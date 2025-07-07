@@ -10,7 +10,7 @@ extern "C" {
 #include "scrollMsgs.h"
 
 /* initialize our ghota config */
-static const char github_Token[] = "fvfvfv";
+static const char github_Token[] = "cvdfASDFDGDA";
 extern ghota_config_t ghconfig;
 extern TaskHandle_t ota_Updating;
 extern SemaphoreHandle_t ota_Update_Sem;

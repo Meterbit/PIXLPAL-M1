@@ -3,4 +3,3 @@ build/*
 !build/ota_data_initial.bin
 !build/spiffs_1.bin
 components/mtb_Ghota/include/*
-!components/mtb_Ghota/include/mtb_ghota.h
