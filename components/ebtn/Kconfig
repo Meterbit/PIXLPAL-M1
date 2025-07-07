@@ -1,0 +1,48 @@
+menu "EBTN"
+    menu "Buttons"
+
+        config EBTN_MAX_COUNT_BTN
+            int "Maximum number of buttons"
+            default 5
+            range 1 10
+
+        config EBTN_MAX_COUNT_BTN_GROUPS
+            int "Maximum number of button click groups"
+            default 5
+            range 1 10
+
+        config EBTN_POLLING_INTERVAL_MS_BTN
+            int "Polling interval for buttons [ms]"
+            default 10
+            range 1 1000
+
+        config EBTN_CLICK_MAX_MS
+            int "Maximum click time [ms]"
+            default 150
+            range 1 1000
+            help
+                The maximum duration a button tap can be considered a consecutive click.
+
+        config EBTN_LONG_PRESS_MIN_MS
+            int "Minimum long press time [ms]"
+            default 800
+            range 400 5000
+            help
+                The minimum time a button press needs to be considered a long button press.
+    endmenu
+
+    ######################################################################################
+
+    menu "Encoders"
+        config EBTN_MAX_COUNT_ENC
+            int "Maximum number of rotary encoders"
+            default 1
+            range 1 5
+
+        config EBTN_POLLING_INTERVAL_US_ENC
+            int "Polling interval for rotary encoders [us]"
+            default 1000
+            range 1 10000
+
+    endmenu
+endmenu

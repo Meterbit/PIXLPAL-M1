@@ -1,0 +1,13 @@
+---
+BasedOnStyle: LLVM
+AccessModifierOffset: '-3'
+AllowShortFunctionsOnASingleLine: Inline
+ColumnLimit: '160'
+IndentCaseLabels: 'true'
+IndentWidth: '3'
+PointerAlignment: Left
+SortIncludes: 'false'
+NamespaceIndentation: 'All'
+AlignTrailingComments: 'true'
+
+...

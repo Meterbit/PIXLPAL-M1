@@ -1,0 +1,366 @@
+{
+    "get": "fixtures",
+    "parameters": {
+        "league": "15",
+        "season": "2025",
+        "next": "5"
+    },
+    "errors": [],
+    "results": 5,
+    "paging": {
+        "current": 1,
+        "total": 1
+    },
+    "response": [
+        {
+            "fixture": {
+                "id": 1321720,
+                "referee": "Tori Penso, USA",
+                "timezone": "UTC",
+                "date": "2025-06-25T19:00:00+00:00",
+                "timestamp": 1750878000,
+                "periods": {
+                    "first": null,
+                    "second": null
+                },
+                "venue": {
+                    "id": 19229,
+                    "name": "TQL Stadium",
+                    "city": "Cincinnati, Ohio"
+                },
+                "status": {
+                    "long": "Not Started",
+                    "short": "NS",
+                    "elapsed": null,
+                    "extra": null
+                }
+            },
+            "league": {
+                "id": 15,
+                "name": "FIFA Club World Cup",
+                "country": "World",
+                "logo": "https:\/\/media.api-sports.io\/football\/leagues\/15.png",
+                "flag": null,
+                "season": 2025,
+                "round": "Group Stage - 3",
+                "standings": true
+            },
+            "teams": {
+                "home": {
+                    "id": 165,
+                    "name": "Borussia Dortmund",
+                    "logo": "https:\/\/media.api-sports.io\/football\/teams\/165.png",
+                    "winner": null
+                },
+                "away": {
+                    "id": 2767,
+                    "name": "Ulsan Hyundai FC",
+                    "logo": "https:\/\/media.api-sports.io\/football\/teams\/2767.png",
+                    "winner": null
+                }
+            },
+            "goals": {
+                "home": null,
+                "away": null
+            },
+            "score": {
+                "halftime": {
+                    "home": null,
+                    "away": null
+                },
+                "fulltime": {
+                    "home": null,
+                    "away": null
+                },
+                "extratime": {
+                    "home": null,
+                    "away": null
+                },
+                "penalty": {
+                    "home": null,
+                    "away": null
+                }
+            }
+        },
+        {
+            "fixture": {
+                "id": 1321721,
+                "referee": "Anthony Taylor, England",
+                "timezone": "UTC",
+                "date": "2025-06-25T19:00:00+00:00",
+                "timestamp": 1750878000,
+                "periods": {
+                    "first": null,
+                    "second": null
+                },
+                "venue": {
+                    "id": null,
+                    "name": "Hard Rock Stadium",
+                    "city": "Miami Garden"
+                },
+                "status": {
+                    "long": "Not Started",
+                    "short": "NS",
+                    "elapsed": null,
+                    "extra": null
+                }
+            },
+            "league": {
+                "id": 15,
+                "name": "FIFA Club World Cup",
+                "country": "World",
+                "logo": "https:\/\/media.api-sports.io\/football\/leagues\/15.png",
+                "flag": null,
+                "season": 2025,
+                "round": "Group Stage - 3",
+                "standings": true
+            },
+            "teams": {
+                "home": {
+                    "id": 2699,
+                    "name": "Mamelodi Sundowns",
+                    "logo": "https:\/\/media.api-sports.io\/football\/teams\/2699.png",
+                    "winner": null
+                },
+                "away": {
+                    "id": 124,
+                    "name": "Fluminense",
+                    "logo": "https:\/\/media.api-sports.io\/football\/teams\/124.png",
+                    "winner": null
+                }
+            },
+            "goals": {
+                "home": null,
+                "away": null
+            },
+            "score": {
+                "halftime": {
+                    "home": null,
+                    "away": null
+                },
+                "fulltime": {
+                    "home": null,
+                    "away": null
+                },
+                "extratime": {
+                    "home": null,
+                    "away": null
+                },
+                "penalty": {
+                    "home": null,
+                    "away": null
+                }
+            }
+        },
+        {
+            "fixture": {
+                "id": 1321722,
+                "referee": "Felix Zwayer",
+                "timezone": "UTC",
+                "date": "2025-06-26T01:00:00+00:00",
+                "timestamp": 1750899600,
+                "periods": {
+                    "first": null,
+                    "second": null
+                },
+                "venue": {
+                    "id": null,
+                    "name": "Rose Bowl",
+                    "city": "Pasadena, California"
+                },
+                "status": {
+                    "long": "Not Started",
+                    "short": "NS",
+                    "elapsed": null,
+                    "extra": null
+                }
+            },
+            "league": {
+                "id": 15,
+                "name": "FIFA Club World Cup",
+                "country": "World",
+                "logo": "https:\/\/media.api-sports.io\/football\/leagues\/15.png",
+                "flag": null,
+                "season": 2025,
+                "round": "Group Stage - 3",
+                "standings": true
+            },
+            "teams": {
+                "home": {
+                    "id": 287,
+                    "name": "Urawa",
+                    "logo": "https:\/\/media.api-sports.io\/football\/teams\/287.png",
+                    "winner": null
+                },
+                "away": {
+                    "id": 2282,
+                    "name": "Monterrey",
+                    "logo": "https:\/\/media.api-sports.io\/football\/teams\/2282.png",
+                    "winner": null
+                }
+            },
+            "goals": {
+                "home": null,
+                "away": null
+            },
+            "score": {
+                "halftime": {
+                    "home": null,
+                    "away": null
+                },
+                "fulltime": {
+                    "home": null,
+                    "away": null
+                },
+                "extratime": {
+                    "home": null,
+                    "away": null
+                },
+                "penalty": {
+                    "home": null,
+                    "away": null
+                }
+            }
+        },
+        {
+            "fixture": {
+                "id": 1321723,
+                "referee": "Ilgiz Tantashev",
+                "timezone": "UTC",
+                "date": "2025-06-26T01:00:00+00:00",
+                "timestamp": 1750899600,
+                "periods": {
+                    "first": null,
+                    "second": null
+                },
+                "venue": {
+                    "id": 11534,
+                    "name": "Lumen Field",
+                    "city": "Seattle, Washington"
+                },
+                "status": {
+                    "long": "Not Started",
+                    "short": "NS",
+                    "elapsed": null,
+                    "extra": null
+                }
+            },
+            "league": {
+                "id": 15,
+                "name": "FIFA Club World Cup",
+                "country": "World",
+                "logo": "https:\/\/media.api-sports.io\/football\/leagues\/15.png",
+                "flag": null,
+                "season": 2025,
+                "round": "Group Stage - 3",
+                "standings": true
+            },
+            "teams": {
+                "home": {
+                    "id": 505,
+                    "name": "Inter",
+                    "logo": "https:\/\/media.api-sports.io\/football\/teams\/505.png",
+                    "winner": null
+                },
+                "away": {
+                    "id": 435,
+                    "name": "River Plate",
+                    "logo": "https:\/\/media.api-sports.io\/football\/teams\/435.png",
+                    "winner": null
+                }
+            },
+            "goals": {
+                "home": null,
+                "away": null
+            },
+            "score": {
+                "halftime": {
+                    "home": null,
+                    "away": null
+                },
+                "fulltime": {
+                    "home": null,
+                    "away": null
+                },
+                "extratime": {
+                    "home": null,
+                    "away": null
+                },
+                "penalty": {
+                    "home": null,
+                    "away": null
+                }
+            }
+        },
+        {
+            "fixture": {
+                "id": 1321724,
+                "referee": null,
+                "timezone": "UTC",
+                "date": "2025-06-26T19:00:00+00:00",
+                "timestamp": 1750964400,
+                "periods": {
+                    "first": null,
+                    "second": null
+                },
+                "venue": {
+                    "id": null,
+                    "name": "Orlando Citrus Bowl Stadium",
+                    "city": "Orlando, Florida"
+                },
+                "status": {
+                    "long": "Not Started",
+                    "short": "NS",
+                    "elapsed": null,
+                    "extra": null
+                }
+            },
+            "league": {
+                "id": 15,
+                "name": "FIFA Club World Cup",
+                "country": "World",
+                "logo": "https:\/\/media.api-sports.io\/football\/leagues\/15.png",
+                "flag": null,
+                "season": 2025,
+                "round": "Group Stage - 3",
+                "standings": true
+            },
+            "teams": {
+                "home": {
+                    "id": 496,
+                    "name": "Juventus",
+                    "logo": "https:\/\/media.api-sports.io\/football\/teams\/496.png",
+                    "winner": null
+                },
+                "away": {
+                    "id": 50,
+                    "name": "Manchester City",
+                    "logo": "https:\/\/media.api-sports.io\/football\/teams\/50.png",
+                    "winner": null
+                }
+            },
+            "goals": {
+                "home": null,
+                "away": null
+            },
+            "score": {
+                "halftime": {
+                    "home": null,
+                    "away": null
+                },
+                "fulltime": {
+                    "home": null,
+                    "away": null
+                },
+                "extratime": {
+                    "home": null,
+                    "away": null
+                },
+                "penalty": {
+                    "home": null,
+                    "away": null
+                }
+            }
+        }
+    ]
+}
