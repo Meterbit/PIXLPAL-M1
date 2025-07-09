@@ -18,11 +18,11 @@ const char *API_KEY = "a2e0674bdfb9d68a5e001e391bcb5160";
 // Base URL for API endpoints
 const char* BASE_URL = "https://v3.football.api-sports.io";
 
-// Timer handle
-TimerHandle_t triggerTimer = NULL;
+int16_t liveFootballDispChangeIntv = 0;  // This variable controls the time it takes for what is being displayed on-screen to change
 
 LiveFootball_Data_t liveFootballData;
 
+EXT_RAM_BSS_ATTR TimerHandle_t triggerTimer = NULL;
 EXT_RAM_BSS_ATTR SemaphoreHandle_t changeDispMatch_Sem = NULL;
 EXT_RAM_BSS_ATTR TaskHandle_t liveFootball_Task_H = NULL;
 void liveFootball_App_Task(void *);
@@ -31,14 +31,14 @@ void liveFootball_App_Task(void *);
 
 void onTimerCallback(TimerHandle_t xTimer);
 void inboundMatchTimer(time_t targetTimestamp);
+String processJsonCommand(uint8_t type = 0, uint16_t leagueId = 39);
 
-String processJsonCommand(const String& input);
 bool fetchLiveMatchTeamLogos(DynamicJsonDocument&, size_t matchIndex = 0);
 bool fetchFixturesMatchTeamLogos(DynamicJsonDocument&, size_t matchIndex = 0);
 
 void wipePrevFixturesLogos(void);
-void drawMatchFixturesBackground(void);
 void drawLiveMatchesBackground(void);
+void drawMatchFixturesBackground(void);
 void drawStandingsBackground(void);
 
 void processLiveMatches(DynamicJsonDocument& doc, void*);
@@ -47,7 +47,10 @@ void processStandingsTable(DynamicJsonDocument& doc, void*);
 
 // Define a function pointer type
 typedef void (*LiveFootballEndpointFn_ptr)(DynamicJsonDocument&, void*);
-LiveFootballEndpointFn_ptr liveFootballPtr = processStandingsTable;
+typedef void (*LiveFootballBackgroundFn_ptr)(void);
+
+LiveFootballEndpointFn_ptr liveFootballPtr = processLiveMatches;
+LiveFootballBackgroundFn_ptr liveFootballBackgroundPtr = drawLiveMatchesBackground;
 
 // button and encoder functions
 void changeFootballTeams(button_event_t button_Data);
@@ -59,15 +62,14 @@ CentreText_t* scoreLineLive;
 CentreText_t* elapsedTimeLive;
 ScrollText_t* moreMatchDataLive;
 
-CentreText_t* titleFixtures;
+CentreText_t* statsTitle;
+
 CentreText_t* serialFixtures;
 CentreText_t* dateFixtures;
 CentreText_t* timeFixtures;
 CentreText_t* vsFixtures;
 ScrollText_t* moreDataFixtures;
 
-
-CentreText_t* titleStandings;
 
 FixedText_t* rankStandings1;
 FixedText_t* teamStandings1;
@@ -96,7 +98,6 @@ void liveFootball_App_Task(void *dApplication){
     ble_AppCom_Parser_Sv->register_BLE_Com_ServiceFns(setFootballTeams);
     appsInitialization(thisApp, statusBarClock_Sv);
     //************************************************************************************ */
-    read_struct_from_nvs("live_FB", &liveFootballData, sizeof(LiveFootball_Data_t));
 
     if(changeDispMatch_Sem == NULL) changeDispMatch_Sem = xSemaphoreCreateBinary();
 
@@ -104,14 +105,13 @@ void liveFootball_App_Task(void *dApplication){
     elapsedTimeLive = new CentreText_t(63, 46, Terminal6x8, CYAN);
     moreMatchDataLive = new ScrollText_t(0, 55, 128, WHITE, 10, 1, Terminal6x8);
 
-    titleFixtures = new CentreText_t(63, 15, Terminal6x8, WHITE, TURQUOISE);
+    statsTitle = new CentreText_t(63, 15, Terminal6x8, WHITE, TURQUOISE);
+
     serialFixtures = new CentreText_t(107, 27, Terminal6x8, WHITE);
     dateFixtures = new CentreText_t(107, 37, Terminal4x6, GREEN_LIZARD);
     timeFixtures = new CentreText_t(107, 47, Terminal6x8, CYAN);
     vsFixtures = new CentreText_t(42, 37, Terminal6x8, WHITE);
     moreDataFixtures = new ScrollText_t(0, 55, 128, WHITE, 10, 1, Terminal6x8);
-
-    titleStandings = new CentreText_t(63, 15, Terminal6x8, WHITE, DARK_BROWN);
 
     rankStandings1 = new FixedText_t(2, 23, Terminal6x8, GREEN);
     teamStandings1 = new FixedText_t(17, 23, Terminal6x8, GREEN_LIZARD);
@@ -133,18 +133,19 @@ void liveFootball_App_Task(void *dApplication){
     WiFiClientSecure client;
     DynamicJsonDocument doc(30 * 1024);
 
+    read_struct_from_nvs("live_FBL", &liveFootballData, sizeof(LiveFootball_Data_t));
+
     while (THIS_APP_IS_ACTIVE == pdTRUE){
+
         while ((Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
           // Set client to insecure for now (you can secure with fingerprint or CA cert)
         client.setInsecure();
+        liveFootballBackgroundPtr();
+        liveFootballDispChangeIntv = 0;
 
-        while (THIS_APP_IS_ACTIVE == pdTRUE){
-        strcpy(liveFootballData.endpointType, "standings");
-        liveFootballData.leagueID = 39; // Default league ID for API-Football 
-        String input = "{ \"type\":\"" + String(liveFootballData.endpointType) + "\", \"league_id\":" +  String(liveFootballData.leagueID) + "}";
-        //printf("Input JSON: %s\n", input.c_str());
-        String fullUrl = BASE_URL + processJsonCommand(input);
-        //printf("The Full URL is: %s\n", fullUrl.c_str());
+        while (THIS_APP_IS_ACTIVE == pdTRUE && liveFootballDispChangeIntv <= 0){
+        String fullUrl = BASE_URL + processJsonCommand(liveFootballData.endpointType, liveFootballData.leagueID);
+        // printf("The Full URL is: %s\n", fullUrl.c_str());
         // Optional: stop here or repeat after a longer delay
         HTTPClient http;
         http.begin(client, fullUrl);
@@ -175,14 +176,12 @@ void liveFootball_App_Task(void *dApplication){
     delete elapsedTimeLive;
     delete moreMatchDataLive;
 
-    delete titleFixtures;
+    delete statsTitle;
     delete serialFixtures;
     delete dateFixtures;
     delete timeFixtures;
     delete vsFixtures;
     delete moreDataFixtures;
-
-    delete titleStandings;
 
     delete rankStandings1;
     delete teamStandings1;
@@ -208,6 +207,187 @@ void liveFootball_App_Task(void *dApplication){
 
 
 
+
+void processLiveMatches(DynamicJsonDocument& doc, void* dApplication){
+      Applications *thisApp = (Applications *)dApplication;
+      JsonArray matches = doc["response"].as<JsonArray>();
+
+      if (matches.isNull() || matches.size() == 0) {
+          //printf("No live matches found.\n");
+          moreDataFixtures->scroll_This_Text("No live matches found.", WHITE);
+          moreDataFixtures->scroll_This_Text("Showing Fixtures.", PINK);
+          liveFootballData.endpointType = FIXTURES_ENDPOINT;
+          liveFootballPtr = processFituresMatches;
+          liveFootballBackgroundPtr = drawMatchFixturesBackground;
+          triggerTimer = NULL;
+          liveFootballDispChangeIntv = 300;
+          return;
+      }
+
+      int matchIndex = 0;
+
+      for (JsonObject match : matches) {
+        liveFootballDispChangeIntv = 300;
+        fetchLiveMatchTeamLogos(doc, matchIndex++); // Draw logos for the first match
+        
+        // Extract data
+        String homeTeam = match["teams"]["home"]["name"].as<String>();
+        String awayTeam = match["teams"]["away"]["name"].as<String>();
+
+        // Navigate to fixture.status
+        JsonObject status = match["fixture"]["status"];
+
+        const char* shortStatus = status["short"] | "";
+        int elapsed = status["elapsed"] | 0;
+        int extra = status["extra"] | 0;  // Will be 0 if null
+
+        // Construct output string
+        String matchStatus = String(shortStatus) + "  " + String(elapsed) + "'";
+        if (status["extra"] != nullptr) {
+          matchStatus += "+" + String(extra);
+        }
+
+        int homeGoals = match["goals"]["home"] | 0;
+        int awayGoals = match["goals"]["away"] | 0;
+        String leagueName = match["league"]["name"].as<String>();
+        String round = match["league"]["round"].as<String>();
+        String venue = match["fixture"]["venue"]["name"].as<String>();
+
+        String scoreText = String(homeGoals) + "-" + String(awayGoals);
+        scoreLineLive->writeColoredString(scoreText.c_str(), WHITE);
+        elapsedTimeLive->writeColoredString(matchStatus.c_str(), CYAN);
+
+        String dLeague = leagueName + " (" + String(round) + ")";
+        moreMatchDataLive->scroll_This_Text(dLeague, CYAN);
+        String dTeams = homeTeam + " vs " + awayTeam;
+        moreMatchDataLive->scroll_This_Text(dTeams, GREEN);
+        moreMatchDataLive->scroll_This_Text(venue, BROWN);
+
+        JsonArray events = match["events"].as<JsonArray>();
+        if (events.size() > 0) {
+          for (JsonObject ev : events) {
+            int eTime = ev["time"]["elapsed"] | 0;
+            String team = ev["team"]["name"] | "Unknown";
+            String player = ev["player"]["name"] | "Unknown";
+            String type = ev["type"] | "Unknown";
+            String detail = ev["detail"] | "Unknown";
+
+            String eventsText = String(eTime) + "' - " + team + ": " + player + " - " + type + " (" + detail + ")";
+            moreMatchDataLive->scroll_This_Text(eventsText, YELLOW);
+          }
+        } else {
+          printf("  No events recorded.\n");
+        }
+
+      while(liveFootballDispChangeIntv-->0 && xSemaphoreTake(changeDispMatch_Sem, 0) != pdTRUE && THIS_APP_IS_ACTIVE == pdTRUE) delay(100);
+      if(liveFootballDispChangeIntv > 0) break;
+      }
+      moreDataFixtures->scroll_Active(STOP_SCROLL);
+}
+
+
+
+void processFituresMatches(DynamicJsonDocument& doc, void* dApplication){
+  Applications *thisApp = (Applications *)dApplication;
+  JsonArray matches = doc["response"].as<JsonArray>();
+  int matchIndex = 0;
+  int results = doc["results"] | 0;
+
+  for (JsonObject match : matches) {
+    liveFootballDispChangeIntv = 75;
+
+    time_t time = match["fixture"]["timestamp"];
+
+    if(matchIndex == 0 && triggerTimer == NULL) inboundMatchTimer(time);
+
+    fetchFixturesMatchTeamLogos(doc, matchIndex++); // Draw logos for the first match
+
+    String status = match["fixture"]["status"]["short"] | "N/A";
+
+    if (status != "NS" && status != "TBD"){
+      //printf("Processing Live match %d\n", matchIndex);
+      liveFootballData.endpointType = LIVE_MATCHES_ENDPOINT;
+      liveFootballPtr = processLiveMatches;
+      liveFootballBackgroundPtr = drawLiveMatchesBackground;
+      triggerTimer = NULL; // Reset the timer handle
+      break;
+    }
+
+    String venue = match["fixture"]["venue"]["name"] | "Unknown Venue";
+    String homeTeam = match["teams"]["home"]["name"];
+    String awayTeam = match["teams"]["away"]["name"];
+    String leagueName = match["league"]["name"];
+    String round = match["league"]["round"];
+
+    statsTitle->writeColoredString(leagueName, BLACK);
+    serialFixtures->writeColoredString(String(matchIndex) + "/" + String(results), BLUE_GRAY);
+    dateFixtures->writeColoredString(formatDateFromTimestamp(time), GREEN_LIZARD);
+    timeFixtures->writeColoredString(formatTimeFromTimestamp(time), CYAN);
+    vsFixtures->writeColoredString("vs", ASH_GRAY);
+
+    String dTeams = homeTeam + " vs " + awayTeam;
+
+    moreDataFixtures->scroll_This_Text(round, CYAN);
+    moreDataFixtures->scroll_This_Text(dTeams, GREEN);
+    moreDataFixtures->scroll_This_Text(venue, PINK);
+
+    while(liveFootballDispChangeIntv-->0 && xSemaphoreTake(changeDispMatch_Sem, 0) != pdTRUE && THIS_APP_IS_ACTIVE == pdTRUE) delay(100);
+    if(liveFootballDispChangeIntv > 0) break;
+  }
+  moreDataFixtures->scroll_Active(STOP_SCROLL);
+}
+
+
+
+void processStandingsTable(DynamicJsonDocument& doc, void* dApplication){
+      Applications *thisApp = (Applications *)dApplication;
+      JsonArray standings = doc["response"][0]["league"]["standings"];
+      //String leagueName = doc["response"][0]["league"]["name"] | "Unknown League";
+      int standingIndex = 0;
+
+        //printf("\n=== Group Standings ===\n");
+        for (JsonArray group : standings) {
+          String groupName = group[0]["group"];
+        //titleStandings->writeColoredString(leagueName, BLACK);
+        statsTitle->writeColoredString(groupName, WHITE);
+          //printf("\n[%s]\n", groupName.c_str());
+          for (JsonObject team : group) {
+            liveFootballDispChangeIntv = 75;
+
+            if ((standingIndex % 4) == 0) {
+              rankStandings1->writeColoredString(String(team["rank"].as<int>()).c_str(), YELLOW_CRAYOLA);
+              teamStandings1->writeColoredString(team["team"]["name"].as<const char*>(), GREEN_LIZARD);
+              pointsStandings1->writeColoredString(String(team["points"].as<int>()), WHITE);
+            } else if ((standingIndex % 4) == 1) {
+              rankStandings2->writeColoredString(String(team["rank"].as<int>()).c_str(), YELLOW_CRAYOLA);
+              teamStandings2->writeColoredString(team["team"]["name"].as<const char*>(), GREEN_LIZARD);
+              pointsStandings2->writeColoredString(String(team["points"].as<int>()), WHITE);
+            } else if ((standingIndex % 4) == 2) {
+              rankStandings3->writeColoredString(String(team["rank"].as<int>()).c_str(), YELLOW_CRAYOLA);
+              teamStandings3->writeColoredString(team["team"]["name"].as<const char*>(), GREEN_LIZARD);
+              pointsStandings3->writeColoredString(String(team["points"].as<int>()), WHITE);
+            } else if ((standingIndex % 4) == 3) {
+              rankStandings4->writeColoredString(String(team["rank"].as<int>()).c_str(), YELLOW_CRAYOLA);
+              teamStandings4->writeColoredString(team["team"]["name"].as<const char*>(), GREEN_LIZARD);
+              pointsStandings4->writeColoredString(String(team["points"].as<int>()), WHITE);
+            }
+
+            // Delay after every 4 teams
+            if (++standingIndex % 4 == 0) {
+              for (; liveFootballDispChangeIntv--> 0;) {
+                if (xSemaphoreTake(changeDispMatch_Sem, 0) == pdTRUE || THIS_APP_IS_ACTIVE == false) {
+                  return;
+                }
+                delay(100);
+              }
+            }
+          }
+        }
+        //printf("\n=======================\n");
+}
+
+
+
 int getCurrentYear() {
   time_t now = time(nullptr);
   struct tm timeinfo;
@@ -217,45 +397,34 @@ int getCurrentYear() {
 
 
 
-String processJsonCommand(const String &input){
-  DynamicJsonDocument doc(512);
-  DeserializationError error = deserializeJson(doc, input);
-  if (error)
-  {
-    printf("JSON Deserialization failed: %s\n", error.c_str());
-    return String("Error deserializing JSON");
-  }
-
+String processJsonCommand(uint8_t type, uint16_t leagueId) {
   time_t now = time(nullptr);
+  String path;
   struct tm timeinfo;
   localtime_r(&now, &timeinfo);
 
-  const char *type = doc["type"]; // live, fixtures, standings, events
-  int leagueId = doc["league_id"];
   int season = getCurrentYear();
-  int fixtureId = doc.containsKey("fixture_id") ? doc["fixture_id"] : 0;
 
-  String path;
+  switch(type){
+    case 0: 
+      path = "/fixtures?live=all&league=" + String(leagueId);
+    break;
 
-  if (strcmp(type, "live") == 0)
-  {
-    // 🔧 Modified to fetch only live data from a specified league
-    path = "/fixtures?live=all&league=" + String(leagueId);
-  }
-  else if (strcmp(type, "fixtures") == 0){
-    int nextCount = doc.containsKey("next") ? doc["next"].as<int>() : 10; // default to 10 if not set
-    path = "/fixtures?league=" + String(leagueId) +
-           "&season=" + String(season) +
-           "&next=" + String(nextCount);
-  }
-  else if (strcmp(type, "standings") == 0)
-  {
-    path = "/standings?league=" + String(leagueId) + "&season=" + String(season);
-  }
-  else
-  {
-    printf("Invalid type or missing parameters.\n");
-    return String("Invalid type or missing parameters.\n");
+    case 1: {
+    int nextCount = 10; 
+      path = "/fixtures?league=" + String(leagueId) +
+            "&season=" + String(season) +
+            "&next=" + String(nextCount);
+      break;
+      }
+    case 2: 
+      path = "/standings?league=" + String(leagueId) + "&season=" + String(season);
+    break;
+
+    default: 
+      printf("Invalid type or missing parameters.\n");
+      path = "/fixtures?live=all&league=" + String(leagueId);
+    break; 
   }
 
   // fetchAndPrintJson(path);
@@ -367,189 +536,6 @@ bool fetchFixturesMatchTeamLogos(DynamicJsonDocument& doc, size_t matchIndex) {
 
 
 
-void processLiveMatches(DynamicJsonDocument& doc, void* dApplication){
-      Applications *thisApp = (Applications *)dApplication;
-      JsonArray matches = doc["response"].as<JsonArray>();
-
-      if (matches.isNull() || matches.size() == 0) {
-          printf("No live matches found.\n");
-          drawMatchFixturesBackground(); // Draw the background for fixtures
-          moreDataFixtures->scroll_This_Text("No live matches found.", WHITE);
-          moreDataFixtures->scroll_This_Text("Showing Fixtures.", PINK);
-          strcpy(liveFootballData.endpointType, "fixtures");
-          liveFootballPtr = processFituresMatches;
-          return;
-      }
-
-      int16_t matchLiveChangeIntvl;
-      int matchIndex = 0;
-
-      for (JsonObject match : matches) {
-        matchLiveChangeIntvl = 300;
-        fetchLiveMatchTeamLogos(doc, matchIndex++); // Draw logos for the first match
-        
-        // Extract data
-        String homeTeam = match["teams"]["home"]["name"].as<String>();
-        String awayTeam = match["teams"]["away"]["name"].as<String>();
-
-        // Navigate to fixture.status
-        JsonObject status = match["fixture"]["status"];
-
-        const char* shortStatus = status["short"] | "";
-        int elapsed = status["elapsed"] | 0;
-        int extra = status["extra"] | 0;  // Will be 0 if null
-
-        // Construct output string
-        String matchStatus = String(shortStatus) + "  " + String(elapsed) + "'";
-        if (status["extra"] != nullptr) {
-          matchStatus += "+" + String(extra);
-        }
-
-        int homeGoals = match["goals"]["home"] | 0;
-        int awayGoals = match["goals"]["away"] | 0;
-        String leagueName = match["league"]["name"].as<String>();
-        String round = match["league"]["round"].as<String>();
-        String venue = match["fixture"]["venue"]["name"].as<String>();
-
-        String scoreText = String(homeGoals) + "-" + String(awayGoals);
-        scoreLineLive->writeColoredString(scoreText.c_str(), WHITE);
-        elapsedTimeLive->writeColoredString(matchStatus.c_str(), CYAN);
-
-        String dLeague = leagueName + " (" + String(round) + ")";
-        moreMatchDataLive->scroll_This_Text(dLeague, CYAN);
-        String dTeams = homeTeam + " vs " + awayTeam;
-        moreMatchDataLive->scroll_This_Text(dTeams, GREEN);
-        moreMatchDataLive->scroll_This_Text(venue, BROWN);
-
-        JsonArray events = match["events"].as<JsonArray>();
-        if (events.size() > 0) {
-          for (JsonObject ev : events) {
-            int eTime = ev["time"]["elapsed"] | 0;
-            String team = ev["team"]["name"] | "Unknown";
-            String player = ev["player"]["name"] | "Unknown";
-            String type = ev["type"] | "Unknown";
-            String detail = ev["detail"] | "Unknown";
-
-            String eventsText = String(eTime) + "' - " + team + ": " + player + " - " + type + " (" + detail + ")";
-            moreMatchDataLive->scroll_This_Text(eventsText, YELLOW);
-          }
-        } else {
-          printf("  No events recorded.\n");
-        }
-
-      while(matchLiveChangeIntvl-->0 && xSemaphoreTake(changeDispMatch_Sem, 0) != pdTRUE && THIS_APP_IS_ACTIVE == pdTRUE) delay(100);
-      if(matchLiveChangeIntvl > 0) break;
-      }
-      moreDataFixtures->scroll_Active(STOP_SCROLL);
-}
-
-
-
-void processFituresMatches(DynamicJsonDocument& doc, void* dApplication){
-  Applications *thisApp = (Applications *)dApplication;
-  JsonArray matches = doc["response"].as<JsonArray>();
-  int16_t matchFixtureChangeIntvl;
-  int matchIndex = 0;
-  int results = doc["results"] | 0;
-
-  for (JsonObject match : matches) {
-
-    matchFixtureChangeIntvl = 75;
-    time_t time = match["fixture"]["timestamp"];
-
-    if(matchIndex == 0 && triggerTimer == NULL){
-      inboundMatchTimer(time);
-      drawMatchFixturesBackground();
-    } 
-
-    fetchFixturesMatchTeamLogos(doc, matchIndex++); // Draw logos for the first match
-
-    String status = match["fixture"]["status"]["short"] | "N/A";
-
-    if (status != "NS" && status != "TBD"){
-      printf("Processing Live match %d\n", matchIndex);
-      strcpy(liveFootballData.endpointType, "live");
-      liveFootballPtr = processLiveMatches;
-      break;
-    }
-
-    String venue = match["fixture"]["venue"]["name"] | "Unknown Venue";
-    String homeTeam = match["teams"]["home"]["name"];
-    String awayTeam = match["teams"]["away"]["name"];
-    String leagueName = match["league"]["name"];
-    String round = match["league"]["round"];
-
-    titleFixtures->writeColoredString(leagueName, BLACK);
-    serialFixtures->writeColoredString(String(matchIndex) + "/" + String(results), BLUE_GRAY);
-    dateFixtures->writeColoredString(formatDateFromTimestamp(time), GREEN_LIZARD);
-    timeFixtures->writeColoredString(formatTimeFromTimestamp(time), CYAN);
-    vsFixtures->writeColoredString("vs", ASH_GRAY);
-
-    String dTeams = homeTeam + " vs " + awayTeam;
-
-    moreDataFixtures->scroll_This_Text(round, CYAN);
-    moreDataFixtures->scroll_This_Text(dTeams, GREEN);
-    moreDataFixtures->scroll_This_Text(venue, PINK);
-
-    while(matchFixtureChangeIntvl-->0 && xSemaphoreTake(changeDispMatch_Sem, 0) != pdTRUE && THIS_APP_IS_ACTIVE == pdTRUE) delay(100);
-    if(matchFixtureChangeIntvl > 0) break;
-  }
-  moreDataFixtures->scroll_Active(STOP_SCROLL);
-}
-
-
-
-void processStandingsTable(DynamicJsonDocument& doc, void* dApplication){
-      Applications *thisApp = (Applications *)dApplication;
-      JsonArray standings = doc["response"][0]["league"]["standings"];
-      String leagueName = doc["response"][0]["league"]["name"] | "Unknown League";
-      int16_t matchFixtureChangeIntvl = 0;
-      int standingIndex = 0;
-
-      drawStandingsBackground();
-
-        printf("\n=== Group Standings ===\n");
-        for (JsonArray group : standings) {
-          String groupName = group[0]["group"];
-        //titleStandings->writeColoredString(leagueName, BLACK);
-        titleStandings->writeColoredString(groupName, BLACK);
-          //printf("\n[%s]\n", groupName.c_str());
-          for (JsonObject team : group) {
-            matchFixtureChangeIntvl = 75;
-
-            if ((standingIndex % 4) == 0) {
-              rankStandings1->writeColoredString(String(team["rank"].as<int>()).c_str(), YELLOW_CRAYOLA);
-              teamStandings1->writeColoredString(team["team"]["name"].as<const char*>(), GREEN_LIZARD);
-              pointsStandings1->writeColoredString(String(team["points"].as<int>()), WHITE);
-            } else if ((standingIndex % 4) == 1) {
-              rankStandings2->writeColoredString(String(team["rank"].as<int>()).c_str(), YELLOW_CRAYOLA);
-              teamStandings2->writeColoredString(team["team"]["name"].as<const char*>(), GREEN_LIZARD);
-              pointsStandings2->writeColoredString(String(team["points"].as<int>()), WHITE);
-            } else if ((standingIndex % 4) == 2) {
-              rankStandings3->writeColoredString(String(team["rank"].as<int>()).c_str(), YELLOW_CRAYOLA);
-              teamStandings3->writeColoredString(team["team"]["name"].as<const char*>(), GREEN_LIZARD);
-              pointsStandings3->writeColoredString(String(team["points"].as<int>()), WHITE);
-            } else if ((standingIndex % 4) == 3) {
-              rankStandings4->writeColoredString(String(team["rank"].as<int>()).c_str(), YELLOW_CRAYOLA);
-              teamStandings4->writeColoredString(team["team"]["name"].as<const char*>(), GREEN_LIZARD);
-              pointsStandings4->writeColoredString(String(team["points"].as<int>()), WHITE);
-            }
-
-            // Delay after every 4 teams
-            if (++standingIndex % 4 == 0) {
-              for (; matchFixtureChangeIntvl-- > 0;) {
-                if (xSemaphoreTake(changeDispMatch_Sem, 0) == pdTRUE || THIS_APP_IS_ACTIVE == false) {
-                  return;
-                }
-                delay(100);
-              }
-            }
-          }
-        }
-        printf("\n=======================\n");
-}
-
-
 void changeFootballTeams(button_event_t button_Data){
     switch (button_Data.type)
     {
@@ -595,10 +581,10 @@ void setFootballTeams(DynamicJsonDocument &dCommand){
 
 // Callback when timer fires
 void onTimerCallback(TimerHandle_t xTimer) {
-  strcpy(liveFootballData.endpointType, "live");
+  liveFootballData.endpointType = LIVE_MATCHES_ENDPOINT; // Reset to live matches
   liveFootballPtr = processLiveMatches;
+  liveFootballBackgroundPtr = drawLiveMatchesBackground;
   triggerTimer = NULL; // Reset the timer handle
-  drawLiveMatchesBackground();
   xSemaphoreGive(changeDispMatch_Sem); // Signal that the timer has fired
 }
 

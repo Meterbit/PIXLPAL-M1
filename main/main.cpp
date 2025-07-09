@@ -26,7 +26,7 @@ extern "C" void app_main(){
     size_t free_sram = 0;
 
     while ((Applications::internetConnectStatus != true)){
-      printf("Waiting for Internet Connection....iIII\n");
+      printf("Waiting for Internet Connection....\n");
       delay(1000);
     }
 

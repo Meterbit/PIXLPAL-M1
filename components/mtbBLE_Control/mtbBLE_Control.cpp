@@ -75,7 +75,7 @@ class MyServerCallbacks : public NimBLEServerCallbacks{
 class CharacteristicsCallbacks : public NimBLECharacteristicCallbacks{
   void onWrite(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo& connInfo){
 
-    //printf("Value Written: %s \n", pCharacteristic->getValue().c_str());
+    printf("Value Written: %s \n", pCharacteristic->getValue().c_str());
 
 if(pCharacteristic == setCom_characteristic){
       setValue = pCharacteristic->getValue().c_str();

@@ -8,10 +8,14 @@
 // #include "encoder.h"
 // #include "button.h"
 
+#define LIVE_MATCHES_ENDPOINT 0
+#define FIXTURES_ENDPOINT 1
+#define STANDINGS_ENDPOINT 2
+
 static const char liveFootbalAppRoute[] = "5/0";
 
 struct LiveFootball_Data_t {
-  char endpointType[20] = "fixtures"; // 1: Fixture; 2: Standings
+  uint8_t endpointType = 0; // 1: Fixture; 2: Standings
   uint16_t leagueID = 39; // Default league ID for API-Football
 };
 
