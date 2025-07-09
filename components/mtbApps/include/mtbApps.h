@@ -301,6 +301,7 @@ extern Applications_StatusBar *googleWeather_App;           // App Communication
 extern Applications_StatusBar *finnhub_Stats_App;          // App Communication Route: 4/0
 extern Applications_StatusBar *crypto_Stats_App;            // App Communication Route: 4/1
 extern Applications_StatusBar *currencyExchange_App;        // App Communication Route: 4/2
+extern Applications_StatusBar *twelveData_App;              // App Communication Route: 4/3
 
 // Sports
 extern Applications_StatusBar *liveFootbalScores_App;       // App Communication Route: 5/0

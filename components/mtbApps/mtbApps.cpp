@@ -571,24 +571,11 @@ void generalAppLunch(CurrentApp_t dAppPath){
     case 9: audioStreamAppLunch(dAppPath.SpeApp); break;
     case 10: sMediaAppLunch(dAppPath.SpeApp); break;
     case 11: miscellanousAppLunch(dAppPath.SpeApp); break;
-    // case 9: specAppLunch(dSpecApp); break;
-    // case 10: specAppLunch(dSpecApp); break;
-    // case 11: specAppLunch(dSpecApp); break;
     // case 12: specAppLunch(dSpecApp); break;
     // case 13: specAppLunch(dSpecApp); break;
     // case 14: specAppLunch(dSpecApp); break;
     // case 15: specAppLunch(dSpecApp); break;
     // case 16: specAppLunch(dSpecApp); break;
-    // case 17: specAppLunch(dSpecApp); break;
-    // case 18: specAppLunch(dSpecApp); break;
-    // case 19: specAppLunch(dSpecApp); break;
-    // case 20: specAppLunch(dSpecApp); break;
-    // case 21: specAppLunch(dSpecApp); break;
-    // case 22: specAppLunch(dSpecApp); break;
-    // case 23: specAppLunch(dSpecApp); break;
-    // case 24: specAppLunch(dSpecApp); break;
-    // case 25: specAppLunch(dSpecApp); break;
-    // case 26: specAppLunch(dSpecApp); break;
     default: printf("No Apps to Lunch.\n");
     //statusBarNotif.scroll_This_Text("COMMAND DOES NOT MENTION ANY APP TO LUNCH.", YELLOW);
     }
@@ -611,11 +598,6 @@ void msgAppLunch(uint16_t dAppNumber){
     switch(dAppNumber){
         case 0: launchThisApp(googleNews_App); break;
         case 1: launchThisApp(rssNewsApp); break;
-        //case 2: launchThisApp(classicClock_App); break; 
-        // case 3: launchThisApp(classicClock_App); break;
-        // case 4: launchThisApp(classicClock_App); break; 
-        // case 5: launchThisApp(classicClock_App); break; 
-        // case 6: launchThisApp(classicClock_App); break; 
 
         default: printf("No Apps to Lunch.\n");
             break;
@@ -627,11 +609,6 @@ void calendarAppLunch(uint16_t dAppNumber){
     switch(dAppNumber){
         case 0: launchThisApp(google_Calendar_App); break;
         case 1: launchThisApp(outlook_Calendar_App); break;
-        // case 2: launchThisApp(classicClock_App); break;
-        // case 3: launchThisApp(classicClock_App); break; 
-        // case 4: launchThisApp(classicClock_App); break; 
-        // case 5: launchThisApp(classicClock_App); break;
-        // case 6: launchThisApp(classicClock_App); break;
 
         default: printf("No Apps to Lunch.\n");
             break;
@@ -644,10 +621,6 @@ void weatherAppLunch(uint16_t dAppNumber){
         case 0: launchThisApp(openWeather_App); break;
         case 1: launchThisApp(openMeteo_App); break;
         case 2: launchThisApp(googleWeather_App); break; 
-        // case 3: launchThisApp(classicClock_App); break; 
-        // case 4: launchThisApp(classicClock_App); break; 
-        // case 5: launchThisApp(classicClock_App); break; 
-        // case 6: launchThisApp(classicClock_App); break;
 
         default: printf("No Apps to Lunch.\n");
             break;
@@ -660,10 +633,7 @@ void financeAppLunch(uint16_t dAppNumber){
         case 0: launchThisApp(finnhub_Stats_App); break;
         case 1: launchThisApp(crypto_Stats_App); break; 
         case 2: launchThisApp(currencyExchange_App); break;
-        // case 3: launchThisApp(classicClock_App); break;
-        // case 4: launchThisApp(classicClock_App); break;
-        // case 5: launchThisApp(classicClock_App); break;
-        // case 6: launchThisApp(classicClock_App); break;
+        case 3: launchThisApp(twelveData_App); break;
 
         default: printf("No Apps to Lunch.\n");
             break;
@@ -675,11 +645,6 @@ void sportsAppLunch(uint16_t dAppNumber){
     switch(dAppNumber){
         case 0: launchThisApp(liveFootbalScores_App); break;
         // case 1: launchThisApp(classicClock_App); break;
-        // case 2: launchThisApp(classicClock_App); break;
-        // case 3: launchThisApp(classicClock_App); break;
-        // case 4: launchThisApp(classicClock_App); break;
-        // case 5: launchThisApp(classicClock_App); break; 
-        // case 6: launchThisApp(classicClock_App); break; 
 
         default: printf("No Apps to Lunch.\n");
             break;
