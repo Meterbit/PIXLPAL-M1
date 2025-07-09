@@ -46,11 +46,3 @@ Replace `PORT` with the serial port of your device.
 
 The firmware exposes a set of BLE characteristics allowing a mobile app to switch between applications and change their settings. Each app documents the commands it accepts in its own README. Most settings are saved to NVS so they persist across reboots.
 
-## TwelveData FX Example
-
-The repository now includes a currency exchange application located in `components/App_TwelveDataFX`. It fetches exchange rates from the TwelveData API and shows the selected currency pair on the matrix display. Configure the API token and refresh interval via BLE before use.
-
-## Contributing
-
-Pull requests are welcome. Please ensure `idf.py build` succeeds and follow the existing code style. Include documentation for any new applications in their component folder.
-
