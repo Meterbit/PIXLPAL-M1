@@ -1,35 +1,56 @@
-| Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C5 | ESP32-C6 | ESP32-H2 | ESP32-P4 | ESP32-S2 | ESP32-S3 |
-| ----------------- | ----- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
+# PIXLPAL-M1
 
-# _Sample project_
+PIXLPAL‑M1 is a collection of ESP‑IDF/Arduino applications designed for a 64×32 RGB LED matrix display. Each application runs as a standalone task that can be launched from a simple menu system or switched via BLE commands. The project demonstrates how to build network enabled visual gadgets such as clocks, news tickers and various API integrations for the PIXLPAL hardware platform.
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+## Features
 
-This is the simplest buildable example. The example is used by command `idf.py create-project`
-that copies the project to user specified path and set it's name. For more information follow the [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project)
+- Modular application framework using FreeRTOS tasks
+- BLE command parser for remote control and configuration
+- Wi‑Fi connectivity with optional over‑the‑air updates
+- Persistent storage via NVS and LittleFS
+- Example apps for weather, crypto prices, calendar events and more
 
-
-
-## How to use example
-We encourage the users to use the example as a template for the new projects.
-A recommended way is to follow the instructions on a [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project).
-
-## Example folder contents
-
-The project **sample_project** contains one source file in C language [main.c](main/main.c). The file is located in folder [main](main).
-
-ESP-IDF projects are built using CMake. The project build configuration is contained in `CMakeLists.txt`
-files that provide set of directives and instructions describing the project's source files and targets
-(executable, library, or both). 
-
-Below is short explanation of remaining files in the project folder.
+## Repository Layout
 
 ```
-├── CMakeLists.txt
-├── main
-│   ├── CMakeLists.txt
-│   └── main.c
-└── README.md                  This is the file you are currently reading
+.
+├── components/        # All application and library components
+├── main/              # Project entry point
+├── partition_table/   # Flash layout
+├── sdkconfig          # ESP‑IDF build configuration
+└── README.md          # Project documentation
 ```
-Additionally, the sample project contains Makefile and component.mk files, used for the legacy Make based build system. 
-They are not used or needed when building with CMake and idf.py.
+
+Applications live under `components/App_*` and are registered with the framework in `main/main.cpp`. Each app exposes BLE commands for runtime configuration and stores its settings in NVS. Resources such as icons or GIF animations are served from the LittleFS filesystem.
+
+## Building
+
+This project uses the ESP‑IDF build system with the Arduino framework as a component. To build you need a recent ESP‑IDF release with its tools installed:
+
+```bash
+cd PIXLPAL-M1
+idf.py set-target esp32
+idf.py menuconfig   # optional project configuration
+idf.py build
+```
+
+Connect your PIXLPAL‑M1 board and run:
+
+```bash
+idf.py -p PORT flash monitor
+```
+
+Replace `PORT` with the serial port of your device.
+
+## BLE Control
+
+The firmware exposes a set of BLE characteristics allowing a mobile app to switch between applications and change their settings. Each app documents the commands it accepts in its own README. Most settings are saved to NVS so they persist across reboots.
+
+## Polygon FX Example
+
+The repository now includes a currency exchange application located in `components/App_PolygonFX`. It fetches exchange rates from the Polygon.io API and shows the selected currency pair on the matrix display. Configure the API token and refresh interval via BLE before use.
+
+## Contributing
+
+Pull requests are welcome. Please ensure `idf.py build` succeeds and follow the existing code style. Include documentation for any new applications in their component folder.
+
