@@ -68,7 +68,7 @@ class MyServerCallbacks : public NimBLEServerCallbacks{
     Applications::bleCentralContd = false;
     showStatusBarIcon({"/batIcons/btOn.png", 18, 1});
     // Start advertising
-    pServer->getAdvertising()->start();
+    NimBLEDevice::startAdvertising(); // Start advertising
   }
 };
 

@@ -49,18 +49,23 @@ void processStandingsTable(DynamicJsonDocument& doc, void*);
 typedef void (*LiveFootballEndpointFn_ptr)(DynamicJsonDocument&, void*);
 typedef void (*LiveFootballBackgroundFn_ptr)(void);
 
-LiveFootballEndpointFn_ptr liveFootballPtr = processLiveMatches;
-LiveFootballBackgroundFn_ptr liveFootballBackgroundPtr = drawLiveMatchesBackground;
+LiveFootballEndpointFn_ptr liveFootballPtr = processFituresMatches;
+LiveFootballBackgroundFn_ptr liveFootballBackgroundPtr = drawMatchFixturesBackground;
 
 // button and encoder functions
 void changeFootballTeams(button_event_t button_Data);
 
 // bluetooth functions
-void setFootballTeams(DynamicJsonDocument &);
+void selectFBL_Leagues(DynamicJsonDocument&);
+void setDisplayFBL_League(DynamicJsonDocument &);
+void saveFBL_Leagues(DynamicJsonDocument &);
+void showFBL_Fix_Stnd(DynamicJsonDocument &);
+void setFBL_Token(DynamicJsonDocument &);
+
 
 CentreText_t* scoreLineLive;
 CentreText_t* elapsedTimeLive;
-ScrollText_t* moreMatchDataLive;
+ScrollText_t* moreDataScroll;
 
 CentreText_t* statsTitle;
 
@@ -68,8 +73,6 @@ CentreText_t* serialFixtures;
 CentreText_t* dateFixtures;
 CentreText_t* timeFixtures;
 CentreText_t* vsFixtures;
-ScrollText_t* moreDataFixtures;
-
 
 FixedText_t* rankStandings1;
 FixedText_t* teamStandings1;
@@ -95,7 +98,7 @@ void liveFootball_App_Task(void *dApplication){
     Applications *thisApp = (Applications *)dApplication;
     thisApp->app_EncoderFn_ptr = brightnessControl;
     thisApp->app_ButtonFn_ptr = changeFootballTeams;
-    ble_AppCom_Parser_Sv->register_BLE_Com_ServiceFns(setFootballTeams);
+    ble_AppCom_Parser_Sv->register_BLE_Com_ServiceFns(selectFBL_Leagues, setDisplayFBL_League, saveFBL_Leagues, showFBL_Fix_Stnd, setFBL_Token);
     appsInitialization(thisApp, statusBarClock_Sv);
     //************************************************************************************ */
 
@@ -103,7 +106,7 @@ void liveFootball_App_Task(void *dApplication){
 
     scoreLineLive = new CentreText_t(63, 29, Terminal10x16, WHITE);
     elapsedTimeLive = new CentreText_t(63, 46, Terminal6x8, CYAN);
-    moreMatchDataLive = new ScrollText_t(0, 55, 128, WHITE, 10, 1, Terminal6x8);
+    moreDataScroll = new ScrollText_t(0, 55, 128, WHITE, 10, 1, Terminal6x8);
 
     statsTitle = new CentreText_t(63, 15, Terminal6x8, WHITE, TURQUOISE);
 
@@ -111,7 +114,6 @@ void liveFootball_App_Task(void *dApplication){
     dateFixtures = new CentreText_t(107, 37, Terminal4x6, GREEN_LIZARD);
     timeFixtures = new CentreText_t(107, 47, Terminal6x8, CYAN);
     vsFixtures = new CentreText_t(42, 37, Terminal6x8, WHITE);
-    moreDataFixtures = new ScrollText_t(0, 55, 128, WHITE, 10, 1, Terminal6x8);
 
     rankStandings1 = new FixedText_t(2, 23, Terminal6x8, GREEN);
     teamStandings1 = new FixedText_t(17, 23, Terminal6x8, GREEN_LIZARD);
@@ -131,9 +133,28 @@ void liveFootball_App_Task(void *dApplication){
 
     // Optional: Replace with your certificate authority if needed
     WiFiClientSecure client;
-    DynamicJsonDocument doc(30 * 1024);
+    DynamicJsonDocument doc(32 * 1024);
 
-    read_struct_from_nvs("live_FBL", &liveFootballData, sizeof(LiveFootball_Data_t));
+    read_struct_from_nvs("apiFutBall", &liveFootballData, sizeof(LiveFootball_Data_t));
+
+    switch(liveFootballData.endpointType){
+    case FIXTURES_ENDPOINT:
+        liveFootballPtr = processFituresMatches;
+        liveFootballBackgroundPtr = drawMatchFixturesBackground;
+    break;
+
+    case STANDINGS_ENDPOINT:
+        liveFootballPtr = processStandingsTable;
+        liveFootballBackgroundPtr = drawStandingsBackground;
+    break;
+
+    default:
+        liveFootballData.endpointType = FIXTURES_ENDPOINT; // Default to fixtures
+        liveFootballPtr = processFituresMatches;
+        liveFootballBackgroundPtr = drawMatchFixturesBackground;
+    break;
+    }
+
 
     while (THIS_APP_IS_ACTIVE == pdTRUE){
 
@@ -145,7 +166,7 @@ void liveFootball_App_Task(void *dApplication){
 
         while (THIS_APP_IS_ACTIVE == pdTRUE && liveFootballDispChangeIntv <= 0){
         String fullUrl = BASE_URL + processJsonCommand(liveFootballData.endpointType, liveFootballData.leagueID);
-        // printf("The Full URL is: %s\n", fullUrl.c_str());
+        printf("The Full URL is: %s\n", fullUrl.c_str());
         // Optional: stop here or repeat after a longer delay
         HTTPClient http;
         http.begin(client, fullUrl);
@@ -158,7 +179,12 @@ void liveFootball_App_Task(void *dApplication){
           //printf("The payload is: %s\n", payload.c_str());
 
           if (!error) {
-            liveFootballPtr(doc, thisApp);
+            if(doc["response"].isNull() || doc["response"].size() == 0){
+              moreDataScroll->scroll_This_Text("NO DATA FOR THIS SELECTION. TRY A DIFFERENT LEAGUE", CYAN);
+              delay(5000); // Wait before retrying
+            } else {
+              liveFootballPtr(doc, thisApp);
+            }
           } else {
             printf("JSON parse error: %s\n", error.c_str());
           }
@@ -167,21 +193,19 @@ void liveFootball_App_Task(void *dApplication){
           printf("HTTP GET failed with code: %d\n", httpResponseCode);
           delay(5000); // Wait before retrying
         }
-
         http.end();
         }
     }
 
     delete scoreLineLive;
     delete elapsedTimeLive;
-    delete moreMatchDataLive;
+    delete moreDataScroll;
 
     delete statsTitle;
     delete serialFixtures;
     delete dateFixtures;
     delete timeFixtures;
     delete vsFixtures;
-    delete moreDataFixtures;
 
     delete rankStandings1;
     delete teamStandings1;
@@ -199,8 +223,8 @@ void liveFootball_App_Task(void *dApplication){
     delete teamStandings4;
     delete pointsStandings4;
 
-    xTimerDelete(triggerTimer, 0);
-    triggerTimer = NULL;
+    //xTimerDelete(triggerTimer, 0);
+    //triggerTimer = NULL;
 
     kill_This_App(thisApp);
 }
@@ -213,9 +237,6 @@ void processLiveMatches(DynamicJsonDocument& doc, void* dApplication){
       JsonArray matches = doc["response"].as<JsonArray>();
 
       if (matches.isNull() || matches.size() == 0) {
-          //printf("No live matches found.\n");
-          moreDataFixtures->scroll_This_Text("No live matches found.", WHITE);
-          moreDataFixtures->scroll_This_Text("Showing Fixtures.", PINK);
           liveFootballData.endpointType = FIXTURES_ENDPOINT;
           liveFootballPtr = processFituresMatches;
           liveFootballBackgroundPtr = drawMatchFixturesBackground;
@@ -258,10 +279,10 @@ void processLiveMatches(DynamicJsonDocument& doc, void* dApplication){
         elapsedTimeLive->writeColoredString(matchStatus.c_str(), CYAN);
 
         String dLeague = leagueName + " (" + String(round) + ")";
-        moreMatchDataLive->scroll_This_Text(dLeague, CYAN);
+        moreDataScroll->scroll_This_Text(dLeague, CYAN);
         String dTeams = homeTeam + " vs " + awayTeam;
-        moreMatchDataLive->scroll_This_Text(dTeams, GREEN);
-        moreMatchDataLive->scroll_This_Text(venue, BROWN);
+        moreDataScroll->scroll_This_Text(dTeams, GREEN);
+        moreDataScroll->scroll_This_Text(venue, BROWN);
 
         JsonArray events = match["events"].as<JsonArray>();
         if (events.size() > 0) {
@@ -273,7 +294,7 @@ void processLiveMatches(DynamicJsonDocument& doc, void* dApplication){
             String detail = ev["detail"] | "Unknown";
 
             String eventsText = String(eTime) + "' - " + team + ": " + player + " - " + type + " (" + detail + ")";
-            moreMatchDataLive->scroll_This_Text(eventsText, YELLOW);
+            moreDataScroll->scroll_This_Text(eventsText, YELLOW);
           }
         } else {
           printf("  No events recorded.\n");
@@ -282,7 +303,7 @@ void processLiveMatches(DynamicJsonDocument& doc, void* dApplication){
       while(liveFootballDispChangeIntv-->0 && xSemaphoreTake(changeDispMatch_Sem, 0) != pdTRUE && THIS_APP_IS_ACTIVE == pdTRUE) delay(100);
       if(liveFootballDispChangeIntv > 0) break;
       }
-      moreDataFixtures->scroll_Active(STOP_SCROLL);
+      moreDataScroll->scroll_Active(STOP_SCROLL);
 }
 
 
@@ -298,7 +319,11 @@ void processFituresMatches(DynamicJsonDocument& doc, void* dApplication){
 
     time_t time = match["fixture"]["timestamp"];
 
-    if(matchIndex == 0 && triggerTimer == NULL) inboundMatchTimer(time);
+    if(matchIndex == 0 && triggerTimer == NULL){
+      moreDataScroll->scroll_This_Text("No live matches found.", WHITE);
+      moreDataScroll->scroll_This_Text("Showing Fixtures.", PINK);
+      inboundMatchTimer(time);
+    } 
 
     fetchFixturesMatchTeamLogos(doc, matchIndex++); // Draw logos for the first match
 
@@ -310,6 +335,7 @@ void processFituresMatches(DynamicJsonDocument& doc, void* dApplication){
       liveFootballPtr = processLiveMatches;
       liveFootballBackgroundPtr = drawLiveMatchesBackground;
       triggerTimer = NULL; // Reset the timer handle
+      xSemaphoreGive(changeDispMatch_Sem); // Signal that the timer has fired
       break;
     }
 
@@ -319,7 +345,8 @@ void processFituresMatches(DynamicJsonDocument& doc, void* dApplication){
     String leagueName = match["league"]["name"];
     String round = match["league"]["round"];
 
-    statsTitle->writeColoredString(leagueName, BLACK);
+    statsTitle->writeColoredString(leagueName, BLACK, TEAL);
+
     serialFixtures->writeColoredString(String(matchIndex) + "/" + String(results), BLUE_GRAY);
     dateFixtures->writeColoredString(formatDateFromTimestamp(time), GREEN_LIZARD);
     timeFixtures->writeColoredString(formatTimeFromTimestamp(time), CYAN);
@@ -327,14 +354,14 @@ void processFituresMatches(DynamicJsonDocument& doc, void* dApplication){
 
     String dTeams = homeTeam + " vs " + awayTeam;
 
-    moreDataFixtures->scroll_This_Text(round, CYAN);
-    moreDataFixtures->scroll_This_Text(dTeams, GREEN);
-    moreDataFixtures->scroll_This_Text(venue, PINK);
+    moreDataScroll->scroll_This_Text(round, CYAN);
+    moreDataScroll->scroll_This_Text(dTeams, GREEN);
+    moreDataScroll->scroll_This_Text(venue, PINK);
 
     while(liveFootballDispChangeIntv-->0 && xSemaphoreTake(changeDispMatch_Sem, 0) != pdTRUE && THIS_APP_IS_ACTIVE == pdTRUE) delay(100);
     if(liveFootballDispChangeIntv > 0) break;
   }
-  moreDataFixtures->scroll_Active(STOP_SCROLL);
+  moreDataScroll->scroll_Active(STOP_SCROLL);
 }
 
 
@@ -349,7 +376,7 @@ void processStandingsTable(DynamicJsonDocument& doc, void* dApplication){
         for (JsonArray group : standings) {
           String groupName = group[0]["group"];
         //titleStandings->writeColoredString(leagueName, BLACK);
-        statsTitle->writeColoredString(groupName, WHITE);
+        statsTitle->writeColoredString(groupName, BLACK, TURTLE_GREEN);
           //printf("\n[%s]\n", groupName.c_str());
           for (JsonObject team : group) {
             liveFootballDispChangeIntv = 75;
@@ -406,19 +433,19 @@ String processJsonCommand(uint8_t type, uint16_t leagueId) {
   int season = getCurrentYear();
 
   switch(type){
-    case 0: 
-      path = "/fixtures?live=all&league=" + String(leagueId);
-    break;
-
-    case 1: {
+    case 0: {
     int nextCount = 10; 
       path = "/fixtures?league=" + String(leagueId) +
             "&season=" + String(season) +
             "&next=" + String(nextCount);
       break;
       }
-    case 2: 
+    case 1: 
       path = "/standings?league=" + String(leagueId) + "&season=" + String(season);
+    break;
+
+    case 2: 
+      path = "/fixtures?live=all&league=" + String(leagueId);
     break;
 
     default: 
@@ -568,20 +595,9 @@ void changeFootballTeams(button_event_t button_Data){
 }
 
 
-
-void setFootballTeams(DynamicJsonDocument &dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
-    String footballTeams = dCommand["teams"];
-
-    write_struct_to_nvs("live_FB", &liveFootballData, sizeof(LiveFootball_Data_t));
-    ble_Application_Command_Respond_Success(liveFootbalAppRoute, cmdNumber, pdPASS);
-}
-
-
-
 // Callback when timer fires
 void onTimerCallback(TimerHandle_t xTimer) {
-  liveFootballData.endpointType = LIVE_MATCHES_ENDPOINT; // Reset to live matches
+  liveFootballData.endpointType = LIVE_MATCHES_ENDPOINT;
   liveFootballPtr = processLiveMatches;
   liveFootballBackgroundPtr = drawLiveMatchesBackground;
   triggerTimer = NULL; // Reset the timer handle
@@ -646,15 +662,76 @@ void drawLiveMatchesBackground(void){
 
 void drawMatchFixturesBackground(void){
     dma_display->fillRect(0, 10, 128, 54, BLACK);
-    dma_display->fillRect(0, 10, 128, 10, TURQUOISE);   // Fill background color2
+    dma_display->fillRect(0, 10, 128, 10, TEAL);   // Fill background color2
     dma_display->drawFastVLine(85, 22, 30, GRAY_WEB);
 }
 
 void drawStandingsBackground(void){
     dma_display->fillRect(0, 10, 128, 54, BLACK);   
-    dma_display->fillRect(0, 10, 128, 10, DARK_BROWN);
+    dma_display->fillRect(0, 10, 128, 10, TURTLE_GREEN);
     uint16_t teamDividerColor = dma_display->color565(35, 35, 35);
     dma_display->drawFastHLine(0, 31, 128, teamDividerColor);
     dma_display->drawFastHLine(0, 42, 128, teamDividerColor);
     dma_display->drawFastHLine(0, 53, 128, teamDividerColor);
+}
+
+
+//************************************************************************************************* */
+//***************************************************************************************************
+
+//******** BLUETOOTH COMMAND 0 **********************/
+void selectFBL_Leagues(DynamicJsonDocument& dCommand){
+  uint8_t cmd = dCommand["app_command"];
+  ble_Application_Command_Respond_Success(liveFootbalAppRoute, cmd, pdPASS);
+}
+
+//******** BLUETOOTH COMMAND 1 **********************/
+void setDisplayFBL_League(DynamicJsonDocument &dCommand){
+    uint8_t cmdNumber = dCommand["app_command"];
+    String leagueName = dCommand["leagueName"];
+    uint16_t leagueId = dCommand["leagueID"];
+
+    liveFootballData.leagueID = leagueId;
+    xSemaphoreGive(changeDispMatch_Sem);
+    triggerTimer = NULL;
+    write_struct_to_nvs("apiFutBall", &liveFootballData, sizeof(LiveFootball_Data_t));
+    ble_Application_Command_Respond_Success(liveFootbalAppRoute, cmdNumber, pdPASS);
+}
+//******** BLUETOOTH COMMAND 2 **********************/
+void saveFBL_Leagues(DynamicJsonDocument &dCommand){
+    uint8_t cmdNumber = dCommand["app_command"];
+    ble_Application_Command_Respond_Success(liveFootbalAppRoute, cmdNumber, pdPASS);
+}
+
+//******** BLUETOOTH COMMAND 3 **********************/
+void showFBL_Fix_Stnd(DynamicJsonDocument &dCommand){
+    uint8_t cmdNumber = dCommand["app_command"];
+    uint8_t showFix_Stnd = dCommand["value"];
+
+    printf("The command clicked is: %d\n", cmdNumber);
+
+    if(showFix_Stnd == 0){
+        liveFootballData.endpointType = FIXTURES_ENDPOINT;
+        liveFootballPtr = processFituresMatches;
+        liveFootballBackgroundPtr = drawMatchFixturesBackground;
+    } else {
+        liveFootballData.endpointType = STANDINGS_ENDPOINT;
+        liveFootballPtr = processStandingsTable;
+        liveFootballBackgroundPtr = drawStandingsBackground;
+    }
+    xSemaphoreGive(changeDispMatch_Sem); 
+    write_struct_to_nvs("apiFutBall", &liveFootballData, sizeof(LiveFootball_Data_t));
+    ble_Application_Command_Respond_Success(liveFootbalAppRoute, cmdNumber, pdPASS);
+}
+//******** BLUETOOTH COMMAND 4 **********************/
+void setFBL_Token(DynamicJsonDocument &dCommand){
+    uint8_t cmdNumber = dCommand["app_command"];
+    String liveFootballToken = dCommand["api_key"];
+    //strcpy(liveFootballData.userAPI_Token, liveFootballToken.c_str());
+
+    printf("The command clicked is: %d\n", cmdNumber);
+
+    xSemaphoreGive(changeDispMatch_Sem); 
+    write_struct_to_nvs("apiFutBall", &liveFootballData, sizeof(LiveFootball_Data_t));
+    ble_Application_Command_Respond_Success(liveFootbalAppRoute, cmdNumber, pdPASS);
 }

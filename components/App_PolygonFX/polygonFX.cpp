@@ -6,7 +6,7 @@
 
 PolygonFX_t polygonFX = {
     "EUR/USD",
-    "",
+    "5VCg1MsJak0eubOx6jJmJVnlmkacVCWj",
     60
 };
 
@@ -28,7 +28,7 @@ void polygonFX_App_Task(void *dApplication){
 
     read_struct_from_nvs("polygonFX", &polygonFX, sizeof(PolygonFX_t));
 
-    StaticJsonDocument<256> doc;
+    StaticJsonDocument<512> doc;
     char apiUrl[256];
     HTTPClient http;
     WiFiClientSecure client;
@@ -40,26 +40,34 @@ void polygonFX_App_Task(void *dApplication){
     while(THIS_APP_IS_ACTIVE == pdTRUE){
         while ((Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
 
-    const char *delim = "/";
-    char from[8] = {0};
-    char to[8] = {0};
-    char *slash = strchr(polygonFX.pair, '/');
-    if(slash){
-        size_t len1 = slash - polygonFX.pair;
-        strncpy(from, polygonFX.pair, len1);
-        strncpy(to, slash + 1, sizeof(to)-1);
-    }
-    snprintf(apiUrl, sizeof(apiUrl), "https://api.polygon.io/v1/conversion/%s/%s?amount=1&apiKey=%s", from, to, polygonFX.apiToken);
+        const char *delim = "/";
+        char from[8] = {0};
+        char to[8] = {0};
+        char *slash = strchr(polygonFX.pair, '/');
+        if(slash){
+            size_t len1 = slash - polygonFX.pair;
+            strncpy(from, polygonFX.pair, len1);
+            strncpy(to, slash + 1, sizeof(to)-1);
+        }
+
+        snprintf(apiUrl, sizeof(apiUrl),
+                 "https://api.polygon.io/v3/reference/exchange-rates?from=%s&to=%s&apiKey=%s",
+                 from, to, polygonFX.apiToken);
+
+        printf("Requesting Polygon FX API: %s\n", apiUrl);
+
         http.begin(client, apiUrl);
         int httpCode = http.GET();
         if(httpCode == 200){
             String payload = http.getString();
+            printf("HTTP GET response: %s\n", payload.c_str());
+
             DeserializationError err = deserializeJson(doc, payload);
             if(!err){
-                const char* price = doc["price"];
-                if(price){
+                float rate = doc["exchange_rate"] | 0.0;
+                if(rate > 0.0){
                     pairTxt.writeString(String(polygonFX.pair));
-                    priceTxt.writeString(String(price));
+                    priceTxt.writeString(String(rate, 4));
                 }
             }
         } else {
@@ -67,11 +75,13 @@ void polygonFX_App_Task(void *dApplication){
         }
         http.end();
 
-        int32_t waitMs = (polygonFX.updateInterval > 0 ? polygonFX.updateInterval*1000 : 30000);
+        int32_t waitMs = (polygonFX.updateInterval > 0 ? polygonFX.updateInterval * 1000 : 30000);
         for(int32_t t=0; t<waitMs && THIS_APP_IS_ACTIVE; t+=1000) delay(1000);
     }
+
     kill_This_App(thisApp);
 }
+
 
 void setPolygonPair(DynamicJsonDocument &dCommand){
     uint8_t cmdNumber = dCommand["app_command"];

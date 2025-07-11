@@ -450,7 +450,7 @@ void ble_AppCom_Parse_Task(void* dService){
     uint16_t dCmd_num = 0;
 
     while(xQueueReceive(appCom_queue, &qMessage, pdMS_TO_TICKS(500))){
-        printf("Application Payload is:  %s\n", (char*) qMessage.payload);
+        //printf("Application Payload is:  %s\n", (char*) qMessage.payload);
         String dInstruction = String((char *)qMessage.payload);
         int charIndex = dInstruction.indexOf('|');             // find index of target character
         String specify_Application = dInstruction.substring(0, charIndex);  // copy up to the target character
@@ -633,7 +633,7 @@ void financeAppLunch(uint16_t dAppNumber){
         case 0: launchThisApp(finnhub_Stats_App); break;
         case 1: launchThisApp(crypto_Stats_App); break; 
         case 2: launchThisApp(currencyExchange_App); break;
-        case 3: launchThisApp(twelveData_App); break;
+        case 3: launchThisApp(polygonFX_App); break;
 
         default: printf("No Apps to Lunch.\n");
             break;
