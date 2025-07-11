@@ -11,6 +11,7 @@
 #include "liveFootball.h"
 #include "mtbApps.h"
 #include "liveMatchJson.h"
+#include "world_countries.h"
 
 // Your API-Football subscription key from RapidAPI
 const char *API_KEY = "a2e0674bdfb9d68a5e001e391bcb5160";
@@ -475,7 +476,8 @@ bool fetchLiveMatchTeamLogos(DynamicJsonDocument& doc, size_t matchIndex) {
     const char* homeLogo = match["teams"]["home"]["logo"];
     const char* awayLogo = match["teams"]["away"]["logo"];
 
-    if (strstr(homeLogo, "png") != nullptr) {
+
+    if (strstr(homeLogo, "png") != nullptr && strstr(awayLogo, "png") != nullptr) {
           strncpy(pnglogoBatch[0].imageLink, homeLogo, sizeof(pnglogoBatch[0].imageLink));
           pnglogoBatch[0].xAxis = 4;
           pnglogoBatch[0].yAxis = 12;
@@ -489,7 +491,8 @@ bool fetchLiveMatchTeamLogos(DynamicJsonDocument& doc, size_t matchIndex) {
           downloadMultipleOnlinePNGs(pnglogoBatch, 2);
           drawMultiplePNGs(2);
           return true;
-    } else if (strstr(homeLogo, "svg") != nullptr){
+    } else if (strstr(homeLogo, "svg") != nullptr && strstr(awayLogo, "svg") != nullptr) {
+
           strncpy(svgLogoBatch[0].imageLink, homeLogo, sizeof(svgLogoBatch[0].imageLink));
           svgLogoBatch[0].xAxis = 4;
           svgLogoBatch[0].yAxis = 12;
@@ -503,9 +506,43 @@ bool fetchLiveMatchTeamLogos(DynamicJsonDocument& doc, size_t matchIndex) {
           downloadMultipleOnlineSVGs(svgLogoBatch, 2);
           drawMultipleSVGs(2);
           return true;
-    }
+    } else if (strstr(homeLogo, "svg") != nullptr && strstr(awayLogo, "png") != nullptr) {
+          strncpy(svgLogoBatch[0].imageLink, homeLogo, sizeof(svgLogoBatch[0].imageLink));
+          svgLogoBatch[0].xAxis = 4;
+          svgLogoBatch[0].yAxis = 12;
+          svgLogoBatch[0].scale = 6;
 
-  return false; // If neither PNG nor SVG, return false
+          strncpy(pnglogoBatch[1].imageLink, awayLogo, sizeof(pnglogoBatch[1].imageLink));
+          pnglogoBatch[1].xAxis = 86;
+          pnglogoBatch[1].yAxis = 12;
+          pnglogoBatch[1].scale = 4;
+
+          downloadMultipleOnlineSVGs(svgLogoBatch, 1);
+          downloadMultipleOnlinePNGs(pnglogoBatch, 1);
+          drawMultipleSVGs(1);
+          drawMultiplePNGs(1);
+          return true;
+    } else if (strstr(homeLogo, "png") != nullptr && strstr(awayLogo, "svg") != nullptr) {
+          strncpy(pnglogoBatch[0].imageLink, homeLogo, sizeof(pnglogoBatch[0].imageLink));
+          pnglogoBatch[0].xAxis = 4;
+          pnglogoBatch[0].yAxis = 12;
+          pnglogoBatch[0].scale = 4;
+
+          strncpy(svgLogoBatch[1].imageLink, awayLogo, sizeof(svgLogoBatch[1].imageLink));
+          svgLogoBatch[1].xAxis = 86;
+          svgLogoBatch[1].yAxis = 12;
+          svgLogoBatch[1].scale = 6;
+
+          downloadMultipleOnlinePNGs(pnglogoBatch, 1);
+          downloadMultipleOnlineSVGs(svgLogoBatch, 1);
+          drawMultiplePNGs(1);
+          drawMultipleSVGs(1);
+          return true;
+    }
+    printf("Invalid logo format for match index: %d\n", matchIndex);
+    statusBarNotif.scroll_This_Text("Invalid logo format for match index: " + String(matchIndex), RED);
+
+  return false;
 }
 
 
@@ -527,7 +564,7 @@ bool fetchFixturesMatchTeamLogos(DynamicJsonDocument& doc, size_t matchIndex) {
 
 
 
-    if (strstr(homeLogo, "png") != nullptr) {
+    if (strstr(homeLogo, "png") != nullptr && strstr(awayLogo, "png") != nullptr) {
         strncpy(pnglogoBatch[0].imageLink, homeLogo, sizeof(pnglogoBatch[0].imageLink));
         pnglogoBatch[0].xAxis = 1;
         pnglogoBatch[0].yAxis = 22;
@@ -541,8 +578,7 @@ bool fetchFixturesMatchTeamLogos(DynamicJsonDocument& doc, size_t matchIndex) {
         downloadMultipleOnlinePNGs(pnglogoBatch, 2);
         drawMultiplePNGs(2, wipePrevFixturesLogos);
         return true;
-    } else if (strstr(homeLogo, "svg") != nullptr) {
-    // If the logos are SVGs, use the SVG batch
+    } else if (strstr(homeLogo, "svg") != nullptr && strstr(awayLogo, "svg") != nullptr) {
         strncpy(svgLogoBatch[0].imageLink, homeLogo, sizeof(svgLogoBatch[0].imageLink));
         svgLogoBatch[0].xAxis = 1;
         svgLogoBatch[0].yAxis = 22;
@@ -556,8 +592,40 @@ bool fetchFixturesMatchTeamLogos(DynamicJsonDocument& doc, size_t matchIndex) {
         downloadMultipleOnlineSVGs(svgLogoBatch, 2);
         drawMultipleSVGs(2);
         return true;
-    } 
-    // If neither PNG nor SVG, return false
+    } else if(strstr(homeLogo, "svg") != nullptr && strstr(awayLogo, "png") != nullptr) {
+        strncpy(svgLogoBatch[0].imageLink, homeLogo, sizeof(svgLogoBatch[0].imageLink));
+        svgLogoBatch[0].xAxis = 1;
+        svgLogoBatch[0].yAxis = 22;
+        svgLogoBatch[0].scale = 8;
+
+        strncpy(pnglogoBatch[1].imageLink, awayLogo, sizeof(pnglogoBatch[1].imageLink));
+        pnglogoBatch[1].xAxis = 52;
+        pnglogoBatch[1].yAxis = 22;
+        pnglogoBatch[1].scale = 5;
+
+        downloadMultipleOnlineSVGs(svgLogoBatch, 1);
+        downloadMultipleOnlinePNGs(pnglogoBatch, 1);
+        drawMultipleSVGs(1);
+        drawMultiplePNGs(1);
+        return true;
+    } else if (strstr(homeLogo, "png") != nullptr && strstr(awayLogo, "svg") != nullptr) {
+        strncpy(pnglogoBatch[0].imageLink, homeLogo, sizeof(pnglogoBatch[0].imageLink));
+        pnglogoBatch[0].xAxis = 1;
+        pnglogoBatch[0].yAxis = 22;
+        pnglogoBatch[0].scale = 5;
+
+        strncpy(svgLogoBatch[1].imageLink, awayLogo, sizeof(svgLogoBatch[1].imageLink));
+        svgLogoBatch[1].xAxis = 52;
+        svgLogoBatch[1].yAxis = 22;
+        svgLogoBatch[1].scale = 8;
+
+        downloadMultipleOnlinePNGs(pnglogoBatch, 1);
+        downloadMultipleOnlineSVGs(svgLogoBatch, 1);
+        drawMultiplePNGs(1);
+        drawMultipleSVGs(1);
+        return true;
+    }
+    
     return false;
 }
 
