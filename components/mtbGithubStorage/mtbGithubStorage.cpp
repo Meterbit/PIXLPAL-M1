@@ -334,7 +334,7 @@ if (contentType.length() == 0) {
 
 // Download SVG file to PSRAM or heap with robust checks
 bool downloadSVGImageToPSRAM(const char* url, uint8_t** outBuffer, size_t* outSize, String* outMimeType) {
-  printf("[Download SVG] Starting: %s\n", url);
+  //printf("[Download SVG] Starting: %s\n", url);
 
   HTTPClient http;
   http.setTimeout(15000);
@@ -349,10 +349,10 @@ bool downloadSVGImageToPSRAM(const char* url, uint8_t** outBuffer, size_t* outSi
 
   String contentType = http.header("Content-Type");
   if (outMimeType) *outMimeType = contentType;
-  printf("[Download SVG] Content-Type: %s\n", contentType.c_str());
+  //printf("[Download SVG] Content-Type: %s\n", contentType.c_str());
 
   if (contentType.length() == 0) {
-    printf("[Download SVG] Warning: No Content-Type provided. Proceeding anyway...\n");
+    //printf("[Download SVG] Warning: No Content-Type provided. Proceeding anyway...\n");
   } else if (!contentType.startsWith("image/svg") && contentType != "application/octet-stream" && !contentType.startsWith("text/xml")) {
     printf("[Download SVG] Unsupported MIME type: %s. Aborting.\n", contentType.c_str());
     http.end();
@@ -412,7 +412,7 @@ bool downloadSVGImageToPSRAM(const char* url, uint8_t** outBuffer, size_t* outSi
     return false;
   }
 
-  printf("[Download SVG] Success: %d bytes downloaded to %s\n", totalRead, usedHeap ? "heap" : "PSRAM");
+  //printf("[Download SVG] Success: %d bytes downloaded to %s\n", totalRead, usedHeap ? "heap" : "PSRAM");
   *outBuffer = buffer;
   *outSize = totalRead;
   return true;

@@ -22,7 +22,7 @@ extern "C" void app_main(){
     wifi_Initialize();
     generalAppLunch(currentApp);
     //launchThisApp(polygonFX_App);
-    
+
 //    size_t free_sram = 0;
 
     // while ((Applications::internetConnectStatus != true)){

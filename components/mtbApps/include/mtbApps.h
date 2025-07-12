@@ -209,6 +209,26 @@ extern void appsInitialization(Applications*, Services* pointer_0 = nullptr, Ser
                                  Services* pointer_6 = nullptr, Services* pointer_7 = nullptr, Services* pointer_8 = nullptr, 
                                 Services* pointer_9 = nullptr);
 
+
+
+// Custom allocator using PSRAM
+struct SpiRamAllocator {
+  void* allocate(size_t size) {
+    return heap_caps_malloc(size, MALLOC_CAP_SPIRAM);
+  }
+  void deallocate(void* pointer) {
+    heap_caps_free(pointer);
+  }
+  void* reallocate(void* ptr, size_t new_size) {
+    return heap_caps_realloc(ptr, new_size, MALLOC_CAP_SPIRAM);
+  }
+};
+
+// Define the document type
+using SpiRamJsonDocument = BasicJsonDocument<SpiRamAllocator>;
+
+
+
 // App Parser Functions
 extern void launchThisApp(Applications* dApp, do_Prev_App_t do_Prv_App = DESTROY_PREVIOUS_APP);
 extern void start_This_Service(Services*);

@@ -579,7 +579,7 @@ const char* jsonWorldCountries = R"json(
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/cd.svg",
     "flag_4x3": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-4x3/cd.svg",
     "iso": true,
-    "name": "Democratic Republic of the Congo"
+    "name": "Congo DR"
   },
   {
     "capital": "Copenhagen",
@@ -1726,7 +1726,7 @@ const char* jsonWorldCountries = R"json(
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/cg.svg",
     "flag_4x3": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-4x3/cg.svg",
     "iso": true,
-    "name": "Republic of the Congo"
+    "name": "Congo"
   },
   {
     "capital": "Bucharest",

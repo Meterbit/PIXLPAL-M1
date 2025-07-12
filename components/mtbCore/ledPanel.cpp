@@ -14,6 +14,7 @@
 #include "esp_log.h"
 
 #include "Arduino.h"
+#include <ArduinoJson.h>
 #include "fonts.h"
 #include "ledPanel.h"
 #include "systemm.h"
@@ -26,9 +27,10 @@
 #include "LittleFS.h"
 #include "mtbGithubStorage.h"
 #include <HTTPClient.h>
-
+#include <esp_heap_caps.h>  // For PSRAM allocation on ESP32
 #include "nanosvg.h"
 #include "nanosvgrast.h"
+#include "world_countries.h"
 
 // SemaphoreHandle_t pngImageDrawer_Sem = NULL;
 //  Define the static queue storage variable
@@ -1259,7 +1261,7 @@ bool drawMultipleSVGs(size_t drawSVGsCount, ImgWipeFn_ptr wipePreviousImg) {
 	    // Start download worker tasks (e.g. 2 workers)
     for (int i = 0; i < drawSVGsCount; ++i) {
         xTaskCreatePinnedToCore(svgDrawerWorker, "SVG IMG_DR", 4096, (void*)drawSVGsCount, 1, NULL, 1);
-		delay(1); // This delay is necessary to allow the task to start ahead of the next, so more than one task doesn't an image more than once.
+		delay(1); // This delay is necessary to allow the task to start ahead of the next, so more than one task doesn't draw an image more than once.
     }
 
 	downloadedSVGs = 0;
@@ -1300,3 +1302,27 @@ void wipeStatusBarIcon(const PNG_LocalImage_t &pngImage)
 }
 //**************************************************************************************
 
+// Function to extract flag URL
+String getFlagUrlByCountryName(const String& countryName, const String& flagType) {
+  const size_t CAPACITY = 150 * 1024; // ~150 KB, adjust to fit your JSON
+  SpiRamJsonDocument doc(CAPACITY);
+
+  // Parse
+  auto err = deserializeJson(doc, jsonWorldCountries);
+  if (err) {
+    Serial.print("JSON parse error: ");
+    Serial.println(err.f_str());
+    return String();
+  }
+
+  // Search for the matching country
+  for (JsonObject country : doc.as<JsonArray>()) {
+    const char* name = country["name"];
+    if (name && countryName.equalsIgnoreCase(name)) {
+      const char* url = country[flagType.c_str()];
+      return url ? String(url) : String();
+    }
+  }
+
+  return String(); // Not found or bad flagType
+}

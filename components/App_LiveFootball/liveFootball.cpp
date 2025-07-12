@@ -11,7 +11,8 @@
 #include "liveFootball.h"
 #include "mtbApps.h"
 #include "liveMatchJson.h"
-#include "world_countries.h"
+#include "ledPanel.h"
+#include "beep.h"
 
 // Your API-Football subscription key from RapidAPI
 const char *API_KEY = "a2e0674bdfb9d68a5e001e391bcb5160";
@@ -114,7 +115,7 @@ void liveFootball_App_Task(void *dApplication){
     serialFixtures = new CentreText_t(107, 27, Terminal6x8, WHITE);
     dateFixtures = new CentreText_t(107, 37, Terminal4x6, GREEN_LIZARD);
     timeFixtures = new CentreText_t(107, 47, Terminal6x8, CYAN);
-    vsFixtures = new CentreText_t(42, 37, Terminal6x8, WHITE);
+    vsFixtures = new CentreText_t(43, 37, Terminal6x8, WHITE);
 
     rankStandings1 = new FixedText_t(2, 23, Terminal6x8, GREEN);
     teamStandings1 = new FixedText_t(17, 23, Terminal6x8, GREEN_LIZARD);
@@ -177,11 +178,11 @@ void liveFootball_App_Task(void *dApplication){
         if (httpResponseCode == 200){
           String payload = http.getString();
           DeserializationError error = deserializeJson(doc, payload);
-          //printf("The payload is: %s\n", payload.c_str());
+          //printf("\n\nThe payload is: %s\n\n", payload.c_str());
 
           if (!error) {
             if(doc["response"].isNull() || doc["response"].size() == 0){
-              moreDataScroll->scroll_This_Text("NO DATA FOR THIS SELECTION. TRY A DIFFERENT LEAGUE", CYAN);
+              moreDataScroll->scroll_This_Text("NO DATA FOR THIS SELECTION. TRY A DIFFERENT LEAGUE", GREEN);
               delay(5000); // Wait before retrying
             } else {
               liveFootballPtr(doc, thisApp);
@@ -312,11 +313,13 @@ void processLiveMatches(DynamicJsonDocument& doc, void* dApplication){
 void processFituresMatches(DynamicJsonDocument& doc, void* dApplication){
   Applications *thisApp = (Applications *)dApplication;
   JsonArray matches = doc["response"].as<JsonArray>();
-  int matchIndex = 0;
   int results = doc["results"] | 0;
+  uint8_t noOfShowCycles = 5;
 
+while(noOfShowCycles-->0){
+    int matchIndex = 0;
   for (JsonObject match : matches) {
-    liveFootballDispChangeIntv = 75;
+    liveFootballDispChangeIntv = 50;
 
     time_t time = match["fixture"]["timestamp"];
 
@@ -362,6 +365,8 @@ void processFituresMatches(DynamicJsonDocument& doc, void* dApplication){
     while(liveFootballDispChangeIntv-->0 && xSemaphoreTake(changeDispMatch_Sem, 0) != pdTRUE && THIS_APP_IS_ACTIVE == pdTRUE) delay(100);
     if(liveFootballDispChangeIntv > 0) break;
   }
+  if(liveFootballDispChangeIntv > 0) break;
+}
   moreDataScroll->scroll_Active(STOP_SCROLL);
 }
 
@@ -371,14 +376,14 @@ void processStandingsTable(DynamicJsonDocument& doc, void* dApplication){
       Applications *thisApp = (Applications *)dApplication;
       JsonArray standings = doc["response"][0]["league"]["standings"];
       //String leagueName = doc["response"][0]["league"]["name"] | "Unknown League";
-      int standingIndex = 0;
 
-        //printf("\n=== Group Standings ===\n");
+      uint8_t noOfShowCycles = 5;
+      while(noOfShowCycles-->0){
+              int standingIndex = 0;
         for (JsonArray group : standings) {
           String groupName = group[0]["group"];
         //titleStandings->writeColoredString(leagueName, BLACK);
-        statsTitle->writeColoredString(groupName, BLACK, TURTLE_GREEN);
-          //printf("\n[%s]\n", groupName.c_str());
+          statsTitle->writeColoredString(groupName, BLACK, TURTLE_GREEN);
           for (JsonObject team : group) {
             liveFootballDispChangeIntv = 75;
 
@@ -411,6 +416,7 @@ void processStandingsTable(DynamicJsonDocument& doc, void* dApplication){
             }
           }
         }
+      }
         //printf("\n=======================\n");
 }
 
@@ -477,7 +483,30 @@ bool fetchLiveMatchTeamLogos(DynamicJsonDocument& doc, size_t matchIndex) {
     const char* awayLogo = match["teams"]["away"]["logo"];
 
 
-    if (strstr(homeLogo, "png") != nullptr && strstr(awayLogo, "png") != nullptr) {
+    String homeName = match["teams"]["home"]["name"];
+    String awayName = match["teams"]["away"]["name"];
+
+    String countryHomeLink = getFlagUrlByCountryName(homeName, "flag_1x1");
+    String countryAwayLink = getFlagUrlByCountryName(awayName, "flag_1x1");
+
+    if (countryHomeLink.length() && countryAwayLink.length()) {
+
+      strncpy(svgLogoBatch[0].imageLink, countryHomeLink.c_str(), sizeof(svgLogoBatch[0].imageLink));
+      svgLogoBatch[0].xAxis = 4;
+      svgLogoBatch[0].yAxis = 12;
+      svgLogoBatch[0].scale = 2;
+
+      strncpy(svgLogoBatch[1].imageLink, countryAwayLink.c_str(), sizeof(svgLogoBatch[1].imageLink));
+      svgLogoBatch[1].xAxis = 86;
+      svgLogoBatch[1].yAxis = 12;
+      svgLogoBatch[1].scale = 2;
+
+      downloadMultipleOnlineSVGs(svgLogoBatch, 2);
+      drawMultipleSVGs(2);
+      return true;
+    } else {
+          printf("Home and Away logos are both PNGs.\n");
+
           strncpy(pnglogoBatch[0].imageLink, homeLogo, sizeof(pnglogoBatch[0].imageLink));
           pnglogoBatch[0].xAxis = 4;
           pnglogoBatch[0].yAxis = 12;
@@ -491,55 +520,8 @@ bool fetchLiveMatchTeamLogos(DynamicJsonDocument& doc, size_t matchIndex) {
           downloadMultipleOnlinePNGs(pnglogoBatch, 2);
           drawMultiplePNGs(2);
           return true;
-    } else if (strstr(homeLogo, "svg") != nullptr && strstr(awayLogo, "svg") != nullptr) {
-
-          strncpy(svgLogoBatch[0].imageLink, homeLogo, sizeof(svgLogoBatch[0].imageLink));
-          svgLogoBatch[0].xAxis = 4;
-          svgLogoBatch[0].yAxis = 12;
-          svgLogoBatch[0].scale = 6;
-
-          strncpy(svgLogoBatch[1].imageLink, awayLogo, sizeof(svgLogoBatch[1].imageLink));
-          svgLogoBatch[1].xAxis = 86;
-          svgLogoBatch[1].yAxis = 12;
-          svgLogoBatch[1].scale = 6;
-
-          downloadMultipleOnlineSVGs(svgLogoBatch, 2);
-          drawMultipleSVGs(2);
-          return true;
-    } else if (strstr(homeLogo, "svg") != nullptr && strstr(awayLogo, "png") != nullptr) {
-          strncpy(svgLogoBatch[0].imageLink, homeLogo, sizeof(svgLogoBatch[0].imageLink));
-          svgLogoBatch[0].xAxis = 4;
-          svgLogoBatch[0].yAxis = 12;
-          svgLogoBatch[0].scale = 6;
-
-          strncpy(pnglogoBatch[1].imageLink, awayLogo, sizeof(pnglogoBatch[1].imageLink));
-          pnglogoBatch[1].xAxis = 86;
-          pnglogoBatch[1].yAxis = 12;
-          pnglogoBatch[1].scale = 4;
-
-          downloadMultipleOnlineSVGs(svgLogoBatch, 1);
-          downloadMultipleOnlinePNGs(pnglogoBatch, 1);
-          drawMultipleSVGs(1);
-          drawMultiplePNGs(1);
-          return true;
-    } else if (strstr(homeLogo, "png") != nullptr && strstr(awayLogo, "svg") != nullptr) {
-          strncpy(pnglogoBatch[0].imageLink, homeLogo, sizeof(pnglogoBatch[0].imageLink));
-          pnglogoBatch[0].xAxis = 4;
-          pnglogoBatch[0].yAxis = 12;
-          pnglogoBatch[0].scale = 4;
-
-          strncpy(svgLogoBatch[1].imageLink, awayLogo, sizeof(svgLogoBatch[1].imageLink));
-          svgLogoBatch[1].xAxis = 86;
-          svgLogoBatch[1].yAxis = 12;
-          svgLogoBatch[1].scale = 6;
-
-          downloadMultipleOnlinePNGs(pnglogoBatch, 1);
-          downloadMultipleOnlineSVGs(svgLogoBatch, 1);
-          drawMultiplePNGs(1);
-          drawMultipleSVGs(1);
-          return true;
     }
-    printf("Invalid logo format for match index: %d\n", matchIndex);
+
     statusBarNotif.scroll_This_Text("Invalid logo format for match index: " + String(matchIndex), RED);
 
   return false;
@@ -562,73 +544,49 @@ bool fetchFixturesMatchTeamLogos(DynamicJsonDocument& doc, size_t matchIndex) {
     const char* homeLogo = match["teams"]["home"]["logo"];
     const char* awayLogo = match["teams"]["away"]["logo"];
 
+    String homeName = match["teams"]["home"]["name"];
+    String awayName = match["teams"]["away"]["name"];
+
+    String countryHomeLink = getFlagUrlByCountryName(homeName, "flag_1x1");
+    String countryAwayLink = getFlagUrlByCountryName(awayName, "flag_1x1");
 
 
-    if (strstr(homeLogo, "png") != nullptr && strstr(awayLogo, "png") != nullptr) {
+    if (countryHomeLink.length() && countryAwayLink.length()) {
+
+        strncpy(svgLogoBatch[0].imageLink, countryHomeLink.c_str(), sizeof(svgLogoBatch[0].imageLink));
+        svgLogoBatch[0].xAxis = 1;
+        svgLogoBatch[0].yAxis = 22;
+        svgLogoBatch[0].scale = 2;
+
+        strncpy(svgLogoBatch[1].imageLink, countryAwayLink.c_str(), sizeof(svgLogoBatch[1].imageLink));
+        svgLogoBatch[1].xAxis = 52;
+        svgLogoBatch[1].yAxis = 22;
+        svgLogoBatch[1].scale = 2;
+
+        downloadMultipleOnlineSVGs(svgLogoBatch, 2);
+        drawMultipleSVGs(2);
+        return true;
+    } else {
+
         strncpy(pnglogoBatch[0].imageLink, homeLogo, sizeof(pnglogoBatch[0].imageLink));
-        pnglogoBatch[0].xAxis = 1;
+        pnglogoBatch[0].xAxis = 2;
         pnglogoBatch[0].yAxis = 22;
         pnglogoBatch[0].scale = 5;
 
         strncpy(pnglogoBatch[1].imageLink, awayLogo, sizeof(pnglogoBatch[1].imageLink));
-        pnglogoBatch[1].xAxis = 52;
+        pnglogoBatch[1].xAxis = 53;
         pnglogoBatch[1].yAxis = 22;
         pnglogoBatch[1].scale = 5;
 
         downloadMultipleOnlinePNGs(pnglogoBatch, 2);
         drawMultiplePNGs(2, wipePrevFixturesLogos);
         return true;
-    } else if (strstr(homeLogo, "svg") != nullptr && strstr(awayLogo, "svg") != nullptr) {
-        strncpy(svgLogoBatch[0].imageLink, homeLogo, sizeof(svgLogoBatch[0].imageLink));
-        svgLogoBatch[0].xAxis = 1;
-        svgLogoBatch[0].yAxis = 22;
-        svgLogoBatch[0].scale = 8;
-
-        strncpy(svgLogoBatch[1].imageLink, awayLogo, sizeof(svgLogoBatch[1].imageLink));
-        svgLogoBatch[1].xAxis = 52;
-        svgLogoBatch[1].yAxis = 22;
-        svgLogoBatch[1].scale = 8;
-
-        downloadMultipleOnlineSVGs(svgLogoBatch, 2);
-        drawMultipleSVGs(2);
-        return true;
-    } else if(strstr(homeLogo, "svg") != nullptr && strstr(awayLogo, "png") != nullptr) {
-        strncpy(svgLogoBatch[0].imageLink, homeLogo, sizeof(svgLogoBatch[0].imageLink));
-        svgLogoBatch[0].xAxis = 1;
-        svgLogoBatch[0].yAxis = 22;
-        svgLogoBatch[0].scale = 8;
-
-        strncpy(pnglogoBatch[1].imageLink, awayLogo, sizeof(pnglogoBatch[1].imageLink));
-        pnglogoBatch[1].xAxis = 52;
-        pnglogoBatch[1].yAxis = 22;
-        pnglogoBatch[1].scale = 5;
-
-        downloadMultipleOnlineSVGs(svgLogoBatch, 1);
-        downloadMultipleOnlinePNGs(pnglogoBatch, 1);
-        drawMultipleSVGs(1);
-        drawMultiplePNGs(1);
-        return true;
-    } else if (strstr(homeLogo, "png") != nullptr && strstr(awayLogo, "svg") != nullptr) {
-        strncpy(pnglogoBatch[0].imageLink, homeLogo, sizeof(pnglogoBatch[0].imageLink));
-        pnglogoBatch[0].xAxis = 1;
-        pnglogoBatch[0].yAxis = 22;
-        pnglogoBatch[0].scale = 5;
-
-        strncpy(svgLogoBatch[1].imageLink, awayLogo, sizeof(svgLogoBatch[1].imageLink));
-        svgLogoBatch[1].xAxis = 52;
-        svgLogoBatch[1].yAxis = 22;
-        svgLogoBatch[1].scale = 8;
-
-        downloadMultipleOnlinePNGs(pnglogoBatch, 1);
-        downloadMultipleOnlineSVGs(svgLogoBatch, 1);
-        drawMultiplePNGs(1);
-        drawMultipleSVGs(1);
-        return true;
-    }
+    } 
     
+    statusBarNotif.scroll_This_Text("Invalid logo format for match index: " + String(matchIndex), RED);
+
     return false;
 }
-
 
 
 void changeFootballTeams(button_event_t button_Data){
@@ -665,6 +623,7 @@ void changeFootballTeams(button_event_t button_Data){
 
 // Callback when timer fires
 void onTimerCallback(TimerHandle_t xTimer) {
+  do_beep(BEEP_1);
   liveFootballData.endpointType = LIVE_MATCHES_ENDPOINT;
   liveFootballPtr = processLiveMatches;
   liveFootballBackgroundPtr = drawLiveMatchesBackground;
@@ -673,40 +632,53 @@ void onTimerCallback(TimerHandle_t xTimer) {
 }
 
 
-
 void inboundMatchTimer(time_t targetTimestamp) {
   // Convert targetTimestamp from UTC to local time
-  struct tm* targetLocalTm = localtime(&targetTimestamp);
-  time_t targetLocal = mktime(targetLocalTm);  // mktime assumes tm is in local time
+  time_t tsCopy = targetTimestamp;
+  struct tm* targetLocalTm = localtime(&tsCopy);
+  if (!targetLocalTm) {
+    printf("Failed to convert target time to local time.\n");
+    return;
+  }
+  time_t targetLocal = mktime(targetLocalTm);
 
   // Get current local time
   time_t nowUTC;
-  time(&nowUTC);  // Still UTC
+  time(&nowUTC);
   struct tm* nowLocalTm = localtime(&nowUTC);
-  time_t nowLocal = mktime(nowLocalTm);  // Now in local time
+  if (!nowLocalTm) {
+    printf("Failed to get current local time.\n");
+    return;
+  }
+  time_t nowLocal = mktime(nowLocalTm);
 
-  printf("Current local time: %llu\n", nowLocal);
-  printf("Target local time : %llu\n", targetLocal);
+  if (targetLocal == (time_t)(-1) || nowLocal == (time_t)(-1)) {
+    printf("Error converting time.\n");
+    return;
+  }
 
-  // Calculate the delay in milliseconds
+  printf("Current local time: %" PRIi64 "\n", (int64_t)nowLocal);  // include <inttypes.h>
+  printf("Target local time : %" PRIi64 "\n", (int64_t)targetLocal);
+
   double secondsUntilTarget = difftime(targetLocal, nowLocal);
-
   if (secondsUntilTarget <= 0) {
     printf("Target time is in the past. Not starting timer.\n");
     return;
   }
 
   uint32_t delayMs = (uint32_t)(secondsUntilTarget * 1000);
+  if (delayMs >= 0xFFFFFFFF) {
+    printf("Delay too long for FreeRTOS timer.\n");
+    return;
+  }
 
   printf("Setting timer to fire in %lu milliseconds (%.2f seconds).\n", delayMs, secondsUntilTarget);
 
-  // Create a one-shot FreeRTOS timer
   if (triggerTimer != nullptr) {
     xTimerDelete(triggerTimer, 0);
   }
 
   triggerTimer = xTimerCreate("TriggerTimer", pdMS_TO_TICKS(delayMs), pdFALSE, nullptr, onTimerCallback);
-
   if (triggerTimer != nullptr) {
     xTimerStart(triggerTimer, 0);
     printf("Timer started.\n");
@@ -717,11 +689,12 @@ void inboundMatchTimer(time_t targetTimestamp) {
 
 
 
+
 void wipePrevFixturesLogos(void){
-  dma_display->fillRect(16, 22, 20, 30, BLACK); // Fill background color2
-  dma_display->fillRect(67, 22, 18, 30, BLACK); // Fill background color2
-  dma_display->fillRect(36, 22, 5, 11, BLACK);   // Fill background color2
-  dma_display->fillRect(36, 41, 5, 11, BLACK);   // Fill background color2
+  dma_display->fillRect(16, 22, 21, 30, BLACK); // Fill background color2
+  dma_display->fillRect(67, 22, 21, 30, BLACK); // Fill background color2
+  dma_display->fillRect(36, 22, 6, 11, BLACK);   // Fill background color2
+  dma_display->fillRect(36, 41, 6, 11, BLACK);   // Fill background color2
 }
 
 void drawLiveMatchesBackground(void){
@@ -731,7 +704,7 @@ void drawLiveMatchesBackground(void){
 void drawMatchFixturesBackground(void){
     dma_display->fillRect(0, 10, 128, 54, BLACK);
     dma_display->fillRect(0, 10, 128, 10, TEAL);   // Fill background color2
-    dma_display->drawFastVLine(85, 22, 30, GRAY_WEB);
+    dma_display->drawFastVLine(88, 22, 32, dma_display->color565(35, 35, 35));
 }
 
 void drawStandingsBackground(void){

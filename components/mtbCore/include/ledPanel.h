@@ -114,6 +114,8 @@ typedef void (*ImgWipeFn_ptr)(void);
     extern void set_Status_RGB_LED(uint16_t color, uint8_t brightness = (uint8_t) panelBrightness/2);
     extern void drawStatusBar(void);
 
+    extern String getFlagUrlByCountryName(const String& countryName, const String& flagType);
+
     extern QueueHandle_t nvsAccessQueue;
     extern QueueHandle_t rgb_led_queue;
 
