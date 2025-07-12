@@ -9,7 +9,6 @@
 #include <HardwareSerial.h>
 #include <esp_wifi.h>
 #include "nvsMem.h"
-//#include <services/gap/ble_svc_gap.h>
 #include "scrollMsgs.h"
 #include "mtbApps.h"
 #include "mtbBLE_Control.h"

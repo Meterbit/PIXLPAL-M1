@@ -158,7 +158,6 @@ void liveFootball_App_Task(void *dApplication){
     break;
     }
 
-
     while (THIS_APP_IS_ACTIVE == pdTRUE){
 
         while ((Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
@@ -320,13 +319,14 @@ void processFituresMatches(SpiRamJsonDocument& doc, void* dApplication){
 while(noOfShowCycles-->0){
     int matchIndex = 0;
   for (JsonObject match : matches) {
-    liveFootballDispChangeIntv = 50;
+    liveFootballDispChangeIntv = 30;
 
     time_t time = match["fixture"]["timestamp"];
+    String leagueName = match["league"]["name"];
 
     if(matchIndex == 0 && triggerTimer == NULL){
       moreDataScroll->scroll_This_Text("No live matches found.", WHITE);
-      moreDataScroll->scroll_This_Text("Showing Fixtures.", PINK);
+      moreDataScroll->scroll_This_Text("Showing Fixtures for " + leagueName, PINK);
       inboundMatchTimer(time);
     } 
 
@@ -347,7 +347,6 @@ while(noOfShowCycles-->0){
     String venue = match["fixture"]["venue"]["name"] | "Unknown Venue";
     String homeTeam = match["teams"]["home"]["name"];
     String awayTeam = match["teams"]["away"]["name"];
-    String leagueName = match["league"]["name"];
     String round = match["league"]["round"];
 
     statsTitle->writeColoredString(leagueName, BLACK, TEAL);
@@ -667,17 +666,19 @@ void inboundMatchTimer(time_t targetTimestamp) {
     return;
   }
 
+
+
   uint32_t delayMs = (uint32_t)(secondsUntilTarget * 1000);
   if (delayMs >= 0xFFFFFFFF) {
     printf("Delay too long for FreeRTOS timer.\n");
     return;
   }
 
-  printf("Setting timer to fire in %lu milliseconds (%.2f seconds).\n", delayMs, secondsUntilTarget);
-
-  if (triggerTimer != nullptr) {
+    if (triggerTimer != nullptr) {
     xTimerDelete(triggerTimer, 0);
   }
+
+  printf("Setting timer to fire in %lu milliseconds (%.2f seconds).\n", delayMs, secondsUntilTarget);
 
   triggerTimer = xTimerCreate("TriggerTimer", pdMS_TO_TICKS(delayMs), pdFALSE, nullptr, onTimerCallback);
   if (triggerTimer != nullptr) {
