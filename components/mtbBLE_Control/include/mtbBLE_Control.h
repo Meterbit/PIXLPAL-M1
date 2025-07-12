@@ -42,7 +42,6 @@ extern void ble_SetCom_Parse_Task(void *);
 extern void ble_AppCom_Parse_Task(void *);
 
 extern void current_Network(const char *, const char *);
-//extern void powerSettings(DynamicJsonDocument&);
 extern void systemSettings(DynamicJsonDocument&);
 extern void wifiSettings(DynamicJsonDocument&);
 extern void bleSettings(DynamicJsonDocument&);

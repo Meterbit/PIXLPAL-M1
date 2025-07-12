@@ -35,20 +35,20 @@ void onTimerCallback(TimerHandle_t xTimer);
 void inboundMatchTimer(time_t targetTimestamp);
 String processJsonCommand(uint8_t type = 0, uint16_t leagueId = 39);
 
-bool fetchLiveMatchTeamLogos(DynamicJsonDocument&, size_t matchIndex = 0);
-bool fetchFixturesMatchTeamLogos(DynamicJsonDocument&, size_t matchIndex = 0);
+bool fetchLiveMatchTeamLogos(SpiRamJsonDocument&, size_t matchIndex = 0);
+bool fetchFixturesMatchTeamLogos(SpiRamJsonDocument&, size_t matchIndex = 0);
 
 void wipePrevFixturesLogos(void);
 void drawLiveMatchesBackground(void);
 void drawMatchFixturesBackground(void);
 void drawStandingsBackground(void);
 
-void processLiveMatches(DynamicJsonDocument& doc, void*);
-void processFituresMatches(DynamicJsonDocument& doc, void*);
-void processStandingsTable(DynamicJsonDocument& doc, void*);
+void processLiveMatches(SpiRamJsonDocument& doc, void*);
+void processFituresMatches(SpiRamJsonDocument& doc, void*);
+void processStandingsTable(SpiRamJsonDocument& doc, void*);
 
 // Define a function pointer type
-typedef void (*LiveFootballEndpointFn_ptr)(DynamicJsonDocument&, void*);
+typedef void (*LiveFootballEndpointFn_ptr)(SpiRamJsonDocument&, void*);
 typedef void (*LiveFootballBackgroundFn_ptr)(void);
 
 LiveFootballEndpointFn_ptr liveFootballPtr = processFituresMatches;
@@ -135,7 +135,8 @@ void liveFootball_App_Task(void *dApplication){
 
     // Optional: Replace with your certificate authority if needed
     WiFiClientSecure client;
-    DynamicJsonDocument doc(32 * 1024);
+    const size_t CAPACITY = 150 * 1024; // ~150 KB, adjust to fit your JSON
+    SpiRamJsonDocument doc(CAPACITY);
 
     read_struct_from_nvs("apiFutBall", &liveFootballData, sizeof(LiveFootball_Data_t));
 
@@ -234,7 +235,7 @@ void liveFootball_App_Task(void *dApplication){
 
 
 
-void processLiveMatches(DynamicJsonDocument& doc, void* dApplication){
+void processLiveMatches(SpiRamJsonDocument& doc, void* dApplication){
       Applications *thisApp = (Applications *)dApplication;
       JsonArray matches = doc["response"].as<JsonArray>();
 
@@ -310,7 +311,7 @@ void processLiveMatches(DynamicJsonDocument& doc, void* dApplication){
 
 
 
-void processFituresMatches(DynamicJsonDocument& doc, void* dApplication){
+void processFituresMatches(SpiRamJsonDocument& doc, void* dApplication){
   Applications *thisApp = (Applications *)dApplication;
   JsonArray matches = doc["response"].as<JsonArray>();
   int results = doc["results"] | 0;
@@ -372,7 +373,7 @@ while(noOfShowCycles-->0){
 
 
 
-void processStandingsTable(DynamicJsonDocument& doc, void* dApplication){
+void processStandingsTable(SpiRamJsonDocument& doc, void* dApplication){
       Applications *thisApp = (Applications *)dApplication;
       JsonArray standings = doc["response"][0]["league"]["standings"];
       //String leagueName = doc["response"][0]["league"]["name"] | "Unknown League";
@@ -467,7 +468,7 @@ String processJsonCommand(uint8_t type, uint16_t leagueId) {
 
 
 
-bool fetchLiveMatchTeamLogos(DynamicJsonDocument& doc, size_t matchIndex) {
+bool fetchLiveMatchTeamLogos(SpiRamJsonDocument& doc, size_t matchIndex) {
 
     PNG_OnlineImage_t pnglogoBatch[2];
     SVG_OnlineImage_t svgLogoBatch[2];
@@ -529,7 +530,7 @@ bool fetchLiveMatchTeamLogos(DynamicJsonDocument& doc, size_t matchIndex) {
 
 
 
-bool fetchFixturesMatchTeamLogos(DynamicJsonDocument& doc, size_t matchIndex) {
+bool fetchFixturesMatchTeamLogos(SpiRamJsonDocument& doc, size_t matchIndex) {
 
     PNG_OnlineImage_t pnglogoBatch[2];
     SVG_OnlineImage_t svgLogoBatch[2];

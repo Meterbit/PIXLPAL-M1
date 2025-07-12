@@ -75,6 +75,24 @@ extern String formatTimeFromTimestamp(time_t timestamp);
 extern String urlencode(const char* str);
 extern String getCurrentTimeRFC3339(void);
 
+
+// Custom allocator using PSRAM
+struct SpiRamAllocator {
+  void* allocate(size_t size) {
+    return heap_caps_malloc(size, MALLOC_CAP_SPIRAM);
+  }
+  void deallocate(void* pointer) {
+    heap_caps_free(pointer);
+  }
+  void* reallocate(void* ptr, size_t new_size) {
+    return heap_caps_realloc(ptr, new_size, MALLOC_CAP_SPIRAM);
+  }
+};
+
+// Define the document type
+using SpiRamJsonDocument = BasicJsonDocument<SpiRamAllocator>;
+
+
 typedef void (*encoderFn_ptr_t)(rotary_encoder_rotation_t);
 typedef void (*buttonFn_ptr_t)(button_event_t);
 
@@ -208,24 +226,6 @@ extern void appsInitialization(Applications*, Services* pointer_0 = nullptr, Ser
                                  Services* pointer_3 = nullptr, Services* pointer_4 = nullptr, Services* pointer_5 = nullptr,
                                  Services* pointer_6 = nullptr, Services* pointer_7 = nullptr, Services* pointer_8 = nullptr, 
                                 Services* pointer_9 = nullptr);
-
-
-
-// Custom allocator using PSRAM
-struct SpiRamAllocator {
-  void* allocate(size_t size) {
-    return heap_caps_malloc(size, MALLOC_CAP_SPIRAM);
-  }
-  void deallocate(void* pointer) {
-    heap_caps_free(pointer);
-  }
-  void* reallocate(void* ptr, size_t new_size) {
-    return heap_caps_realloc(ptr, new_size, MALLOC_CAP_SPIRAM);
-  }
-};
-
-// Define the document type
-using SpiRamJsonDocument = BasicJsonDocument<SpiRamAllocator>;
 
 
 

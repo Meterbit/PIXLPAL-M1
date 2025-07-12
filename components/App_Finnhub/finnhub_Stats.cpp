@@ -52,7 +52,7 @@ void finhubStats_App_Task(void* dApplication){
     time_t present = 0;
     if(changeDispStock_Sem == NULL) changeDispStock_Sem = xSemaphoreCreateBinary();
     if(stockChangeTimer_H == NULL) stockChangeTimer_H = xTimerCreate("stockChange Timer", pdMS_TO_TICKS(currentStocks.stockChangeInterval > 0 ? (currentStocks.stockChangeInterval * 1000) : (30 * 1000)), true, NULL, stockChange_TimerCallback);
-    StaticJsonDocument<3000> doc;
+    StaticJsonDocument<3072> doc;
 
     FixedText_t stockID_tag(40, 13, Terminal6x8, CYAN);
     FixedText_t current_price_tag(40, 23, Terminal6x8, YELLOW);

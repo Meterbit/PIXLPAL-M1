@@ -52,8 +52,7 @@ void cryptoStats_App_Task(void* dApplication){
   read_struct_from_nvs("cryptoCur", &currentCryptoCurrency, sizeof(Crypto_Stat_t));
   if(changeDispCrypto_Sem == NULL) changeDispCrypto_Sem = xSemaphoreCreateBinary();
   if(cryptoChangeTimer_H == NULL) cryptoChangeTimer_H = xTimerCreate("cryptoIntvTim", pdMS_TO_TICKS(currentCryptoCurrency.cryptoChangeInterval>0 ? (currentCryptoCurrency.cryptoChangeInterval * 1000) : (30 * 1000)), true, NULL, crytoChange_TimerCallback);
-  //StaticJsonDocument<3000> doc;
-  DynamicJsonDocument doc(3000);
+  DynamicJsonDocument doc(3072);
   DeserializationError error;
 
   FixedText_t coinSymbol_tag(38, 13, Terminal6x8, YELLOW);

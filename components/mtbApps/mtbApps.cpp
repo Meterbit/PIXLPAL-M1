@@ -432,7 +432,7 @@ void appsInitialization(Applications *thisApp, Services* pointer_0, Services* po
 
 void ble_Application_Command_Respond_Success(const char* appRoute, uint8_t commandNumber, uint8_t response ){
     String jsonString;
-    StaticJsonDocument<200> doc;
+    StaticJsonDocument<1024> doc;
 
     doc["pxp_command"] = commandNumber;
     doc["response"] = response;

@@ -8,15 +8,15 @@
 #include "driver/gpio.h"
 #include <HardwareSerial.h>
 #include <esp_wifi.h>
-#include "mtbBLE_Control.h"
-#include "mtbApps.h"
 #include "nvsMem.h"
 //#include <services/gap/ble_svc_gap.h>
 #include "scrollMsgs.h"
+#include "mtbApps.h"
+#include "mtbBLE_Control.h"
 
 bool isDisconnected = true;
 
-DynamicJsonDocument dCommand(1000);
+DynamicJsonDocument dCommand(1024);
 
 EXT_RAM_BSS_ATTR TaskHandle_t ble_SetCom_Parser_Task_Handle = NULL;
 EXT_RAM_BSS_ATTR QueueHandle_t setCom_queue = NULL;
