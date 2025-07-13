@@ -142,13 +142,15 @@ void liveFootball_App_Task(void *dApplication){
         liveFootballPtr = processLiveMatches;
         liveFootballBackgroundPtr = drawLiveMatchesBackground;
 
+        // Set client to insecure for now (you can secure with fingerprint or CA cert)
+        client.setInsecure();
+
     while (THIS_APP_IS_ACTIVE == pdTRUE){
 
         while ((Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
-          // Set client to insecure for now (you can secure with fingerprint or CA cert)
-        client.setInsecure();
-        liveFootballBackgroundPtr();
+
         liveFootballDispChangeIntv = 0;
+        liveFootballBackgroundPtr();
 
         while (THIS_APP_IS_ACTIVE == pdTRUE && liveFootballDispChangeIntv <= 0){
         String fullUrl = BASE_URL + processJsonCommand(liveFootballData.endpointType, liveFootballData.leagueID);
