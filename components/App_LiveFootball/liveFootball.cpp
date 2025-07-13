@@ -51,8 +51,8 @@ void processStandingsTable(SpiRamJsonDocument& doc, void*);
 typedef void (*LiveFootballEndpointFn_ptr)(SpiRamJsonDocument&, void*);
 typedef void (*LiveFootballBackgroundFn_ptr)(void);
 
-LiveFootballEndpointFn_ptr liveFootballPtr = processFituresMatches;
-LiveFootballBackgroundFn_ptr liveFootballBackgroundPtr = drawMatchFixturesBackground;
+LiveFootballEndpointFn_ptr liveFootballPtr;
+LiveFootballBackgroundFn_ptr liveFootballBackgroundPtr;
 
 // button and encoder functions
 void changeFootballTeams(button_event_t button_Data);
@@ -137,26 +137,10 @@ void liveFootball_App_Task(void *dApplication){
     WiFiClientSecure client;
     const size_t CAPACITY = 150 * 1024; // ~150 KB, adjust to fit your JSON
     SpiRamJsonDocument doc(CAPACITY);
-
-    read_struct_from_nvs("apiFutBall", &liveFootballData, sizeof(LiveFootball_Data_t));
-
-    switch(liveFootballData.endpointType){
-    case FIXTURES_ENDPOINT:
-        liveFootballPtr = processFituresMatches;
-        liveFootballBackgroundPtr = drawMatchFixturesBackground;
-    break;
-
-    case STANDINGS_ENDPOINT:
-        liveFootballPtr = processStandingsTable;
-        liveFootballBackgroundPtr = drawStandingsBackground;
-    break;
-
-    default:
-        liveFootballData.endpointType = FIXTURES_ENDPOINT; // Default to fixtures
-        liveFootballPtr = processFituresMatches;
-        liveFootballBackgroundPtr = drawMatchFixturesBackground;
-    break;
-    }
+        read_struct_from_nvs("apiFutBall", &liveFootballData, sizeof(LiveFootball_Data_t));
+        liveFootballData.endpointType = LIVE_MATCHES_ENDPOINT;
+        liveFootballPtr = processLiveMatches;
+        liveFootballBackgroundPtr = drawLiveMatchesBackground;
 
     while (THIS_APP_IS_ACTIVE == pdTRUE){
 
@@ -182,8 +166,27 @@ void liveFootball_App_Task(void *dApplication){
 
           if (!error) {
             if(doc["response"].isNull() || doc["response"].size() == 0){
+              liveFootballDispChangeIntv = 300; // Set a longer interval to wait for the next fetch
+              read_struct_from_nvs("apiFutBall", &liveFootballData, sizeof(LiveFootball_Data_t));
               moreDataScroll->scroll_This_Text("NO DATA FOR THIS SELECTION. TRY A DIFFERENT LEAGUE", GREEN);
-              delay(5000); // Wait before retrying
+              
+              switch(liveFootballData.endpointType){
+              case FIXTURES_ENDPOINT:
+                  liveFootballPtr = processFituresMatches;
+                  liveFootballBackgroundPtr = drawMatchFixturesBackground;
+              break;
+
+              case STANDINGS_ENDPOINT:
+                  liveFootballPtr = processStandingsTable;
+                  liveFootballBackgroundPtr = drawStandingsBackground;
+              break;
+
+              default:
+                  liveFootballData.endpointType = FIXTURES_ENDPOINT; // Default to fixtures
+                  liveFootballPtr = processFituresMatches;
+                  liveFootballBackgroundPtr = drawMatchFixturesBackground;
+              break;
+              }
             } else {
               liveFootballPtr(doc, thisApp);
             }
@@ -244,14 +247,14 @@ void processLiveMatches(SpiRamJsonDocument& doc, void* dApplication){
           liveFootballPtr = processFituresMatches;
           liveFootballBackgroundPtr = drawMatchFixturesBackground;
           triggerTimer = nullptr;
-          liveFootballDispChangeIntv = 300;
+          liveFootballDispChangeIntv = 150;
           return;
       }
 
       int matchIndex = 0;
 
       for (JsonObject match : matches) {
-        liveFootballDispChangeIntv = 300;
+        liveFootballDispChangeIntv = 150;
         fetchLiveMatchTeamLogos(doc, matchIndex++); // Draw logos for the first match
         
         // Extract data
@@ -306,9 +309,7 @@ void processLiveMatches(SpiRamJsonDocument& doc, void* dApplication){
       while(liveFootballDispChangeIntv-->0 && xSemaphoreTake(changeDispMatch_Sem, 0) != pdTRUE && THIS_APP_IS_ACTIVE == pdTRUE) delay(100);
       if(liveFootballDispChangeIntv > 0) break;
       }
-      moreDataScroll->scroll_Active(STOP_SCROLL);
 }
-
 
 
 void processFituresMatches(SpiRamJsonDocument& doc, void* dApplication){
@@ -509,14 +510,14 @@ bool fetchLiveMatchTeamLogos(SpiRamJsonDocument& doc, size_t matchIndex) {
           printf("Home and Away logos are both PNGs.\n");
 
           strncpy(pnglogoBatch[0].imageLink, homeLogo, sizeof(pnglogoBatch[0].imageLink));
-          pnglogoBatch[0].xAxis = 4;
-          pnglogoBatch[0].yAxis = 12;
-          pnglogoBatch[0].scale = 4;
+          pnglogoBatch[0].xAxis = 6;
+          pnglogoBatch[0].yAxis = 15;
+          pnglogoBatch[0].scale = 5;
 
           strncpy(pnglogoBatch[1].imageLink, awayLogo, sizeof(pnglogoBatch[1].imageLink));
-          pnglogoBatch[1].xAxis = 86;
-          pnglogoBatch[1].yAxis = 12;
-          pnglogoBatch[1].scale = 4;
+          pnglogoBatch[1].xAxis = 88;
+          pnglogoBatch[1].yAxis = 15;
+          pnglogoBatch[1].scale = 5;
 
           downloadMultipleOnlinePNGs(pnglogoBatch, 2);
           drawMultiplePNGs(2);
@@ -688,7 +689,6 @@ void inboundMatchTimer(time_t targetTimestamp) {
     printf("Failed to create timer.\n");
   }
 }
-
 
 
 
