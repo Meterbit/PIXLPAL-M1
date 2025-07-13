@@ -24,7 +24,7 @@ int16_t liveFootballDispChangeIntv = 0;  // This variable controls the time it t
 
 LiveFootball_Data_t liveFootballData;
 
-EXT_RAM_BSS_ATTR TimerHandle_t triggerTimer = NULL;
+EXT_RAM_BSS_ATTR TimerHandle_t triggerTimer = nullptr;
 EXT_RAM_BSS_ATTR SemaphoreHandle_t changeDispMatch_Sem = NULL;
 EXT_RAM_BSS_ATTR TaskHandle_t liveFootball_Task_H = NULL;
 void liveFootball_App_Task(void *);
@@ -225,8 +225,9 @@ void liveFootball_App_Task(void *dApplication){
     delete teamStandings4;
     delete pointsStandings4;
 
-    //xTimerDelete(triggerTimer, 0);
-    //triggerTimer = NULL;
+    if (triggerTimer != nullptr) {
+    xTimerDelete(triggerTimer, 0);
+  }
 
     kill_This_App(thisApp);
 }
@@ -242,7 +243,7 @@ void processLiveMatches(SpiRamJsonDocument& doc, void* dApplication){
           liveFootballData.endpointType = FIXTURES_ENDPOINT;
           liveFootballPtr = processFituresMatches;
           liveFootballBackgroundPtr = drawMatchFixturesBackground;
-          triggerTimer = NULL;
+          triggerTimer = nullptr;
           liveFootballDispChangeIntv = 300;
           return;
       }
@@ -324,7 +325,7 @@ while(noOfShowCycles-->0){
     time_t time = match["fixture"]["timestamp"];
     String leagueName = match["league"]["name"];
 
-    if(matchIndex == 0 && triggerTimer == NULL){
+    if(matchIndex == 0 && triggerTimer == nullptr){
       moreDataScroll->scroll_This_Text("No live matches found.", WHITE);
       moreDataScroll->scroll_This_Text("Showing Fixtures for " + leagueName, PINK);
       inboundMatchTimer(time);
@@ -339,7 +340,7 @@ while(noOfShowCycles-->0){
       liveFootballData.endpointType = LIVE_MATCHES_ENDPOINT;
       liveFootballPtr = processLiveMatches;
       liveFootballBackgroundPtr = drawLiveMatchesBackground;
-      triggerTimer = NULL; // Reset the timer handle
+      triggerTimer = nullptr; // Reset the timer handle
       xSemaphoreGive(changeDispMatch_Sem); // Signal that the timer has fired
       break;
     }
@@ -627,7 +628,7 @@ void onTimerCallback(TimerHandle_t xTimer) {
   liveFootballData.endpointType = LIVE_MATCHES_ENDPOINT;
   liveFootballPtr = processLiveMatches;
   liveFootballBackgroundPtr = drawLiveMatchesBackground;
-  triggerTimer = NULL; // Reset the timer handle
+  triggerTimer = nullptr; // Reset the timer handle
   xSemaphoreGive(changeDispMatch_Sem); // Signal that the timer has fired
 }
 
@@ -666,7 +667,9 @@ void inboundMatchTimer(time_t targetTimestamp) {
     return;
   }
 
-
+    if (triggerTimer != nullptr) {
+    xTimerDelete(triggerTimer, 0);
+  }
 
   uint32_t delayMs = (uint32_t)(secondsUntilTarget * 1000);
   if (delayMs >= 0xFFFFFFFF) {
@@ -674,9 +677,6 @@ void inboundMatchTimer(time_t targetTimestamp) {
     return;
   }
 
-    if (triggerTimer != nullptr) {
-    xTimerDelete(triggerTimer, 0);
-  }
 
   printf("Setting timer to fire in %lu milliseconds (%.2f seconds).\n", delayMs, secondsUntilTarget);
 
@@ -736,7 +736,7 @@ void setDisplayFBL_League(DynamicJsonDocument &dCommand){
 
     liveFootballData.leagueID = leagueId;
     xSemaphoreGive(changeDispMatch_Sem);
-    triggerTimer = NULL;
+    triggerTimer = nullptr;
     write_struct_to_nvs("apiFutBall", &liveFootballData, sizeof(LiveFootball_Data_t));
     ble_Application_Command_Respond_Success(liveFootbalAppRoute, cmdNumber, pdPASS);
 }
