@@ -24,7 +24,6 @@ int16_t liveFootballDispChangeIntv = 0;  // This variable controls the time it t
 
 LiveFootball_Data_t liveFootballData;
 
-EXT_RAM_BSS_ATTR TimerHandle_t triggerTimer = nullptr;
 EXT_RAM_BSS_ATTR SemaphoreHandle_t changeDispMatch_Sem = NULL;
 EXT_RAM_BSS_ATTR TaskHandle_t liveFootball_Task_H = NULL;
 void liveFootball_App_Task(void *);
@@ -230,16 +229,11 @@ void liveFootball_App_Task(void *dApplication){
     delete teamStandings4;
     delete pointsStandings4;
 
-    if (triggerTimer != nullptr) {
-    xTimerDelete(triggerTimer, 0);
-  }
-
     kill_This_App(thisApp);
 }
 
 
-
-
+  
 void processLiveMatches(SpiRamJsonDocument& doc, void* dApplication){
       Applications *thisApp = (Applications *)dApplication;
       JsonArray matches = doc["response"].as<JsonArray>();
@@ -248,7 +242,6 @@ void processLiveMatches(SpiRamJsonDocument& doc, void* dApplication){
           liveFootballData.endpointType = FIXTURES_ENDPOINT;
           liveFootballPtr = processFituresMatches;
           liveFootballBackgroundPtr = drawMatchFixturesBackground;
-          triggerTimer = nullptr;
           liveFootballDispChangeIntv = 150;
           return;
       }
@@ -328,24 +321,18 @@ while(noOfShowCycles-->0){
     time_t time = match["fixture"]["timestamp"];
     String leagueName = match["league"]["name"];
 
-    if(matchIndex == 0 && triggerTimer == nullptr){
-      moreDataScroll->scroll_This_Text("No live matches found.", WHITE);
-      moreDataScroll->scroll_This_Text("Showing Fixtures for " + leagueName, PINK);
-      inboundMatchTimer(time);
-    } 
 
-    fetchFixturesMatchTeamLogos(doc, matchIndex++); // Draw logos for the first match
+    fetchFixturesMatchTeamLogos(doc, matchIndex); // Draw logos for the first match
 
     String status = match["fixture"]["status"]["short"] | "N/A";
 
-    if (status != "NS" && status != "TBD"){
+    if (matchIndex == 0 && status != "NS" && status != "TBD"){
       //printf("Processing Live match %d\n", matchIndex);
       liveFootballData.endpointType = LIVE_MATCHES_ENDPOINT;
       liveFootballPtr = processLiveMatches;
       liveFootballBackgroundPtr = drawLiveMatchesBackground;
-      triggerTimer = nullptr; // Reset the timer handle
-      xSemaphoreGive(changeDispMatch_Sem); // Signal that the timer has fired
-      break;
+      do_beep(BEEP_1);
+      return;
     }
 
     String venue = match["fixture"]["venue"]["name"] | "Unknown Venue";
@@ -355,7 +342,7 @@ while(noOfShowCycles-->0){
 
     statsTitle->writeColoredString(leagueName, BLACK, TEAL);
 
-    serialFixtures->writeColoredString(String(matchIndex) + "/" + String(results), BLUE_GRAY);
+    serialFixtures->writeColoredString(String(++matchIndex) + "/" + String(results), BLUE_GRAY);
     dateFixtures->writeColoredString(formatDateFromTimestamp(time), GREEN_LIZARD);
     timeFixtures->writeColoredString(formatTimeFromTimestamp(time), CYAN);
     vsFixtures->writeColoredString("vs", ASH_GRAY);
@@ -625,74 +612,6 @@ void changeFootballTeams(button_event_t button_Data){
 }
 
 
-// Callback when timer fires
-void onTimerCallback(TimerHandle_t xTimer) {
-  do_beep(BEEP_1);
-  liveFootballData.endpointType = LIVE_MATCHES_ENDPOINT;
-  liveFootballPtr = processLiveMatches;
-  liveFootballBackgroundPtr = drawLiveMatchesBackground;
-  triggerTimer = nullptr; // Reset the timer handle
-  xSemaphoreGive(changeDispMatch_Sem); // Signal that the timer has fired
-}
-
-
-void inboundMatchTimer(time_t targetTimestamp) {
-  // Convert targetTimestamp from UTC to local time
-  time_t tsCopy = targetTimestamp;
-  struct tm* targetLocalTm = localtime(&tsCopy);
-  if (!targetLocalTm) {
-    printf("Failed to convert target time to local time.\n");
-    return;
-  }
-  time_t targetLocal = mktime(targetLocalTm);
-
-  // Get current local time
-  time_t nowUTC;
-  time(&nowUTC);
-  struct tm* nowLocalTm = localtime(&nowUTC);
-  if (!nowLocalTm) {
-    printf("Failed to get current local time.\n");
-    return;
-  }
-  time_t nowLocal = mktime(nowLocalTm);
-
-  if (targetLocal == (time_t)(-1) || nowLocal == (time_t)(-1)) {
-    printf("Error converting time.\n");
-    return;
-  }
-
-  printf("Current local time: %" PRIi64 "\n", (int64_t)nowLocal);  // include <inttypes.h>
-  printf("Target local time : %" PRIi64 "\n", (int64_t)targetLocal);
-
-  double secondsUntilTarget = difftime(targetLocal, nowLocal);
-  if (secondsUntilTarget <= 0) {
-    printf("Target time is in the past. Not starting timer.\n");
-    return;
-  }
-
-    if (triggerTimer != nullptr) {
-    xTimerDelete(triggerTimer, 0);
-  }
-
-  uint32_t delayMs = (uint32_t)(secondsUntilTarget * 1000);
-  if (delayMs >= 0xFFFFFFFF) {
-    printf("Delay too long for FreeRTOS timer.\n");
-    return;
-  }
-
-
-  printf("Setting timer to fire in %lu milliseconds (%.2f seconds).\n", delayMs, secondsUntilTarget);
-
-  triggerTimer = xTimerCreate("TriggerTimer", pdMS_TO_TICKS(delayMs), pdFALSE, nullptr, onTimerCallback);
-  if (triggerTimer != nullptr) {
-    xTimerStart(triggerTimer, 0);
-    printf("Timer started.\n");
-  } else {
-    printf("Failed to create timer.\n");
-  }
-}
-
-
 
 void wipePrevFixturesLogos(void){
   dma_display->fillRect(16, 22, 21, 30, BLACK); // Fill background color2
@@ -738,7 +657,6 @@ void setDisplayFBL_League(DynamicJsonDocument &dCommand){
 
     liveFootballData.leagueID = leagueId;
     xSemaphoreGive(changeDispMatch_Sem);
-    triggerTimer = nullptr;
     write_struct_to_nvs("apiFutBall", &liveFootballData, sizeof(LiveFootball_Data_t));
     ble_Application_Command_Respond_Success(liveFootbalAppRoute, cmdNumber, pdPASS);
 }
