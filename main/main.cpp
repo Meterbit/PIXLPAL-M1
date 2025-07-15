@@ -20,8 +20,8 @@ extern "C" void app_main(){
     while(Applications::firmwareOTA_Status != pdFALSE) delay(1000);
     read_struct_from_nvs("currentApp", &currentApp, sizeof(CurrentApp_t));
     wifi_Initialize();
-    generalAppLunch(currentApp);
-    //launchThisApp(polygonFX_App);
+    //generalAppLunch(currentApp);
+    launchThisApp(worldFlags_App);
 
    size_t free_sram = 0;
 

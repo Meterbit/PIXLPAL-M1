@@ -9,6 +9,8 @@
 #include "nvsMem.h"
 #include "mtbApps.h"
 #include "worldFlags.h"
+#include "workerWorldFlagsFns.h"
+#include "psram_allocator.h"
 
 WorldFlags_Data_t worldFlagsInfo;
 
@@ -36,13 +38,21 @@ void worldFlags_App_Task(void* dApplication){
   //************************************************************************************ */
   read_struct_from_nvs("worldFlags", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
 
+    SVG_OnlineImage_t holderImage{
+        .imageLink = "placeHolder",
+        .xAxis = 20,
+        .yAxis = 0,
+        .scale = 1
+    };
+
 while (THIS_APP_IS_ACTIVE == pdTRUE) {
 
     while ((Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
 
     while (THIS_APP_IS_ACTIVE == pdTRUE) {
-
-
+        strcpy(holderImage.imageLink, getRandomFlag4x3().c_str());
+        drawOnlineSVG(holderImage);
+        delay(10000);
     }
 
 }

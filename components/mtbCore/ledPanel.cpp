@@ -1158,6 +1158,7 @@ BaseType_t drawOnlineSVG(const SVG_OnlineImage_t &dImage){
 	start_This_Service(svgOnlineImageDrawer_Sv);
 	return 0;
 }
+
 //**************************************************************************************
 void drawDecodedSVG(SVG_PreloadedImage_t& item) {
     NSVGimage* svg = nsvgParse((char*)item.svgBuffer, "px", 96.0f);

@@ -420,6 +420,6 @@ direct_dependencies:
 - espressif/usb_host_msc
 - idf
 - joltwallet/littlefs
-manifest_hash: f465b3395879f856c6072263bd3c576241bc712cf69b5b9781886a759e0fe832
+manifest_hash: 0748ccdfe8bb87d5fbaf8467c588e68d7cc3588922d3b7db76e403d3335ff495
 target: esp32s3
 version: 2.0.0
