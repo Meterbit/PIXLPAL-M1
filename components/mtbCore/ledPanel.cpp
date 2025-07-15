@@ -988,7 +988,7 @@ void drawDecodedPNG(PNG_PreloadedImage_t& pImg) {
 
 void pngDownloaderWorker(void* param) {
     size_t drawPNGsCount = (size_t)param;
-
+	log_i("PNG Downloader Worker started processing %d images", drawPNGsCount);
     while (true) {
         int myIndex;
 
@@ -1012,13 +1012,13 @@ void pngDownloaderWorker(void* param) {
     }
 	
 	while(downloadedPNGs < drawPNGsCount)delay(10); // Wait for all images to be processed
-
+    log_i("PNG Downloader Worker finished processing %d images", drawPNGsCount);
     vTaskDelete(NULL);  // ✅ Frees stack after work
 }
 
 void pngDrawerWorker(void* param) {
     size_t drawPNGsCount = (size_t)param;
-
+	log_i("PNG Drawer Worker started processing %d images", drawPNGsCount);
 	// Now decode & draw
     for (int i = 0; i < drawPNGsCount; ++i){
         if (preloadedPNGs[i].isReady) {
@@ -1027,7 +1027,7 @@ void pngDrawerWorker(void* param) {
             free(preloadedPNGs[i].pngBuffer);
         }
     }
-
+	log_i("PNG Drawer Worker finished processing %d images", drawPNGsCount);
     vTaskDelete(NULL);  // ✅ Frees stack after work
 }
 
@@ -1211,7 +1211,7 @@ void drawDecodedSVG(SVG_PreloadedImage_t& item) {
 void svgDownloaderWorker(void* param) {
     size_t drawSVGsCount = (size_t)param;
     int myIndex;
-
+	log_i("SVG Downloader Worker started processing %d images", drawSVGsCount);
     while (true) {
         // Atomically grab next available index
         xSemaphoreTake(preloadIndexMutex, portMAX_DELAY);
@@ -1232,7 +1232,7 @@ void svgDownloaderWorker(void* param) {
         }
 		downloadedSVGs++;
     }
-	
+	log_i("SVG Downloader Worker finished processing %d images", drawSVGsCount);
 	while(downloadedSVGs < drawSVGsCount)delay(10); // Wait for all images to be processed
 
     vTaskDelete(NULL);
@@ -1240,7 +1240,7 @@ void svgDownloaderWorker(void* param) {
 
 void svgDrawerWorker(void* param) {
     size_t drawSVGsCount = (size_t)param;
-
+	log_i("SVG Drawer Worker started processing %d images", drawSVGsCount);
 	// Now decode & draw
     for (int i = 0; i < drawSVGsCount; ++i){
         if (preloadedSVGs[i].isReady) {
@@ -1249,7 +1249,7 @@ void svgDrawerWorker(void* param) {
             free(preloadedSVGs[i].svgBuffer);
         }
     }
-
+	log_i("SVG Drawer Worker finished processing %d images", drawSVGsCount);
     vTaskDelete(NULL);  // ✅ Frees stack after work
 }
 
@@ -1284,7 +1284,6 @@ void downloadMultipleOnlineSVGs(const SVG_OnlineImage_t* images, size_t count) {
     for (int i = 0; i < 2; ++i) {
         xTaskCreatePinnedToCore(svgDownloaderWorker, "SVG_DL", 8192, (void*)count, 3, NULL, 0);
     }
-
 }
 
 //**************************************************************************************

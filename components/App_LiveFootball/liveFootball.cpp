@@ -194,7 +194,7 @@ void liveFootball_App_Task(void *dApplication){
           } else {
             printf("JSON parse error: %s\n", error.c_str());
           }
-          //delay(5000); // Wait before next fetch
+          delay(5000); // Wait before next fetch
         } else {
           printf("HTTP GET failed with code: %d\n", httpResponseCode);
           delay(5000); // Wait before retrying
@@ -320,7 +320,6 @@ while(noOfShowCycles-->0){
 
     time_t time = match["fixture"]["timestamp"];
     String leagueName = match["league"]["name"];
-
 
     fetchFixturesMatchTeamLogos(doc, matchIndex); // Draw logos for the first match
 
@@ -509,7 +508,8 @@ bool fetchLiveMatchTeamLogos(SpiRamJsonDocument& doc, size_t matchIndex) {
           pnglogoBatch[1].scale = 5;
 
           downloadMultipleOnlinePNGs(pnglogoBatch, 2);
-          drawMultiplePNGs(2);
+          if(matchIndex > 0) drawMultiplePNGs(2, wipePrevFixturesLogos);
+          else drawMultiplePNGs(2);
           return true;
     }
 
@@ -570,7 +570,9 @@ bool fetchFixturesMatchTeamLogos(SpiRamJsonDocument& doc, size_t matchIndex) {
         pnglogoBatch[1].scale = 5;
 
         downloadMultipleOnlinePNGs(pnglogoBatch, 2);
-        drawMultiplePNGs(2, wipePrevFixturesLogos);
+
+        if(matchIndex > 0) drawMultiplePNGs(2, wipePrevFixturesLogos);
+        else drawMultiplePNGs(2);
         return true;
     } 
     

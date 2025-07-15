@@ -655,6 +655,7 @@ void sportsAppLunch(uint16_t dAppNumber){
 void animationsAppLunch(uint16_t dAppNumber){
     switch(dAppNumber){
         case 0: launchThisApp(studioLight_App); break;   // ABOUT 10KB RAM IS CONSUMED JUST BY HAVING THIS APPLICATION AMONG THE OTHERS
+        case 1: launchThisApp(worldFlags_App); break;
         default: printf("No Apps to Lunch.\n");
             break;
     }

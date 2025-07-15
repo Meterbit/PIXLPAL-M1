@@ -328,6 +328,7 @@ extern Applications_StatusBar *liveFootbalScores_App;       // App Communication
 
 // Animations
 extern Applications_FullScreen *studioLight_App;             // App Communication Route: 6/0
+extern Applications_FullScreen *worldFlags_App;               // App Communication Route: 6/1
 
 // Notifications
 extern Applications_StatusBar *apple_Notifications_App;     // App Communication Route: 7/0
