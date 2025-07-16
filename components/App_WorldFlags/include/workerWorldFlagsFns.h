@@ -15,7 +15,9 @@
 #include <algorithm>
 #include <random>   // after <algorithm>
 #include "mtbApps.h"
-#include "world_countries.h"
+
+
+extern const char* jsonWorldCountries;
 
 // Use std::basic_string with our PSRAM allocator
 using PsString = std::basic_string<char,
@@ -55,8 +57,7 @@ void parseJsonOnce()
     if (!gCountries.empty()) return;
 
     /* ---------- ArduinoJson in PSRAM ---------- */
-    constexpr size_t CAPACITY =
-        JSON_ARRAY_SIZE(256) + 256 * JSON_OBJECT_SIZE(8);
+    constexpr size_t CAPACITY = 200 * 1024;
 
     // Allocate the variant pool itself in PSRAM
     SpiRamJsonDocument doc(CAPACITY);

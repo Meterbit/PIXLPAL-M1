@@ -40,9 +40,9 @@ void worldFlags_App_Task(void* dApplication){
 
     SVG_OnlineImage_t holderImage{
         .imageLink = "placeHolder",
-        .xAxis = 20,
+        .xAxis = 24,
         .yAxis = 0,
-        .scale = 1
+        .scale = 2
     };
 
 while (THIS_APP_IS_ACTIVE == pdTRUE) {
@@ -52,7 +52,8 @@ while (THIS_APP_IS_ACTIVE == pdTRUE) {
     while (THIS_APP_IS_ACTIVE == pdTRUE) {
         strcpy(holderImage.imageLink, getRandomFlag4x3().c_str());
         drawOnlineSVG(holderImage);
-        delay(10000);
+        printf("Current Flag: %s\n", holderImage.imageLink);
+        delay(2000);
     }
 
 }
