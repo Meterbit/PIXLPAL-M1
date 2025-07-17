@@ -8,7 +8,7 @@ const char* jsonWorldCountries = R"json(
     "code": "af",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/af.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/af.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/af.svg",
     "iso": true,
     "name": "Afghanistan"
   },
@@ -17,7 +17,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ax",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ax.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ax.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ax.svg",
     "iso": true,
     "name": "Aland Islands"
   },
@@ -26,7 +26,7 @@ const char* jsonWorldCountries = R"json(
     "code": "al",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/al.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/al.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/al.svg",
     "iso": true,
     "name": "Albania"
   },
@@ -35,7 +35,7 @@ const char* jsonWorldCountries = R"json(
     "code": "dz",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/dz.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/dz.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/dz.svg",
     "iso": true,
     "name": "Algeria"
   },
@@ -44,7 +44,7 @@ const char* jsonWorldCountries = R"json(
     "code": "as",
     "continent": "Oceania",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/as.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/as.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/as.svg",
     "iso": true,
     "name": "American Samoa"
   },
@@ -53,7 +53,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ad",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ad.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ad.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ad.svg",
     "iso": true,
     "name": "Andorra"
   },
@@ -62,7 +62,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ao",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ao.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ao.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ao.svg",
     "iso": true,
     "name": "Angola"
   },
@@ -71,14 +71,14 @@ const char* jsonWorldCountries = R"json(
     "code": "ai",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ai.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ai.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ai.svg",
     "iso": true,
     "name": "Anguilla"
   },
   {
     "code": "aq",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/aq.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/aq.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/aq.svg",
     "iso": true,
     "name": "Antarctica"
   },
@@ -87,7 +87,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ag",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ag.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ag.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ag.svg",
     "iso": true,
     "name": "Antigua and Barbuda"
   },
@@ -96,7 +96,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ar",
     "continent": "South America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ar.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ar.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ar.svg",
     "iso": true,
     "name": "Argentina"
   },
@@ -105,7 +105,7 @@ const char* jsonWorldCountries = R"json(
     "code": "am",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/am.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/am.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/am.svg",
     "iso": true,
     "name": "Armenia"
   },
@@ -114,7 +114,7 @@ const char* jsonWorldCountries = R"json(
     "code": "aw",
     "continent": "South America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/aw.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/aw.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/aw.svg",
     "iso": true,
     "name": "Aruba"
   },
@@ -122,15 +122,15 @@ const char* jsonWorldCountries = R"json(
     "capital": "Georgetown",
     "code": "sh-ac",
     "continent": "Africa",
-    "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/sh-ac.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/sh-ac.svg",
+    "flag_1x1": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/1x1/sh-ac.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/4x3/sh-ac.svg",
     "iso": false,
     "name": "Ascension Island"
   },
   {
     "code": "asean",
-    "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/asean.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/asean.svg",
+    "flag_1x1": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/1x1/asean.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/4x3/asean.svg",
     "iso": false,
     "name": "Association of Southeast Asian Nations"
   },
@@ -139,7 +139,7 @@ const char* jsonWorldCountries = R"json(
     "code": "au",
     "continent": "Oceania",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/au.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/au.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/au.svg",
     "iso": true,
     "name": "Australia"
   },
@@ -148,7 +148,7 @@ const char* jsonWorldCountries = R"json(
     "code": "at",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/at.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/at.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/at.svg",
     "iso": true,
     "name": "Austria"
   },
@@ -157,7 +157,7 @@ const char* jsonWorldCountries = R"json(
     "code": "az",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/az.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/az.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/az.svg",
     "iso": true,
     "name": "Azerbaijan"
   },
@@ -166,7 +166,7 @@ const char* jsonWorldCountries = R"json(
     "code": "bs",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/bs.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/bs.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/bs.svg",
     "iso": true,
     "name": "Bahamas"
   },
@@ -175,7 +175,7 @@ const char* jsonWorldCountries = R"json(
     "code": "bh",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/bh.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/bh.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/bh.svg",
     "iso": true,
     "name": "Bahrain"
   },
@@ -184,7 +184,7 @@ const char* jsonWorldCountries = R"json(
     "code": "bd",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/bd.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/bd.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/bd.svg",
     "iso": true,
     "name": "Bangladesh"
   },
@@ -193,14 +193,14 @@ const char* jsonWorldCountries = R"json(
     "code": "bb",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/bb.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/bb.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/bb.svg",
     "iso": true,
     "name": "Barbados"
   },
   {
     "code": "es-pv",
-    "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/es-pv.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/es-pv.svg",
+    "flag_1x1": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/1x1/es-pv.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/4x3/es-pv.svg",
     "iso": false,
     "name": "Basque Country"
   },
@@ -209,7 +209,7 @@ const char* jsonWorldCountries = R"json(
     "code": "by",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/by.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/by.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/by.svg",
     "iso": true,
     "name": "Belarus"
   },
@@ -218,7 +218,7 @@ const char* jsonWorldCountries = R"json(
     "code": "be",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/be.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/be.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/be.svg",
     "iso": true,
     "name": "Belgium"
   },
@@ -227,7 +227,7 @@ const char* jsonWorldCountries = R"json(
     "code": "bz",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/bz.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/bz.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/bz.svg",
     "iso": true,
     "name": "Belize"
   },
@@ -236,7 +236,7 @@ const char* jsonWorldCountries = R"json(
     "code": "bj",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/bj.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/bj.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/bj.svg",
     "iso": true,
     "name": "Benin"
   },
@@ -245,7 +245,7 @@ const char* jsonWorldCountries = R"json(
     "code": "bm",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/bm.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/bm.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/bm.svg",
     "iso": true,
     "name": "Bermuda"
   },
@@ -254,7 +254,7 @@ const char* jsonWorldCountries = R"json(
     "code": "bt",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/bt.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/bt.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/bt.svg",
     "iso": true,
     "name": "Bhutan"
   },
@@ -263,7 +263,7 @@ const char* jsonWorldCountries = R"json(
     "code": "bo",
     "continent": "South America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/bo.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/bo.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/bo.svg",
     "iso": true,
     "name": "Bolivia"
   },
@@ -272,7 +272,7 @@ const char* jsonWorldCountries = R"json(
     "code": "bq",
     "continent": "South America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/bq.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/bq.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/bq.svg",
     "iso": true,
     "name": "Bonaire, Sint Eustatius and Saba"
   },
@@ -281,7 +281,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ba",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ba.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ba.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ba.svg",
     "iso": true,
     "name": "Bosnia and Herzegovina"
   },
@@ -290,14 +290,14 @@ const char* jsonWorldCountries = R"json(
     "code": "bw",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/bw.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/bw.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/bw.svg",
     "iso": true,
     "name": "Botswana"
   },
   {
     "code": "bv",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/bv.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/bv.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/bv.svg",
     "iso": true,
     "name": "Bouvet Island"
   },
@@ -306,7 +306,7 @@ const char* jsonWorldCountries = R"json(
     "code": "br",
     "continent": "South America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/br.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/br.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/br.svg",
     "iso": true,
     "name": "Brazil"
   },
@@ -315,7 +315,7 @@ const char* jsonWorldCountries = R"json(
     "code": "io",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/io.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/io.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/io.svg",
     "iso": true,
     "name": "British Indian Ocean Territory"
   },
@@ -324,7 +324,7 @@ const char* jsonWorldCountries = R"json(
     "code": "bn",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/bn.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/bn.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/bn.svg",
     "iso": true,
     "name": "Brunei Darussalam"
   },
@@ -333,7 +333,7 @@ const char* jsonWorldCountries = R"json(
     "code": "bg",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/bg.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/bg.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/bg.svg",
     "iso": true,
     "name": "Bulgaria"
   },
@@ -342,7 +342,7 @@ const char* jsonWorldCountries = R"json(
     "code": "bf",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/bf.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/bf.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/bf.svg",
     "iso": true,
     "name": "Burkina Faso"
   },
@@ -351,7 +351,7 @@ const char* jsonWorldCountries = R"json(
     "code": "bi",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/bi.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/bi.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/bi.svg",
     "iso": true,
     "name": "Burundi"
   },
@@ -360,7 +360,7 @@ const char* jsonWorldCountries = R"json(
     "code": "cv",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/cv.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/cv.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/cv.svg",
     "iso": true,
     "name": "Cabo Verde"
   },
@@ -369,7 +369,7 @@ const char* jsonWorldCountries = R"json(
     "code": "kh",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/kh.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/kh.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/kh.svg",
     "iso": true,
     "name": "Cambodia"
   },
@@ -378,7 +378,7 @@ const char* jsonWorldCountries = R"json(
     "code": "cm",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/cm.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/cm.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/cm.svg",
     "iso": true,
     "name": "Cameroon"
   },
@@ -387,21 +387,21 @@ const char* jsonWorldCountries = R"json(
     "code": "ca",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ca.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ca.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ca.svg",
     "iso": true,
     "name": "Canada"
   },
   {
     "code": "ic",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ic.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ic.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ic.svg",
     "iso": false,
     "name": "Canary Islands"
   },
   {
     "code": "es-ct",
-    "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/es-ct.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/es-ct.svg",
+    "flag_1x1": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/1x1/es-ct.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/4x3/es-ct.svg",
     "iso": false,
     "name": "Catalonia"
   },
@@ -410,7 +410,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ky",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ky.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ky.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ky.svg",
     "iso": true,
     "name": "Cayman Islands"
   },
@@ -419,14 +419,14 @@ const char* jsonWorldCountries = R"json(
     "code": "cf",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/cf.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/cf.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/cf.svg",
     "iso": true,
     "name": "Central African Republic"
   },
   {
     "code": "cefta",
-    "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/cefta.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/cefta.svg",
+    "flag_1x1": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/1x1/cefta.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/4x3/cefta.svg",
     "iso": false,
     "name": "Central European Free Trade Agreement"
   },
@@ -435,7 +435,7 @@ const char* jsonWorldCountries = R"json(
     "code": "td",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/td.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/td.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/td.svg",
     "iso": true,
     "name": "Chad"
   },
@@ -444,7 +444,7 @@ const char* jsonWorldCountries = R"json(
     "code": "cl",
     "continent": "South America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/cl.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/cl.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/cl.svg",
     "iso": true,
     "name": "Chile"
   },
@@ -453,7 +453,7 @@ const char* jsonWorldCountries = R"json(
     "code": "cn",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/cn.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/cn.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/cn.svg",
     "iso": true,
     "name": "China"
   },
@@ -462,14 +462,14 @@ const char* jsonWorldCountries = R"json(
     "code": "cx",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/cx.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/cx.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/cx.svg",
     "iso": true,
     "name": "Christmas Island"
   },
   {
     "code": "cp",
-    "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/cp.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/cp.svg",
+    "flag_1x1": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/1x1/cp.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/4x3/cp.svg",
     "iso": false,
     "name": "Clipperton Island"
   },
@@ -478,7 +478,7 @@ const char* jsonWorldCountries = R"json(
     "code": "cc",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/cc.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/cc.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/cc.svg",
     "iso": true,
     "name": "Cocos (Keeling) Islands"
   },
@@ -487,7 +487,7 @@ const char* jsonWorldCountries = R"json(
     "code": "co",
     "continent": "South America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/co.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/co.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/co.svg",
     "iso": true,
     "name": "Colombia"
   },
@@ -496,7 +496,7 @@ const char* jsonWorldCountries = R"json(
     "code": "km",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/km.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/km.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/km.svg",
     "iso": true,
     "name": "Comoros"
   },
@@ -505,7 +505,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ck",
     "continent": "Oceania",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ck.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ck.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ck.svg",
     "iso": true,
     "name": "Cook Islands"
   },
@@ -514,7 +514,7 @@ const char* jsonWorldCountries = R"json(
     "code": "cr",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/cr.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/cr.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/cr.svg",
     "iso": true,
     "name": "Costa Rica"
   },
@@ -523,7 +523,7 @@ const char* jsonWorldCountries = R"json(
     "code": "hr",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/hr.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/hr.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/hr.svg",
     "iso": true,
     "name": "Croatia"
   },
@@ -532,7 +532,7 @@ const char* jsonWorldCountries = R"json(
     "code": "cu",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/cu.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/cu.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/cu.svg",
     "iso": true,
     "name": "Cuba"
   },
@@ -541,7 +541,7 @@ const char* jsonWorldCountries = R"json(
     "code": "cw",
     "continent": "South America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/cw.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/cw.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/cw.svg",
     "iso": true,
     "name": "Curaçao"
   },
@@ -550,7 +550,7 @@ const char* jsonWorldCountries = R"json(
     "code": "cy",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/cy.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/cy.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/cy.svg",
     "iso": true,
     "name": "Cyprus"
   },
@@ -559,7 +559,7 @@ const char* jsonWorldCountries = R"json(
     "code": "cz",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/cz.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/cz.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/cz.svg",
     "iso": true,
     "name": "Czech Republic"
   },
@@ -568,7 +568,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ci",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ci.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ci.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ci.svg",
     "iso": true,
     "name": "Ivory Coast"
   },
@@ -577,7 +577,7 @@ const char* jsonWorldCountries = R"json(
     "code": "cd",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/cd.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/cd.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/cd.svg",
     "iso": true,
     "name": "Congo DR"
   },
@@ -586,14 +586,14 @@ const char* jsonWorldCountries = R"json(
     "code": "dk",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/dk.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/dk.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/dk.svg",
     "iso": true,
     "name": "Denmark"
   },
   {
     "code": "dg",
-    "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/dg.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/dg.svg",
+    "flag_1x1": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/1x1/dg.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/4x3/dg.svg",
     "iso": false,
     "name": "Diego Garcia"
   },
@@ -602,7 +602,7 @@ const char* jsonWorldCountries = R"json(
     "code": "dj",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/dj.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/dj.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/dj.svg",
     "iso": true,
     "name": "Djibouti"
   },
@@ -611,7 +611,7 @@ const char* jsonWorldCountries = R"json(
     "code": "dm",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/dm.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/dm.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/dm.svg",
     "iso": true,
     "name": "Dominica"
   },
@@ -620,14 +620,14 @@ const char* jsonWorldCountries = R"json(
     "code": "do",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/do.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/do.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/do.svg",
     "iso": true,
     "name": "Dominican Republic"
   },
   {
     "code": "eac",
-    "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/eac.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/eac.svg",
+    "flag_1x1": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/1x1/eac.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/4x3/eac.svg",
     "iso": false,
     "name": "East African Community"
   },
@@ -636,7 +636,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ec",
     "continent": "South America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ec.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ec.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ec.svg",
     "iso": true,
     "name": "Ecuador"
   },
@@ -645,7 +645,7 @@ const char* jsonWorldCountries = R"json(
     "code": "eg",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/eg.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/eg.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/eg.svg",
     "iso": true,
     "name": "Egypt"
   },
@@ -654,7 +654,7 @@ const char* jsonWorldCountries = R"json(
     "code": "sv",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/sv.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/sv.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/sv.svg",
     "iso": true,
     "name": "El Salvador"
   },
@@ -663,7 +663,7 @@ const char* jsonWorldCountries = R"json(
     "code": "gb-eng",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/lipis/flag-icons/master/flags/1x1/gb-eng.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/lipis/flag-icons/master/flags/4x3/gb-eng.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/gb-eng.svg",
     "iso": false,
     "name": "England"
   },
@@ -672,7 +672,7 @@ const char* jsonWorldCountries = R"json(
     "code": "gq",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/gq.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/gq.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/gq.svg",
     "iso": true,
     "name": "Equatorial Guinea"
   },
@@ -681,7 +681,7 @@ const char* jsonWorldCountries = R"json(
     "code": "er",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/er.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/er.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/er.svg",
     "iso": true,
     "name": "Eritrea"
   },
@@ -690,7 +690,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ee",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ee.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ee.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ee.svg",
     "iso": true,
     "name": "Estonia"
   },
@@ -699,7 +699,7 @@ const char* jsonWorldCountries = R"json(
     "code": "sz",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/sz.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/sz.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/sz.svg",
     "iso": true,
     "name": "Eswatini"
   },
@@ -708,14 +708,14 @@ const char* jsonWorldCountries = R"json(
     "code": "et",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/et.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/et.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/et.svg",
     "iso": true,
     "name": "Ethiopia"
   },
   {
     "code": "eu",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/eu.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/eu.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/necessarylion/country-list-with-dial-code-and-flag/refs/heads/master/assets/svg/eu.svg",
     "iso": false,
     "name": "Europe"
   },
@@ -724,7 +724,7 @@ const char* jsonWorldCountries = R"json(
     "code": "fk",
     "continent": "South America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/fk.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/fk.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/fk.svg",
     "iso": true,
     "name": "Falkland Islands"
   },
@@ -733,7 +733,7 @@ const char* jsonWorldCountries = R"json(
     "code": "fo",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/fo.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/fo.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/fo.svg",
     "iso": true,
     "name": "Faroe Islands"
   },
@@ -742,7 +742,7 @@ const char* jsonWorldCountries = R"json(
     "code": "fm",
     "continent": "Oceania",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/fm.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/fm.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/fm.svg",
     "iso": true,
     "name": "Federated States of Micronesia"
   },
@@ -751,7 +751,7 @@ const char* jsonWorldCountries = R"json(
     "code": "fj",
     "continent": "Oceania",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/fj.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/fj.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/fj.svg",
     "iso": true,
     "name": "Fiji"
   },
@@ -760,7 +760,7 @@ const char* jsonWorldCountries = R"json(
     "code": "fi",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/fi.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/fi.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/fi.svg",
     "iso": true,
     "name": "Finland"
   },
@@ -769,7 +769,7 @@ const char* jsonWorldCountries = R"json(
     "code": "fr",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/fr.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/fr.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/fr.svg",
     "iso": true,
     "name": "France"
   },
@@ -778,7 +778,7 @@ const char* jsonWorldCountries = R"json(
     "code": "gf",
     "continent": "South America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/gf.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/gf.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/gf.svg",
     "iso": true,
     "name": "French Guiana"
   },
@@ -787,7 +787,7 @@ const char* jsonWorldCountries = R"json(
     "code": "pf",
     "continent": "Oceania",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/pf.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/pf.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/pf.svg",
     "iso": true,
     "name": "French Polynesia"
   },
@@ -796,7 +796,7 @@ const char* jsonWorldCountries = R"json(
     "code": "tf",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/tf.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/tf.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/tf.svg",
     "iso": true,
     "name": "French Southern Territories"
   },
@@ -805,14 +805,14 @@ const char* jsonWorldCountries = R"json(
     "code": "ga",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ga.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ga.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ga.svg",
     "iso": true,
     "name": "Gabon"
   },
   {
     "code": "es-ga",
-    "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/es-ga.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/es-ga.svg",
+    "flag_1x1": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/1x1/es-ga.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/4x3/es-ga.svg",
     "iso": false,
     "name": "Galicia"
   },
@@ -821,7 +821,7 @@ const char* jsonWorldCountries = R"json(
     "code": "gm",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/gm.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/gm.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/gm.svg",
     "iso": true,
     "name": "Gambia"
   },
@@ -830,7 +830,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ge",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ge.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ge.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ge.svg",
     "iso": true,
     "name": "Georgia"
   },
@@ -839,7 +839,7 @@ const char* jsonWorldCountries = R"json(
     "code": "de",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/de.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/de.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/de.svg",
     "iso": true,
     "name": "Germany"
   },
@@ -848,7 +848,7 @@ const char* jsonWorldCountries = R"json(
     "code": "gh",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/gh.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/gh.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/gh.svg",
     "iso": true,
     "name": "Ghana"
   },
@@ -857,7 +857,7 @@ const char* jsonWorldCountries = R"json(
     "code": "gi",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/gi.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/gi.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/gi.svg",
     "iso": true,
     "name": "Gibraltar"
   },
@@ -866,7 +866,7 @@ const char* jsonWorldCountries = R"json(
     "code": "gr",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/gr.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/gr.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/gr.svg",
     "iso": true,
     "name": "Greece"
   },
@@ -875,7 +875,7 @@ const char* jsonWorldCountries = R"json(
     "code": "gl",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/gl.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/gl.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/gl.svg",
     "iso": true,
     "name": "Greenland"
   },
@@ -884,7 +884,7 @@ const char* jsonWorldCountries = R"json(
     "code": "gd",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/gd.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/gd.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/gd.svg",
     "iso": true,
     "name": "Grenada"
   },
@@ -893,7 +893,7 @@ const char* jsonWorldCountries = R"json(
     "code": "gp",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/gp.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/gp.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/gp.svg",
     "iso": true,
     "name": "Guadeloupe"
   },
@@ -902,7 +902,7 @@ const char* jsonWorldCountries = R"json(
     "code": "gu",
     "continent": "Oceania",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/gu.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/gu.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/gu.svg",
     "iso": true,
     "name": "Guam"
   },
@@ -911,7 +911,7 @@ const char* jsonWorldCountries = R"json(
     "code": "gt",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/gt.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/gt.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/gt.svg",
     "iso": true,
     "name": "Guatemala"
   },
@@ -920,7 +920,7 @@ const char* jsonWorldCountries = R"json(
     "code": "gg",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/gg.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/gg.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/gg.svg",
     "iso": true,
     "name": "Guernsey"
   },
@@ -929,7 +929,7 @@ const char* jsonWorldCountries = R"json(
     "code": "gn",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/gn.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/gn.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/gn.svg",
     "iso": true,
     "name": "Guinea"
   },
@@ -938,7 +938,7 @@ const char* jsonWorldCountries = R"json(
     "code": "gw",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/gw.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/gw.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/gw.svg",
     "iso": true,
     "name": "Guinea-Bissau"
   },
@@ -947,7 +947,7 @@ const char* jsonWorldCountries = R"json(
     "code": "gy",
     "continent": "South America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/gy.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/gy.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/gy.svg",
     "iso": true,
     "name": "Guyana"
   },
@@ -956,14 +956,14 @@ const char* jsonWorldCountries = R"json(
     "code": "ht",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ht.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ht.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ht.svg",
     "iso": true,
     "name": "Haiti"
   },
   {
     "code": "hm",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/hm.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/hm.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/hm.svg",
     "iso": true,
     "name": "Heard Island and McDonald Islands"
   },
@@ -972,7 +972,7 @@ const char* jsonWorldCountries = R"json(
     "code": "va",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/va.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/va.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/va.svg",
     "iso": true,
     "name": "Holy See"
   },
@@ -981,7 +981,7 @@ const char* jsonWorldCountries = R"json(
     "code": "hn",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/hn.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/hn.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/hn.svg",
     "iso": true,
     "name": "Honduras"
   },
@@ -990,7 +990,7 @@ const char* jsonWorldCountries = R"json(
     "code": "hk",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/hk.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/hk.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/hk.svg",
     "iso": true,
     "name": "Hong Kong"
   },
@@ -999,7 +999,7 @@ const char* jsonWorldCountries = R"json(
     "code": "hu",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/hu.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/hu.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/hu.svg",
     "iso": true,
     "name": "Hungary"
   },
@@ -1008,7 +1008,7 @@ const char* jsonWorldCountries = R"json(
     "code": "is",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/is.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/is.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/is.svg",
     "iso": true,
     "name": "Iceland"
   },
@@ -1017,7 +1017,7 @@ const char* jsonWorldCountries = R"json(
     "code": "in",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/in.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/in.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/shandriy/flags/refs/heads/master/India.svg",
     "iso": true,
     "name": "India"
   },
@@ -1026,7 +1026,7 @@ const char* jsonWorldCountries = R"json(
     "code": "id",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/id.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/id.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/id.svg",
     "iso": true,
     "name": "Indonesia"
   },
@@ -1035,7 +1035,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ir",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ir.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ir.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ir.svg",
     "iso": true,
     "name": "Iran"
   },
@@ -1044,7 +1044,7 @@ const char* jsonWorldCountries = R"json(
     "code": "iq",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/iq.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/iq.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/iq.svg",
     "iso": true,
     "name": "Iraq"
   },
@@ -1053,7 +1053,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ie",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ie.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ie.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ie.svg",
     "iso": true,
     "name": "Ireland"
   },
@@ -1062,7 +1062,7 @@ const char* jsonWorldCountries = R"json(
     "code": "im",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/im.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/im.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/im.svg",
     "iso": true,
     "name": "Isle of Man"
   },
@@ -1071,7 +1071,7 @@ const char* jsonWorldCountries = R"json(
     "code": "il",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/il.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/il.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/il.svg",
     "iso": true,
     "name": "Israel"
   },
@@ -1080,7 +1080,7 @@ const char* jsonWorldCountries = R"json(
     "code": "it",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/it.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/it.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/it.svg",
     "iso": true,
     "name": "Italy"
   },
@@ -1089,7 +1089,7 @@ const char* jsonWorldCountries = R"json(
     "code": "jm",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/jm.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/jm.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/jm.svg",
     "iso": true,
     "name": "Jamaica"
   },
@@ -1098,7 +1098,7 @@ const char* jsonWorldCountries = R"json(
     "code": "jp",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/jp.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/jp.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/jp.svg",
     "iso": true,
     "name": "Japan"
   },
@@ -1107,7 +1107,7 @@ const char* jsonWorldCountries = R"json(
     "code": "je",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/je.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/je.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/je.svg",
     "iso": true,
     "name": "Jersey"
   },
@@ -1116,7 +1116,7 @@ const char* jsonWorldCountries = R"json(
     "code": "jo",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/jo.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/jo.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/jo.svg",
     "iso": true,
     "name": "Jordan"
   },
@@ -1125,7 +1125,7 @@ const char* jsonWorldCountries = R"json(
     "code": "kz",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/kz.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/kz.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/kz.svg",
     "iso": true,
     "name": "Kazakhstan"
   },
@@ -1134,7 +1134,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ke",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ke.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ke.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ke.svg",
     "iso": true,
     "name": "Kenya"
   },
@@ -1143,7 +1143,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ki",
     "continent": "Oceania",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ki.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ki.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ki.svg",
     "iso": true,
     "name": "Kiribati"
   },
@@ -1152,7 +1152,7 @@ const char* jsonWorldCountries = R"json(
     "code": "xk",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/xk.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/xk.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/xk.svg",
     "iso": false,
     "name": "Kosovo"
   },
@@ -1161,7 +1161,7 @@ const char* jsonWorldCountries = R"json(
     "code": "kw",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/kw.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/kw.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/kw.svg",
     "iso": true,
     "name": "Kuwait"
   },
@@ -1170,7 +1170,7 @@ const char* jsonWorldCountries = R"json(
     "code": "kg",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/kg.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/kg.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/kg.svg",
     "iso": true,
     "name": "Kyrgyzstan"
   },
@@ -1179,7 +1179,7 @@ const char* jsonWorldCountries = R"json(
     "code": "la",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/la.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/la.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/la.svg",
     "iso": true,
     "name": "Laos"
   },
@@ -1188,14 +1188,14 @@ const char* jsonWorldCountries = R"json(
     "code": "lv",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/lv.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/lv.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/lv.svg",
     "iso": true,
     "name": "Latvia"
   },
   {
     "code": "arab",
-    "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/arab.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/arab.svg",
+    "flag_1x1": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/1x1/arab.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/4x3/arab.svg",
     "iso": false,
     "name": "League of Arab States"
   },
@@ -1204,7 +1204,7 @@ const char* jsonWorldCountries = R"json(
     "code": "lb",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/lb.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/lb.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/lb.svg",
     "iso": true,
     "name": "Lebanon"
   },
@@ -1213,7 +1213,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ls",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ls.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ls.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ls.svg",
     "iso": true,
     "name": "Lesotho"
   },
@@ -1222,7 +1222,7 @@ const char* jsonWorldCountries = R"json(
     "code": "lr",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/lr.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/lr.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/lr.svg",
     "iso": true,
     "name": "Liberia"
   },
@@ -1231,7 +1231,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ly",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ly.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ly.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ly.svg",
     "iso": true,
     "name": "Libya"
   },
@@ -1240,7 +1240,7 @@ const char* jsonWorldCountries = R"json(
     "code": "li",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/li.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/li.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/li.svg",
     "iso": true,
     "name": "Liechtenstein"
   },
@@ -1249,7 +1249,7 @@ const char* jsonWorldCountries = R"json(
     "code": "lt",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/lt.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/lt.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/lt.svg",
     "iso": true,
     "name": "Lithuania"
   },
@@ -1258,7 +1258,7 @@ const char* jsonWorldCountries = R"json(
     "code": "lu",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/lu.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/lu.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/lu.svg",
     "iso": true,
     "name": "Luxembourg"
   },
@@ -1267,7 +1267,7 @@ const char* jsonWorldCountries = R"json(
     "code": "mo",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/mo.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/mo.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/mo.svg",
     "iso": true,
     "name": "Macau"
   },
@@ -1276,7 +1276,7 @@ const char* jsonWorldCountries = R"json(
     "code": "mg",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/mg.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/mg.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/mg.svg",
     "iso": true,
     "name": "Madagascar"
   },
@@ -1285,7 +1285,7 @@ const char* jsonWorldCountries = R"json(
     "code": "mw",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/mw.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/mw.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/mw.svg",
     "iso": true,
     "name": "Malawi"
   },
@@ -1294,7 +1294,7 @@ const char* jsonWorldCountries = R"json(
     "code": "my",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/my.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/my.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/my.svg",
     "iso": true,
     "name": "Malaysia"
   },
@@ -1303,7 +1303,7 @@ const char* jsonWorldCountries = R"json(
     "code": "mv",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/mv.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/mv.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/mv.svg",
     "iso": true,
     "name": "Maldives"
   },
@@ -1312,7 +1312,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ml",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ml.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ml.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ml.svg",
     "iso": true,
     "name": "Mali"
   },
@@ -1321,7 +1321,7 @@ const char* jsonWorldCountries = R"json(
     "code": "mt",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/mt.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/mt.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/mt.svg",
     "iso": true,
     "name": "Malta"
   },
@@ -1330,7 +1330,7 @@ const char* jsonWorldCountries = R"json(
     "code": "mh",
     "continent": "Oceania",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/mh.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/mh.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/mh.svg",
     "iso": true,
     "name": "Marshall Islands"
   },
@@ -1339,7 +1339,7 @@ const char* jsonWorldCountries = R"json(
     "code": "mq",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/mq.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/mq.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/mq.svg",
     "iso": true,
     "name": "Martinique"
   },
@@ -1348,7 +1348,7 @@ const char* jsonWorldCountries = R"json(
     "code": "mr",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/mr.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/mr.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/mr.svg",
     "iso": true,
     "name": "Mauritania"
   },
@@ -1357,7 +1357,7 @@ const char* jsonWorldCountries = R"json(
     "code": "mu",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/mu.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/mu.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/mu.svg",
     "iso": true,
     "name": "Mauritius"
   },
@@ -1366,7 +1366,7 @@ const char* jsonWorldCountries = R"json(
     "code": "yt",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/yt.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/yt.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/yt.svg",
     "iso": true,
     "name": "Mayotte"
   },
@@ -1375,7 +1375,7 @@ const char* jsonWorldCountries = R"json(
     "code": "mx",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/mx.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/mx.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/mx.svg",
     "iso": true,
     "name": "Mexico"
   },
@@ -1384,7 +1384,7 @@ const char* jsonWorldCountries = R"json(
     "code": "md",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/md.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/md.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/md.svg",
     "iso": true,
     "name": "Moldova"
   },
@@ -1393,7 +1393,7 @@ const char* jsonWorldCountries = R"json(
     "code": "mc",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/mc.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/mc.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/mc.svg",
     "iso": true,
     "name": "Monaco"
   },
@@ -1402,7 +1402,7 @@ const char* jsonWorldCountries = R"json(
     "code": "mn",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/mn.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/mn.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/mn.svg",
     "iso": true,
     "name": "Mongolia"
   },
@@ -1411,7 +1411,7 @@ const char* jsonWorldCountries = R"json(
     "code": "me",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/me.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/me.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/me.svg",
     "iso": true,
     "name": "Montenegro"
   },
@@ -1420,7 +1420,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ms",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ms.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ms.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ms.svg",
     "iso": true,
     "name": "Montserrat"
   },
@@ -1429,7 +1429,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ma",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ma.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ma.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ma.svg",
     "iso": true,
     "name": "Morocco"
   },
@@ -1438,7 +1438,7 @@ const char* jsonWorldCountries = R"json(
     "code": "mz",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/mz.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/mz.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/mz.svg",
     "iso": true,
     "name": "Mozambique"
   },
@@ -1447,7 +1447,7 @@ const char* jsonWorldCountries = R"json(
     "code": "mm",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/mm.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/mm.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/mm.svg",
     "iso": true,
     "name": "Myanmar"
   },
@@ -1456,7 +1456,7 @@ const char* jsonWorldCountries = R"json(
     "code": "na",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/na.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/na.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/na.svg",
     "iso": true,
     "name": "Namibia"
   },
@@ -1465,7 +1465,7 @@ const char* jsonWorldCountries = R"json(
     "code": "nr",
     "continent": "Oceania",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/nr.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/nr.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/nr.svg",
     "iso": true,
     "name": "Nauru"
   },
@@ -1474,7 +1474,7 @@ const char* jsonWorldCountries = R"json(
     "code": "np",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/np.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/np.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/np.svg",
     "iso": true,
     "name": "Nepal"
   },
@@ -1483,7 +1483,7 @@ const char* jsonWorldCountries = R"json(
     "code": "nl",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/nl.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/nl.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/nl.svg",
     "iso": true,
     "name": "Netherlands"
   },
@@ -1492,7 +1492,7 @@ const char* jsonWorldCountries = R"json(
     "code": "nc",
     "continent": "Oceania",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/nc.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/nc.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/nc.svg",
     "iso": true,
     "name": "New Caledonia"
   },
@@ -1501,7 +1501,7 @@ const char* jsonWorldCountries = R"json(
     "code": "nz",
     "continent": "Oceania",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/nz.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/nz.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/nz.svg",
     "iso": true,
     "name": "New Zealand"
   },
@@ -1510,7 +1510,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ni",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ni.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ni.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ni.svg",
     "iso": true,
     "name": "Nicaragua"
   },
@@ -1519,7 +1519,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ne",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ne.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ne.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ne.svg",
     "iso": true,
     "name": "Niger"
   },
@@ -1528,7 +1528,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ng",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ng.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ng.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ng.svg",
     "iso": true,
     "name": "Nigeria"
   },
@@ -1537,7 +1537,7 @@ const char* jsonWorldCountries = R"json(
     "code": "nu",
     "continent": "Oceania",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/nu.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/nu.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/nu.svg",
     "iso": true,
     "name": "Niue"
   },
@@ -1546,7 +1546,7 @@ const char* jsonWorldCountries = R"json(
     "code": "nf",
     "continent": "Oceania",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/nf.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/nf.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/nf.svg",
     "iso": true,
     "name": "Norfolk Island"
   },
@@ -1555,7 +1555,7 @@ const char* jsonWorldCountries = R"json(
     "code": "kp",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/kp.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/kp.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/kp.svg",
     "iso": true,
     "name": "North Korea"
   },
@@ -1564,7 +1564,7 @@ const char* jsonWorldCountries = R"json(
     "code": "mk",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/mk.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/mk.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/mk.svg",
     "iso": true,
     "name": "North Macedonia"
   },
@@ -1582,7 +1582,7 @@ const char* jsonWorldCountries = R"json(
     "code": "mp",
     "continent": "Oceania",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/mp.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/mp.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/mp.svg",
     "iso": true,
     "name": "Northern Mariana Islands"
   },
@@ -1591,7 +1591,7 @@ const char* jsonWorldCountries = R"json(
     "code": "no",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/no.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/no.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/no.svg",
     "iso": true,
     "name": "Norway"
   },
@@ -1600,14 +1600,14 @@ const char* jsonWorldCountries = R"json(
     "code": "om",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/om.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/om.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/om.svg",
     "iso": true,
     "name": "Oman"
   },
   {
     "code": "pc",
-    "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/pc.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/pc.svg",
+    "flag_1x1": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/1x1/pc.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/4x3/pc.svg",
     "iso": false,
     "name": "Pacific Community"
   },
@@ -1616,7 +1616,7 @@ const char* jsonWorldCountries = R"json(
     "code": "pk",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/pk.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/pk.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/pk.svg",
     "iso": true,
     "name": "Pakistan"
   },
@@ -1625,7 +1625,7 @@ const char* jsonWorldCountries = R"json(
     "code": "pw",
     "continent": "Oceania",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/pw.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/pw.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/pw.svg",
     "iso": true,
     "name": "Palau"
   },
@@ -1634,7 +1634,7 @@ const char* jsonWorldCountries = R"json(
     "code": "pa",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/pa.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/pa.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/pa.svg",
     "iso": true,
     "name": "Panama"
   },
@@ -1643,7 +1643,7 @@ const char* jsonWorldCountries = R"json(
     "code": "pg",
     "continent": "Oceania",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/pg.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/pg.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/pg.svg",
     "iso": true,
     "name": "Papua New Guinea"
   },
@@ -1652,7 +1652,7 @@ const char* jsonWorldCountries = R"json(
     "code": "py",
     "continent": "South America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/py.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/py.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/py.svg",
     "iso": true,
     "name": "Paraguay"
   },
@@ -1661,7 +1661,7 @@ const char* jsonWorldCountries = R"json(
     "code": "pe",
     "continent": "South America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/pe.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/pe.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/pe.svg",
     "iso": true,
     "name": "Peru"
   },
@@ -1670,7 +1670,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ph",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ph.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ph.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ph.svg",
     "iso": true,
     "name": "Philippines"
   },
@@ -1679,7 +1679,7 @@ const char* jsonWorldCountries = R"json(
     "code": "pn",
     "continent": "Oceania",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/pn.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/pn.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/pn.svg",
     "iso": true,
     "name": "Pitcairn"
   },
@@ -1688,7 +1688,7 @@ const char* jsonWorldCountries = R"json(
     "code": "pl",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/pl.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/pl.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/pl.svg",
     "iso": true,
     "name": "Poland"
   },
@@ -1697,7 +1697,7 @@ const char* jsonWorldCountries = R"json(
     "code": "pt",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/pt.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/pt.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/pt.svg",
     "iso": true,
     "name": "Portugal"
   },
@@ -1706,7 +1706,7 @@ const char* jsonWorldCountries = R"json(
     "code": "pr",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/pr.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/pr.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/pr.svg",
     "iso": true,
     "name": "Puerto Rico"
   },
@@ -1715,7 +1715,7 @@ const char* jsonWorldCountries = R"json(
     "code": "qa",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/qa.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/qa.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/qa.svg",
     "iso": true,
     "name": "Qatar"
   },
@@ -1724,7 +1724,7 @@ const char* jsonWorldCountries = R"json(
     "code": "cg",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/cg.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/cg.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/cg.svg",
     "iso": true,
     "name": "Congo"
   },
@@ -1733,7 +1733,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ro",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ro.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ro.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ro.svg",
     "iso": true,
     "name": "Romania"
   },
@@ -1742,7 +1742,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ru",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ru.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ru.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ru.svg",
     "iso": true,
     "name": "Russia"
   },
@@ -1751,7 +1751,7 @@ const char* jsonWorldCountries = R"json(
     "code": "rw",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/rw.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/rw.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/rw.svg",
     "iso": true,
     "name": "Rwanda"
   },
@@ -1760,7 +1760,7 @@ const char* jsonWorldCountries = R"json(
     "code": "re",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/re.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/re.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/re.svg",
     "iso": true,
     "name": "Réunion"
   },
@@ -1769,7 +1769,7 @@ const char* jsonWorldCountries = R"json(
     "code": "bl",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/bl.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/bl.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/bl.svg",
     "iso": true,
     "name": "Saint Barthélemy"
   },
@@ -1777,8 +1777,8 @@ const char* jsonWorldCountries = R"json(
     "capital": "Jamestown",
     "code": "sh-hl",
     "continent": "Africa",
-    "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/sh-hl.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/sh-hl.svg",
+    "flag_1x1": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/1x1/sh-hl.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/4x3/sh-hl.svg",
     "iso": false,
     "name": "Saint Helena"
   },
@@ -1787,7 +1787,7 @@ const char* jsonWorldCountries = R"json(
     "code": "sh",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/sh.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/sh.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/sh.svg",
     "iso": true,
     "name": "Saint Helena, Ascension and Tristan da Cunha"
   },
@@ -1796,7 +1796,7 @@ const char* jsonWorldCountries = R"json(
     "code": "kn",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/kn.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/kn.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/kn.svg",
     "iso": true,
     "name": "Saint Kitts and Nevis"
   },
@@ -1805,7 +1805,7 @@ const char* jsonWorldCountries = R"json(
     "code": "lc",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/lc.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/lc.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/lc.svg",
     "iso": true,
     "name": "Saint Lucia"
   },
@@ -1814,7 +1814,7 @@ const char* jsonWorldCountries = R"json(
     "code": "mf",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/mf.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/mf.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/mf.svg",
     "iso": true,
     "name": "Saint Martin"
   },
@@ -1823,7 +1823,7 @@ const char* jsonWorldCountries = R"json(
     "code": "pm",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/pm.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/pm.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/pm.svg",
     "iso": true,
     "name": "Saint Pierre and Miquelon"
   },
@@ -1832,7 +1832,7 @@ const char* jsonWorldCountries = R"json(
     "code": "vc",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/vc.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/vc.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/vc.svg",
     "iso": true,
     "name": "Saint Vincent and the Grenadines"
   },
@@ -1841,7 +1841,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ws",
     "continent": "Oceania",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ws.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ws.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ws.svg",
     "iso": true,
     "name": "Samoa"
   },
@@ -1850,7 +1850,7 @@ const char* jsonWorldCountries = R"json(
     "code": "sm",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/sm.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/sm.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/sm.svg",
     "iso": true,
     "name": "San Marino"
   },
@@ -1859,7 +1859,7 @@ const char* jsonWorldCountries = R"json(
     "code": "st",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/st.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/st.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/st.svg",
     "iso": true,
     "name": "Sao Tome and Principe"
   },
@@ -1868,7 +1868,7 @@ const char* jsonWorldCountries = R"json(
     "code": "sa",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/sa.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/sa.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/sa.svg",
     "iso": true,
     "name": "Saudi Arabia"
   },
@@ -1877,7 +1877,7 @@ const char* jsonWorldCountries = R"json(
     "code": "gb-sct",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/lipis/flag-icons/master/flags/1x1/gb-sct.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/lipis/flag-icons/master/flags/4x3/gb-sct.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/gb-sct.svg",
     "iso": false,
     "name": "Scotland"
   },
@@ -1886,7 +1886,7 @@ const char* jsonWorldCountries = R"json(
     "code": "sn",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/sn.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/sn.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/sn.svg",
     "iso": true,
     "name": "Senegal"
   },
@@ -1895,7 +1895,7 @@ const char* jsonWorldCountries = R"json(
     "code": "rs",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/rs.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/rs.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/rs.svg",
     "iso": true,
     "name": "Serbia"
   },
@@ -1904,7 +1904,7 @@ const char* jsonWorldCountries = R"json(
     "code": "sc",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/sc.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/sc.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/sc.svg",
     "iso": true,
     "name": "Seychelles"
   },
@@ -1913,7 +1913,7 @@ const char* jsonWorldCountries = R"json(
     "code": "sl",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/sl.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/sl.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/sl.svg",
     "iso": true,
     "name": "Sierra Leone"
   },
@@ -1922,7 +1922,7 @@ const char* jsonWorldCountries = R"json(
     "code": "sg",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/sg.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/sg.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/sg.svg",
     "iso": true,
     "name": "Singapore"
   },
@@ -1931,7 +1931,7 @@ const char* jsonWorldCountries = R"json(
     "code": "sx",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/sx.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/sx.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/sx.svg",
     "iso": true,
     "name": "Sint Maarten"
   },
@@ -1940,7 +1940,7 @@ const char* jsonWorldCountries = R"json(
     "code": "sk",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/sk.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/sk.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/sk.svg",
     "iso": true,
     "name": "Slovakia"
   },
@@ -1949,7 +1949,7 @@ const char* jsonWorldCountries = R"json(
     "code": "si",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/si.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/si.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/si.svg",
     "iso": true,
     "name": "Slovenia"
   },
@@ -1958,7 +1958,7 @@ const char* jsonWorldCountries = R"json(
     "code": "sb",
     "continent": "Oceania",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/sb.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/sb.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/sb.svg",
     "iso": true,
     "name": "Solomon Islands"
   },
@@ -1967,7 +1967,7 @@ const char* jsonWorldCountries = R"json(
     "code": "so",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/so.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/so.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/so.svg",
     "iso": true,
     "name": "Somalia"
   },
@@ -1976,7 +1976,7 @@ const char* jsonWorldCountries = R"json(
     "code": "za",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/za.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/za.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/za.svg",
     "iso": true,
     "name": "South Africa"
   },
@@ -1985,7 +1985,7 @@ const char* jsonWorldCountries = R"json(
     "code": "gs",
     "continent": "Antarctica",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/gs.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/gs.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/gs.svg",
     "iso": true,
     "name": "South Georgia and the South Sandwich Islands"
   },
@@ -1994,7 +1994,7 @@ const char* jsonWorldCountries = R"json(
     "code": "kr",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/kr.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/kr.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/kr.svg",
     "iso": true,
     "name": "South Korea"
   },
@@ -2003,7 +2003,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ss",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ss.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ss.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ss.svg",
     "iso": true,
     "name": "South Sudan"
   },
@@ -2012,7 +2012,7 @@ const char* jsonWorldCountries = R"json(
     "code": "es",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/es.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/es.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/es.svg",
     "iso": true,
     "name": "Spain"
   },
@@ -2021,7 +2021,7 @@ const char* jsonWorldCountries = R"json(
     "code": "lk",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/lk.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/lk.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/lk.svg",
     "iso": true,
     "name": "Sri Lanka"
   },
@@ -2030,7 +2030,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ps",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ps.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ps.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ps.svg",
     "iso": true,
     "name": "State of Palestine"
   },
@@ -2039,7 +2039,7 @@ const char* jsonWorldCountries = R"json(
     "code": "sd",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/sd.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/sd.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/sd.svg",
     "iso": true,
     "name": "Sudan"
   },
@@ -2048,7 +2048,7 @@ const char* jsonWorldCountries = R"json(
     "code": "sr",
     "continent": "South America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/sr.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/sr.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/sr.svg",
     "iso": true,
     "name": "Suriname"
   },
@@ -2057,7 +2057,7 @@ const char* jsonWorldCountries = R"json(
     "code": "sj",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/sj.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/sj.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/sj.svg",
     "iso": true,
     "name": "Svalbard and Jan Mayen"
   },
@@ -2066,7 +2066,7 @@ const char* jsonWorldCountries = R"json(
     "code": "se",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/se.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/se.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/se.svg",
     "iso": true,
     "name": "Sweden"
   },
@@ -2075,7 +2075,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ch",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ch.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ch.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ch.svg",
     "iso": true,
     "name": "Switzerland"
   },
@@ -2084,7 +2084,7 @@ const char* jsonWorldCountries = R"json(
     "code": "sy",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/sy.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/sy.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/sy.svg",
     "iso": true,
     "name": "Syria"
   },
@@ -2093,7 +2093,7 @@ const char* jsonWorldCountries = R"json(
     "code": "tw",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/tw.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/tw.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/tw.svg",
     "iso": true,
     "name": "Taiwan"
   },
@@ -2102,7 +2102,7 @@ const char* jsonWorldCountries = R"json(
     "code": "tj",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/tj.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/tj.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/tj.svg",
     "iso": true,
     "name": "Tajikistan"
   },
@@ -2111,7 +2111,7 @@ const char* jsonWorldCountries = R"json(
     "code": "tz",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/tz.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/tz.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/tz.svg",
     "iso": true,
     "name": "Tanzania"
   },
@@ -2120,7 +2120,7 @@ const char* jsonWorldCountries = R"json(
     "code": "th",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/th.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/th.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/th.svg",
     "iso": true,
     "name": "Thailand"
   },
@@ -2129,7 +2129,7 @@ const char* jsonWorldCountries = R"json(
     "code": "tl",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/tl.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/tl.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/tl.svg",
     "iso": true,
     "name": "Timor-Leste"
   },
@@ -2138,7 +2138,7 @@ const char* jsonWorldCountries = R"json(
     "code": "tg",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/tg.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/tg.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/tg.svg",
     "iso": true,
     "name": "Togo"
   },
@@ -2147,7 +2147,7 @@ const char* jsonWorldCountries = R"json(
     "code": "tk",
     "continent": "Oceania",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/tk.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/tk.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/tk.svg",
     "iso": true,
     "name": "Tokelau"
   },
@@ -2156,7 +2156,7 @@ const char* jsonWorldCountries = R"json(
     "code": "to",
     "continent": "Oceania",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/to.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/to.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/to.svg",
     "iso": true,
     "name": "Tonga"
   },
@@ -2165,7 +2165,7 @@ const char* jsonWorldCountries = R"json(
     "code": "tt",
     "continent": "South America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/tt.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/tt.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/tt.svg",
     "iso": true,
     "name": "Trinidad and Tobago"
   },
@@ -2173,8 +2173,8 @@ const char* jsonWorldCountries = R"json(
     "capital": "Edinburgh of the Seven Seas",
     "code": "sh-ta",
     "continent": "Africa",
-    "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/sh-ta.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/sh-ta.svg",
+    "flag_1x1": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/1x1/sh-ta.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/4x3/sh-ta.svg",
     "iso": false,
     "name": "Tristan da Cunha"
   },
@@ -2183,7 +2183,7 @@ const char* jsonWorldCountries = R"json(
     "code": "tn",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/tn.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/tn.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/tn.svg",
     "iso": true,
     "name": "Tunisia"
   },
@@ -2192,7 +2192,7 @@ const char* jsonWorldCountries = R"json(
     "code": "tm",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/tm.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/tm.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/tm.svg",
     "iso": true,
     "name": "Turkmenistan"
   },
@@ -2201,7 +2201,7 @@ const char* jsonWorldCountries = R"json(
     "code": "tc",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/tc.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/tc.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/tc.svg",
     "iso": true,
     "name": "Turks and Caicos Islands"
   },
@@ -2210,7 +2210,7 @@ const char* jsonWorldCountries = R"json(
     "code": "tv",
     "continent": "Oceania",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/tv.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/tv.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/tv.svg",
     "iso": true,
     "name": "Tuvalu"
   },
@@ -2219,7 +2219,7 @@ const char* jsonWorldCountries = R"json(
     "code": "tr",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/tr.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/tr.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/tr.svg",
     "iso": true,
     "name": "Turkey"
   },
@@ -2228,7 +2228,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ug",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ug.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ug.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ug.svg",
     "iso": true,
     "name": "Uganda"
   },
@@ -2237,7 +2237,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ua",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ua.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ua.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ua.svg",
     "iso": true,
     "name": "Ukraine"
   },
@@ -2246,7 +2246,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ae",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ae.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ae.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ae.svg",
     "iso": true,
     "name": "United Arab Emirates"
   },
@@ -2255,14 +2255,14 @@ const char* jsonWorldCountries = R"json(
     "code": "gb",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/gb.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/gb.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/gb.svg",
     "iso": true,
     "name": "United Kingdom"
   },
   {
     "code": "un",
-    "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/un.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/un.svg",
+    "flag_1x1": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/1x1/un.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/4x3/un.svg",
     "iso": false,
     "name": "United Nations"
   },
@@ -2271,7 +2271,7 @@ const char* jsonWorldCountries = R"json(
     "code": "um",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/um.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/um.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/um.svg",
     "iso": true,
     "name": "United States Minor Outlying Islands"
   },
@@ -2280,23 +2280,16 @@ const char* jsonWorldCountries = R"json(
     "code": "us",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/us.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/us.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/us.svg",
     "iso": true,
     "name": "United States of America"
-  },
-  {
-    "code": "xx",
-    "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/xx.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/xx.svg",
-    "iso": false,
-    "name": "Unknown"
   },
   {
     "capital": "Montevideo",
     "code": "uy",
     "continent": "South America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/uy.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/uy.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/uy.svg",
     "iso": true,
     "name": "Uruguay"
   },
@@ -2305,7 +2298,7 @@ const char* jsonWorldCountries = R"json(
     "code": "uz",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/uz.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/uz.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/uz.svg",
     "iso": true,
     "name": "Uzbekistan"
   },
@@ -2314,7 +2307,7 @@ const char* jsonWorldCountries = R"json(
     "code": "vu",
     "continent": "Oceania",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/vu.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/vu.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/vu.svg",
     "iso": true,
     "name": "Vanuatu"
   },
@@ -2323,7 +2316,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ve",
     "continent": "South America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ve.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ve.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ve.svg",
     "iso": true,
     "name": "Venezuela"
   },
@@ -2332,7 +2325,7 @@ const char* jsonWorldCountries = R"json(
     "code": "vn",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/vn.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/vn.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/vn.svg",
     "iso": true,
     "name": "Vietnam"
   },
@@ -2341,7 +2334,7 @@ const char* jsonWorldCountries = R"json(
     "code": "vg",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/vg.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/vg.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/vg.svg",
     "iso": true,
     "name": "Virgin Islands (British)"
   },
@@ -2350,7 +2343,7 @@ const char* jsonWorldCountries = R"json(
     "code": "vi",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/vi.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/vi.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/vi.svg",
     "iso": true,
     "name": "Virgin Islands (U.S.)"
   },
@@ -2359,7 +2352,7 @@ const char* jsonWorldCountries = R"json(
     "code": "gb-wls",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/lipis/flag-icons/master/flags/1x1/gb-wls.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/lipis/flag-icons/master/flags/4x3/gb-wls.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/gb-wls.svg",
     "iso": false,
     "name": "Wales"
   },
@@ -2368,7 +2361,7 @@ const char* jsonWorldCountries = R"json(
     "code": "wf",
     "continent": "Oceania",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/wf.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/wf.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/wf.svg",
     "iso": true,
     "name": "Wallis and Futuna"
   },
@@ -2377,7 +2370,7 @@ const char* jsonWorldCountries = R"json(
     "code": "eh",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/eh.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/eh.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/eh.svg",
     "iso": true,
     "name": "Western Sahara"
   },
@@ -2386,7 +2379,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ye",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ye.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/ye.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ye.svg",
     "iso": true,
     "name": "Yemen"
   },
@@ -2395,7 +2388,7 @@ const char* jsonWorldCountries = R"json(
     "code": "zm",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/zm.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/zm.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/zm.svg",
     "iso": true,
     "name": "Zambia"
   },
@@ -2404,7 +2397,7 @@ const char* jsonWorldCountries = R"json(
     "code": "zw",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/zw.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/zw.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/zw.svg",
     "iso": true,
     "name": "Zimbabwe"
   }

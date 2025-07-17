@@ -18,6 +18,8 @@ EXT_RAM_BSS_ATTR TaskHandle_t worldFlags_Task_H = NULL;
 void worldFlags_App_Task(void *);
 // supporting functions
 
+void wipeFlagBackground(void);
+
 // button and encoder functions
 void changeWorldFlagButton(button_event_t button_Data);
 
@@ -40,20 +42,20 @@ void worldFlags_App_Task(void* dApplication){
 
     SVG_OnlineImage_t holderImage{
         .imageLink = "placeHolder",
-        .xAxis = 24,
+        .xAxis = 16,
         .yAxis = 0,
-        .scale = 2
+        .scale = 1
     };
 
 while (THIS_APP_IS_ACTIVE == pdTRUE) {
 
     while ((Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
-
     while (THIS_APP_IS_ACTIVE == pdTRUE) {
         strcpy(holderImage.imageLink, getRandomFlag4x3().c_str());
-        drawOnlineSVG(holderImage);
+        downloadMultipleOnlineSVGs(&holderImage, 1);
         printf("Current Flag: %s\n", holderImage.imageLink);
-        delay(2000);
+        drawMultipleSVGs(1, wipeFlagBackground);
+        delay(10000);
     }
 
 }
@@ -90,6 +92,11 @@ void changeWorldFlagButton(button_event_t button_Data){
 			}
 }
 
+void wipeFlagBackground(void){
+    dma_display->fillScreen(dma_display->color565(0, 0, 16)); // Clear the entire screen
+}
+
+
 void selectDisplayFlag(DynamicJsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     String location = dCommand["duration"];
@@ -121,3 +128,6 @@ void setFlagChangeIntv(DynamicJsonDocument&){
     write_struct_to_nvs("worldFlags", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
     ble_Application_Command_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
 }
+
+
+

@@ -32,7 +32,8 @@ extern "C" void app_main(){
 
     // drawOnlinePNG({"https://media.api-sports.io//football//teams//165.png", 3, 17, 5});     // Draw the logo on the top left corner of the screen.
     // drawOnlinePNG({"https://media.api-sports.io//football//teams//166.png", 45, 17, 5});    // Draw the logo on the top right corner of the screen.
-    //drawOnlineSVG({"https://raw.githubusercontent.com/stevenrskelton/flag-icon/refs/heads/master/svg/country-4x3/yt.svg", 0, 0, 1}); // Draw the MTB Logo on the top left corner of the screen.
+    // drawOnlineSVG({"https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/in.svg", 0, 0, 1}); // Draw the MTB Logo on the top left corner of the screen.
+
 
     while (1){
     delay(2000);
@@ -40,7 +41,7 @@ extern "C" void app_main(){
     // // //Get the total free size of internal SRAM
     free_sram = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
     //Print the free SRAM size
-    printf("#############Free SRAM: %zu bytes\n", free_sram);
+    //printf("#############Free SRAM: %zu bytes\n", free_sram);
     //ESP_LOGI(TAG, "Memory: Free %dKiB Low: %dKiB\n", (int)xPortGetFreeHeapSize()/1024, (int)xPortGetMinimumEverFreeHeapSize()/1024);
      }
 }
