@@ -52,8 +52,7 @@ void makePermutation()
     gNext = 0;
 }
 
-void parseJsonOnce()
-{
+void parseJsonOnce(){
     if (!gCountries.empty()) return;
 
     /* ---------- ArduinoJson in PSRAM ---------- */
@@ -70,7 +69,7 @@ void parseJsonOnce()
 
     for (JsonObject obj : doc.as<JsonArray>()) {
         Country c;
-        c.name    = obj["name"    ].as<const char*>();
+        c.name    = obj["name"].as<const char*>();
         c.flag4x3 = obj["flag_4x3"].as<const char*>();
         gCountries.emplace_back(std::move(c));
     }
@@ -80,8 +79,7 @@ void parseJsonOnce()
 } // anonymous
 
 /* ---------- PUBLIC API ---------- */
-std::string getRandomFlag4x3()
-{
+std::string getRandomFlag4x3(){
     parseJsonOnce();
     if (gCountries.empty()) return {};
 
@@ -91,8 +89,7 @@ std::string getRandomFlag4x3()
     return std::string(ps.data(), ps.size());   // explicit conversion
 }
 
-std::string getFlag4x3ByCountry(const char* name)
-{
+std::string getFlag4x3ByCountry(const char* name){
     parseJsonOnce();
     if (!name) return {};
 

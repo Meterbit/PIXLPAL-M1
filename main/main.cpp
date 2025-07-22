@@ -20,8 +20,8 @@ extern "C" void app_main(){
     while(Applications::firmwareOTA_Status != pdFALSE) delay(1000);
     read_struct_from_nvs("currentApp", &currentApp, sizeof(CurrentApp_t));
     wifi_Initialize();
-    //generalAppLunch(currentApp);
-    launchThisApp(worldFlags_App);
+    generalAppLunch(currentApp);
+    //launchThisApp(worldFlags_App);
 
    size_t free_sram = 0;
 
@@ -32,7 +32,9 @@ extern "C" void app_main(){
 
     // drawOnlinePNG({"https://media.api-sports.io//football//teams//165.png", 3, 17, 5});     // Draw the logo on the top left corner of the screen.
     // drawOnlinePNG({"https://media.api-sports.io//football//teams//166.png", 45, 17, 5});    // Draw the logo on the top right corner of the screen.
-    // drawOnlineSVG({"https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/in.svg", 0, 0, 1}); // Draw the MTB Logo on the top left corner of the screen.
+    //SVG_OnlineImage_t testImage = {"https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/in.svg", 0, 0, 1};
+    //printf("Current Flag: %s\n", testImage.imageLink); 
+    //drawOnlineSVGs(&testImage); // Draw the MTB Logo on the top left corner of the screen.
 
 
     while (1){

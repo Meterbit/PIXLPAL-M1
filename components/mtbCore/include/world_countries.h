@@ -130,7 +130,7 @@ const char* jsonWorldCountries = R"json(
   {
     "code": "asean",
     "flag_1x1": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/1x1/asean.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/4x3/asean.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/BoltSwith/PublicFiles/refs/heads/main/CountryFlags/flag-of-asean.svg",
     "iso": false,
     "name": "Association of Southeast Asian Nations"
   },
@@ -394,7 +394,7 @@ const char* jsonWorldCountries = R"json(
   {
     "code": "ic",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ic.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ic.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/necessarylion/country-list-with-dial-code-and-flag/refs/heads/master/assets/svg/IC.svg",
     "iso": false,
     "name": "Canary Islands"
   },
@@ -2012,7 +2012,7 @@ const char* jsonWorldCountries = R"json(
     "code": "es",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/es.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/es.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/BoltSwith/PublicFiles/refs/heads/main/CountryFlags/spain.svg",
     "iso": true,
     "name": "Spain"
   },
@@ -2262,7 +2262,7 @@ const char* jsonWorldCountries = R"json(
   {
     "code": "un",
     "flag_1x1": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/1x1/un.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/4x3/un.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/BoltSwith/PublicFiles/refs/heads/main/CountryFlags/unitedNations.svg",
     "iso": false,
     "name": "United Nations"
   },

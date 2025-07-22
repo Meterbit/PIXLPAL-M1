@@ -25,41 +25,33 @@ void changeWorldFlagButton(button_event_t button_Data);
 
 // bluetooth functions
 void selectDisplayFlag(DynamicJsonDocument&);
+void selectPreferredFlags(DynamicJsonDocument&);
+void cycleAllFlags(DynamicJsonDocument&);
 void showCountryName(DynamicJsonDocument&);
-void showRandomFlags(DynamicJsonDocument&);
 void setFlagChangeIntv(DynamicJsonDocument&);
 
-EXT_RAM_BSS_ATTR Applications_FullScreen *worldFlags_App = new Applications_FullScreen(worldFlags_App_Task, &worldFlags_Task_H, "worldFlags", 4096);
+EXT_RAM_BSS_ATTR Applications_FullScreen *worldFlags_App = new Applications_FullScreen(worldFlags_App_Task, &worldFlags_Task_H, "worlfFlagsApp", 4096);
 
 void worldFlags_App_Task(void* dApplication){
   Applications *thisApp = (Applications *)dApplication;
   thisApp->app_EncoderFn_ptr = brightnessControl;
   thisApp->app_ButtonFn_ptr = changeWorldFlagButton;
-  ble_AppCom_Parser_Sv->register_BLE_Com_ServiceFns(selectDisplayFlag, showCountryName, showRandomFlags, setFlagChangeIntv);
+  ble_AppCom_Parser_Sv->register_BLE_Com_ServiceFns(selectDisplayFlag, selectPreferredFlags, cycleAllFlags, showCountryName, setFlagChangeIntv);
   appsInitialization(thisApp);
   //************************************************************************************ */
-  read_struct_from_nvs("worldFlags", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
+  read_struct_from_nvs("worlfFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
 
-    SVG_OnlineImage_t holderImage{
-        .imageLink = "placeHolder",
-        .xAxis = 16,
-        .yAxis = 0,
-        .scale = 1
-    };
+    SVG_OnlineImage_t testImage({"placeHolder", 16, 0, 1});
 
 while (THIS_APP_IS_ACTIVE == pdTRUE) {
 
     while ((Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
     while (THIS_APP_IS_ACTIVE == pdTRUE) {
-        strcpy(holderImage.imageLink, getRandomFlag4x3().c_str());
-        downloadMultipleOnlineSVGs(&holderImage, 1);
-        printf("Current Flag: %s\n", holderImage.imageLink);
-        drawMultipleSVGs(1, wipeFlagBackground);
+        strcpy(testImage.imageLink, getRandomFlag4x3().c_str());
+        drawOnlineSVGs(&testImage, 1, wipeFlagBackground); 
         delay(10000);
     }
-
 }
-
   kill_This_App(thisApp);
 }
 
@@ -95,37 +87,58 @@ void changeWorldFlagButton(button_event_t button_Data){
 void wipeFlagBackground(void){
     dma_display->fillScreen(dma_display->color565(0, 0, 16)); // Clear the entire screen
 }
-
+//************************************************************************************ */
+//************************************************************************************ */
 
 void selectDisplayFlag(DynamicJsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
-    String location = dCommand["duration"];
+    const char* countryFlag = dCommand["countryName"];
 
-    write_struct_to_nvs("worldFlags", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
+    printf("Select Country: %s \n", countryFlag);
+
+    SVG_OnlineImage_t testImage({"placeHolder", 16, 0, 1});
+    
+    strcpy(testImage.imageLink, getFlag4x3ByCountry(countryFlag).c_str());
+
+    drawOnlineSVGs(&testImage, 1, wipeFlagBackground); 
+
+    write_struct_to_nvs("worlfFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
+    ble_Application_Command_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
+}
+
+void selectPreferredFlags(DynamicJsonDocument& dCommand){
+    uint8_t cmdNumber = dCommand["app_command"];
+
+    printf("Command Number: %d \n", cmdNumber);
+
+    write_struct_to_nvs("worlfFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
+    ble_Application_Command_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
+}
+
+void cycleAllFlags(DynamicJsonDocument&){
+    uint8_t cmdNumber = dCommand["app_command"];
+
+    printf("Command Number: %d \n", cmdNumber);
+
+    write_struct_to_nvs("worlfFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
     ble_Application_Command_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
 }
 
 void showCountryName(DynamicJsonDocument&){
     uint8_t cmdNumber = dCommand["app_command"];
-    String location = dCommand["duration"];
 
-    write_struct_to_nvs("worldFlags", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
-    ble_Application_Command_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
-}
+    printf("Command Number: %d \n", cmdNumber);
 
-void showRandomFlags(DynamicJsonDocument&){
-    uint8_t cmdNumber = dCommand["app_command"];
-    String location = dCommand["duration"];
-
-    write_struct_to_nvs("worldFlags", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
+    write_struct_to_nvs("worlfFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
     ble_Application_Command_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
 }
 
 void setFlagChangeIntv(DynamicJsonDocument&){
     uint8_t cmdNumber = dCommand["app_command"];
-    String location = dCommand["duration"];
 
-    write_struct_to_nvs("worldFlags", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
+    printf("Command Number: %d \n", cmdNumber);
+
+    write_struct_to_nvs("worlfFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
     ble_Application_Command_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
 }
 

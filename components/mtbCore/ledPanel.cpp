@@ -35,20 +35,20 @@
 // SemaphoreHandle_t pngImageDrawer_Sem = NULL;
 //  Define the static queue storage variable
 StaticQueue_t xQueueStorage_PNG_LocalDrawings;
-StaticQueue_t xQueueStorage_PNG_OnlineDrawings;
-StaticQueue_t xQueueStorage_SVG_OnlineDrawings;
+// StaticQueue_t xQueueStorage_PNG_OnlineDrawings;
+// StaticQueue_t xQueueStorage_SVG_OnlineDrawings;
 
 
 EXT_RAM_BSS_ATTR QueueHandle_t pngLocalImageDrawer_Q = NULL;
-EXT_RAM_BSS_ATTR QueueHandle_t pngOnlineImageDrawer_Q = NULL;
-EXT_RAM_BSS_ATTR QueueHandle_t svgOnlineImageDrawer_Q = NULL;
+//EXT_RAM_BSS_ATTR QueueHandle_t pngOnlineImageDrawer_Q = NULL;
+//EXT_RAM_BSS_ATTR QueueHandle_t svgOnlineImageDrawer_Q = NULL;
 EXT_RAM_BSS_ATTR QueueHandle_t rgb_led_queue = NULL;
 // QueueHandle_t statusBar_Q_Handle = NULL;
 // SemaphoreHandle_t statusBar_Mutex_Handle = NULL;
 // TaskHandle_t statusBarUpdateTask_h = NULL;
 EXT_RAM_BSS_ATTR TaskHandle_t pngLocalImageDrawer_Handle = NULL;
-EXT_RAM_BSS_ATTR TaskHandle_t pngOnlineImageDrawer_Handle = NULL;
-EXT_RAM_BSS_ATTR TaskHandle_t svgOnlineImageDrawer_Handle = NULL;
+// EXT_RAM_BSS_ATTR TaskHandle_t pngOnlineImageDrawer_Handle = NULL;
+// EXT_RAM_BSS_ATTR TaskHandle_t svgOnlineImageDrawer_Handle = NULL;
 
 EXT_RAM_BSS_ATTR PNG_LocalImage_t statusBarItems[11];
 uint16_t currentStatusLEDcolor = BLACK;
@@ -58,8 +58,8 @@ uint8_t **FixedText_t::scratchPad = nullptr;
 
 
 EXT_RAM_BSS_ATTR Services *pngLocalImageDrawer_Sv = new Services(drawLocalPNG_Task, &pngLocalImageDrawer_Handle, "PNG Local draw", 12288, 4); // Keep the task stack size at 12288 for reliability.
-EXT_RAM_BSS_ATTR Services *pngOnlineImageDrawer_Sv = new Services(drawOnlinePNG_Task, &pngOnlineImageDrawer_Handle, "PNG Online draw", 12288, 4); // Keep the task stack size at 12288 for reliability.
-EXT_RAM_BSS_ATTR Services *svgOnlineImageDrawer_Sv = new Services(drawOnlineSVG_Task, &svgOnlineImageDrawer_Handle, "SVG Online draw", 12288, 4); // Keep the task stack size at 12288 for reliability.
+//EXT_RAM_BSS_ATTR Services *pngOnlineImageDrawer_Sv = new Services(drawOnlinePNG_Task, &pngOnlineImageDrawer_Handle, "PNG Online draw", 12288, 4); // Keep the task stack size at 12288 for reliability.
+//EXT_RAM_BSS_ATTR Services *svgOnlineImageDrawer_Sv = new Services(drawOnlineSVG_Task, &svgOnlineImageDrawer_Handle, "SVG Online draw", 12288, 4); // Keep the task stack size at 12288 for reliability.
 
 #define RGB_LED_PIN_R 3
 #define RGB_LED_PIN_G 42
@@ -191,11 +191,11 @@ void Matrix_Panel_t::config_ESP32_Panel_Pins()
 // PASSED
 void Matrix_Panel_t::init_LED_MatrixPanel(){
 	uint8_t *pngLocalItems_buffer = (uint8_t *)heap_caps_malloc(20 * sizeof(PNG_LocalImage_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
-	uint8_t *pngOnlineItems_buffer = (uint8_t *)heap_caps_malloc(20 * sizeof(PNG_OnlineImage_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
-	uint8_t *svgOnlineItems_buffer = (uint8_t *)heap_caps_malloc(20 * sizeof(SVG_OnlineImage_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+	//uint8_t *pngOnlineItems_buffer = (uint8_t *)heap_caps_malloc(20 * sizeof(PNG_OnlineImage_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+	//uint8_t *svgOnlineItems_buffer = (uint8_t *)heap_caps_malloc(20 * sizeof(SVG_OnlineImage_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
 	if (pngLocalImageDrawer_Q == NULL) pngLocalImageDrawer_Q = xQueueCreateStatic(20, sizeof(PNG_LocalImage_t), pngLocalItems_buffer, &xQueueStorage_PNG_LocalDrawings);
-	if (pngOnlineImageDrawer_Q == NULL) pngOnlineImageDrawer_Q = xQueueCreateStatic(20, sizeof(PNG_OnlineImage_t), pngOnlineItems_buffer, &xQueueStorage_PNG_OnlineDrawings);
-	if (svgOnlineImageDrawer_Q == NULL) svgOnlineImageDrawer_Q = xQueueCreateStatic(20, sizeof(SVG_OnlineImage_t), svgOnlineItems_buffer, &xQueueStorage_SVG_OnlineDrawings);
+	//if (pngOnlineImageDrawer_Q == NULL) pngOnlineImageDrawer_Q = xQueueCreateStatic(20, sizeof(PNG_OnlineImage_t), pngOnlineItems_buffer, &xQueueStorage_PNG_OnlineDrawings);
+	//if (svgOnlineImageDrawer_Q == NULL) svgOnlineImageDrawer_Q = xQueueCreateStatic(20, sizeof(SVG_OnlineImage_t), svgOnlineItems_buffer, &xQueueStorage_SVG_OnlineDrawings);
 	// Module configuration
 	HUB75_I2S_CFG mxconfig(
 		PANEL_RES_X, // module width
@@ -842,99 +842,99 @@ BaseType_t drawLocalPNG(const PNG_LocalImage_t &dImage){
 
 //************************************************************************************ */
 
-void drawOnlinePNG_Task(void *dService) {
-	Services *thisService = (Services *)dService;
-	PNG_OnlineImage_t holderItem;
-	unsigned error;
-	unsigned char *imageData = nullptr;
-	unsigned int width, height;
-	uint16_t colorHolder = 0;
-	//String tempImagePath = "/tempFile/tmpImg.png";
-	uint8_t* pngBuffer = nullptr;
-	size_t pngSize = 0;
-	String mimeType;
+// void drawOnlinePNG_Task(void *dService) {
+// 	Services *thisService = (Services *)dService;
+// 	PNG_OnlineImage_t holderItem;
+// 	unsigned error;
+// 	unsigned char *imageData = nullptr;
+// 	unsigned int width, height;
+// 	uint16_t colorHolder = 0;
+// 	//String tempImagePath = "/tempFile/tmpImg.png";
+// 	uint8_t* pngBuffer = nullptr;
+// 	size_t pngSize = 0;
+// 	String mimeType;
 
 
-	while ((xQueueReceive(pngOnlineImageDrawer_Q, &holderItem, pdMS_TO_TICKS(100)) == pdTRUE) && (litFS_Ready == true)){
+// 	while ((xQueueReceive(pngOnlineImageDrawer_Q, &holderItem, pdMS_TO_TICKS(100)) == pdTRUE) && (litFS_Ready == true)){
 
 		
-if (downloadPNGImageToPSRAM(holderItem.imageLink, &pngBuffer, &pngSize, &mimeType)) {
-  printf("Image MIME: %s\n", mimeType.c_str());
+// if (downloadPNGImageToPSRAM(holderItem.imageLink, &pngBuffer, &pngSize, &mimeType)) {
+//   printf("Image MIME: %s\n", mimeType.c_str());
 
-  // Decode with lodepng_decode24(...)
+//   // Decode with lodepng_decode24(...)
 
-			// String imageFilePath = "/littlefs" + tempImagePath;
-			// error = lodepng_decode24_file(&image, &width, &height, imageFilePath.c_str());
-			error = lodepng_decode24(&imageData, &width, &height, pngBuffer, pngSize);
+// 			// String imageFilePath = "/littlefs" + tempImagePath;
+// 			// error = lodepng_decode24_file(&image, &width, &height, imageFilePath.c_str());
+// 			error = lodepng_decode24(&imageData, &width, &height, pngBuffer, pngSize);
 
-			if (error) {
-				printf("error %u: %s\n", error, lodepng_error_text(error));
-				if (imageData) free(imageData);
-				if (pngBuffer) free(pngBuffer);
-				continue;
-			}
+// 			if (error) {
+// 				printf("error %u: %s\n", error, lodepng_error_text(error));
+// 				if (imageData) free(imageData);
+// 				if (pngBuffer) free(pngBuffer);
+// 				continue;
+// 			}
 
-			// Start drawing with anti-aliased downscaling
-			uint8_t scaleFactor = holderItem.scale;
-			if (scaleFactor < 1) scaleFactor = 1;
+// 			// Start drawing with anti-aliased downscaling
+// 			uint8_t scaleFactor = holderItem.scale;
+// 			if (scaleFactor < 1) scaleFactor = 1;
 
-			uint16_t scaledWidth = width / scaleFactor;
-			uint16_t scaledHeight = height / scaleFactor;
+// 			uint16_t scaledWidth = width / scaleFactor;
+// 			uint16_t scaledHeight = height / scaleFactor;
 
-			if (scaledWidth < 129 && scaledHeight < 65) {
-				for (uint16_t yOut = 0; yOut < scaledHeight; yOut++) {
-					for (uint16_t xOut = 0; xOut < scaledWidth; xOut++) {
+// 			if (scaledWidth < 129 && scaledHeight < 65) {
+// 				for (uint16_t yOut = 0; yOut < scaledHeight; yOut++) {
+// 					for (uint16_t xOut = 0; xOut < scaledWidth; xOut++) {
 
-						uint32_t rSum = 0, gSum = 0, bSum = 0;
-						uint16_t pixelCount = 0;
+// 						uint32_t rSum = 0, gSum = 0, bSum = 0;
+// 						uint16_t pixelCount = 0;
 
-						// Loop through the block of source pixels to average
-						for (uint8_t dy = 0; dy < scaleFactor; dy++) {
-							for (uint8_t dx = 0; dx < scaleFactor; dx++) {
-								uint16_t xIn = xOut * scaleFactor + dx;
-								uint16_t yIn = yOut * scaleFactor + dy;
+// 						// Loop through the block of source pixels to average
+// 						for (uint8_t dy = 0; dy < scaleFactor; dy++) {
+// 							for (uint8_t dx = 0; dx < scaleFactor; dx++) {
+// 								uint16_t xIn = xOut * scaleFactor + dx;
+// 								uint16_t yIn = yOut * scaleFactor + dy;
 
-								if (xIn >= width || yIn >= height) continue;
+// 								if (xIn >= width || yIn >= height) continue;
 
-								uint32_t idx = yIn * width * 3 + xIn * 3;
-								rSum += imageData[idx + 0];
-								gSum += imageData[idx + 1];
-								bSum += imageData[idx + 2];
-								pixelCount++;
-							}
-						}
+// 								uint32_t idx = yIn * width * 3 + xIn * 3;
+// 								rSum += imageData[idx + 0];
+// 								gSum += imageData[idx + 1];
+// 								bSum += imageData[idx + 2];
+// 								pixelCount++;
+// 							}
+// 						}
 
-						// Compute average color
-						if (pixelCount > 0) {
-							uint8_t rAvg = rSum / pixelCount;
-							uint8_t gAvg = gSum / pixelCount;
-							uint8_t bAvg = bSum / pixelCount;
+// 						// Compute average color
+// 						if (pixelCount > 0) {
+// 							uint8_t rAvg = rSum / pixelCount;
+// 							uint8_t gAvg = gSum / pixelCount;
+// 							uint8_t bAvg = bSum / pixelCount;
 
-							colorHolder = dma_display->color565(rAvg, gAvg, bAvg);
-							dma_display->drawPixel(holderItem.xAxis + xOut, holderItem.yAxis + yOut, colorHolder);
-						}
-					}
-				}
-				free(imageData);
-			} else {
-			// printf("Image Dimensions are: Width = %d; Height = %d\n", width, height);
-			free(imageData);
-			}
+// 							colorHolder = dma_display->color565(rAvg, gAvg, bAvg);
+// 							dma_display->drawPixel(holderItem.xAxis + xOut, holderItem.yAxis + yOut, colorHolder);
+// 						}
+// 					}
+// 				}
+// 				free(imageData);
+// 			} else {
+// 			// printf("Image Dimensions are: Width = %d; Height = %d\n", width, height);
+// 			free(imageData);
+// 			}
 			
-			free(pngBuffer);
-		} else if (Applications::internetConnectStatus != true){
-			statusBarNotif.scroll_This_Text("NO INTERNET CONNECTION TO DOWNLOAD ONLINE IMAGE.", GREEN_LIZARD);
-		}
-	}
+// 			free(pngBuffer);
+// 		} else if (Applications::internetConnectStatus != true){
+// 			statusBarNotif.scroll_This_Text("NO INTERNET CONNECTION TO DOWNLOAD ONLINE IMAGE.", GREEN_LIZARD);
+// 		}
+// 	}
 
-	kill_This_Service(thisService);
-}
+// 	kill_This_Service(thisService);
+// }
 
-BaseType_t drawOnlinePNG(const PNG_OnlineImage_t &dImage){
-	xQueueSend(pngOnlineImageDrawer_Q, &dImage, 0);
-	start_This_Service(pngOnlineImageDrawer_Sv);
-	return 0;
-}
+// BaseType_t drawOnlinePNG(const PNG_OnlineImage_t &dImage){
+// 	xQueueSend(pngOnlineImageDrawer_Q, &dImage, 0);
+// 	start_This_Service(pngOnlineImageDrawer_Sv);
+// 	return 0;
+// }
 
 //***************************************************************************************** */
 void drawDecodedPNG(PNG_PreloadedImage_t& pImg) {
@@ -1065,99 +1065,104 @@ void downloadMultipleOnlinePNGs(const PNG_OnlineImage_t* images, size_t count) {
     }
 }
 
-void drawOnlineSVG_Task(void *dService) {
-  Services *thisService = (Services *)dService;
-  PNG_OnlineImage_t holderItem;
-  uint8_t* svgBuffer = nullptr;
-  size_t svgSize = 0;
-  String mimeType;
-
-  while ((xQueueReceive(svgOnlineImageDrawer_Q, &holderItem, pdMS_TO_TICKS(100)) == pdTRUE) && (litFS_Ready == true)) {
-
-    if (downloadSVGImageToPSRAM(holderItem.imageLink, &svgBuffer, &svgSize, &mimeType)) {
-      printf("SVG MIME: %s\n", mimeType.c_str());
-
-      // Ensure null-terminated SVG string
-      svgBuffer[svgSize] = '\0';
-
-      // Parse SVG
-      NSVGimage* svg = nsvgParse((char*)svgBuffer, "px", 96.0f);
-      if (!svg) {
-        printf("Failed to parse SVG\n");
-        free(svgBuffer);
-        continue;
-      }
-
-      // Default dimensions if not specified
-      float svgW = svg->width > 0 ? svg->width : 1024.0f;
-      float svgH = svg->height > 0 ? svg->height : 512.0f;
-
-      // Maximum output size on screen
-      const float maxW = 128.0f;
-      const float maxH = 64.0f;
-
-      // Use user-provided scale factor (1 = full size to fit screen)
-      uint8_t userScale = holderItem.scale;
-      if (userScale < 1) userScale = 1;
-
-      float baseScaleX = maxW / svgW;
-      float baseScaleY = maxH / svgH;
-      float baseScale = fminf(baseScaleX, baseScaleY);
-
-      float scale = baseScale / userScale;
-
-      // Compute final render size
-      uint16_t outputW = svgW * scale;
-      uint16_t outputH = svgH * scale;
-
-      // Allocate pixel buffer for rasterized image (RGBA)
-      unsigned char* bitmap = (unsigned char*)ps_malloc(outputW * outputH * 4);
-
-      if (!bitmap) {
-        printf("Failed to allocate bitmap buffer\n");
-        nsvgDelete(svg);
-        free(svgBuffer);
-        continue;
-      }
-
-      NSVGrasterizer* rast = nsvgCreateRasterizer();
-      nsvgRasterize(rast, svg, 0, 0, scale, bitmap, outputW, outputH, outputW * 4);
-      nsvgDeleteRasterizer(rast);
-
-      // Draw pixels to screen using dma_display
-      for (uint16_t y = 0; y < outputH; y++) {
-        for (uint16_t x = 0; x < outputW; x++) {
-          uint32_t i = (y * outputW + x) * 4;
-          uint8_t r = bitmap[i + 0];
-          uint8_t g = bitmap[i + 1];
-          uint8_t b = bitmap[i + 2];
-          uint8_t a = bitmap[i + 3];
-
-          if (a < 128) continue; // Skip transparent pixels
-
-          uint16_t color = dma_display->color565(r, g, b);
-          dma_display->drawPixel(holderItem.xAxis + x, holderItem.yAxis + y, color);
-        }
-      }
-
-      free(bitmap);
-      nsvgDelete(svg);
-      free(svgBuffer);
-    }
-    else if (Applications::internetConnectStatus != true) {
-      statusBarNotif.scroll_This_Text("NO INTERNET CONNECTION TO DOWNLOAD SVG IMAGE.", GREEN_LIZARD);
-    }
-  }
-
-  kill_This_Service(thisService);
+void drawOnlinePNGs(const PNG_OnlineImage_t* images, size_t drawPNGsCount, ImgWipeFn_ptr wipePreviousImgs){
+	    downloadMultipleOnlinePNGs(images, drawPNGsCount);
+        drawMultiplePNGs(drawPNGsCount, wipePreviousImgs);
 }
 
+// void drawOnlineSVG_Task(void *dService) {
+//   Services *thisService = (Services *)dService;
+//   PNG_OnlineImage_t holderItem;
+//   uint8_t* svgBuffer = nullptr;
+//   size_t svgSize = 0;
+//   String mimeType;
 
-BaseType_t drawOnlineSVG(const SVG_OnlineImage_t &dImage){
-	xQueueSend(svgOnlineImageDrawer_Q, &dImage, 0);
-	start_This_Service(svgOnlineImageDrawer_Sv);
-	return 0;
-}
+//   while ((xQueueReceive(svgOnlineImageDrawer_Q, &holderItem, pdMS_TO_TICKS(100)) == pdTRUE) && (litFS_Ready == true)) {
+
+//     if (downloadSVGImageToPSRAM(holderItem.imageLink, &svgBuffer, &svgSize, &mimeType)) {
+//       printf("SVG MIME: %s\n", mimeType.c_str());
+
+//       // Ensure null-terminated SVG string
+//       svgBuffer[svgSize] = '\0';
+
+//       // Parse SVG
+//       NSVGimage* svg = nsvgParse((char*)svgBuffer, "px", 96.0f);
+//       if (!svg) {
+//         printf("Failed to parse SVG\n");
+//         free(svgBuffer);
+//         continue;
+//       }
+
+//       // Default dimensions if not specified
+//       float svgW = svg->width > 0 ? svg->width : 1024.0f;
+//       float svgH = svg->height > 0 ? svg->height : 512.0f;
+
+//       // Maximum output size on screen
+//       const float maxW = 128.0f;
+//       const float maxH = 64.0f;
+
+//       // Use user-provided scale factor (1 = full size to fit screen)
+//       uint8_t userScale = holderItem.scale;
+//       if (userScale < 1) userScale = 1;
+
+//       float baseScaleX = maxW / svgW;
+//       float baseScaleY = maxH / svgH;
+//       float baseScale = fminf(baseScaleX, baseScaleY);
+
+//       float scale = baseScale / userScale;
+
+//       // Compute final render size
+//       uint16_t outputW = svgW * scale;
+//       uint16_t outputH = svgH * scale;
+
+//       // Allocate pixel buffer for rasterized image (RGBA)
+//       unsigned char* bitmap = (unsigned char*)ps_malloc(outputW * outputH * 4);
+
+//       if (!bitmap) {
+//         printf("Failed to allocate bitmap buffer\n");
+//         nsvgDelete(svg);
+//         free(svgBuffer);
+//         continue;
+//       }
+
+//       NSVGrasterizer* rast = nsvgCreateRasterizer();
+//       nsvgRasterize(rast, svg, 0, 0, scale, bitmap, outputW, outputH, outputW * 4);
+//       nsvgDeleteRasterizer(rast);
+
+//       // Draw pixels to screen using dma_display
+//       for (uint16_t y = 0; y < outputH; y++) {
+//         for (uint16_t x = 0; x < outputW; x++) {
+//           uint32_t i = (y * outputW + x) * 4;
+//           uint8_t r = bitmap[i + 0];
+//           uint8_t g = bitmap[i + 1];
+//           uint8_t b = bitmap[i + 2];
+//           uint8_t a = bitmap[i + 3];
+
+//           if (a < 128) continue; // Skip transparent pixels
+
+//           uint16_t color = dma_display->color565(r, g, b);
+//           dma_display->drawPixel(holderItem.xAxis + x, holderItem.yAxis + y, color);
+//         }
+//       }
+
+//       free(bitmap);
+//       nsvgDelete(svg);
+//       free(svgBuffer);
+//     }
+//     else if (Applications::internetConnectStatus != true) {
+//       statusBarNotif.scroll_This_Text("NO INTERNET CONNECTION TO DOWNLOAD SVG IMAGE.", GREEN_LIZARD);
+//     }
+//   }
+
+//   kill_This_Service(thisService);
+// }
+
+
+// BaseType_t drawOnlineSVG(const SVG_OnlineImage_t &dImage){
+// 	xQueueSend(svgOnlineImageDrawer_Q, &dImage, 0);
+// 	start_This_Service(svgOnlineImageDrawer_Sv);
+// 	return 0;
+// }
 
 //**************************************************************************************
 void drawDecodedSVG(SVG_PreloadedImage_t& item) {
@@ -1285,6 +1290,11 @@ void downloadMultipleOnlineSVGs(const SVG_OnlineImage_t* images, size_t count) {
     for (int i = 0; i < 2; ++i) {
         xTaskCreatePinnedToCore(svgDownloaderWorker, "SVG_DL", 8192, (void*)count, 3, NULL, 0);
     }
+}
+
+void drawOnlineSVGs(const SVG_OnlineImage_t* images, size_t drawSVGsCount, ImgWipeFn_ptr wipePreviousImgs){
+	    downloadMultipleOnlineSVGs(images, drawSVGsCount);
+        drawMultipleSVGs(drawSVGsCount, wipePreviousImgs);
 }
 
 //**************************************************************************************

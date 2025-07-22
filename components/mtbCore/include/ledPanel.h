@@ -96,17 +96,20 @@ typedef void (*ImgWipeFn_ptr)(void);
     extern void drawLocalPNG_Task(void *);   
 
 
-    extern BaseType_t drawOnlinePNG(const PNG_OnlineImage_t&);
-    extern void drawOnlinePNG_Task(void *);
+    // extern BaseType_t drawOnlinePNG(const PNG_OnlineImage_t&);
+    // extern void drawOnlinePNG_Task(void *);
 
-    extern void downloadMultipleOnlinePNGs(const PNG_OnlineImage_t* images, size_t count);
+    extern void drawOnlinePNGs(const PNG_OnlineImage_t* images, size_t drawPNGsCount = 1, ImgWipeFn_ptr wipePreviousImgs = doNothingVoidFn);
+    extern void downloadMultipleOnlinePNGs(const PNG_OnlineImage_t* images, size_t drawPNGsCount);
     extern bool drawMultiplePNGs(size_t drawPNGsCount, ImgWipeFn_ptr wipePreviousImgs = doNothingVoidFn);
 
-    extern BaseType_t drawOnlineSVG(const SVG_OnlineImage_t&);
-    extern void drawOnlineSVG_Task(void *);
+    // extern BaseType_t drawOnlineSVG(const SVG_OnlineImage_t&);
+    // extern void drawOnlineSVG_Task(void *);
 
-    extern void downloadMultipleOnlineSVGs(const SVG_OnlineImage_t* images, size_t count);
+    extern void drawOnlineSVGs(const SVG_OnlineImage_t* images, size_t drawSVGsCount = 1, ImgWipeFn_ptr wipePreviousImgs = doNothingVoidFn);
+    extern void downloadMultipleOnlineSVGs(const SVG_OnlineImage_t* images, size_t drawSVGsCount);
     extern bool drawMultipleSVGs(size_t drawSVGsCount, ImgWipeFn_ptr wipePreviousImgs = doNothingVoidFn);
+
 
     extern void showStatusBarIcon(const PNG_LocalImage_t&);
     extern void wipeStatusBarIcon(const PNG_LocalImage_t &);
