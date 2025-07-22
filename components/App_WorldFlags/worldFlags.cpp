@@ -39,17 +39,27 @@ void worldFlags_App_Task(void* dApplication){
   ble_AppCom_Parser_Sv->register_BLE_Com_ServiceFns(selectDisplayFlag, selectPreferredFlags, cycleAllFlags, showCountryName, setFlagChangeIntv);
   appsInitialization(thisApp);
   //************************************************************************************ */
-  read_struct_from_nvs("worlfFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
+  read_struct_from_nvs("worldFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
 
-    SVG_OnlineImage_t testImage({"placeHolder", 16, 0, 1});
+    SVG_OnlineImage_t imageHolder({"placeHolder", 16, 0, 1});
 
 while (THIS_APP_IS_ACTIVE == pdTRUE) {
 
     while ((Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
+
+        strcpy(imageHolder.imageLink, getFlag4x3ByCountry(worldFlagsInfo.countryName).c_str());
+        drawOnlineSVGs(&imageHolder, 1, wipeFlagBackground); 
+
     while (THIS_APP_IS_ACTIVE == pdTRUE) {
-        strcpy(testImage.imageLink, getRandomFlag4x3().c_str());
-        drawOnlineSVGs(&testImage, 1, wipeFlagBackground); 
-        delay(10000);
+        if (worldFlagsInfo.cycleAllFlags == true) {
+            uint8_t changeIntv = worldFlagsInfo.flagChangeIntv;
+            strcpy(imageHolder.imageLink, getRandomFlag4x3().c_str());
+            drawOnlineSVGs(&imageHolder, 1, wipeFlagBackground);
+            while(changeIntv-->0 && Applications::internetConnectStatus == true && THIS_APP_IS_ACTIVE == pdTRUE) delay(1000);
+        } else delay(1000);
+        if (worldFlagsInfo.showCountryName == true) {
+            
+        } 
     }
 }
   kill_This_App(thisApp);
@@ -96,49 +106,41 @@ void selectDisplayFlag(DynamicJsonDocument& dCommand){
 
     printf("Select Country: %s \n", countryFlag);
 
-    SVG_OnlineImage_t testImage({"placeHolder", 16, 0, 1});
+    SVG_OnlineImage_t imageHolder({"placeHolder", 16, 0, 1});
     
-    strcpy(testImage.imageLink, getFlag4x3ByCountry(countryFlag).c_str());
+    strcpy(worldFlagsInfo.countryName, countryFlag);
+    strcpy(imageHolder.imageLink, getFlag4x3ByCountry(countryFlag).c_str());
+    drawOnlineSVGs(&imageHolder, 1, wipeFlagBackground); 
 
-    drawOnlineSVGs(&testImage, 1, wipeFlagBackground); 
-
-    write_struct_to_nvs("worlfFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
+    write_struct_to_nvs("worldFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
     ble_Application_Command_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
 }
 
 void selectPreferredFlags(DynamicJsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
-
-    printf("Command Number: %d \n", cmdNumber);
-
-    write_struct_to_nvs("worlfFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
+    //write_struct_to_nvs("worldFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
     ble_Application_Command_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
 }
 
 void cycleAllFlags(DynamicJsonDocument&){
     uint8_t cmdNumber = dCommand["app_command"];
-
-    printf("Command Number: %d \n", cmdNumber);
-
-    write_struct_to_nvs("worlfFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
+    worldFlagsInfo.cycleAllFlags = dCommand["cycleFlags"].as<bool>();
+    worldFlagsInfo.flagChangeIntv = dCommand["dInterval"].as<uint8_t>();
+    write_struct_to_nvs("worldFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
     ble_Application_Command_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
 }
 
 void showCountryName(DynamicJsonDocument&){
     uint8_t cmdNumber = dCommand["app_command"];
-
-    printf("Command Number: %d \n", cmdNumber);
-
-    write_struct_to_nvs("worlfFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
+    worldFlagsInfo.showCountryName = dCommand["showData"].as<bool>();
+    write_struct_to_nvs("worldFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
     ble_Application_Command_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
 }
 
 void setFlagChangeIntv(DynamicJsonDocument&){
     uint8_t cmdNumber = dCommand["app_command"];
-
-    printf("Command Number: %d \n", cmdNumber);
-
-    write_struct_to_nvs("worlfFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
+    worldFlagsInfo.flagChangeIntv = dCommand["dInterval"].as<uint8_t>();
+    write_struct_to_nvs("worldFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
     ble_Application_Command_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
 }
 

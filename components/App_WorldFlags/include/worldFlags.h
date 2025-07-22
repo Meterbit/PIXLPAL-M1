@@ -12,7 +12,7 @@
 static const char worldFlagsAppRoute[] = "6/1";
 
 struct WorldFlags_Data_t {
-uint16_t countryJsonIndex = 100;    // 
+char countryName[100] = "Nigeria";    // 
 uint8_t flagChangeIntv = 100;       // 0-255
 bool cycleAllFlags = true;         // true or false
 bool showCountryName = false;       // true or false
