@@ -43,14 +43,14 @@ void worldFlags_App_Task(void* dApplication){
 
     SVG_OnlineImage_t imageHolder({"placeHolder", 16, 0, 1});
 
-while (THIS_APP_IS_ACTIVE == pdTRUE) {
+while (THIS_APP_IS_ACTIVE == pdTRUE){
 
     while ((Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
 
         strcpy(imageHolder.imageLink, getFlag4x3ByCountry(worldFlagsInfo.countryName).c_str());
         drawOnlineSVGs(&imageHolder, 1, wipeFlagBackground); 
 
-    while (THIS_APP_IS_ACTIVE == pdTRUE) {
+    while (THIS_APP_IS_ACTIVE == pdTRUE && Applications::internetConnectStatus == true) {
         if (worldFlagsInfo.cycleAllFlags == true) {
             uint8_t changeIntv = worldFlagsInfo.flagChangeIntv;
             strcpy(imageHolder.imageLink, getRandomFlag4x3().c_str());
