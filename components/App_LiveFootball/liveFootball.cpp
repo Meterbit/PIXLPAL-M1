@@ -283,7 +283,7 @@ void processLiveMatches(SpiRamJsonDocument& doc, void* dApplication){
         moreDataScroll->scroll_This_Text(dLeague, CYAN);
         String dTeams = homeTeam + " vs " + awayTeam;
         moreDataScroll->scroll_This_Text(dTeams, GREEN);
-        moreDataScroll->scroll_This_Text(venue, BROWN);
+        //moreDataScroll->scroll_This_Text(venue, BROWN);
 
         JsonArray events = match["events"].as<JsonArray>();
         if (events.size() > 0) {
