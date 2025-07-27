@@ -571,8 +571,9 @@ bool fetchFixturesMatchTeamLogos(SpiRamJsonDocument& doc, size_t matchIndex) {
 
         downloadMultipleOnlinePNGs(pnglogoBatch, 2);
 
-        if(matchIndex > 0) drawMultiplePNGs(2, wipePrevFixturesLogos);
-        else drawMultiplePNGs(2);
+        drawMultiplePNGs(2, wipePrevFixturesLogos);
+        //if(matchIndex > 0) drawMultiplePNGs(2, wipePrevFixturesLogos);
+        //else drawMultiplePNGs(2);
         return true;
     } 
     

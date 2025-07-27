@@ -27,8 +27,6 @@ EXT_RAM_BSS_ATTR TaskHandle_t internet_Radio_Task_H = NULL;
 RadioStation_t currentRadioStation = {
     "Naija Hits FM",
     "https://stream.zeno.fm/thbqnu2wvmzuv",
-    "/radioSta/curPost.png",
-    "IntRad/Nigeria/Naija Hits FM.png",
     1
   };
 
@@ -37,13 +35,13 @@ static const char favouriteRadioStationsFilePath[] = "/radioStations/favSta.csv"
 //String posterCurrentStation = "/radioStations/currentPoster.png";
 //************************************************************* */
 void selectRadioStations(DynamicJsonDocument&); // This function is called from the App to select a radio station.
-void playRadioStationNumber(DynamicJsonDocument&);
+void playRadioStationLink(DynamicJsonDocument&);
 void volumeControl(DynamicJsonDocument&);
 void updateSavedStations(DynamicJsonDocument&);
 //*********************************************************** */
 //void station_Poster_Download_Task(void *);
 void intRadioButtonControl(button_event_t);
-String getStationInfoAsJson(int);
+//String getStationInfoAsJson(int);
 int searchStationInFavorites(const String&);
 bool decodeSaveBase64(String &base64Image, String &fileName);
 //void station_Poster_Download(void);
@@ -55,7 +53,7 @@ void  internetRadio_App_Task(void* dApplication){
     Applications *thisApp = (Applications *) dApplication;
     thisApp->app_EncoderFn_ptr = volumeControl_Encoder;
     thisApp->app_ButtonFn_ptr = intRadioButtonControl;
-    ble_AppCom_Parser_Sv->register_BLE_Com_ServiceFns(selectRadioStations, playRadioStationNumber, updateSavedStations, volumeControl);
+    ble_AppCom_Parser_Sv->register_BLE_Com_ServiceFns(selectRadioStations, playRadioStationLink, updateSavedStations, volumeControl);
     appsInitialization(thisApp, statusBarClock_Sv, audioOutProcessing_Sv);
   //**************************************************************************************************************************
     AudioTextTransfer_T audioTextReceiver;
@@ -86,10 +84,11 @@ void  internetRadio_App_Task(void* dApplication){
 
     do{
       delay(3000);
-      cont_To_Host = mtbAudioPlayer->mtb_ConnectToHost("https://coolfmlagos969-atunwadigital.streamguys1.com/coolfmlagos969");
+      cont_To_Host = mtbAudioPlayer->mtb_ConnectToHost(currentRadioStation.streamLink);
     } while((cont_To_Host != true) && (THIS_APP_IS_ACTIVE == pdTRUE));
 
       //conn2Sta.scroll_Active(STOP_SCROLL);
+      fmStation.scroll_This_Text(currentRadioStation.stationName, CYAN);
       conn2Sta.scroll_This_Text("Connected to Radio Station..!!", LEMON_MERINGUE);
       radioPlayReady = true;
 
@@ -126,13 +125,13 @@ kill_This_App(thisApp);
 }
 
 //##############################################################################################################
-void station_Poster_Download(void){
-  // if((drawLocalPNG(currentRadioStation.posterFlashPath.c_str(), 1, 10))){
-  // String downloadSuccess = downloadFireStrgFile(currentRadioStation.posterBucketPath, currentRadioStation.posterFlashPath);
-  // if (downloadSuccess == "Download success") drawLocalPNG(currentRadioStation.posterFlashPath.c_str(), 1, 10);
-  // else statusBarNotif.scroll_This_Text("STATION POSTER NOT FOUND.", ORANGE); //REPLACE THIS CODE WITH A GENERIC GIF SHOWING STATION NOT FOUND.
-  // }
-}
+// void station_Poster_Download(void){
+//   // if((drawLocalPNG(currentRadioStation.posterFlashPath.c_str(), 1, 10))){
+//   // String downloadSuccess = downloadFireStrgFile(currentRadioStation.posterBucketPath, currentRadioStation.posterFlashPath);
+//   // if (downloadSuccess == "Download success") drawLocalPNG(currentRadioStation.posterFlashPath.c_str(), 1, 10);
+//   // else statusBarNotif.scroll_This_Text("STATION POSTER NOT FOUND.", ORANGE); //REPLACE THIS CODE WITH A GENERIC GIF SHOWING STATION NOT FOUND.
+//   // }
+// }
 
 //##############################################################################################################
 void intRadioButtonControl(button_event_t button_Data){
@@ -171,28 +170,20 @@ void selectRadioStations(DynamicJsonDocument& dCommand){
 }
 
 //************************************************************************************************
-void playRadioStationNumber(DynamicJsonDocument& dCommand){
+void playRadioStationLink(DynamicJsonDocument& dCommand){
   uint8_t cmd = dCommand["app_command"];
+  const char* streamLink = dCommand["stationLink"];
+  const char* stationName = dCommand["stationName"];
+
+  strcpy(currentRadioStation.stationName, stationName); // Copy the station name to the current radio station
+  strcpy(currentRadioStation.streamLink, streamLink); // Copy the stream link to the current radio station
+
+  printf("Playing Station: %s\n", currentRadioStation.stationName);
+  printf("Stream Link: %s\n", currentRadioStation.streamLink);
+
   ble_Application_Command_Respond_Success(internetRadioAppRoute, cmd, pdPASS);
-
-    // RadioStation_t radioStation;
-    // int stationSerialNumber = dCommand["serialNumber"];
-
-    // String playStation = getStationInfoAsJson(stationSerialNumber);
-    // DeserializationError passed = deserializeJson(dCommand, playStation);
-
-    // if(passed == passed.Ok){
-    //     radioStation.serialNumber = dCommand["serialNumber"];
-    //     radioStation.stationName = dCommand["stationName"].as<String>();
-    //     radioStation.streamLink = dCommand["streamLink"].as<String>();
-    //     // radioStation.posterFlashPath = dCommand["posterPath"].as<String>();
-    //     radioStation.posterBucketPath = dCommand["posterLink"].as<String>();
-    // } 
-    // else printf("String not JSON Formated for Radio Play\n");
-
-    // currentRadioStation = radioStation;
-    // write_struct_to_nvs("currentRadSta", &currentRadioStation, sizeof(RadioStation_t));
-    // radioPlayReady = false;
+  write_struct_to_nvs("currentRadSta", &currentRadioStation, sizeof(RadioStation_t));
+  radioPlayReady = false;
 }
 
 // Function to write a RadioStation's info to a CSV file
@@ -243,84 +234,84 @@ void volumeControl(DynamicJsonDocument& dCommand){
   ble_Application_Command_Respond_Success(internetRadioAppRoute, cmd, pdPASS);
 }
 
-//************************************************************************************************
-// Function to retrieve a Radio Station entry by its serial number and return it as a JSON string
-String getStationInfoAsJson(int serialNumber) {
+// //************************************************************************************************
+// // Function to retrieve a Radio Station entry by its serial number and return it as a JSON string
+// String getStationInfoAsJson(int serialNumber) {
 
-  // Open the CSV file for reading
-  File file = LittleFS.open(favouriteRadioStationsFilePath, FILE_READ);
-  if (!file) {
-    printf("Failed to open file for reading\n");
-    return "";
-  }
+//   // Open the CSV file for reading
+//   File file = LittleFS.open(favouriteRadioStationsFilePath, FILE_READ);
+//   if (!file) {
+//     printf("Failed to open file for reading\n");
+//     return "";
+//   }
 
-  // Read the file line by line to find the matching serial number
-  while (file.available()) {
-    String line = file.readStringUntil('\n');
-    int foundSerialNumber = line.substring(0, line.indexOf(',')).toInt();
-    if (foundSerialNumber == serialNumber) {
-      // If the serial number matches, parse the line and create a JSON object
-      DynamicJsonDocument doc(1024);
-      // Splitting the CSV line into parts
-      int startIndex = 0, endIndex = 0;
-      endIndex = line.indexOf(',', startIndex);
-      doc["serialNumber"] = line.substring(startIndex, endIndex).toInt();
+//   // Read the file line by line to find the matching serial number
+//   while (file.available()) {
+//     String line = file.readStringUntil('\n');
+//     int foundSerialNumber = line.substring(0, line.indexOf(',')).toInt();
+//     if (foundSerialNumber == serialNumber) {
+//       // If the serial number matches, parse the line and create a JSON object
+//       DynamicJsonDocument doc(1024);
+//       // Splitting the CSV line into parts
+//       int startIndex = 0, endIndex = 0;
+//       endIndex = line.indexOf(',', startIndex);
+//       doc["serialNumber"] = line.substring(startIndex, endIndex).toInt();
 
-      startIndex = endIndex + 1;
-      endIndex = line.indexOf(',', startIndex);
-      doc["stationName"] = line.substring(startIndex, endIndex);
+//       startIndex = endIndex + 1;
+//       endIndex = line.indexOf(',', startIndex);
+//       doc["stationName"] = line.substring(startIndex, endIndex);
 
-      startIndex = endIndex + 1;
-      endIndex = line.indexOf(',', startIndex);
-      doc["streamLink"] = line.substring(startIndex, endIndex);
+//       startIndex = endIndex + 1;
+//       endIndex = line.indexOf(',', startIndex);
+//       doc["streamLink"] = line.substring(startIndex, endIndex);
 
-      // startIndex = endIndex + 1;
-      // endIndex = line.length();
-      // doc["posterPath"] = line.substring(startIndex, endIndex);
+//       // startIndex = endIndex + 1;
+//       // endIndex = line.length();
+//       // doc["posterPath"] = line.substring(startIndex, endIndex);
 
-      // Convert JSON object to String
-      String jsonString;
-      serializeJson(doc, jsonString);
-      file.close();
-      return jsonString;
-    }
-  }
-  // Close the file if the serial number is not found
-  file.close();
-  // Return an empty string if no matching station is found
-  return "";
-}
+//       // Convert JSON object to String
+//       String jsonString;
+//       serializeJson(doc, jsonString);
+//       file.close();
+//       return jsonString;
+//     }
+//   }
+//   // Close the file if the serial number is not found
+//   file.close();
+//   // Return an empty string if no matching station is found
+//   return "";
+// }
 
-// Function to search for a station by name and return its serial number
-int searchStationInFavorites(const String& stationName) {
+// // Function to search for a station by name and return its serial number
+// int searchStationInFavorites(const String& stationName) {
 
-  // Open the CSV file for reading
-  File file = LittleFS.open(favouriteRadioStationsFilePath, FILE_READ);
-  if (!file) {
-    printf("Failed to open file for reading\n");
-    return 0;
-  }
+//   // Open the CSV file for reading
+//   File file = LittleFS.open(favouriteRadioStationsFilePath, FILE_READ);
+//   if (!file) {
+//     printf("Failed to open file for reading\n");
+//     return 0;
+//   }
 
-  while (file.available()) {
-    String line = file.readStringUntil('\n');
-    int firstCommaIndex = line.indexOf(',');
-    int secondCommaIndex = line.indexOf(',', firstCommaIndex + 1);
-    String currentStationName = line.substring(firstCommaIndex + 1, secondCommaIndex);
+//   while (file.available()) {
+//     String line = file.readStringUntil('\n');
+//     int firstCommaIndex = line.indexOf(',');
+//     int secondCommaIndex = line.indexOf(',', firstCommaIndex + 1);
+//     String currentStationName = line.substring(firstCommaIndex + 1, secondCommaIndex);
 
-    // Compare the current station name with the provided station name
-    if (currentStationName.equalsIgnoreCase(stationName)) {
-      // If found, extract the serial number and return it
-      String serialNumberStr = line.substring(0, firstCommaIndex);
-      int serialNumber = serialNumberStr.toInt();
-      file.close();
-      return serialNumber;
-    }
-  }
+//     // Compare the current station name with the provided station name
+//     if (currentStationName.equalsIgnoreCase(stationName)) {
+//       // If found, extract the serial number and return it
+//       String serialNumberStr = line.substring(0, firstCommaIndex);
+//       int serialNumber = serialNumberStr.toInt();
+//       file.close();
+//       return serialNumber;
+//     }
+//   }
 
-  // Close the file and return 0 if the station name is not found
-  file.close();
-  return 0;
-}
+//   // Close the file and return 0 if the station name is not found
+//   file.close();
+//   return 0;
+// }
 
 
 // // Function to remove a Radio Station entry by its serial number

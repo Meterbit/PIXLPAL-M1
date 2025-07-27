@@ -10,10 +10,8 @@
 static const char internetRadioAppRoute[] = "9/0";
 
 struct RadioStation_t {
-  String stationName;
-  String streamLink;
-  String posterFlashPath;
-  String posterBucketPath;
+  char stationName[100];
+  char streamLink[1000];
   int serialNumber;
 };
 
