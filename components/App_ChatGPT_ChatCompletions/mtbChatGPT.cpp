@@ -68,7 +68,7 @@ OpenAI_ChatCompletion chat(openai);
 
 
 EXT_RAM_BSS_ATTR Services *Audio_Listening_Sv = new Services(micAudioListen_Task, &micAudioListen_Task_H, "Aud listen Serv", 4096);
-EXT_RAM_BSS_ATTR Applications_StatusBar *chatGPT_App = new Applications_StatusBar(chatGPT_App_Task, &chatGPT_Task_H, "chatGPT App", 10240, pdTRUE); // Review down this stack size later.
+EXT_RAM_BSS_ATTR Applications_StatusBar *chatGPT_App = new Applications_StatusBar(chatGPT_App_Task, &chatGPT_Task_H, "chatGPT App", 10240); // Review down this stack size later.
 
 //***************************************************************************************************
 void  chatGPT_App_Task(void* dApplication){
