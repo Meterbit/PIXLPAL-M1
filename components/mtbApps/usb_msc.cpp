@@ -24,6 +24,11 @@
 #include "msc.h"
 #include "Arduino.h"
 #include "mtbApps.h"
+#include "USBFS.h"
+
+#include "freertos/event_groups.h"
+
+EventGroupHandle_t usb_event_group;
 
 /**
  * @brief Application Queue and its messages ID
@@ -59,6 +64,11 @@ void usb_Mass_Strg_Task(void* d_Service){
     app_queue = xQueueCreate(5, sizeof(app_message_t));
     assert(app_queue);
 
+    // Create the event group if not already created
+    if (!usb_event_group) {
+        usb_event_group = xEventGroupCreate();
+    }
+
     const usb_host_config_t host_config = { .intr_flags = ESP_INTR_FLAG_LEVEL1 };
     ESP_ERROR_CHECK(usb_host_install(&host_config));
 
@@ -71,14 +81,13 @@ void usb_Mass_Strg_Task(void* d_Service){
     ESP_ERROR_CHECK(msc_host_install(&msc_config));
 
     ESP_LOGI(TAG, "\nWaiting for USB flash drive to be connected");
-    msc_host_device_handle_t msc_device = NULL;
-    msc_host_vfs_handle_t vfs_handle = NULL;
 
 //************************************************************************************************************ */
     bool has_clients = true;
+
     while (THIS_SERV_IS_ACTIVE == pdTRUE) {
         uint32_t event_flags;
-        usb_host_lib_handle_events(portMAX_DELAY, &event_flags);
+        usb_host_lib_handle_events(pdMS_TO_TICKS(200), &event_flags);
 
         // Release devices once all clients has deregistered
         if (event_flags & USB_HOST_LIB_EVENT_FLAGS_NO_CLIENTS) {
@@ -90,7 +99,43 @@ void usb_Mass_Strg_Task(void* d_Service){
         if (event_flags & USB_HOST_LIB_EVENT_FLAGS_ALL_FREE && !has_clients) {
             break;
         }
+
+        app_message_t msg;
+        BaseType_t success = xQueueReceive(app_queue, &msg, pdMS_TO_TICKS(200));
+
+            if(msg.id == (app_message_t::MYVALUES) 1 && success == pdTRUE){
+            printf("Preparing USB flash for mounting at: %s\n", MNT_PATH);
+
+            // 1. MSC flash drive connected. Open it and map it to Virtual File System
+            ESP_ERROR_CHECK(msc_host_install_device(msg.data.new_dev_address, &msc_device));
+            const esp_vfs_fat_mount_config_t mount_config = {
+                .format_if_mount_failed = false,
+                .max_files = 3,
+                .allocation_unit_size = 8192,
+            };
+            ESP_ERROR_CHECK(msc_host_vfs_register(msc_device, MNT_PATH, &mount_config, &vfs_handle));
+            // Signal to others that USB is mounted
+            xEventGroupSetBits(usb_event_group, USB_MOUNTED_BIT);
+            printf("USB flash drive mounted at %s\n", MNT_PATH);
+            }
+            else if(msg.id == (app_message_t::MYVALUES)2 && success == pdTRUE){
+            printf("USB flash drive disconnected\n");
+            }
     }
+
+        uint32_t event_flags;
+        usb_host_lib_handle_events(portMAX_DELAY, &event_flags);
+
+        // Release devices once all clients has deregistered
+        if (event_flags & USB_HOST_LIB_EVENT_FLAGS_NO_CLIENTS) {
+            has_clients = false;
+            if (usb_host_device_free_all() == ESP_OK) {
+                //break;
+            };
+        }
+        if (event_flags & USB_HOST_LIB_EVENT_FLAGS_ALL_FREE && !has_clients) {
+            //break;
+        }
 
     vTaskDelay(10); // Give clients some time to uninstall
     ESP_LOGI(TAG, "Deinitializing USB");
@@ -112,11 +157,11 @@ static void msc_event_cb(const msc_host_event_t *event, void *arg)
 {
     if (event->event == 0) {
         ESP_LOGI(TAG, "MSC device connected");
-        app_message_t message = {
+        app_message_t msg = {
             (app_message_t::MYVALUES) 1,
             1
         };
-        xQueueSend(app_queue, &message, portMAX_DELAY);
+        xQueueSend(app_queue, &msg, portMAX_DELAY);
     } else if (event->event == 1) {
         ESP_LOGI(TAG, "MSC device disconnected");
         app_message_t message = {
@@ -145,8 +190,8 @@ static void print_device_info(msc_host_device_info_t *info)
 }
 
 void file_operations(void){
-    // const char *directory = "/usb/esp";
-    // const char *file_path = "/usb/esp/test.txt";
+    const char *directory = "/usb/esp";
+    const char *file_path = "/usb/esp/test.txt";
 
     app_message_t msg;
     xQueueReceive(app_queue, &msg, portMAX_DELAY);
@@ -166,42 +211,42 @@ void file_operations(void){
         msc_host_print_descriptors(msc_device);
         print_device_info(&info);
 
-    // // Create /usb/esp directory
-    // struct stat s = {0};
-    // bool directory_exists = stat(directory, &s) == 0;
-    // if (!directory_exists) {
-    //     if (mkdir(directory, 0775) != 0) {
-    //         ESP_LOGE(TAG, "mkdir failed with errno: %s", strerror(errno));
-    //     }
-    // }
+    // Create /usb/esp directory
+    struct stat s = {0};
+    bool directory_exists = stat(directory, &s) == 0;
+    if (!directory_exists) {
+        if (mkdir(directory, 0775) != 0) {
+            ESP_LOGE(TAG, "mkdir failed with errno: %s", strerror(errno));
+        }
+    }
 
-    // // Create /usb/esp/test.txt file, if it doesn't exist
-    // if (stat(file_path, &s) != 0) {
-    //     ESP_LOGI(TAG, "Creating file");
-    //     FILE *f = fopen(file_path, "w");
-    //     if (f == NULL) {
-    //         ESP_LOGE(TAG, "Failed to open file for writing");
-    //         return;
-    //     }
-    //     fprintf(f, "Hello World!\n");
-    //     fclose(f);
-    // }
+    // Create /usb/esp/test.txt file, if it doesn't exist
+    if (stat(file_path, &s) != 0) {
+        ESP_LOGI(TAG, "Creating file");
+        FILE *f = fopen(file_path, "w");
+        if (f == NULL) {
+            ESP_LOGE(TAG, "Failed to open file for writing");
+            return;
+        }
+        fprintf(f, "Hello World!\n");
+        fclose(f);
+    }
 
-    // // Read back the file
-    // FILE *f;
-    // ESP_LOGI(TAG, "Reading file");
-    // f = fopen(file_path, "r");
-    // if (f == NULL) {
-    //     ESP_LOGE(TAG, "Failed to open file for reading");
-    //     return;
-    // }
-    // char line[64];
-    // fgets(line, sizeof(line), f);
-    // fclose(f);
-    // // strip newline
-    // char *pos = strchr(line, '\n');
-    // if (pos) {
-    //     *pos = '\0';
-    // }
-    // ESP_LOGI(TAG, "Read from file '%s': '%s'", file_path, line);
+    // Read back the file
+    FILE *f;
+    ESP_LOGI(TAG, "Reading file");
+    f = fopen(file_path, "r");
+    if (f == NULL) {
+        ESP_LOGE(TAG, "Failed to open file for reading");
+        return;
+    }
+    char line[64];
+    fgets(line, sizeof(line), f);
+    fclose(f);
+    // strip newline
+    char *pos = strchr(line, '\n');
+    if (pos) {
+        *pos = '\0';
+    }
+    ESP_LOGI(TAG, "Read from file '%s': '%s'", file_path, line);
 }

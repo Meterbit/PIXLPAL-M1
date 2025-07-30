@@ -1,5 +1,0 @@
-{
-  "dependencies": {
-    "espressif/usb_host_msc": "^1.1.3"
-  }
-}

@@ -36,7 +36,7 @@ dependencies:
       type: local
     version: 1.5.1
   espressif/esp-modbus:
-    component_hash: e42ebfdfc9d8e46821a915b4c1a5c6465c44dbd4e1bca10531e26f4adc7acc42
+    component_hash: 5d5e90b9e55721a8a194b301ad8102d4affb647f47b74cd413ff7d1ce2c1169c
     dependencies:
     - name: idf
       require: private
@@ -44,7 +44,7 @@ dependencies:
     source:
       registry_url: https://components.espressif.com/
       type: service
-    version: 1.0.17
+    version: 1.0.18
   espressif/esp-serial-flasher:
     component_hash: dcc42a16712a1a636509cf0bf90e14032d7f2141784b533613b267b6aa318d52
     dependencies: []
@@ -139,7 +139,7 @@ dependencies:
       type: service
     version: 1.2.2
   espressif/esp_modem:
-    component_hash: 681d7c8417ce0f2a11a562c6998b7b379a4847be41d84673c11c0c7a6b00e918
+    component_hash: b541c3f5765d3ba062c0d004b9ca6da6d0af908293421c2dbe046c537fb2a011
     dependencies:
     - name: idf
       require: private
@@ -147,7 +147,7 @@ dependencies:
     source:
       registry_url: https://components.espressif.com/
       type: service
-    version: 1.3.0
+    version: 1.4.0
   espressif/esp_msc_ota:
     component_hash: e7a965cc4d1737f531f20fa22e80a7b22a7b82bd79775ed11ed1bc31039aea95
     dependencies:
@@ -386,7 +386,7 @@ dependencies:
       type: idf
     version: 5.3.2
   joltwallet/littlefs:
-    component_hash: 34b8c56a14f10b440845fe972ce34ef41d1d205bcb139b3dfc58983a10abf59b
+    component_hash: 8e12955f47e27e6070b76715a96d6c75fc2b44f069e8c33679332d9bdd3120c4
     dependencies:
     - name: idf
       require: private
@@ -394,7 +394,7 @@ dependencies:
     source:
       registry_url: https://components.espressif.com/
       type: service
-    version: 1.19.1
+    version: 1.20.1
 direct_dependencies:
 - chmorgan/esp-libhelix-mp3
 - espressif/cbor
@@ -420,6 +420,6 @@ direct_dependencies:
 - espressif/usb_host_msc
 - idf
 - joltwallet/littlefs
-manifest_hash: 18ca62185d0d8690d363b1653d4d5c613af888706dd672e7f643420d6a4c6788
+manifest_hash: 0748ccdfe8bb87d5fbaf8467c588e68d7cc3588922d3b7db76e403d3335ff495
 target: esp32s3
 version: 2.0.0

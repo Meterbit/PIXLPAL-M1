@@ -1,0 +1,5 @@
+dependencies:
+  espressif/esp-dsp:
+    version: '*'
+  espressif/m5stack_core_s3: '*'
+description: ESP-DSP azure board application 3d graphics

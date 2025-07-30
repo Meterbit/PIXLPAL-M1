@@ -1,4 +1,4 @@
-idf_component_register(SRCS "usb_msc.cpp" "firmwareOTA_Update.cpp" "classClk.cpp" "mtbApps.cpp" "statusBarClock.cpp"
+idf_component_register(SRCS "usb_msc.cpp" "firmwareOTA_Update.cpp" "classClk.cpp" "mtbApps.cpp" "statusBarClock.cpp" "USBFS.cpp"
                     INCLUDE_DIRS "include"
                     PRIV_REQUIRES usb fatfs driver esp_timer
                     REQUIRES mtbCore mtbMQTT ArduinoJson-7xx mtbGithubStorage PicoMQTT arduino-esp32 ebtn Wifi_Man mtb_Ghota ESP32-audioI2S mtbAudio espressif__esp_msc_ota mtbBLE_Control ESP-Mail-Client
@@ -27,5 +27,4 @@ idf_component_register(SRCS "usb_msc.cpp" "firmwareOTA_Update.cpp" "classClk.cpp
                     App_World_Clock
                     App_PolygonFX
                     App_WorldFlags
-                    USBMSCFS_v4
                     )

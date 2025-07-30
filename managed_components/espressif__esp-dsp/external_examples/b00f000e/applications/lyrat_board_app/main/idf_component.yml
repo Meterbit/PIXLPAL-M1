@@ -1,0 +1,4 @@
+dependencies:
+  espressif/esp-dsp:
+    version: '*'
+  espressif/esp32_lyrat: ^1.0.0
