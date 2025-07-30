@@ -8,6 +8,11 @@ from cryptography.hazmat.primitives.asymmetric import rsa, ec
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.utils import int_to_bytes
 from esp_secure_cert.esp_secure_cert_helper import load_private_key
+from esp_secure_cert.efuse_helper import (
+    log_efuse_summary,
+    configure_efuse_key_block,
+)
+from esp_secure_cert.esp_secure_cert_helper import convert_der_key_to_pem
 
 supported_targets_rsa_ds = ['esp32s2', 'esp32s3', 'esp32c3',
                             'esp32c6', 'esp32h2', 'esp32p4']
@@ -21,11 +26,6 @@ supported_key_size_rsa = {'esp32s2': [1024, 2048, 3072, 4096],
 supported_targets_ecdsa = ['esp32h2', 'esp32p4']
 supported_key_size_ecdsa = {'esp32h2': [256],
                             'esp32p4': [256]}
-
-idf_path = os.getenv('IDF_PATH')
-if not idf_path or not os.path.exists(idf_path):
-    raise Exception('IDF_PATH not found')
-
 
 def number_as_bytes(number, pad_bits=None):
     """
@@ -170,3 +170,66 @@ def get_ecdsa_key_bytes(privkey, priv_key_pass, key_length_bytes):
     private = priv_numbers.private_value
     ecdsa_key = private.to_bytes(key_length_bytes, byteorder='big')
     return ecdsa_key
+
+
+def configure_efuse_for_rsa(idf_target, port, hmac_key_file, efuse_key_file, rsa_key_size, priv_key, priv_key_pass, efuse_key_id):
+    sign_algo = 'RSA'
+    sign_algo_key_size = rsa_key_size
+    validate_ds_algorithm(sign_algo, sign_algo_key_size, idf_target)
+
+    # Burn hmac_key on the efuse block (if it is empty) or read it
+    # from the efuse block (if the efuse block already contains a key).
+    efuse_purpose = 'HMAC_DOWN_DIGITAL_SIGNATURE'
+    hmac_key = None
+    if (efuse_key_file is None or not os.path.exists(efuse_key_file)):
+        if not os.path.exists(hmac_key_file):
+            hmac_key = os.urandom(32)
+            with open(hmac_key_file, "wb+") as key_file:
+                key_file.write(hmac_key)
+
+        efuse_key_file = hmac_key_file
+    else:
+        with open(efuse_key_file, "rb") as key_file:
+            hmac_key = key_file.read()
+
+        print(f'Using the eFuse key given at {efuse_key_file}'
+                      'as the HMAC key')
+
+    configure_efuse_key_block(idf_target, port, efuse_key_file, efuse_key_id, efuse_purpose)
+
+    with open(efuse_key_file, "rb") as key_file:
+        hmac_key = key_file.read()
+
+    return hmac_key
+
+def configure_efuse_for_ecdsa(idf_target, port, ecdsa_key_file, efuse_key_file, esp_secure_cert_data_dir, ecdsa_key_size, priv_key, priv_key_pass, efuse_key_id):
+    sign_algo = 'ECDSA'
+    sign_algo_key_size = ecdsa_key_size
+    validate_ds_algorithm(sign_algo, sign_algo_key_size, idf_target)
+
+    # efuse key length
+    expected_key_len = 32
+    ecdsa_key = get_ecdsa_key_bytes(priv_key, priv_key_pass, expected_key_len)
+
+    with open(ecdsa_key_file, "wb+") as key_file:
+        key_file.write(ecdsa_key)
+
+        temp_ecdsa_key_file = os.path.join(esp_secure_cert_data_dir, 'temp_ecdsa_key.pem')
+        try:
+           pem_key = convert_der_key_to_pem(priv_key)
+
+           with open(temp_ecdsa_key_file, "wb+") as key_file:
+               key_file.write(pem_key)
+
+           efuse_key_file = temp_ecdsa_key_file
+           efuse_purpose = 'ECDSA_KEY'
+
+           configure_efuse_key_block(idf_target, port, efuse_key_file, efuse_key_id, efuse_purpose)
+        except OSError:
+                print('Hint: For ECDSA peripheral esptool version'
+                      ' must be >= v4.6, Please make sure the '
+                      'requirement is satisfied')
+                raise
+        finally:
+                if os.path.exists(temp_ecdsa_key_file):
+                    os.remove(temp_ecdsa_key_file)

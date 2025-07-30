@@ -9,8 +9,8 @@ repos:
       - id: check-executables-have-shebangs
       - id: mixed-line-ending
         args: ['-f=lf']
-  - repo: https://gitlab.com/pycqa/flake8
-    rev: 3.8.4
+  - repo: https://github.com/PyCQA/flake8
+    rev: 5.0.4
     hooks:
       - id: flake8
-        args: ['--config=.flake8', '--tee', '--benchmark']
+        args: ['--tee', '--benchmark']

@@ -1,17 +1,6 @@
 import os
 import sys
-
-idf_path = os.getenv('IDF_PATH')
-try:
-
-    import nvs_partition_gen as nvs_gen
-except ImportError:
-    if not idf_path or not os.path.exists(idf_path):
-        raise Exception('IDF_PATH not found')
-    sys.path.insert(0, os.path.join(idf_path, 'components',
-                    'nvs_flash', 'nvs_partition_generator'))
-    import nvs_partition_gen as nvs_gen
-
+import esp_idf_nvs_partition_gen.nvs_partition_gen as nvs_gen
 
 # @info
 #       Generate a custom csv file of encrypted private key parameters
@@ -29,7 +18,8 @@ def generate_csv_file_ds(c, iv, hmac_key_id, key_size,
         if ca_cert is not None:
             f.write('ca_cert,file,string,{}\n'.format(ca_cert))
         f.write('cipher_c,data,hex2bin,{}\n'.format(c.hex()))
-        f.write('dev_cert,file,string,{}\n'.format(device_cert))
+        if device_cert is not None:
+            f.write('dev_cert,file,string,{}\n'.format(device_cert))
         f.write('rsa_len,data,u16,{}\n'.format(key_size))
         f.write('ds_key_id,data,u8,{}\n'.format(hmac_key_id))
         f.write('iv,data,hex2bin,{}\n'.format(iv.hex()))

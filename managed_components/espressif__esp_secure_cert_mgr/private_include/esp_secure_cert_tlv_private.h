@@ -95,7 +95,7 @@ _Static_assert(sizeof(esp_secure_cert_tlv_footer_t) == 4, "TLV footer size shoul
  */
 
 typedef struct esp_secure_cert_tlv_sec_cfg {
-    uint8_t priv_key_efuse_id; /* eFuse key id in which the private key is stored */
+    uint8_t priv_key_efuse_id; /* eFuse block id in which the private key is stored (efuse_key_block_id + ESP_EFUSE_BLK_KEY0)*/
     uint8_t reserved[39];       /* Reserving 39 bytes for future use */
 } __attribute__((packed)) esp_secure_cert_tlv_sec_cfg_t;
 

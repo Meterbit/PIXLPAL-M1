@@ -15,6 +15,7 @@
 #include <string.h>
 #include <inttypes.h>
 #include "esp_log.h"
+#include "soc/soc_caps.h"
 #include "esp_secure_cert_read.h"
 #include "esp_secure_cert_tlv_read.h"
 
@@ -26,8 +27,27 @@
 #include "mbedtls/error.h"
 #include "esp_idf_version.h"
 
+#if SOC_ECDSA_SUPPORTED
+#include "ecdsa/ecdsa_alt.h"
+#include "esp_efuse.h"
+#endif
 #define TAG "esp_secure_cert_app"
 
+// Modular function to print certificate or key data in PEM or DER format
+static void esp_print_cert_or_key(const char *label, const char *data, uint32_t len)
+{
+    if (len > 0 && data != NULL) {
+        const char *pem_header = "-----BEGIN";
+        if (strncmp(data, pem_header, strlen(pem_header)) == 0) {
+            ESP_LOGI(TAG, "%s (PEM): \nLength: %"PRIu32"\n%s", label, len, data);
+        } else {
+            ESP_LOGI(TAG, "%s (DER): \nLength: %"PRIu32"\n", label, len);
+            ESP_LOG_BUFFER_HEX_LEVEL(TAG, data, len, ESP_LOG_INFO);
+        }
+    } else {
+        ESP_LOGW(TAG, "%s: No data found", label);
+    }
+}
 
 #ifdef CONFIG_ESP_SECURE_CERT_DS_PERIPHERAL
 static esp_err_t test_ciphertext_validity(esp_ds_data_ctx_t *ds_data, unsigned char *dev_cert, size_t dev_cert_len)
@@ -120,17 +140,48 @@ static esp_err_t test_priv_key_validity(unsigned char* priv_key, size_t priv_key
         goto exit;
     }
 
-#if (MBEDTLS_VERSION_NUMBER < 0x03000000)
-    ret = mbedtls_pk_parse_key(&pk, (const uint8_t *)priv_key, priv_key_len, NULL, 0);
-#else
-    ret = mbedtls_pk_parse_key(&pk, (const uint8_t *)priv_key, priv_key_len, NULL, 0, mbedtls_ctr_drbg_random, &ctr_drbg);
-#endif
-    if (ret != 0) {
-        ESP_LOGE(TAG, "Failed to parse the key");
-        esp_ret = ESP_FAIL;
+    esp_secure_cert_key_type_t key_type = ESP_SECURE_CERT_DEFAULT_FORMAT_KEY;
+#ifndef CONFIG_ESP_SECURE_CERT_SUPPORT_LEGACY_FORMATS
+    esp_ret = esp_secure_cert_get_priv_key_type(&key_type);
+    if (esp_ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to obtain the priv key type");
         goto exit;
+    }
+#endif
+    if (key_type == ESP_SECURE_CERT_ECDSA_PERIPHERAL_KEY) {
+#if SOC_ECDSA_SUPPORTED
+        ESP_LOGI(TAG, "Setting up the ECDSA key from eFuse");
+        uint8_t efuse_block_id;
+        esp_ret = esp_secure_cert_get_priv_key_efuse_id(&efuse_block_id);
+        if (esp_ret != ESP_OK) {
+            ESP_LOGE(TAG, "Failed to obtain efuse key id");
+            goto exit;
+        }
+        ESP_LOGI(TAG, "Using key from eFuse block %d for ECDSA key", efuse_block_id);
+        esp_ecdsa_pk_conf_t pk_conf = {
+            .grp_id = MBEDTLS_ECP_DP_SECP256R1,
+            .efuse_block = efuse_block_id,
+        };
+        if (esp_ecdsa_set_pk_context(&pk, &pk_conf) != 0) {
+            ESP_LOGE(TAG, "Failed to set ECDSA context");
+            esp_ret = ESP_FAIL;
+            goto exit;
+        }
+        ESP_LOGI(TAG, "Successfully set ECDSA key context");
+#endif
     } else {
-        ESP_LOGI(TAG, "Successfully parsed the key");
+#if (MBEDTLS_VERSION_NUMBER < 0x03000000)
+        ret = mbedtls_pk_parse_key(&pk, (const uint8_t *)priv_key, priv_key_len, NULL, 0);
+#else
+        ret = mbedtls_pk_parse_key(&pk, (const uint8_t *)priv_key, priv_key_len, NULL, 0, mbedtls_ctr_drbg_random, &ctr_drbg);
+#endif
+        if (ret != 0) {
+            ESP_LOGE(TAG, "Failed to parse the key");
+            esp_ret = ESP_FAIL;
+            goto exit;
+        } else {
+            ESP_LOGI(TAG, "Successfully parsed the key");
+        }
     }
 
     static uint32_t hash[8] = {[0 ... 7] = 0xAABBCCDD};
@@ -180,15 +231,14 @@ void app_main()
 
     esp_ret = esp_secure_cert_get_device_cert(&addr, &len);
     if (esp_ret == ESP_OK) {
-        ESP_LOGI(TAG, "Device Cert: \nLength: %"PRIu32"\n%s", len, (char *)addr);
+        esp_print_cert_or_key("Device Cert", (const char *)addr, len);
     } else {
         ESP_LOGE(TAG, "Failed to obtain flash address of device cert");
     }
 
     esp_ret = esp_secure_cert_get_ca_cert(&addr, &len);
     if (esp_ret == ESP_OK) {
-        ESP_LOGI(TAG, "CA Cert: \nLength: %"PRIu32"\n%s", len, (char *)addr);
-        ESP_LOG_BUFFER_HEX_LEVEL(TAG, addr, len, ESP_LOG_DEBUG);
+        esp_print_cert_or_key("CA Cert", (const char *)addr, len);
     } else {
         ESP_LOGE(TAG, "Failed to obtain flash address of ca_cert");
     }
@@ -196,7 +246,7 @@ void app_main()
 #ifndef CONFIG_ESP_SECURE_CERT_DS_PERIPHERAL
     esp_ret = esp_secure_cert_get_priv_key(&addr, &len);
     if (esp_ret == ESP_OK) {
-        ESP_LOGI(TAG, "PEM KEY: \nLength: %"PRIu32"\n%s", len, (char *)addr);
+        esp_print_cert_or_key("Private Key", (const char *)addr, len);
     } else {
         ESP_LOGE(TAG, "Failed to obtain flash address of private_key");
     }
@@ -249,7 +299,7 @@ void app_main()
     esp_secure_cert_tlv_info_t tlv_info = {};
     esp_ret = esp_secure_cert_get_tlv_info(&tlv_config, &tlv_info);
     if (esp_ret == ESP_OK) {
-        ESP_LOGI(TAG, "Device Cert: \nLength: %"PRIu32"\n%s", tlv_info.length, tlv_info.data);
+        esp_print_cert_or_key("Device Cert", (const char *)tlv_info.data, tlv_info.length);
     }
 
     ESP_LOGI(TAG, "Printing a list of TLV entries");

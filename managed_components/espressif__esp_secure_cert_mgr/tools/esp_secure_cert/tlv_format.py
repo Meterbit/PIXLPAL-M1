@@ -9,19 +9,19 @@ from cryptography.hazmat.primitives import serialization
 
 
 class tlv_type_t(enum.IntEnum):
-    CA_CERT = 0
-    DEV_CERT = 1
-    PRIV_KEY = 2
-    DS_DATA = 3
-    DS_CONTEXT = 4
-    ECDSA_KEY_SALT = 5
-    SEC_CFG = 6
+    ESP_SECURE_CERT_CA_CERT_TLV = 0
+    ESP_SECURE_CERT_DEV_CERT_TLV = 1
+    ESP_SECURE_CERT_PRIV_KEY_TLV = 2
+    ESP_SECURE_CERT_DS_DATA_TLV = 3
+    ESP_SECURE_CERT_DS_CONTEXT_TLV = 4
+    ESP_SECURE_CERT_ECDSA_KEY_SALT_TLV = 5
+    ESP_SECURE_CERT_SEC_CFG_TLV = 6
     TLV_END = 50
-    USER_DATA_1 = 51
-    USER_DATA_2 = 52
-    USER_DATA_3 = 53
-    USER_DATA_4 = 54
-    USER_DATA_5 = 55
+    ESP_SECURE_CERT_USER_DATA_1_TLV = 51
+    ESP_SECURE_CERT_USER_DATA_2_TLV = 52
+    ESP_SECURE_CERT_USER_DATA_3_TLV = 53
+    ESP_SECURE_CERT_USER_DATA_4_TLV = 54
+    ESP_SECURE_CERT_USER_DATA_5_TLV = 55
 
 
 class tlv_priv_key_type_t(enum.IntEnum):
@@ -75,10 +75,12 @@ def _get_tlv_header_key_info_byte(key_type):
 
 
 def prepare_tlv(tlv_type, tlv_type_info, data, data_len):
+    if data_len == 0:
+        return b''
     # Add the magic at start ( unsigned int )
     tlv_header = struct.pack('<I', 0xBA5EBA11)
     # Reserved bytes in TLV header ( 4 bytes)
-    if tlv_type is tlv_type_t.PRIV_KEY:
+    if tlv_type is tlv_type_t.ESP_SECURE_CERT_PRIV_KEY_TLV:
         key_info_byte = _get_tlv_header_key_info_byte(tlv_type_info)
         reserved_bytes = '000000'
         tlv_header_bytes = reserved_bytes + key_info_byte[2:]
@@ -117,11 +119,11 @@ def generate_partition_rsa_ds(ciphertext, iv, efuse_key_id, rsa_key_len,
         dev_cert_data = load_certificate(device_cert)
 
         # Write dev cert at specific address
-        if dev_cert_data["encoding"] == serialization.Encoding.PEM.value:
+        if dev_cert_data.get("encoding") == serialization.Encoding.PEM.value:
             dev_cert = dev_cert_data["bytes"] + b'\0'
         else:
             dev_cert = dev_cert_data["bytes"]
-        dev_cert_tlv = prepare_tlv(tlv_type_t.DEV_CERT,
+        dev_cert_tlv = prepare_tlv(tlv_type_t.ESP_SECURE_CERT_DEV_CERT_TLV,
                                    None,
                                    dev_cert,
                                    len(dev_cert))
@@ -138,7 +140,7 @@ def generate_partition_rsa_ds(ciphertext, iv, efuse_key_id, rsa_key_len,
                 ca_cert = ca_cert_data["bytes"] + b'\0'
             else:
                 ca_cert = ca_cert_data["bytes"]
-            ca_cert_tlv = prepare_tlv(tlv_type_t.CA_CERT,
+            ca_cert_tlv = prepare_tlv(tlv_type_t.ESP_SECURE_CERT_CA_CERT_TLV,
                                       None,
                                       ca_cert,
                                       len(ca_cert))
@@ -154,7 +156,7 @@ def generate_partition_rsa_ds(ciphertext, iv, efuse_key_id, rsa_key_len,
         ds_data = ds_data + iv
         ds_data = ds_data + ciphertext
 
-        ds_data_tlv = prepare_tlv(tlv_type_t.DS_DATA, None,
+        ds_data_tlv = prepare_tlv(tlv_type_t.ESP_SECURE_CERT_DS_DATA_TLV, None,
                                   ds_data, len(ds_data))
         output_file_data[cur_offset: cur_offset
                          + len(ds_data_tlv)] = ds_data_tlv
@@ -169,7 +171,7 @@ def generate_partition_rsa_ds(ciphertext, iv, efuse_key_id, rsa_key_len,
         ds_context = ds_context + struct.pack('<B', 0)
         ds_context = ds_context + struct.pack('<H', rsa_key_len)
 
-        ds_context_tlv = prepare_tlv(tlv_type_t.DS_CONTEXT,
+        ds_context_tlv = prepare_tlv(tlv_type_t.ESP_SECURE_CERT_DS_CONTEXT_TLV,
                                      None,
                                      ds_context,
                                      len(ds_context))
@@ -197,7 +199,7 @@ def generate_partition_ecdsa(efuse_key_id, device_cert, ca_cert, op_file):
             dev_cert = dev_cert_data["bytes"] + b'\0'
         else:
             dev_cert = dev_cert_data["bytes"]
-        dev_cert_tlv = prepare_tlv(tlv_type_t.DEV_CERT,
+        dev_cert_tlv = prepare_tlv(tlv_type_t.ESP_SECURE_CERT_DEV_CERT_TLV,
                                    None,
                                    dev_cert,
                                    len(dev_cert))
@@ -214,7 +216,7 @@ def generate_partition_ecdsa(efuse_key_id, device_cert, ca_cert, op_file):
                 ca_cert = ca_cert_data["bytes"] + b'\0'
             else:
                 ca_cert = ca_cert_data["bytes"]
-            ca_cert_tlv = prepare_tlv(tlv_type_t.CA_CERT,
+            ca_cert_tlv = prepare_tlv(tlv_type_t.ESP_SECURE_CERT_CA_CERT_TLV,
                                       None,
                                       ca_cert,
                                       len(ca_cert))
@@ -227,7 +229,7 @@ def generate_partition_ecdsa(efuse_key_id, device_cert, ca_cert, op_file):
 
         # Prepare priv key dummy tlv
         priv_key = bytearray()
-        priv_key_tlv = prepare_tlv(tlv_type_t.PRIV_KEY,
+        priv_key_tlv = prepare_tlv(tlv_type_t.ESP_SECURE_CERT_PRIV_KEY_TLV,
                                    tlv_priv_key_type_t.ESP_SECURE_CERT_ECDSA_PERIPHERAL_KEY,  # type: ignore # noqa: E501
                                    priv_key,
                                    len(priv_key))
@@ -241,7 +243,7 @@ def generate_partition_ecdsa(efuse_key_id, device_cert, ca_cert, op_file):
         efuse_block_id = efuse_key_id + 4
         sec_cfg = struct.pack('<B', efuse_block_id) + b'\0' * 39
         print(f'length of sec_cfg struct = {len(sec_cfg)}')
-        sec_cfg_tlv = prepare_tlv(tlv_type_t.SEC_CFG,
+        sec_cfg_tlv = prepare_tlv(tlv_type_t.ESP_SECURE_CERT_SEC_CFG_TLV,
                                   None,
                                   sec_cfg,
                                   len(sec_cfg))
@@ -312,7 +314,7 @@ def generate_partition_no_ds(priv_key: tlv_priv_key_t,
             dev_cert = dev_cert_data["bytes"] + b'\0'
         else:
             dev_cert = dev_cert_data["bytes"]
-        dev_cert_tlv = prepare_tlv(tlv_type_t.DEV_CERT,
+        dev_cert_tlv = prepare_tlv(tlv_type_t.ESP_SECURE_CERT_DEV_CERT_TLV,
                                    None,
                                    dev_cert,
                                    len(dev_cert))
@@ -329,7 +331,7 @@ def generate_partition_no_ds(priv_key: tlv_priv_key_t,
                 ca_cert = ca_cert_data["bytes"] + b'\0'
             else:
                 ca_cert = ca_cert_data["bytes"]
-            ca_cert_tlv = prepare_tlv(tlv_type_t.CA_CERT,
+            ca_cert_tlv = prepare_tlv(tlv_type_t.ESP_SECURE_CERT_CA_CERT_TLV,
                                       None,
                                       ca_cert,
                                       len(ca_cert))
@@ -350,7 +352,7 @@ def generate_partition_no_ds(priv_key: tlv_priv_key_t,
             else:
                 private_key = private_key_data["bytes"]
 
-        priv_key_tlv = prepare_tlv(tlv_type_t.PRIV_KEY,
+        priv_key_tlv = prepare_tlv(tlv_type_t.ESP_SECURE_CERT_PRIV_KEY_TLV,
                                    priv_key.key_type,
                                    private_key,
                                    len(private_key))

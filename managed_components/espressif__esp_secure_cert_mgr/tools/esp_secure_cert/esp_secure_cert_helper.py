@@ -6,6 +6,9 @@ from cryptography.x509 import (
     load_der_x509_certificate
 )
 
+import os
+
+esp_secure_cert_data_dir = 'esp_secure_cert_data'
 
 def load_private_key(key_file_path: str,
                      password: str = None) -> Dict[str, str]:
@@ -79,6 +82,46 @@ def load_private_key(key_file_path: str,
                          " Please provide PEM or DER encoded key")
 
 
+def convert_der_key_to_pem(key_file_path: str, password: str = None) -> bytes:
+    """
+    Convert a key from DER format to PEM format, or return the PEM key as-is.
+    """
+    with open(key_file_path, 'rb') as key_file:
+        key_data = key_file.read()
+
+    try:
+        # First, try to load the key as a PEM-encoded private key
+        private_key = serialization.load_pem_private_key(
+            key_data,
+            password=password,
+            backend=default_backend()
+        )
+        # If successful, return the original PEM data
+        return key_data
+    except ValueError:
+        pass  # If it fails, it might be a DER key, so continue
+
+    try:
+        # Attempt to load the key as a DER-encoded private key
+        private_key = serialization.load_der_private_key(
+            key_data,
+            password=password,
+            backend=default_backend()
+        )
+    except ValueError:
+        raise ValueError("Unsupported key encoding format. "
+                         "Please provide a PEM or DER encoded key.")
+
+    # Convert the DER key to PEM format
+    pem_key = private_key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.TraditionalOpenSSL,
+        encryption_algorithm=serialization.NoEncryption()
+    )
+
+    return pem_key
+
+
 def load_certificate(cert_file_path: str) -> Dict[str, str]:
     """
     Load a certificate from a file in either PEM or DER format.
@@ -97,6 +140,11 @@ def load_certificate(cert_file_path: str) -> Dict[str, str]:
         ValueError: If the certificate file is not in PEM or DER format.
     """
     result = {}
+
+    if (cert_file_path is None):
+        result["encoding"] = None
+        result["bytes"] = b''
+        return result
 
     try:
         with open(cert_file_path, "rb") as cert_file:
@@ -124,3 +172,21 @@ def load_certificate(cert_file_path: str) -> Dict[str, str]:
     except ValueError:
         raise ValueError("Unsupported certificate encoding format,"
                          "Please provide PEM or DER encoded certificate")
+
+def get_efuse_key_file(efuse_key_spec):
+    """
+    Get efuse key file path:
+    - None or empty: return None (auto-generate)
+    - file path: return path if exists
+    - otherwise: return None (auto-generate)
+    """
+    if not efuse_key_spec:
+        return None
+
+    if os.path.exists(efuse_key_spec):
+        print(f"Using custom efuse key file: {efuse_key_spec}")
+        return efuse_key_spec
+    else:
+        print(f"Warning: efuse key file '{efuse_key_spec}' not found, using auto-generated key")
+        return None
+

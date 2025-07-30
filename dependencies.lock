@@ -242,7 +242,7 @@ dependencies:
       type: service
     version: 1.2.0
   espressif/esp_secure_cert_mgr:
-    component_hash: 5d9175b416f751ba6a7cb35bdf092f0af85658ce06c4a592c7c541d8017ebeb9
+    component_hash: 95b490db6944b2a6b32d7af172bb52e5045fe1d37ac8e00f9edfdd0535d64f72
     dependencies:
     - name: idf
       require: private
@@ -250,7 +250,7 @@ dependencies:
     source:
       registry_url: https://components.espressif.com
       type: service
-    version: 2.5.0
+    version: 2.5.1
   espressif/esp_tinyusb:
     component_hash: 9382e15aaacd3f29e2de2360eb266ef1d7e5ebf4fdefbeaebe146e471d341656
     dependencies:
@@ -420,6 +420,6 @@ direct_dependencies:
 - espressif/usb_host_msc
 - idf
 - joltwallet/littlefs
-manifest_hash: 0748ccdfe8bb87d5fbaf8467c588e68d7cc3588922d3b7db76e403d3335ff495
+manifest_hash: 18ca62185d0d8690d363b1653d4d5c613af888706dd672e7f643420d6a4c6788
 target: esp32s3
 version: 2.0.0
