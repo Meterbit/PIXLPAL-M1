@@ -55,7 +55,7 @@ enum AUDIO_I2S_MODE_T{
     CONNECT_HOST = 0,
     OPENAI_SPEECH,
     CONNECT_SPEECH,
-    CONNECT_LittleFS,
+    CONNECT_USB_FS,
 };
 
 struct AudioTextTransfer_T{
@@ -123,7 +123,7 @@ class MTB_Audio {
         bool mtb_Openai_Speech(const String &model, const String &input, const String &voice, const String &response_format, const String &speed);
         bool mtb_ConnectToHost(const char *host, const char *user = "", const char *pwd = "");
         bool mtb_ConnectToSpeech(const char *speech, const char *lang);
-        bool mtb_ConnectToLittleFS(const char *path, int32_t m_fileStartPos = -1);
+        bool mtb_ConnectToUSB_FS(const char *path, int32_t m_fileStartPos = -1);
         //bool mtb_ConnectToUSBFS(const char *path, int32_t m_fileStartPos = -1);
 };
 

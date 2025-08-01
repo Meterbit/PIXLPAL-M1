@@ -12,8 +12,7 @@
 #include "mtbAudio.h"
 #include "lib8tion.h"
 #include "mtbApps.h"
-#include <LittleFS.h>
-#include "USBFS.h"   // make sure this is in your include path
+#include "mtbUSBFS.h"   // make sure this is in your include path
 
 EXT_RAM_BSS_ATTR TimerHandle_t showRandomPatternTimer_H = NULL;
 EXT_RAM_BSS_ATTR TaskHandle_t audioProcessing_Task_H = NULL;
@@ -63,7 +62,7 @@ void audioProcessing_Task(void *d_Service){
         break;
       case CONNECT_SPEECH: mtbAudioPlayer->contdSucceed = (int8_t) audio->connecttospeech(mtbAudioPlayer->speech_Message.c_str(), mtbAudioPlayer->ggle_Lang.c_str());
         break;
-      case CONNECT_LittleFS: mtbAudioPlayer->contdSucceed = (int8_t) audio->connecttoFS(USBFS, mtbAudioPlayer->filePath.c_str(), mtbAudioPlayer->fileStartPos);
+      case CONNECT_USB_FS: mtbAudioPlayer->contdSucceed = (int8_t) audio->connecttoFS(USBFS, mtbAudioPlayer->filePath.c_str(), mtbAudioPlayer->fileStartPos);
         break;
       default: ESP_LOGE("MTB_AUDIO", "Audio Output Mode Not Specified.");
       goto KillAudio;
@@ -531,15 +530,22 @@ bool MTB_Audio::mtb_ConnectToSpeech(const char* speech, const char* lang){
   return (bool) contdSucceed;
 }
 
-bool MTB_Audio::mtb_ConnectToLittleFS( const char *path, int32_t m_fileStartPos){
+bool MTB_Audio::mtb_ConnectToUSB_FS( const char *path, int32_t m_fileStartPos){
   int16_t countdown = 2000;   // 2000 here represents the number of 5ms in 10s
   contdSucceed = -1;
   
   filePath = String(path);
   fileStartPos = m_fileStartPos;
 
-  audioOutMode = CONNECT_LittleFS;
-  use_Mic_OR_Dac(I2S_DAC);
+  bool isMounted = USBFS.begin("/usb");
+  if (isMounted){
+        audioOutMode = CONNECT_USB_FS;
+        use_Mic_OR_Dac(I2S_DAC);
+  }
+  else {
+    ESP_LOGE("MTB_AUDIO", "USBFS not mounted. Cannot connect to USB_FS.");
+    return false;
+  }
 
   while (contdSucceed == -1 && countdown-->0) delay(5);
   return (bool) contdSucceed;

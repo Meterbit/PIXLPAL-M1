@@ -24,6 +24,7 @@
 #include "msc.h"
 #include "Arduino.h"
 #include "mtbApps.h"
+#include "mtbUSBFS.h"
 
 #include "freertos/event_groups.h"
 
@@ -116,6 +117,7 @@ void usb_Mass_Strg_Task(void* d_Service){
             // Signal to others that USB is mounted
             xEventGroupSetBits(usb_event_group, USB_MOUNTED_BIT);
             printf("USB flash drive mounted at %s\n", MNT_PATH);
+            USBFS.begin(MNT_PATH);
             }
             else if(msg.id == (app_message_t::MYVALUES)2 && success == pdTRUE){
             printf("USB flash drive disconnected\n");
@@ -136,10 +138,10 @@ void usb_Mass_Strg_Task(void* d_Service){
             //break;
         }
 
-    vTaskDelay(10); // Give clients some time to uninstall
+    delay(10); // Give clients some time to uninstall
     ESP_LOGI(TAG, "Deinitializing USB");
     ESP_ERROR_CHECK(usb_host_uninstall());
-    //vTaskDelete(NULL);
+
     kill_This_Service(thisServ);
 }
 
