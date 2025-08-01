@@ -24,7 +24,6 @@
 #include "msc.h"
 #include "Arduino.h"
 #include "mtbApps.h"
-#include "USBFS.h"
 
 #include "freertos/event_groups.h"
 

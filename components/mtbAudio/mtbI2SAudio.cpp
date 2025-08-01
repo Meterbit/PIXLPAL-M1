@@ -13,6 +13,7 @@
 #include "lib8tion.h"
 #include "mtbApps.h"
 #include <LittleFS.h>
+#include "USBFS.h"   // make sure this is in your include path
 
 EXT_RAM_BSS_ATTR TimerHandle_t showRandomPatternTimer_H = NULL;
 EXT_RAM_BSS_ATTR TaskHandle_t audioProcessing_Task_H = NULL;
@@ -62,7 +63,7 @@ void audioProcessing_Task(void *d_Service){
         break;
       case CONNECT_SPEECH: mtbAudioPlayer->contdSucceed = (int8_t) audio->connecttospeech(mtbAudioPlayer->speech_Message.c_str(), mtbAudioPlayer->ggle_Lang.c_str());
         break;
-      case CONNECT_LittleFS: mtbAudioPlayer->contdSucceed = (int8_t) audio->connecttoFS(LittleFS, mtbAudioPlayer->filePath.c_str(), mtbAudioPlayer->fileStartPos);
+      case CONNECT_LittleFS: mtbAudioPlayer->contdSucceed = (int8_t) audio->connecttoFS(USBFS, mtbAudioPlayer->filePath.c_str(), mtbAudioPlayer->fileStartPos);
         break;
       default: ESP_LOGE("MTB_AUDIO", "Audio Output Mode Not Specified.");
       goto KillAudio;

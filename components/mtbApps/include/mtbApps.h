@@ -279,7 +279,6 @@ extern Services* micInProcessing_Sv;
 extern Service_With_Fns* encoder_Task_Sv;       // USES PSRAM AS TASK STACK
 extern Service_With_Fns* button_Task_Sv;        // USES PSRAM AS TASK STACK
 extern Services* usb_Mass_Storage_Sv;
-
 extern Services* freeServAndAppPSRAM_Sv;
 
 
