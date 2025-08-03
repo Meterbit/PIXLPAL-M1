@@ -97,6 +97,7 @@ void launchThisApp(Applications *dApp, do_Prev_App_t do_Prv_App){
 //         }
 //     }
 // }
+
 void start_This_Service(Services* dService){
     if(*(dService->serviceT_Handle_ptr) == NULL) {  // Prevents the service from being started multiple times
         dService->service_is_Running = pdTRUE;

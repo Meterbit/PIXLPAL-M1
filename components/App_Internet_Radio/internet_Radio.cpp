@@ -76,22 +76,23 @@ void  internetRadio_App_Task(void* dApplication){
     read_struct_from_nvs("currentRadSta", &currentRadioStation, sizeof(RadioStation_t));
 
     conn2Sta.scroll_This_Text("Awaiting internet connection...", GREEN_LIZARD);
-    // while(!(Applications::internetConnectStatus) && (THIS_APP_IS_ACTIVE == pdTRUE)) vTaskDelay(pdMS_TO_TICKS(500));
+    while(!(Applications::internetConnectStatus) && (THIS_APP_IS_ACTIVE == pdTRUE)) vTaskDelay(pdMS_TO_TICKS(500));
 
     delay(500); //This delay is placed here to allow "audioTextInfo_Q_H" to be created.
     bool cont_To_Host = false;
     conn2Sta.scroll_This_Text("Connecting to Station....", ORANGE_RED);
-    radioPlayReady = true;
+    
 
     do{
       delay(500);
       cont_To_Host = mtbAudioPlayer->mtb_ConnectToHost(currentRadioStation.streamLink);
-    } while((cont_To_Host != true) && (THIS_APP_IS_ACTIVE == pdTRUE) && (radioPlayReady));
+    } while((cont_To_Host != true) && (THIS_APP_IS_ACTIVE == pdTRUE));
 
       //conn2Sta.scroll_Active(STOP_SCROLL);
       fmStation.scroll_This_Text(currentRadioStation.stationName, CYAN);
       conn2Sta.scroll_This_Text("Connected to Radio Station..!!", LEMON_MERINGUE);
       
+      radioPlayReady = true;
 
       while ((Applications::internetConnectStatus) && (radioPlayReady) && (THIS_APP_IS_ACTIVE == pdTRUE)){
         if(xQueueReceive(audioTextInfo_Q_H, &audioTextReceiver, 0) == pdTRUE){

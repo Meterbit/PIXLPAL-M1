@@ -57,7 +57,7 @@ uint16_t panelBrightness = 70;
 uint8_t **FixedText_t::scratchPad = nullptr;
 
 
-EXT_RAM_BSS_ATTR Services *pngLocalImageDrawer_Sv = new Services(drawLocalPNG_Task, &pngLocalImageDrawer_Handle, "PNG Local draw", 12288, 4); // Keep the task stack size at 12288 for reliability.
+EXT_RAM_BSS_ATTR Services *pngLocalImageDrawer_Sv = new Services(drawLocalPNG_Task, &pngLocalImageDrawer_Handle, "PNG Local draw", 12288, 1, pdFALSE, 1); // Keep the task stack size at 12288 for reliability.
 //EXT_RAM_BSS_ATTR Services *pngOnlineImageDrawer_Sv = new Services(drawOnlinePNG_Task, &pngOnlineImageDrawer_Handle, "PNG Online draw", 12288, 4); // Keep the task stack size at 12288 for reliability.
 //EXT_RAM_BSS_ATTR Services *svgOnlineImageDrawer_Sv = new Services(drawOnlineSVG_Task, &svgOnlineImageDrawer_Handle, "SVG Online draw", 12288, 4); // Keep the task stack size at 12288 for reliability.
 
@@ -158,20 +158,14 @@ void rgb_led_task(void *param)
 	}
 }
 
-void set_Status_RGB_LED(uint16_t dColor, uint8_t dBrightness)
-{
-
+void set_Status_RGB_LED(uint16_t dColor, uint8_t dBrightness){
 	rgb_led_message_t message = {.color = dColor, .brightness = dBrightness}; // Red color with half brightness
 	xQueueSend(rgb_led_queue, &message, portMAX_DELAY);
 }
 
-void drawStatusBar(void)
-{
-	if (Applications::currentRunningApp->fullScreen == false)
-	{
-		for (uint8_t i = 0; i < 11; i++)
-			if (statusBarItems[i].xAxis != 0 && statusBarItems[i].yAxis != 0)
-				drawLocalPNG(statusBarItems[i]);
+void drawStatusBar(void){
+	if (Applications::currentRunningApp->fullScreen == false){
+		for (uint8_t i = 0; i < 11; i++) if (statusBarItems[i].xAxis != 0 && statusBarItems[i].yAxis != 0) drawLocalPNG(statusBarItems[i]);
 		dma_display->drawFastHLine(0, 9, 128, dma_display->color565(35, 35, 35));
 	}
 }
@@ -747,6 +741,7 @@ uint16_t FixedText_t::clearString()
 }
 //************************************************************************************ */
 void drawLocalPNG_Task(void *dService){
+	printf("PNG Local Image Drawer Task Started\n");
 	Services *thisService = (Services *)dService;
 	PNG_LocalImage_t holderItem;
 	unsigned error;
@@ -988,7 +983,7 @@ void drawDecodedPNG(PNG_PreloadedImage_t& pImg) {
 
 void pngDownloaderWorker(void* param) {
     size_t drawPNGsCount = (size_t)param;
-	log_i("PNG Downloader Worker started processing %d images", drawPNGsCount);
+	//log_i("PNG Downloader Worker started processing %d images", drawPNGsCount);
     while (true) {
         int myIndex;
 
@@ -1012,13 +1007,13 @@ void pngDownloaderWorker(void* param) {
     }
 	
 	while(downloadedPNGs < drawPNGsCount)delay(10); // Wait for all images to be processed
-    log_i("PNG Downloader Worker finished processing %d images", drawPNGsCount);
+    //log_i("PNG Downloader Worker finished processing %d images", drawPNGsCount);
     vTaskDelete(NULL);  // ✅ Frees stack after work
 }
 
 void pngDrawerWorker(void* param) {
     size_t drawPNGsCount = (size_t)param;
-	log_i("PNG Drawer Worker started processing %d images", drawPNGsCount);
+	//log_i("PNG Drawer Worker started processing %d images", drawPNGsCount);
 	// Now decode & draw
     for (int i = 0; i < drawPNGsCount; ++i){
         if (preloadedPNGs[i].isReady) {
@@ -1027,7 +1022,7 @@ void pngDrawerWorker(void* param) {
             free(preloadedPNGs[i].pngBuffer);
         }
     }
-	log_i("PNG Drawer Worker finished processing %d images", drawPNGsCount);
+	//log_i("PNG Drawer Worker finished processing %d images", drawPNGsCount);
     vTaskDelete(NULL);  // ✅ Frees stack after work
 }
 
@@ -1217,7 +1212,7 @@ void drawDecodedSVG(SVG_PreloadedImage_t& item) {
 void svgDownloaderWorker(void* param) {
     size_t drawSVGsCount = (size_t)param;
     int myIndex;
-	log_i("SVG Downloader Worker started processing %d images", drawSVGsCount);
+	//log_i("SVG Downloader Worker started processing %d images", drawSVGsCount);
     while (true) {
         // Atomically grab next available index
         xSemaphoreTake(preloadIndexMutex, portMAX_DELAY);
@@ -1238,7 +1233,7 @@ void svgDownloaderWorker(void* param) {
         }
 		downloadedSVGs++;
     }
-	log_i("SVG Downloader Worker finished processing %d images", drawSVGsCount);
+	//log_i("SVG Downloader Worker finished processing %d images", drawSVGsCount);
 	while(downloadedSVGs < drawSVGsCount)delay(10); // Wait for all images to be processed
 
     vTaskDelete(NULL);
@@ -1246,7 +1241,7 @@ void svgDownloaderWorker(void* param) {
 
 void svgDrawerWorker(void* param) {
     size_t drawSVGsCount = (size_t)param;
-	log_i("SVG Drawer Worker started processing %d images", drawSVGsCount);
+	//log_i("SVG Drawer Worker started processing %d images", drawSVGsCount);
 	// Now decode & draw
     for (int i = 0; i < drawSVGsCount; ++i){
         if (preloadedSVGs[i].isReady) {
@@ -1255,7 +1250,7 @@ void svgDrawerWorker(void* param) {
             free(preloadedSVGs[i].svgBuffer);
         }
     }
-	log_i("SVG Drawer Worker finished processing %d images", drawSVGsCount);
+	//log_i("SVG Drawer Worker finished processing %d images", drawSVGsCount);
     vTaskDelete(NULL);  // ✅ Frees stack after work
 }
 

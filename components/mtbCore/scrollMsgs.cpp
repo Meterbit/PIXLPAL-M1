@@ -112,10 +112,9 @@ void scrollText_0_Task(void* dService){
             for(int i = 0; i < holder.stretch; i++) free(holder.dText_Raw[i]);
             free(holder.dText_Raw);
         }
-
-    if(Applications::currentRunningApp->showStatusBarClock == pdTRUE) start_This_Service(statusBarClock_Sv);
     drawStatusBar();
-    
+    if(Applications::currentRunningApp->showStatusBarClock == pdTRUE) start_This_Service(statusBarClock_Sv);
+    //delay(1000); // Wait for 1 second before killing the service.
     kill_This_Service(thisService);
 }
 //**************************************************************************************

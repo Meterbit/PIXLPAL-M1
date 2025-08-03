@@ -472,6 +472,8 @@ bool fetchLiveMatchTeamLogos(SpiRamJsonDocument& doc, size_t matchIndex) {
     const char* homeLogo = match["teams"]["home"]["logo"];
     const char* awayLogo = match["teams"]["away"]["logo"];
 
+    if(strstr(homeLogo, "/teams/66.png")) homeLogo = "https://raw.githubusercontent.com/BoltSwith/PublicFiles/main/CountryFlags/aston-villa.png";
+    else if(strstr(awayLogo, "/teams/66.png")) awayLogo = "https://raw.githubusercontent.com/BoltSwith/PublicFiles/main/CountryFlags/aston-villa.png";
 
     String homeName = match["teams"]["home"]["name"];
     String awayName = match["teams"]["away"]["name"];
@@ -534,6 +536,9 @@ bool fetchFixturesMatchTeamLogos(SpiRamJsonDocument& doc, size_t matchIndex) {
     JsonObject match = matches[matchIndex];
     const char* homeLogo = match["teams"]["home"]["logo"];
     const char* awayLogo = match["teams"]["away"]["logo"];
+
+    if(strstr(homeLogo, "/teams/66.png")) homeLogo = "https://raw.githubusercontent.com/BoltSwith/PublicFiles/main/CountryFlags/aston-villa.png";
+    else if(strstr(awayLogo, "/teams/66.png")) awayLogo = "https://raw.githubusercontent.com/BoltSwith/PublicFiles/main/CountryFlags/aston-villa.png";
 
     String homeName = match["teams"]["home"]["name"];
     String awayName = match["teams"]["away"]["name"];

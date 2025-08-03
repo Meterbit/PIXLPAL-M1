@@ -11,7 +11,7 @@
 
 EXT_RAM_BSS_ATTR TaskHandle_t statusBarClock_H = NULL;
 
-EXT_RAM_BSS_ATTR Services *statusBarClock_Sv = new Services(statusBarClock, &statusBarClock_H, "StatBar Clk Serv.", 2048, 1, pdTRUE);
+EXT_RAM_BSS_ATTR Services *statusBarClock_Sv = new Services(statusBarClock, &statusBarClock_H, "StatBar Clk Serv.", 4096, 1, pdTRUE);
 
 void statusBarClock(void* dService){
   Services *thisServ = (Services *)dService;
