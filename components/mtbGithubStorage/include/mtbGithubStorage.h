@@ -26,4 +26,5 @@ extern bool downloadSVGImageToPSRAM(const char* url, uint8_t** outBuffer, size_t
 extern bool prepareFilePath(const char* filePath);
 extern bool downloadGithubStrgFile(githubStrg_UpDwn_t&);
 extern bool downloadGithubStrgFile(String bucketPath, String flashPath);
+extern bool downloadGithubFileToPSRAM(const String& bucketPath, uint8_t** outBuffer, size_t* outSize);
 #endif

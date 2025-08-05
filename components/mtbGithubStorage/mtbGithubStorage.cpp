@@ -5,6 +5,7 @@
 #include "mtb_ghota.h"
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include "esp_heap_caps.h"  // for PSRAM allocation
 
 EXT_RAM_BSS_ATTR QueueHandle_t files2Download_Q = NULL;
 EXT_RAM_BSS_ATTR TaskHandle_t files2Download_Task_H = NULL;
@@ -91,6 +92,83 @@ bool downloadGithubStrgFile(String bucketPath, String flashPath){
 
   https.end();
   return true;
+}
+
+bool downloadGithubFileToPSRAM(const String& bucketPath, uint8_t** outBuffer, size_t* outSize) {
+    // GitHub repo details
+    const char* host = "api.github.com";
+    const int httpsPort = 443;
+    const char* owner = "Meterbit";
+    const char* repo = "PXP_X1_STORAGE";
+    const char* path = bucketPath.c_str();
+    const char* token = github_Token; // Personal Access Token
+
+    WiFiClientSecure client;
+    client.setInsecure();  // Insecure, for testing only
+
+    HTTPClient https;
+
+    String url = String("https://api.github.com/repos/") + owner + "/" + repo + "/contents/" + path;
+
+    if (!https.begin(client, url)) {
+        Serial.println("HTTPS begin failed.");
+        return false;
+    }
+
+    https.addHeader("User-Agent", "ESP32");
+    https.addHeader("Accept", "application/vnd.github.v3.raw");
+    https.addHeader("Authorization", "token " + String(token));
+
+    int httpCode = https.GET();
+
+    if (httpCode != HTTP_CODE_OK) {
+        Serial.printf("HTTP GET failed: %d\n", httpCode);
+        https.end();
+        return false;
+    }
+
+    WiFiClient* stream = https.getStreamPtr();
+    int contentLength = https.getSize();
+
+    if (contentLength <= 0) {
+        Serial.println("Invalid content length");
+        https.end();
+        return false;
+    }
+
+    // Allocate buffer in PSRAM
+    uint8_t* buffer = (uint8_t*) heap_caps_malloc(contentLength, MALLOC_CAP_SPIRAM);
+    if (!buffer) {
+        Serial.println("Failed to allocate PSRAM buffer");
+        https.end();
+        return false;
+    }
+
+    size_t bytesRead = 0;
+    uint8_t temp[128];
+
+    while (https.connected() && bytesRead < contentLength) {
+        size_t available = stream->available();
+        if (available) {
+            int toRead = min((int)sizeof(temp), (int)(contentLength - bytesRead));
+            int readLen = stream->readBytes(temp, toRead);
+            memcpy(buffer + bytesRead, temp, readLen);
+            bytesRead += readLen;
+        }
+        delay(1);
+    }
+
+    https.end();
+
+    if (bytesRead != contentLength) {
+        Serial.println("Mismatch in content size");
+        free(buffer);
+        return false;
+    }
+
+    *outBuffer = buffer;
+    *outSize = bytesRead;
+    return true;
 }
 
 bool downloadGithubStrgFile(githubStrg_UpDwn_t& downloadPaths){
