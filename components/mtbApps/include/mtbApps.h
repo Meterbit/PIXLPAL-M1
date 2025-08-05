@@ -175,11 +175,14 @@ public:
     static  Applications *currentRunningApp;
     static Applications *previousRunningApp;
     static bool internetConnectStatus;
+    static bool usbPenDriveConnectStatus;
+    static bool usbPenDriveMounted;
     static bool pxpWifiConnectStatus;
     static bool bleAdvertisingStatus;
     static bool bleCentralContd;
     // static bool mqttPhoneConnectStatus;
     static uint8_t firmwareOTA_Status;
+    static uint8_t spiffsOTA_Status;
     //void *app_Dyn_Mems[5] = {nullptr};
 
     bool appRunner();               // The function that runs any selected.
@@ -278,8 +281,8 @@ extern Services* micInProcessing_Sv;
 
 extern Service_With_Fns* encoder_Task_Sv;       // USES PSRAM AS TASK STACK
 extern Service_With_Fns* button_Task_Sv;        // USES PSRAM AS TASK STACK
-extern Services* usb_Mass_Storage_Sv;
-extern Services* freeServAndAppPSRAM_Sv;
+extern Services* usb_Mass_Storage_Sv;           //
+extern Services* freeServAndAppPSRAM_Sv;        //
 
 
 //*********************************************************************************** */
@@ -337,6 +340,7 @@ extern Applications_StatusBar *chatGPT_App;                 // App Communication
 
 // Audio and Media
 extern Applications_StatusBar* internetRadio_App;           // App Communication Route: 9/0
-extern Applications_FullScreen* audSpecAnalyzer_App;        // App Communication Route: 9/1
-extern Applications_StatusBar *spotify_App;                 // App Communication Route: 9/2
+extern Applications_StatusBar* musicPlayer_App;             // App Communication Route: 9/1
+extern Applications_FullScreen* audSpecAnalyzer_App;        // App Communication Route: 9/2
+extern Applications_StatusBar *spotify_App;                 // App Communication Route: 9/3
 #endif

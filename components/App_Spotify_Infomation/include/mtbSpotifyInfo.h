@@ -8,7 +8,7 @@
 // #include "encoder.h"
 // #include "button.h"
 
-static const char spotifyAppRoute[] = "9/2";
+static const char spotifyAppRoute[] = "9/3";
 
 struct Spotify_Data_t {
 char refreshToken[250] = {0};

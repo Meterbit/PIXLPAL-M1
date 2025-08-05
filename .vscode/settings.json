@@ -93,9 +93,19 @@
         "diskio_usb.h": "c",
         "ff.h": "c",
         "*.inc": "cpp",
-        "esp32-hal-tinyusb.h": "c"
+        "esp32-hal-tinyusb.h": "c",
+        "__bit_reference": "cpp",
+        "__config": "cpp",
+        "__hash_table": "cpp",
+        "__split_buffer": "cpp",
+        "locale": "cpp",
+        "print": "cpp",
+        "queue": "cpp",
+        "__tree": "cpp",
+        "filesystem": "cpp",
+        "forward_list": "cpp"
     },
     "idf.flashType": "UART",
     "C_Cpp.errorSquiggles": "enabled",
-    "idf.port": "/dev/tty.usbmodem1201"
+    "idf.port": "/dev/tty.usbmodem1101"
 }

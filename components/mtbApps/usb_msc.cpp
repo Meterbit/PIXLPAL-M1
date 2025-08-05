@@ -117,12 +117,19 @@ void usb_Mass_Strg_Task(void* d_Service){
             // Signal to others that USB is mounted
             xEventGroupSetBits(usb_event_group, USB_MOUNTED_BIT);
             printf("USB flash drive mounted at %s\n", MNT_PATH);
+            Applications::usbPenDriveMounted = true;
             USBFS.begin(MNT_PATH);
             }
             else if(msg.id == (app_message_t::MYVALUES)2 && success == pdTRUE){
             printf("USB flash drive disconnected\n");
             }
     }
+
+        if(vfs_handle != NULL) msc_host_vfs_unregister(vfs_handle);
+        if(msc_device != NULL) msc_host_uninstall_device(msc_device);
+        USBFS.end();
+        Applications::usbPenDriveMounted = false;
+    // Wait for all clients to deregister
 
         uint32_t event_flags;
         usb_host_lib_handle_events(portMAX_DELAY, &event_flags);
@@ -141,6 +148,7 @@ void usb_Mass_Strg_Task(void* d_Service){
     delay(10); // Give clients some time to uninstall
     ESP_LOGI(TAG, "Deinitializing USB");
     ESP_ERROR_CHECK(usb_host_uninstall());
+    vQueueDelete(app_queue);
 
     kill_This_Service(thisServ);
 }
@@ -162,12 +170,14 @@ static void msc_event_cb(const msc_host_event_t *event, void *arg)
             (app_message_t::MYVALUES) 1,
             1
         };
+        Applications::usbPenDriveConnectStatus = true;
         xQueueSend(app_queue, &msg, portMAX_DELAY);
     } else if (event->event == 1) {
         ESP_LOGI(TAG, "MSC device disconnected");
         app_message_t message = {
             .id = (app_message_t::MYVALUES) 2,
         };
+        Applications::usbPenDriveConnectStatus = false;
         xQueueSend(app_queue, &message, portMAX_DELAY);
     }
 }

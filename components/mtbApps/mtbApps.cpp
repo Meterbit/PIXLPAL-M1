@@ -46,10 +46,13 @@ EXT_RAM_BSS_ATTR Applications* Applications::previousRunningApp = nullptr;
 
 // Device Status Flags
 bool Applications::internetConnectStatus = false;
+bool Applications::usbPenDriveConnectStatus = false;
+bool Applications::usbPenDriveMounted = false;
 bool Applications::pxpWifiConnectStatus = false;
 bool Applications::bleAdvertisingStatus = false;
 bool Applications::bleCentralContd = false;
 uint8_t Applications::firmwareOTA_Status = 6;
+uint8_t Applications::spiffsOTA_Status = 6;
 
 Applications::Applications(void (*dApplication)(void *), TaskHandle_t* dAppHandle_ptr, const char* dAppName, uint32_t dStackSize, uint8_t psRamStack, uint8_t core){
     application = dApplication;
@@ -698,8 +701,9 @@ void ai_AppLunch(uint16_t dAppNumber){
 void audioStreamAppLunch(uint16_t dAppNumber){
     switch(dAppNumber){
         case 0: launchThisApp(internetRadio_App); break;
-        case 1: launchThisApp(audSpecAnalyzer_App); break;
-        case 2: launchThisApp(spotify_App); break;
+        case 1: launchThisApp(musicPlayer_App); break;
+        case 2: launchThisApp(audSpecAnalyzer_App); break;
+        case 3: launchThisApp(spotify_App); break;
         default: printf("No Apps to Lunch.\n");
             break;
     }

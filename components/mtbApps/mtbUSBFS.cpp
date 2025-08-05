@@ -1,6 +1,8 @@
+#include "msc.h"
 #include "mtbUSBFS.h"
 #include <unistd.h>   // fileno, ftruncate, truncate
 #include <errno.h>
+
 
 using namespace usbfs_internal;
 

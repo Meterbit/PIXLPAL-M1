@@ -27,4 +27,5 @@ idf_component_register(SRCS "usb_msc.cpp" "firmwareOTA_Update.cpp" "classClk.cpp
                     App_World_Clock
                     App_PolygonFX
                     App_WorldFlags
+                    App_MusicPlayer
                     )

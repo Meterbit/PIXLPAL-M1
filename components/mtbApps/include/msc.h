@@ -3,6 +3,8 @@
 #define USB_MSC_H
 
 #include <stdlib.h>
+#include "FreeRTOS.h"
+#include "task.h"
 
 #ifdef __cplusplus
 extern "C" {
