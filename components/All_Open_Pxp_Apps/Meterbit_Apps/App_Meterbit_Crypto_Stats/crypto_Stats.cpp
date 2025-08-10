@@ -189,9 +189,9 @@ while (MTB_APP_IS_ACTIVE == pdTRUE) {
                 moreCryptoData.mtb_Scroll_This_Text("RANK: " + coinRank, FUCHSIA);
                 moreCryptoData.mtb_Scroll_This_Text("CURR: USD", CYAN);
                 double mkt_Cap_Double = market_cap.toDouble();
-                moreCryptoData.mtb_Scroll_This_Text("MKT CAP: " + formatLargeNumber(mkt_Cap_Double) + " USD", GREEN);
+                moreCryptoData.mtb_Scroll_This_Text("MKT CAP: " + mtb_Format_Large_Number(mkt_Cap_Double) + " USD", GREEN);
                 double cir_Supply = circulating_supply.toDouble();
-                moreCryptoData.mtb_Scroll_This_Text("CIR SUP: " + formatLargeNumber(cir_Supply) + " " + coinSymbol, ORANGE);
+                moreCryptoData.mtb_Scroll_This_Text("CIR SUP: " + mtb_Format_Large_Number(cir_Supply) + " " + coinSymbol, ORANGE);
             } else {
                 ESP_LOGI(TAG, "JSON parse error or no data key.\n");
             }

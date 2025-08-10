@@ -113,7 +113,7 @@ void scrollText_0_Task(void* dService){
             free(holder.dText_Raw);
         }
     drawStatusBar();
-    if(Mtb_Applications::currentRunningApp->showStatusBarClock == pdTRUE) start_This_Service(mtb_Status_Bar_Clock_Sv);
+    if(Mtb_Applications::currentRunningApp->showStatusBarClock == pdTRUE) mtb_Start_This_Service(mtb_Status_Bar_Clock_Sv);
     //delay(1000); // Wait for 1 second before killing the service.
     mtb_End_This_Service(thisService);
 }
@@ -229,13 +229,13 @@ void Mtb_ScrollText_t::mtb_Scroll_This_Text(const char* dText){
 
     if(this == (&statusBarNotif)){
         xQueueSend(scroll_Q[0], this, portMAX_DELAY);
-        start_This_Service(scroll_Tasks_Sv[0]);
+        mtb_Start_This_Service(scroll_Tasks_Sv[0]);
     }else {
         for (uint8_t i = 1; i < 5; i++){
         if((scrollText_Handles[i]) == NULL){
             this->scrollTaskHandling = i;
             xQueueSend(scroll_Q[i], this, portMAX_DELAY);
-            start_This_Service(scroll_Tasks_Sv[i]);
+            mtb_Start_This_Service(scroll_Tasks_Sv[i]);
             break;
             }
         }

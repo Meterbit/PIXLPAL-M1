@@ -77,16 +77,16 @@ Mtb_Applications::Mtb_Applications(void (*dApplication)(void *), TaskHandle_t* d
 //     memcpy(com_Data.payload, calendarClockAppBleCom, com_Data.pay_size);
 
 //     xQueueSend(appCom_queue, &com_Data, portMAX_DELAY);
-//     start_This_Service(mtb_Ble_AppComm_Parser_Sv);
+//     mtb_Start_This_Service(mtb_Ble_AppComm_Parser_Sv);
 // }
 
 void mtb_Launch_This_App(Mtb_Applications *dApp, do_Prev_App_t do_Prv_App){
     dApp->action_On_Prev_App = do_Prv_App;
     xQueueSend(appLuncherQueue, &dApp, portMAX_DELAY);
-    start_This_Service(app_Luncher_Task_Sv);
+    mtb_Start_This_Service(app_Luncher_Task_Sv);
 }
 
-// void start_This_Service(Mtb_Services* dService){
+// void mtb_Start_This_Service(Mtb_Services* dService){
 //     if(*(dService->serviceT_Handle_ptr) == NULL) {
 //         dService->service_is_Running = pdTRUE;
 //         if(dService->usePSRAM_Stack == pdFALSE) xTaskCreatePinnedToCore(dService->service, dService->serviceName, dService->stackSize, dService, dService->servicePriority, dService->serviceT_Handle_ptr, dService->serviceCore);
@@ -103,11 +103,10 @@ void mtb_Launch_This_App(Mtb_Applications *dApp, do_Prev_App_t do_Prv_App){
 //     }
 // }
 
-void start_This_Service(Mtb_Services* dService){
+void mtb_Start_This_Service(Mtb_Services* dService){
     if(*(dService->serviceT_Handle_ptr) == NULL) {  // Prevents the service from being started multiple times
         dService->service_is_Running = pdTRUE;
-        if(dService->usePSRAM_Stack == pdFALSE) {
-            xTaskCreatePinnedToCore(dService->service, dService->serviceName, dService->stackSize, dService, dService->servicePriority, dService->serviceT_Handle_ptr, dService->serviceCore);
+        if(dService->usePSRAM_Stack == pdFALSE) {xTaskCreatePinnedToCore(dService->service, dService->serviceName, dService->stackSize, dService, dService->servicePriority, dService->serviceT_Handle_ptr, dService->serviceCore);
         } else {
             dService->task_stack = (StackType_t *)heap_caps_malloc(dService->stackSize, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
             dService->tcb_psram = (StaticTask_t *)heap_caps_malloc(sizeof(StaticTask_t), MALLOC_CAP_INTERNAL);
@@ -309,7 +308,7 @@ void mtb_End_This_App(Mtb_Applications* dApp){
         if(dApp->usePSRAM_Stack == pdTRUE){
             xQueueSend(freeServAndAppPSRAM_Q, &dApp->task_stack, pdMS_TO_TICKS(500));
             xQueueSend(freeServAndAppPSRAM_Q, &dApp->tcb_psram, pdMS_TO_TICKS(500));
-            start_This_Service(freeServAndAppPSRAM_Sv);
+            mtb_Start_This_Service(freeServAndAppPSRAM_Sv);
             dApp->task_stack = NULL;
             dApp->tcb_psram = NULL;
         }
@@ -322,7 +321,7 @@ void mtb_End_This_Service(Mtb_Services* dService){
         if (dService->usePSRAM_Stack == pdTRUE){
             xQueueSend(freeServAndAppPSRAM_Q, &dService->task_stack, pdMS_TO_TICKS(500));
             xQueueSend(freeServAndAppPSRAM_Q, &dService->tcb_psram, pdMS_TO_TICKS(500));
-            start_This_Service(freeServAndAppPSRAM_Sv);
+            mtb_Start_This_Service(freeServAndAppPSRAM_Sv);
             dService->task_stack = NULL;
             dService->tcb_psram = NULL;
         }
@@ -334,23 +333,23 @@ void encoderDoNothing(rotary_encoder_rotation_t){}
 void buttonDoNothing(button_event_t){}
 
 void mtb_Brightness_Control(rotary_encoder_rotation_t direction){
-if (direction == ROT_CLOCKWISE){
-    if(panelBrightness <= 250){ 
-    panelBrightness += 5;
-    dma_display->setBrightness(panelBrightness); // 0-255
-    set_Status_RGB_LED(currentStatusLEDcolor);
-    mtb_Write_Nvs_Struct("pan_brghnss", &panelBrightness, sizeof(uint8_t));
+    if (direction == ROT_CLOCKWISE){
+        if(panelBrightness <= 250){ 
+        panelBrightness += 5;
+        dma_display->setBrightness(panelBrightness); // 0-255
+        set_Status_RGB_LED(currentStatusLEDcolor);
+        mtb_Write_Nvs_Struct("pan_brghnss", &panelBrightness, sizeof(uint8_t));
+        }
+        if(panelBrightness >= 255) do_beep(CLICK_BEEP);
+    } else if(direction == ROT_COUNTERCLOCKWISE){
+        if(panelBrightness >= 7){
+        panelBrightness -= 5;
+        dma_display->setBrightness(panelBrightness); //0-255
+        set_Status_RGB_LED(currentStatusLEDcolor);
+        mtb_Write_Nvs_Struct("pan_brghnss", &panelBrightness, sizeof(uint8_t));
+        }
+        if(panelBrightness <= 6) do_beep(CLICK_BEEP);
     }
-    if(panelBrightness >= 255) do_beep(CLICK_BEEP);
-} else if(direction == ROT_COUNTERCLOCKWISE){
-    if(panelBrightness >= 7){
-    panelBrightness -= 5;
-    dma_display->setBrightness(panelBrightness); //0-255
-    set_Status_RGB_LED(currentStatusLEDcolor);
-    mtb_Write_Nvs_Struct("pan_brghnss", &panelBrightness, sizeof(uint8_t));
-    }
-    if(panelBrightness <= 6) do_beep(CLICK_BEEP);
-}
 }
 
 void mtb_Vol_Control_Encoder(rotary_encoder_rotation_t direction){
@@ -378,11 +377,11 @@ void randomButtonControl(button_event_t button_Data){
             break;
 
             case BUTTON_PRESSED:
-            mtb_Ble_Comm_Init();
+            //mtb_Ble_Comm_Init();
             break;
 
             case BUTTON_PRESSED_LONG:
-                mtb_Launch_This_App(pixelAnimClock_App);
+            //mtb_Launch_This_App(pixelAnimClock_App);
             break;
 
             case BUTTON_CLICKED:
@@ -426,9 +425,9 @@ void mtb_App_Init(Mtb_Applications *thisApp, Mtb_Services* pointer_0, Mtb_Servic
 
     delay(250);
     dma_display->clearScreen();
-    for (Mtb_Services *element : thisApp->appServices) if (element != nullptr) start_This_Service(element);
-    if(thisApp->mtb_App_ButtonFn_ptr != buttonDoNothing) start_This_Service(button_Task_Sv);
-    if(thisApp->mtb_App_EncoderFn_ptr != encoderDoNothing) start_This_Service(encoder_Task_Sv);
+    for (Mtb_Services *element : thisApp->appServices) if (element != nullptr) mtb_Start_This_Service(element);
+    if(thisApp->mtb_App_ButtonFn_ptr != buttonDoNothing) mtb_Start_This_Service(button_Task_Sv);
+    if(thisApp->mtb_App_EncoderFn_ptr != encoderDoNothing) mtb_Start_This_Service(encoder_Task_Sv);
     if(thisApp->fullScreen == false) drawStatusBar();
     MTB_APP_IS_ACTIVE = pdTRUE;
     //ESP_LOGI(TAG, "&&&&&&&&&&&&& THIS APPLICATION HAS BEEN STARTED: %s \n", Mtb_Applications::currentRunningApp->appName);
@@ -526,7 +525,6 @@ void ble_AppCom_Parse_Task(void* dService){
                 break;
             }
         }else{
-
             dError = deserializeJson(dCommand, dJsonPayload);
             dCmd_num = dCommand["app_command"];
 
@@ -751,7 +749,7 @@ esp_err_t mtb_Write_Nvs_Struct(const char* keyIdentifier, void* struct_pointer, 
         .struct_size = struct_sized
     };
     xQueueSend(nvsAccessQueue, &dataWriteHolder, pdMS_TO_TICKS(5000));
-    start_This_Service(read_Write_NVS_Sv);
+    mtb_Start_This_Service(read_Write_NVS_Sv);
     xSemaphoreTake(nvsAccessComplete_Sem, portMAX_DELAY);
     return 0;
 }
@@ -764,12 +762,12 @@ esp_err_t mtb_Read_Nvs_Struct(const char* keyIdentifier, void* struct_pointer, s
         .struct_size = struct_sized
     };
     xQueueSend(nvsAccessQueue, &dataReadHolder, pdMS_TO_TICKS(5000));
-    start_This_Service(read_Write_NVS_Sv);
+    mtb_Start_This_Service(read_Write_NVS_Sv);
     xSemaphoreTake(nvsAccessComplete_Sem, portMAX_DELAY);
     return 0;
 }
 
-String unixTimeToReadable(time_t unixTime, int timezoneOffsetHours) {
+String mtb_Unix_Time_To_Readable(time_t unixTime, int timezoneOffsetHours) {
     struct tm *tm_info;
     char buffer[26];
 
@@ -787,7 +785,7 @@ String unixTimeToReadable(time_t unixTime, int timezoneOffsetHours) {
 }
 
 // Function to format large numbers
-String formatLargeNumber(double number) {
+String mtb_Format_Large_Number(double number) {
   const char* suffixes[] = {"", "k", "m", "b", "t", "q"}; // Add more suffixes if needed
   int suffixIndex = 0;
 
@@ -804,7 +802,7 @@ String formatLargeNumber(double number) {
   return String(number, 2) + suffixes[suffixIndex];
 }
 
-String formatIsoDate(const String& input) {
+String mtb_Format_Iso_Date(const String& input) {
   struct tm timeinfo = {0};
   time_t parsedTime;
   bool hasTime = input.indexOf('T') != -1;
@@ -856,7 +854,7 @@ String formatIsoDate(const String& input) {
 }
 
 
-String formatIsoTime(const String& input) {
+String mtb_Format_Iso_Time(const String& input) {
   struct tm timeinfo = {0};
   time_t parsedTime;
 
@@ -899,7 +897,7 @@ String formatIsoTime(const String& input) {
   return String(buffer);
 }
 
-String formatDateFromTimestamp(time_t timestamp) {
+String mtb_Format_Date_From_Timestamp(time_t timestamp) {
   // Adjust to Nigeria time zone (UTC+1)
   timestamp += 3600;
 
@@ -910,7 +908,7 @@ String formatDateFromTimestamp(time_t timestamp) {
   return String(buffer);
 }
 
-String formatTimeFromTimestamp(time_t timestamp) {
+String mtb_Format_Time_From_Timestamp(time_t timestamp) {
   struct tm* local = localtime(&timestamp);
   char buffer[6];  // "HH:MM" + null terminator
   strftime(buffer, sizeof(buffer), "%H:%M", local);  // 24-hour format
@@ -919,7 +917,7 @@ String formatTimeFromTimestamp(time_t timestamp) {
 
 
 
-String urlencode(const char* str) {
+String mtb_Url_Encode(const char* str) {
     String encoded = "";
     char c;
     while ((c = *str++)) {

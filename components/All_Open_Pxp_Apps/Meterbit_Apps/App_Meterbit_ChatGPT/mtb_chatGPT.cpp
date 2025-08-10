@@ -62,7 +62,6 @@ void delete_file(const char *path) {
     }
 }
 
-String openai_key = "sk-svcacct-7TDOdEhvwntW7SrC1brgBH2VNmqXXhxKh2bLjobDdiecWv82WIvnNe_yQaFugvaoJFsIT3BlbkFJIa5_gMWvZw31-rfvKtWTAwNAnAK6uMRX1_FV2O-tmixbxpZ5Nfx40dKnHJSMSsaR6VQA";
 OpenAI openai(openai_key.c_str());
 OpenAI_ChatCompletion chat(openai);
 
@@ -189,7 +188,7 @@ void Listen_Process_Button(button_event_t button_Data){
         xTimerStart(chatPromptTimer_H, 0);
         aiResponse->mtb_Scroll_Active(STOP_SCROLL);
         humanSpeech->mtb_Scroll_Active(STOP_SCROLL);
-        start_This_Service(Audio_Listening_Sv);
+        mtb_Start_This_Service(Audio_Listening_Sv);
         recordingCountdown = REC_DURATION_SECONDS_MAX;
         mtb_Draw_Local_Png({"/batIcons/micRec.png", 2, 45});
       } else {

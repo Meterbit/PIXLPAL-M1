@@ -87,7 +87,7 @@ if(pCharacteristic == setCom_characteristic){
       setCom_data.payload = heap_caps_calloc(pCharacteristic->getLength() + 1, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
       memcpy(setCom_data.payload, pCharacteristic->getValue(), pCharacteristic->getLength());
       xQueueSend(setCom_queue, &setCom_data, portMAX_DELAY);
-      start_This_Service(ble_SetCom_Parse_Sv);
+      mtb_Start_This_Service(ble_SetCom_Parse_Sv);
 
     } else if (pCharacteristic == appCom_characteristic){
       appValue = pCharacteristic->getValue().c_str();
@@ -97,7 +97,7 @@ if(pCharacteristic == setCom_characteristic){
       appCom_data.payload = heap_caps_calloc(pCharacteristic->getLength() + 1, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
       memcpy(appCom_data.payload, pCharacteristic->getValue(), pCharacteristic->getLength());
       xQueueSend(appCom_queue, &appCom_data, portMAX_DELAY);
-      start_This_Service(mtb_Ble_AppComm_Parser_Sv);
+      mtb_Start_This_Service(mtb_Ble_AppComm_Parser_Sv);
     } else ESP_LOGI(TAG, "PIXLPAL IS RECEIVING THE COMMAND, BUT IT'S NOT BEING RIGHTLY PARSED.\n");
   }
 };

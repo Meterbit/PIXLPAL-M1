@@ -27,6 +27,8 @@
 extern bool completedAudioMicConfig;
 extern Audio* audio;
 
+static const String openai_key = "sk-svcacct-7TDOdEhvwntW7SrC1brgBH2VNmqXXhxKh2bLjobDdiecWv82WIvnNe_yQaFugvaoJFsIT3BlbkFJIa5_gMWvZw31-rfvKtWTAwNAnAK6uMRX1_FV2O-tmixbxpZ5Nfx40dKnHJSMSsaR6VQA";
+
 struct AudioSpectVisual_Set_t {
     uint8_t selectedPattern;
     int noOfBands;

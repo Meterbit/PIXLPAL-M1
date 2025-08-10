@@ -66,13 +66,13 @@ extern void mtb_Vol_Control_Encoder(rotary_encoder_rotation_t);
 extern void randomButtonControl(button_event_t);
 
 // GENERAL UTILITIES FUNCTIONS
-extern String unixTimeToReadable(time_t unixTime, int timezoneOffsetHours = 0);
-extern String formatLargeNumber(double number);
-extern String formatIsoDate(const String& isoDateTime);
-extern String formatIsoTime(const String& isoDateTime);
-extern String formatDateFromTimestamp(time_t timestamp);
-extern String formatTimeFromTimestamp(time_t timestamp);
-extern String urlencode(const char* str);
+extern String mtb_Unix_Time_To_Readable(time_t unixTime, int timezoneOffsetHours = 0);
+extern String mtb_Format_Large_Number(double number);
+extern String mtb_Url_Encode(const char* str);
+extern String mtb_Format_Iso_Date(const String& isoDateTime);
+extern String mtb_Format_Iso_Time(const String& isoDateTime);
+extern String mtb_Format_Date_From_Timestamp(time_t timestamp);
+extern String mtb_Format_Time_From_Timestamp(time_t timestamp);
 extern String mtb_Get_Current_Time_RFC3339(void);
 
 
@@ -234,7 +234,7 @@ extern void mtb_App_Init(Mtb_Applications*, Mtb_Services* pointer_0 = nullptr, M
 
 // App Parser Functions
 extern void mtb_Launch_This_App(Mtb_Applications* dApp, do_Prev_App_t do_Prv_App = DESTROY_PREVIOUS_APP);
-extern void start_This_Service(Mtb_Services*);
+extern void mtb_Start_This_Service(Mtb_Services*);
 extern void resume_This_Service(Mtb_Services*);
 extern void suspend_This_Service(Mtb_Services*);
 extern void mtb_End_This_Service(Mtb_Services *);

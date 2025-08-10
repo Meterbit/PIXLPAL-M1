@@ -833,7 +833,7 @@ void drawLocalPNG_Task(void *dService){
 
 BaseType_t mtb_Draw_Local_Png(const PNG_LocalImage_t &dImage){
 	xQueueSend(pngLocalImageDrawer_Q, &dImage, 0);
-	start_This_Service(pngLocalImageDrawer_Sv);
+	mtb_Start_This_Service(pngLocalImageDrawer_Sv);
 	return 0;
 }
 
@@ -929,7 +929,7 @@ BaseType_t mtb_Draw_Local_Png(const PNG_LocalImage_t &dImage){
 
 // BaseType_t drawOnlinePNG(const PNG_OnlineImage_t &dImage){
 // 	xQueueSend(pngOnlineImageDrawer_Q, &dImage, 0);
-// 	start_This_Service(pngOnlineImageDrawer_Sv);
+// 	mtb_Start_This_Service(pngOnlineImageDrawer_Sv);
 // 	return 0;
 // }
 
@@ -1157,7 +1157,7 @@ void drawOnlinePNGs(const PNG_OnlineImage_t* images, size_t drawPNGsCount, ImgWi
 
 // BaseType_t drawOnlineSVG(const SVG_OnlineImage_t &dImage){
 // 	xQueueSend(svgOnlineImageDrawer_Q, &dImage, 0);
-// 	start_This_Service(svgOnlineImageDrawer_Sv);
+// 	mtb_Start_This_Service(svgOnlineImageDrawer_Sv);
 // 	return 0;
 // }
 

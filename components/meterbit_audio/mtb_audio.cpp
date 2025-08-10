@@ -47,7 +47,6 @@ EXT_RAM_BSS_ATTR Mtb_Services *mtb_AudioOut_Sv = new Mtb_Services(audioProcessin
 
 void audioProcessing_Task(void *d_Service){
   Mtb_Services *thisServ = (Mtb_Services *)d_Service;
-  String openai_key = "sk-svcacct-7TDOdEhvwntW7SrC1brgBH2VNmqXXhxKh2bLjobDdiecWv82WIvnNe_yQaFugvaoJFsIT3BlbkFJIa5_gMWvZw31-rfvKtWTAwNAnAK6uMRX1_FV2O-tmixbxpZ5Nfx40dKnHJSMSsaR6VQA";
   mtb_audioPlayer = new MTB_Audio();
   init_Mic_DAC_Audio_Processing_Peripherals();
   if(audioTextInfo_Q_H == NULL) audioTextInfo_Q_H = xQueueCreate(5, sizeof(AudioTextTransfer_T));

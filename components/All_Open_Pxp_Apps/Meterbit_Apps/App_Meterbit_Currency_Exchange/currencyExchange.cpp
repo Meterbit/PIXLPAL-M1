@@ -154,7 +154,7 @@ while (MTB_APP_IS_ACTIVE == pdTRUE){
             moreCurrencyData.mtb_Scroll_This_Text("LOW: " + String(low24), YELLOW);
             moreCurrencyData.mtb_Scroll_This_Text("OPEN: " + String(openPrice24), GREEN_CYAN);
             moreCurrencyData.mtb_Scroll_This_Text("PCPR: " + String(previouClosePrice24), ORANGE);
-            moreCurrencyData.mtb_Scroll_This_Text("TIME: " + unixTimeToReadable(present), YELLOW);
+            moreCurrencyData.mtb_Scroll_This_Text("TIME: " + mtb_Unix_Time_To_Readable(present), YELLOW);
 
     } else {
         ESP_LOGI(TAG, "Error on HTTP request: %d \n", httpCode);

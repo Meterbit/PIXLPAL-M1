@@ -282,6 +282,6 @@ void clock_Color_Change(JsonDocument& dCommand){
 //**13*********************************************************************************************************************
 void get_NTP_Local_Time(JsonDocument& dCommand){
   uint8_t cmd = dCommand["app_command"];
-  start_This_Service(sntp_Time_Sv);
+  mtb_Start_This_Service(sntp_Time_Sv);
   mtb_Ble_App_Cmd_Respond_Success(classicClockAppRoute, cmd, pdPASS);
 }

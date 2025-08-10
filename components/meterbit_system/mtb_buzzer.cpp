@@ -32,7 +32,7 @@ EXT_RAM_BSS_ATTR Mtb_Services *beep_Buzzer_Sv = new Mtb_Services(buzzer_Beep, &b
 void do_beep(uint8_t beep_Typ, uint8_t beep_Cnt){
     beep_COUNT = beep_Cnt;
     beep_TYPE = beep_Typ;
-    start_This_Service(beep_Buzzer_Sv);
+    mtb_Start_This_Service(beep_Buzzer_Sv);
 }
 
 void beepStop(TimerHandle_t timer200){

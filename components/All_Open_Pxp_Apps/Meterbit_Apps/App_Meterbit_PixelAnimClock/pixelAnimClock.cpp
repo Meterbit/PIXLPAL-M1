@@ -411,7 +411,7 @@ void setPixAnimClkColors(JsonDocument& dCommand){
 //**5*********************************************************************************************************************
 void requestNTP_Time(JsonDocument& dCommand){
   uint8_t cmdNumber = dCommand["app_command"];
-  start_This_Service(sntp_Time_Sv);
+  mtb_Start_This_Service(sntp_Time_Sv);
   mtb_Ble_App_Cmd_Respond_Success(pixelAnimClockAppRoute, cmdNumber, pdPASS);
 }
 

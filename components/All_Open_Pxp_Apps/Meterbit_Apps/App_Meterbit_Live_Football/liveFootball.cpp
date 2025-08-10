@@ -342,8 +342,8 @@ while(noOfShowCycles-->0){
     statsTitle->mtb_Write_Colored_String(leagueName, BLACK, TEAL);
 
     serialFixtures->mtb_Write_Colored_String(String(++matchIndex) + "/" + String(results), BLUE_GRAY);
-    dateFixtures->mtb_Write_Colored_String(formatDateFromTimestamp(time), GREEN_LIZARD);
-    timeFixtures->mtb_Write_Colored_String(formatTimeFromTimestamp(time), CYAN);
+    dateFixtures->mtb_Write_Colored_String(mtb_Format_Date_From_Timestamp(time), GREEN_LIZARD);
+    timeFixtures->mtb_Write_Colored_String(mtb_Format_Time_From_Timestamp(time), CYAN);
     vsFixtures->mtb_Write_Colored_String("vs", ASH_GRAY);
 
     String dTeams = homeTeam + " vs " + awayTeam;

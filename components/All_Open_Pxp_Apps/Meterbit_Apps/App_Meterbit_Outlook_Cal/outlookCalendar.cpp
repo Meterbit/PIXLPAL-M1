@@ -58,7 +58,7 @@ bool showOutlookTaskNotes      = true;
   void fetchAllOutlookCalendarEvents(const String& accessToken);
   void fetchOutlookTasks(const String& accessToken);
   void printOutlookCalThm(void);
-  String urlencode(const char* str);
+  String mtb_Url_Encode(const char* str);
 
 void outlookCalButtonControl(button_event_t){}
 //*************************************************************************************************** */
@@ -143,7 +143,7 @@ void fetchEventsForOutlookCalendar(const String& accessToken, const char* calend
   String currentTime = mtb_Get_Current_Time_RFC3339();
 
   String url = "https://www.outlook.apis.com/calendar/v3/calendars/";
-  url += urlencode(calendarId);  // URL-encode calendarId (e.g. contains @ symbol)
+  url += mtb_Url_Encode(calendarId);  // URL-encode calendarId (e.g. contains @ symbol)
   url += "/events?maxResults=5&orderBy=startTime&singleEvents=true&timeMin=" + currentTime;
 
   http.begin(url);
@@ -169,11 +169,11 @@ void fetchEventsForOutlookCalendar(const String& accessToken, const char* calend
       ESP_LOGI(TAG, "🕒 Time: %s to %s\n",
              (const char*)(event["start"]["dateTime"] | event["start"]["date"]),
              (const char*)(event["end"]["dateTime"] | event["end"]["date"]));
-      outlookEvent_Task_Date_1->mtb_Write_String(formatIsoDate((const char*)(event["start"]["dateTime"] | event["start"]["date"])));
-      outlookEvent_Task_Date_2->mtb_Write_String(formatIsoDate((const char*)(event["start"]["dateTime"] | event["start"]["date"])));
+      outlookEvent_Task_Date_1->mtb_Write_String(mtb_Format_Iso_Date((const char*)(event["start"]["dateTime"] | event["start"]["date"])));
+      outlookEvent_Task_Date_2->mtb_Write_String(mtb_Format_Iso_Date((const char*)(event["start"]["dateTime"] | event["start"]["date"])));
 
-      outlookEvent_Task_Time_1->mtb_Write_String(formatIsoTime((const char*)(event["start"]["dateTime"] | event["start"]["date"])));
-      outlookEvent_Task_Time_2->mtb_Write_String(formatIsoTime((const char*)(event["start"]["dateTime"] | event["start"]["date"])));
+      outlookEvent_Task_Time_1->mtb_Write_String(mtb_Format_Iso_Time((const char*)(event["start"]["dateTime"] | event["start"]["date"])));
+      outlookEvent_Task_Time_2->mtb_Write_String(mtb_Format_Iso_Time((const char*)(event["start"]["dateTime"] | event["start"]["date"])));
     }
 
     // if (showEventStatus) {
