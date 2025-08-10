@@ -20,7 +20,7 @@
 #include "outlookCalendar.h"
 #include "mtb_graphics.h"
 
-static const char *TAG = "PXP_OUTLOOK_CAL";
+static const char *TAG = "OUTLOOK_CAL";
 
 const String CLIENT_ID = "";
 const String CLIENT_SECRET = "";
