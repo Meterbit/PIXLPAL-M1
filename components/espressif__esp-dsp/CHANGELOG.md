@@ -59,7 +59,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.4.7] 2023-07-13
 
 ### Changed
-- Demo applications added to the component manager as examples 
+- Demo Mtb_Applications added to the component manager as examples 
 
 ## [1.4.6] 2023-07-11
 

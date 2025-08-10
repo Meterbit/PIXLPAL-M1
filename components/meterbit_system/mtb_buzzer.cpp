@@ -27,7 +27,7 @@ EXT_RAM_BSS_ATTR TaskHandle_t beepTaskHandle = NULL;
 uint8_t beep_TYPE = 0;
 uint8_t beep_COUNT = 0;
 
-EXT_RAM_BSS_ATTR Services *beep_Buzzer_Sv = new Services(buzzer_Beep, &beepTaskHandle, "Beep Sound", 2048, 3, pdTRUE);
+EXT_RAM_BSS_ATTR Mtb_Services *beep_Buzzer_Sv = new Mtb_Services(buzzer_Beep, &beepTaskHandle, "Beep Sound", 2048, 3, pdTRUE);
 
 void do_beep(uint8_t beep_Typ, uint8_t beep_Cnt){
     beep_COUNT = beep_Cnt;
@@ -50,14 +50,14 @@ void make_Beep(TimerHandle_t dTimer_H){
 }
 
 void buzzer_Beep(void* dService){         // Beep sound task
-Services *thisServ = (Services *)dService;
+Mtb_Services *thisServ = (Mtb_Services *)dService;
     uint8_t beep_TRACK;
     if(beep_Duration_Sem == NULL) beep_Duration_Sem = xSemaphoreCreateBinary();
     if(beepTimerHandle200 == NULL) beepTimerHandle200 = xTimerCreate("beepTimer200", pdMS_TO_TICKS(200), pdFALSE, NULL, beepStop);
     if(beepTimerHandle1000 == NULL) beepTimerHandle1000 = xTimerCreate("beepTimer1000", pdMS_TO_TICKS(1000), pdFALSE, NULL, beepStop);
     if(beepTimerHandle10 == NULL) beepTimerHandle10 = xTimerCreate("beepTimer200", pdMS_TO_TICKS(10), pdFALSE, NULL, beepStop);
         
-    while(beep_COUNT-->0 && THIS_SERV_IS_ACTIVE){
+    while(beep_COUNT-->0 && MTB_SERV_IS_ACTIVE){
         beep_TRACK = beep_TYPE;
         switch (beep_TYPE){
         case BEEP_0: 
@@ -88,8 +88,8 @@ Services *thisServ = (Services *)dService;
             break;
         }
         delay(1000);
-        //printf("ONE SEC DELAY\n");
+        //ESP_LOGI(TAG, "ONE SEC DELAY\n");
     }
 // CREATED TIMERS IN THIS TASK SHOULD BE DELETED HERE IF NEEDED.
-    kill_This_Service(thisServ);
+    mtb_End_This_Service(thisServ);
 }

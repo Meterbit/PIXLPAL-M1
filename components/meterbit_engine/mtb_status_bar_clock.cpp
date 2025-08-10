@@ -11,15 +11,15 @@
 
 EXT_RAM_BSS_ATTR TaskHandle_t statusBarClock_H = NULL;
 
-EXT_RAM_BSS_ATTR Services *statusBarClock_Sv = new Services(statusBarClock, &statusBarClock_H, "StatBar Clk Serv.", 4096, 1, pdTRUE);
+EXT_RAM_BSS_ATTR Mtb_Services *mtb_Status_Bar_Clock_Sv = new Mtb_Services(statusBarClock, &statusBarClock_H, "StatBar Clk Serv.", 4096, 1, pdTRUE);
 
 void statusBarClock(void* dService){
-  Services *thisServ = (Services *)dService;
-  Applications::currentRunningApp->showStatusBarClock = pdTRUE;
+  Mtb_Services *thisServ = (Mtb_Services *)dService;
+  Mtb_Applications::currentRunningApp->showStatusBarClock = pdTRUE;
     uint8_t timeRefresh = pdTRUE;
-    read_struct_from_nvs("Clock Cols", &clk_Updt, sizeof(Clock_Colors));
-    FixedText_t hr_min_Obj(52, 1, Terminal6x8, clk_Updt.hourMinColour);
-    FixedText_t mnth_day_Obj(93, 1, Terminal6x8, clk_Updt.dateColour);
+    mtb_Read_Nvs_Struct("Clock Cols", &clk_Updt, sizeof(Clock_Colors));
+    Mtb_FixedText_t hr_min_Obj(52, 1, Terminal6x8, clk_Updt.hourMinColour);
+    Mtb_FixedText_t mnth_day_Obj(93, 1, Terminal6x8, clk_Updt.dateColour);
     char rtc_Hr_Min[10] = {0};
     char rtc_Dated[10] = {0};
     time_t present = 0;
@@ -30,11 +30,11 @@ void statusBarClock(void* dService){
     uint8_t pre_Day = 111;
     uint8_t pre_Month = 111;
 
-  while (THIS_SERV_IS_ACTIVE == pdTRUE){
+  while (MTB_SERV_IS_ACTIVE == pdTRUE){
     time(&present);
     now = localtime(&present);
   if((now->tm_year) < 124){
-    //printf("Time is not correct. The year is: %d\n", now->tm_year);
+    //ESP_LOGI(TAG, "Time is not correct. The year is: %d\n", now->tm_year);
   }else{
 //*************************************************
   if (pre_Hr != now->tm_hour || timeRefresh){
@@ -78,7 +78,7 @@ void statusBarClock(void* dService){
   rtc_Hr_Min[2] = ':';
 
   rtc_Hr_Min[5] = 0;
-  hr_min_Obj.writeString(rtc_Hr_Min);
+  hr_min_Obj.mtb_Write_String(rtc_Hr_Min);
 }
 
 if (pre_Month != now->tm_mon  || timeRefresh){
@@ -126,7 +126,7 @@ if(pre_Day != now->tm_mday  || timeRefresh){
 	}
     rtc_Dated[3] = ' ';
     rtc_Dated[6] = 0;
-    mnth_day_Obj.writeString(rtc_Dated);
+    mnth_day_Obj.mtb_Write_String(rtc_Dated);
   }
 
   }
@@ -134,13 +134,13 @@ if(pre_Day != now->tm_mday  || timeRefresh){
   hr_min_Obj.color = clk_Updt.hourMinColour;
   timeRefresh = pdTRUE;
   } else{
-    //printf("Hello Status Clock\n");
+    //ESP_LOGI(TAG, "Hello Status Clock\n");
     timeRefresh = pdFALSE;
     vTaskDelay(pdMS_TO_TICKS(1000));  
   }
 }
 
-kill_This_Service(thisServ);
+mtb_End_This_Service(thisServ);
 }
 
 

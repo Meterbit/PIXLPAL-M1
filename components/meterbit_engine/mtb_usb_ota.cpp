@@ -35,25 +35,25 @@ void startEncoder_USB_SPIFFS_UPDATE(rotary_encoder_rotation_t);
 
 //***************************************************************************************************
 void  firmwareUpdateTask(void* dApplication){
-    Applications *thisApp = (Applications *) dApplication;
-    thisApp->app_ButtonFn_ptr = startButton_USB_OTA_UPDATE;
-    thisApp->app_EncoderFn_ptr = startEncoder_USB_SPIFFS_UPDATE;
-    appsInitialization(thisApp);
+    Mtb_Applications *thisApp = (Mtb_Applications *) dApplication;
+    thisApp->mtb_App_ButtonFn_ptr = startButton_USB_OTA_UPDATE;
+    thisApp->mtb_App_EncoderFn_ptr = startEncoder_USB_SPIFFS_UPDATE;
+    mtb_App_Init(thisApp);
     
 //****************************************************************************************************************************
-    FixedText_t otaTextTop(16, 18, Terminal8x12);
-    FixedText_t otaTextBotm(16, 31, Terminal8x12);
+    Mtb_FixedText_t otaTextTop(16, 18, Terminal8x12);
+    Mtb_FixedText_t otaTextBotm(16, 31, Terminal8x12);
 //****************************************************************************************************************************
     
     if(litFS_Ready){
         uint8_t countdown = panelBrightness, countup = 0;
-        // drawGIF("/mtblg/mtbStart.gif", 0, 0, 1);
+        // mtb_draw_gif("/mtblg/mtbStart.gif", 0, 0, 1);
         // delay(1000);
         // while (countdown-- > 0){
         //     dma_display->setBrightness(countdown);
         //     delay(10);
         // }      
-        drawLocalPNG({"/mtblg/pixlpal.png", 0, 0});
+        mtb_Draw_Local_Png({"/mtblg/pixlpal.png", 0, 0});
         while(countup++ < panelBrightness){
             dma_display->setBrightness(countup);
             delay(20);
@@ -61,38 +61,38 @@ void  firmwareUpdateTask(void* dApplication){
     }
     set_Status_RGB_LED(MAGENTA);
 do{
-    if(Applications::firmwareOTA_Status > 6){
-        printf("Code entered USB Firmware Update\n");
+    if(Mtb_Applications::firmwareOTA_Status > 6){
+        ESP_LOGI(TAG, "Code entered USB Firmware Update\n");
         dma_display->clearScreen();
         uint8_t attemptResult = attemptUSB_FirmwareUpdate();
         if(attemptResult == pdPASS) attemptUSB_SPIFFSUpdate();
         else break;
-        Applications::firmwareOTA_Status = pdTRUE;
-    } else if (Applications::spiffsOTA_Status > 6){
-        printf("Code entered USB Firmware Update\n");
+        Mtb_Applications::firmwareOTA_Status = pdTRUE;
+    } else if (Mtb_Applications::spiffsOTA_Status > 6){
+        ESP_LOGI(TAG, "Code entered USB Firmware Update\n");
         dma_display->clearScreen();
         start_This_Service(usb_Mass_Storage_Sv);
         uint8_t attemptResult = attemptUSB_SPIFFSUpdate();
         if(attemptResult != pdPASS) break;
-        Applications::spiffsOTA_Status = pdTRUE;
+        Mtb_Applications::spiffsOTA_Status = pdTRUE;
     } else delay(1000);
-} while (Applications::firmwareOTA_Status--> pdTRUE && Applications::spiffsOTA_Status--> pdTRUE);
+} while (Mtb_Applications::firmwareOTA_Status--> pdTRUE && Mtb_Applications::spiffsOTA_Status--> pdTRUE);
 
     set_Status_RGB_LED(YELLOW);
 
 //************************************************************************************************************************************
-    Applications::firmwareOTA_Status = pdFALSE;
-    Applications::spiffsOTA_Status = pdFALSE;
+    Mtb_Applications::firmwareOTA_Status = pdFALSE;
+    Mtb_Applications::spiffsOTA_Status = pdFALSE;
 
-    while (THIS_APP_IS_ACTIVE == pdTRUE) delay(2000);
-    kill_This_App(thisApp);
+    while (MTB_APP_IS_ACTIVE == pdTRUE) delay(2000);
+    mtb_End_This_App(thisApp);
 }
 
 static void msc_ota_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data){
 //***************************************************************************************************
-    static FixedText_t usbOTA_Text(8, 39, Terminal8x12, LEMON_YELLOW);
-    static FixedText_t otaProgressText(8, 52, Terminal8x12, GREEN);
-    static FixedText_t otaProgressPercentage(95, 52, Terminal8x12, WHITE);
+    static Mtb_FixedText_t usbOTA_Text(8, 39, Terminal8x12, LEMON_YELLOW);
+    static Mtb_FixedText_t otaProgressText(8, 52, Terminal8x12, GREEN);
+    static Mtb_FixedText_t otaProgressPercentage(95, 52, Terminal8x12, WHITE);
 
     static char softProgress[12] = {0};
 
@@ -104,21 +104,21 @@ static void msc_ota_event_handler(void *arg, esp_event_base_t event_base, int32_
         ESP_LOGI(TAG, "ESP_MSC_OTA_READY_UPDATE");
             if(litFS_Ready){
             PNG_LocalImage_t otaUSB_Image {"/batIcons/otaUSB.png", 0, 0};
-            drawLocalPNG(otaUSB_Image);
+            mtb_Draw_Local_Png(otaUSB_Image);
             }
-            usbOTA_Text.writeString("SOFTWARE UPDATE");
-            otaProgressText.writeString("PROGRESS: ");
+            usbOTA_Text.mtb_Write_String("SOFTWARE UPDATE");
+            otaProgressText.mtb_Write_String("PROGRESS: ");
         break;
     case ESP_MSC_OTA_WRITE_FLASH:{
         float progress = *(float *)event_data;
         int completed = progress * 100;
         sprintf(softProgress, "%d", completed);
         strcat(softProgress, "%");
-        otaProgressPercentage.writeString(softProgress);
+        otaProgressPercentage.mtb_Write_String(softProgress);
         break;}
     case ESP_MSC_OTA_FAILED:
         ESP_LOGI(TAG, "ESP_MSC_OTA_FAILED");
-        otaProgressText.writeColoredString("FAILED... ", RED);
+        otaProgressText.mtb_Write_Colored_String("FAILED... ", RED);
         break;
     case ESP_MSC_OTA_GET_IMG_DESC:
         ESP_LOGI(TAG, "ESP_MSC_OTA_GET_IMG_DESC");
@@ -133,11 +133,11 @@ static void msc_ota_event_handler(void *arg, esp_event_base_t event_base, int32_
         break;}
     case ESP_MSC_OTA_FINISH:
         ESP_LOGI(TAG, "ESP_MSC_OTA_FINISH");
-        otaProgressText.writeColoredString("SUCCESSFUL", CYAN);
+        otaProgressText.mtb_Write_Colored_String("SUCCESSFUL", CYAN);
         break;
     case ESP_MSC_OTA_ABORT:
         ESP_LOGI(TAG, "ESP_MSC_OTA_ABORT");
-        otaProgressText.writeColoredString("ABORTED... ", ORANGE);
+        otaProgressText.mtb_Write_Colored_String("ABORTED... ", ORANGE);
         break;
     }
 }
@@ -199,7 +199,7 @@ uint8_t attemptUSB_SPIFFSUpdate(void){
 uint8_t checkMountAttempts = 5;
 
 while (checkMountAttempts-- > 0) {
-    if (Applications::usbPenDriveConnectStatus == true && Applications::usbPenDriveMounted == true) {  
+    if (Mtb_Applications::usbPenDriveConnectStatus == true && Mtb_Applications::usbPenDriveMounted == true) {  
         ESP_LOGI(TAG, "USB is mounted, proceeding with SPIFFS update");
         
         File file = USBFS.open("/spiffs.bin", "r");
@@ -287,7 +287,7 @@ void startButton_USB_OTA_UPDATE (button_event_t button_Data){
             break;
 
             case BUTTON_PRESSED:
-            Applications::firmwareOTA_Status = 10;
+            Mtb_Applications::firmwareOTA_Status = 10;
             do_beep(CLICK_BEEP);
             break;
 
@@ -295,7 +295,7 @@ void startButton_USB_OTA_UPDATE (button_event_t button_Data){
             break;
 
             case BUTTON_CLICKED:
-            //printf("Button Clicked: %d Times\n",button_Data.count);
+            //ESP_LOGI(TAG, "Button Clicked: %d Times\n",button_Data.count);
             switch (button_Data.count){
             case 1:
                 break;
@@ -314,10 +314,10 @@ void startButton_USB_OTA_UPDATE (button_event_t button_Data){
 
 void startEncoder_USB_SPIFFS_UPDATE(rotary_encoder_rotation_t direction){
 if (direction == ROT_CLOCKWISE){
-    Applications::spiffsOTA_Status = 10;
+    Mtb_Applications::spiffsOTA_Status = 10;
     do_beep(CLICK_BEEP);
 } else if(direction == ROT_COUNTERCLOCKWISE){
-    Applications::spiffsOTA_Status = 10;
+    Mtb_Applications::spiffsOTA_Status = 10;
     do_beep(CLICK_BEEP);
 }
 }

@@ -147,7 +147,7 @@ A simplified skeleton of a GIF viewer may look like this:
 
 GIFs can mark a certain color in the palette as the "Background Color".
 Pixels having this  color are usually treated as  transparent pixels by
-applications.
+Mtb_Applications.
 
 The function `gd_is_bgcolor()`  can be used to check whether  a pixel in
 the canvas currently has background color.

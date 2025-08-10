@@ -19,7 +19,7 @@
 #include "mtb_gif_parser.h"
 //#include "esp_heap_caps.h"
 
-uint8_t drawGIF(const char *dGifPath, uint16_t xAxis, uint16_t yAxis, uint32_t loopCounter){
+uint8_t mtb_draw_gif(const char *dGifPath, uint16_t xAxis, uint16_t yAxis, uint32_t loopCounter){
 	if(litFS_Ready != pdTRUE) return 1;		// No reading from littlefs if the otaStorage was not successful.
 	String imageFilePath = "/littlefs" + String(dGifPath);
 	uint16_t width, height, colorHolder;
@@ -51,7 +51,7 @@ uint8_t drawGIF(const char *dGifPath, uint16_t xAxis, uint16_t yAxis, uint32_t l
 		return 0;
 	}
 	else
-		//printf("Gif Dimensions is: Width = %d; Height = %d;\n", width, height);
+		//ESP_LOGI(TAG, "Gif Dimensions is: Width = %d; Height = %d;\n", width, height);
 	gd_close_gif(gif);
 	return 1;
 }

@@ -3234,7 +3234,7 @@ void ESP_Mail_Client::saveHeader(IMAPSession *imap, bool json)
 
     MB_String headerFilePath;
 
-    prepareFilePath(imap, headerFilePath, true);
+    mtb_Prepare_Flash_File_Path(imap, headerFilePath, true);
 
     headerFilePath += json ? esp_mail_str_65 /* "/header.json" */ : esp_mail_str_66 /* "/header.txt" */;
 
@@ -4239,7 +4239,7 @@ void ESP_Mail_Client::decodeText(IMAPSession *imap, esp_mail_imap_response_data 
 
             bool dlMsg = (rfc822_body_subtype && imap->_imap_data->download.rfc822) || (!rfc822_body_subtype && ((cPart(imap)->msg_type == esp_mail_msg_type_html && imap->_imap_data->download.html) || ((cPart(imap)->msg_type == esp_mail_msg_type_plain || cPart(imap)->msg_type == esp_mail_msg_type_enriched) && imap->_imap_data->download.text)));
             if (dlMsg)
-                prepareFilePath(imap, res.filePath, false);
+                mtb_Prepare_Flash_File_Path(imap, res.filePath, false);
 
             if (res.filePath.length() == 0)
             {
@@ -4504,7 +4504,7 @@ void ESP_Mail_Client::sendStreamCB(IMAPSession *imap, void *buf, size_t len, int
     }
 }
 
-void ESP_Mail_Client::prepareFilePath(IMAPSession *imap, MB_String &filePath, bool header)
+void ESP_Mail_Client::mtb_Prepare_Flash_File_Path(IMAPSession *imap, MB_String &filePath, bool header)
 {
     bool rfc822_body_subtype = cPart(imap)->message_sub_type == esp_mail_imap_message_sub_type_rfc822;
     MB_String fpath = imap->_imap_data->storage.saved_path;

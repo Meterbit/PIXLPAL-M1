@@ -2,7 +2,7 @@
 
 This guide describes the required changes to existing projects migrating from the original bluedroid API to NimBLE.
 
-**The changes listed here are only the required changes that must be made**, and a short overview of options for migrating existing applications.
+**The changes listed here are only the required changes that must be made**, and a short overview of options for migrating existing Mtb_Applications.
 
 For more information on the improvements and additions please refer to the [class documentation](https://h2zero.github.io/esp-nimble-cpp/annotated.html)
 
@@ -37,7 +37,7 @@ All classes are accessible by including `NimBLEDevice.h` in your application, no
 Class names remain the same as the original with the addition of a "Nim" prefix.
 For example `BLEDevice` is now `NimBLEDevice` and `BLEServer` is now `NimBLEServer` etc.
 
-For convenience definitions have been added to allow applications to use either name for all classes this means **no class names need to be changed in existing code** and makes migrating easier.  
+For convenience definitions have been added to allow Mtb_Applications to use either name for all classes this means **no class names need to be changed in existing code** and makes migrating easier.  
 <br/>
 
 ### BLE Addresses

@@ -41,7 +41,7 @@ LDFLAGS_GCC += -nostartfiles --specs=nosys.specs --specs=nano.specs
 SIGNED_BUILD ?= 0
 DEFAULT_FLASH = flash-jlink
 
-# If the applications needs to be signed (for the MAX32651), sign it first and
+# If the Mtb_Applications needs to be signed (for the MAX32651), sign it first and
 # then need to use MSDK's OpenOCD to flash it
 # Also need to include the __SLA_FWK__ define to enable the signed header into
 # memory

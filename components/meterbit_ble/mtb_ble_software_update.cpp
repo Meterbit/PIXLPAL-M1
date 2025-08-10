@@ -45,7 +45,7 @@ void softwareUpdate(JsonDocument& dCommand) {
             break;
 
         default:
-            printf("pxpBLE Settings Number not Recognised.\n");
+            ESP_LOGI(TAG, "pxpBLE Settings Number not Recognised.\n");
             break;
     }
 }
@@ -54,7 +54,7 @@ void softwareUpdate(JsonDocument& dCommand) {
 void mtb_Current_Software_Version(const char* curVer, const char* verDate, const char* wifiMac, const char* bleMac) {
 String verHeader = "{\"pxp_command\": 1, \"curVersion\": \"";
 String currentVersion = verHeader + String(curVer) + "\", \"curDate\": \"" + String(verDate) + "\", \"wifiMac\": \"" + String(wifiMac) + "\", \"bleMac\": \"" + String(bleMac) + "\"}";
-//printf("Current Software Version: %s\n", currentVersion.c_str());
+//ESP_LOGI(TAG, "Current Software Version: %s\n", currentVersion.c_str());
 bleSettingsComSend(mtb_Software_Update_Route, currentVersion);
 }
 
@@ -63,7 +63,7 @@ void attemptSoftwareUpdate(JsonDocument& dCommand){
 
 String failure = "{\"pxp_command\": 2, \"response\": 0}";
 
-if(Applications::internetConnectStatus == pdTRUE){
+if(Mtb_Applications::internetConnectStatus == pdTRUE){
   mtb_Launch_This_App(otaUpdateApplication_App, IGNORE_PREVIOUS_APP);
 } else{
   bleSettingsComSend(mtb_Software_Update_Route, failure);

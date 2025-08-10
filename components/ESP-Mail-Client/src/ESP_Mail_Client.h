@@ -1663,7 +1663,7 @@ private:
   void sendStreamCB(IMAPSession *imap, void *buf, size_t len, int chunkIndex, bool hrdBrk);
 
   // Prepare file path for saving
-  void prepareFilePath(IMAPSession *imap, MB_String &filePath, bool header);
+  void mtb_Prepare_Flash_File_Path(IMAPSession *imap, MB_String &filePath, bool header);
 
   // Decode text and store it to buffer or file
   void decodeText(IMAPSession *imap, esp_mail_imap_response_data &res);

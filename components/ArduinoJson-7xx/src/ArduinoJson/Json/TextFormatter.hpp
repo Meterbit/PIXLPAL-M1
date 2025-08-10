@@ -36,7 +36,7 @@ class TextFormatter {
       writeRaw("false");
   }
 
-  void writeString(const char* value) {
+  void mtb_Write_String(const char* value) {
     ARDUINOJSON_ASSERT(value != NULL);
     writeRaw('\"');
     while (*value)
@@ -44,7 +44,7 @@ class TextFormatter {
     writeRaw('\"');
   }
 
-  void writeString(const char* value, size_t n) {
+  void mtb_Write_String(const char* value, size_t n) {
     ARDUINOJSON_ASSERT(value != NULL);
     writeRaw('\"');
     while (n--)

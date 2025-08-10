@@ -187,7 +187,7 @@
 #define CFG_TUD_AUDIO_EP_IN_FLOW_CONTROL  1
 #endif
 
-// Enable/disable feedback EP (required for asynchronous RX applications)
+// Enable/disable feedback EP (required for asynchronous RX Mtb_Applications)
 #ifndef CFG_TUD_AUDIO_ENABLE_FEEDBACK_EP
 #define CFG_TUD_AUDIO_ENABLE_FEEDBACK_EP                    0                             // Feedback - 0 or 1
 #endif

@@ -27,7 +27,7 @@ Then, the Espressif TinyUSB component will be added automatically during resolvi
 
 ### 2. Use component directly
 
-Use this option for custom TinyUSB applications.
+Use this option for custom TinyUSB Mtb_Applications.
 In this case you will have to provide configuration header file ``tusb_config.h``. More information about TinyUSB configuration can be found [in official TinyUSB documentation](https://docs.tinyusb.org/en/latest/reference/getting_started.html).
 
 You will also have to tell TinyUSB where to find the configuration file. This can be achieved by adding following CMake snippet to you main component's ``CMakeLists.txt``:

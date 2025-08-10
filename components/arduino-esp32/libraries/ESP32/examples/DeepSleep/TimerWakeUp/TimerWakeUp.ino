@@ -3,7 +3,7 @@ Simple Deep Sleep with Timer Wake Up
 =====================================
 ESP32 offers a deep sleep mode for effective power
 saving as power is an important factor for IoT
-applications. In this mode CPUs, most of the RAM,
+Mtb_Applications. In this mode CPUs, most of the RAM,
 and all the digital peripherals which are clocked
 from APB_CLK are powered off. The only parts of
 the chip which can still be powered on are:

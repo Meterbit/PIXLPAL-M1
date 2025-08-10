@@ -274,7 +274,7 @@ the functions and tracking in the host stack.
 - `NimBLEAdvertising::setManufacturerData` Overload that takes a `const uint8_t*` and , size_t` parameter.
 - `NimBLEAdvertising::setServiceData` Overload that takes `const NimBLEUUID& uuid`, ` const uint8_t* data`, ` size_t length` as parameters.
 - `NimBLEAdvertising::setServiceData` Overload that takes `const NimBLEUUID& uuid`, `const std::vector<uint8_t>&` as parameters.
-- `NimBLEAdvertising::setDiscoverableMode` to allow applications to control the discoverability of the advertiser.
+- `NimBLEAdvertising::setDiscoverableMode` to allow Mtb_Applications to control the discoverability of the advertiser.
 - `NimBLEAdvertising::setAdvertisingCompleteCallback` sets the callback to call when advertising ends.
 - `NimBLEAdvertising::setPreferredParams` that takes the min and max preferred connection parameters as an alternative for `setMinPreferred` and `setMaxPreferred`.
 - `NimBLEAdvertising::setAdvertisingInterval` Sets the advertisement interval for min and max to the same value instead of calling `setMinInterval` and `setMaxInterval` separately if there is not value difference.

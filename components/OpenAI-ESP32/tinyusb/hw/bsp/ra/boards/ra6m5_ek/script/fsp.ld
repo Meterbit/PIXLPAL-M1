@@ -166,7 +166,7 @@ SECTIONS
         __Vectors_End = .;
 
         /* Some devices have a gap of code flash between the vector table and ROM Registers.
-         * The flash gap section allows applications to place code and data in this section. */
+         * The flash gap section allows Mtb_Applications to place code and data in this section. */
         *(.flash_gap*)
 
         /* ROM Registers start at address 0x00000400 for devices that do not have the OPTION_SETTING region. */

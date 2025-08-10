@@ -14,12 +14,12 @@
 StaticQueue_t xQueueStorage_Scrolls[5];
 EXT_RAM_BSS_ATTR TaskHandle_t scrollText_Handles[5] = {NULL};
 EXT_RAM_BSS_ATTR QueueHandle_t scroll_Q[5] = {NULL};
-EXT_RAM_BSS_ATTR Services* scroll_Tasks_Sv[5];
-ScrollText_t* ScrollText_t::scrollTask_HolderPointers[5] = {nullptr};
+EXT_RAM_BSS_ATTR Mtb_Services* scroll_Tasks_Sv[5];
+Mtb_ScrollText_t* Mtb_ScrollText_t::scrollTask_HolderPointers[5] = {nullptr};
 //**************************************************************************************
-ScrollText_t statusBarNotif (PINK_FLAMINGO);
+Mtb_ScrollText_t statusBarNotif (PINK_FLAMINGO);
 //**************************************************************************************
-ScrollText_t::ScrollText_t(uint16_t c, uint16_t p, uint8_t makeBeep){
+Mtb_ScrollText_t::Mtb_ScrollText_t(uint16_t c, uint16_t p, uint8_t makeBeep){
     xPos = 0;
     yPos = 1;
     width = 128;
@@ -31,7 +31,7 @@ ScrollText_t::ScrollText_t(uint16_t c, uint16_t p, uint8_t makeBeep){
     height = font[6];
 }
 
-ScrollText_t::ScrollText_t(uint16_t xAxis, uint16_t yAxis, uint16_t width, uint16_t color){
+Mtb_ScrollText_t::Mtb_ScrollText_t(uint16_t xAxis, uint16_t yAxis, uint16_t width, uint16_t color){
     xPos = xAxis;
     yPos = yAxis;
     width = width;
@@ -43,7 +43,7 @@ ScrollText_t::ScrollText_t(uint16_t xAxis, uint16_t yAxis, uint16_t width, uint1
     height = font[6];
 }
 //**************************************************************************************
-ScrollText_t::ScrollText_t(uint16_t x, uint16_t y, uint16_t w, uint16_t c, uint16_t s, uint16_t p, const uint8_t * f, uint64_t scr_hld, uint8_t makeBeep){
+Mtb_ScrollText_t::Mtb_ScrollText_t(uint16_t x, uint16_t y, uint16_t w, uint16_t c, uint16_t s, uint16_t p, const uint8_t * f, uint64_t scr_hld, uint8_t makeBeep){
     xPos = x;
     yPos = y;
     width = w;
@@ -68,7 +68,7 @@ int countCharOccurrences(const char *str, char ch) {
     return count;
 }
 //**************************************************************************************
-void ScrollText_t::scrollString(){
+void Mtb_ScrollText_t::scrollString(){
     uint32_t scroll_Length = span + width;
     uint8_t yPos2 = font[6] + yPos;
     uint8_t xPos2 = width + xPos;
@@ -100,28 +100,28 @@ void ScrollText_t::scrollString(){
 }
 //**************************************************************************************
 void scrollText_0_Task(void* dService){
-    Services *thisService = (Services*) dService;
-    if(Applications::currentRunningApp->showStatusBarClock == pdTRUE) statusBarClock_Sv->service_is_Running = pdFALSE;      // End the status bar clock service.
+    Mtb_Services *thisService = (Mtb_Services*) dService;
+    if(Mtb_Applications::currentRunningApp->showStatusBarClock == pdTRUE) mtb_Status_Bar_Clock_Sv->service_is_Running = pdFALSE;      // End the status bar clock service.
 
-    ScrollText_t holder;
-    ScrollText_t::scrollTask_HolderPointers[0] = &holder;
+    Mtb_ScrollText_t holder;
+    Mtb_ScrollText_t::scrollTask_HolderPointers[0] = &holder;
 
     while ((xQueuePeek(scroll_Q[0], &holder, pdMS_TO_TICKS(100)) == pdTRUE)){
-        if(Applications::currentRunningApp->fullScreen == false) holder.scrollString();
+        if(Mtb_Applications::currentRunningApp->fullScreen == false) holder.scrollString();
             xQueueReceive(scroll_Q[0], &holder, pdMS_TO_TICKS(100));
             for(int i = 0; i < holder.stretch; i++) free(holder.dText_Raw[i]);
             free(holder.dText_Raw);
         }
     drawStatusBar();
-    if(Applications::currentRunningApp->showStatusBarClock == pdTRUE) start_This_Service(statusBarClock_Sv);
+    if(Mtb_Applications::currentRunningApp->showStatusBarClock == pdTRUE) start_This_Service(mtb_Status_Bar_Clock_Sv);
     //delay(1000); // Wait for 1 second before killing the service.
-    kill_This_Service(thisService);
+    mtb_End_This_Service(thisService);
 }
 //**************************************************************************************
 void scrollText_1_Task(void* dService){
-    Services *thisService = (Services*) dService;
-    ScrollText_t holder;
-    ScrollText_t::scrollTask_HolderPointers[1] = &holder;
+    Mtb_Services *thisService = (Mtb_Services*) dService;
+    Mtb_ScrollText_t holder;
+    Mtb_ScrollText_t::scrollTask_HolderPointers[1] = &holder;
     
     while(xQueuePeek(scroll_Q[1], &holder, pdMS_TO_TICKS(100)) == pdTRUE){
     holder.scrollString();
@@ -129,13 +129,13 @@ void scrollText_1_Task(void* dService){
     for(int i = 0; i < holder.stretch; i++) free(holder.dText_Raw[i]);
     free(holder.dText_Raw);
     }
-    kill_This_Service(thisService);
+    mtb_End_This_Service(thisService);
 }
 //**************************************************************************************
 void scrollText_2_Task(void* dService){
-    Services *thisService = (Services*) dService;
-    ScrollText_t holder;
-    ScrollText_t::scrollTask_HolderPointers[2] = &holder;
+    Mtb_Services *thisService = (Mtb_Services*) dService;
+    Mtb_ScrollText_t holder;
+    Mtb_ScrollText_t::scrollTask_HolderPointers[2] = &holder;
 
     while(xQueuePeek(scroll_Q[2], &holder, pdMS_TO_TICKS(100)) == pdTRUE){
         holder.scrollString();
@@ -143,13 +143,13 @@ void scrollText_2_Task(void* dService){
     for(int i = 0; i < holder.stretch; i++) free(holder.dText_Raw[i]);
     free(holder.dText_Raw);
     }
-    kill_This_Service(thisService);
+    mtb_End_This_Service(thisService);
 }
 //**************************************************************************************
 void scrollText_3_Task(void* dService){
-    Services *thisService = (Services*) dService;
-    ScrollText_t holder;
-    ScrollText_t::scrollTask_HolderPointers[3] = &holder;
+    Mtb_Services *thisService = (Mtb_Services*) dService;
+    Mtb_ScrollText_t holder;
+    Mtb_ScrollText_t::scrollTask_HolderPointers[3] = &holder;
 
     while(xQueuePeek(scroll_Q[3], &holder, pdMS_TO_TICKS(100)) == pdTRUE){
         holder.scrollString();
@@ -158,13 +158,13 @@ void scrollText_3_Task(void* dService){
     free(holder.dText_Raw);
     }
 
-    kill_This_Service(thisService);
+    mtb_End_This_Service(thisService);
 }
 //**************************************************************************************
 void scrollText_4_Task(void* dService){
-    Services *thisService = (Services*) dService;
-    ScrollText_t holder;
-    ScrollText_t::scrollTask_HolderPointers[4] = &holder;
+    Mtb_Services *thisService = (Mtb_Services*) dService;
+    Mtb_ScrollText_t holder;
+    Mtb_ScrollText_t::scrollTask_HolderPointers[4] = &holder;
 
     while(xQueuePeek(scroll_Q[4], &holder, pdMS_TO_TICKS(100)) == pdTRUE){
         holder.scrollString();
@@ -173,14 +173,14 @@ void scrollText_4_Task(void* dService){
     free(holder.dText_Raw);
     }
 
-    kill_This_Service(thisService);
+    mtb_End_This_Service(thisService);
 }
 //**************************************************************************************
 void  text_Scrolls_Init(void){
     for (uint8_t i = 0; i < 5; i++){
-    uint8_t *scrollQueues_buffer = (uint8_t *)heap_caps_malloc(40 * sizeof(ScrollText_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
-    scroll_Q[i] = xQueueCreateStatic(40, sizeof(ScrollText_t), scrollQueues_buffer, &xQueueStorage_Scrolls[i]); // These Queues live forever on device startup.
-    scroll_Tasks_Sv[i] = (Services*) new Services();
+    uint8_t *scrollQueues_buffer = (uint8_t *)heap_caps_malloc(40 * sizeof(Mtb_ScrollText_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+    scroll_Q[i] = xQueueCreateStatic(40, sizeof(Mtb_ScrollText_t), scrollQueues_buffer, &xQueueStorage_Scrolls[i]); // These Queues live forever on device startup.
+    scroll_Tasks_Sv[i] = (Mtb_Services*) new Mtb_Services();
     }
     for (uint8_t v = 0; v < 5; v++){
         scroll_Tasks_Sv[v]->serviceT_Handle_ptr = &scrollText_Handles[v];
@@ -198,9 +198,9 @@ void  text_Scrolls_Init(void){
     scroll_Tasks_Sv[4]->service = scrollText_4_Task;
 }
 //**************************************************************************************
-void ScrollText_t::scroll_This_Text(const char* dText){
+void Mtb_ScrollText_t::mtb_Scroll_This_Text(const char* dText){
     int spaceCount = countCharOccurrences(dText, ' ');
-    ScrollText_t scroller;
+    Mtb_ScrollText_t scroller;
     uint32_t charCount = strlen(dText);
     uint16_t fontHeight = font[6];
     uint8_t charSpacing = font[0];
@@ -216,7 +216,7 @@ void ScrollText_t::scroll_This_Text(const char* dText){
     for (int i = 0; i < stretch; i++) dText_Raw[i] = (uint8_t*)heap_caps_calloc(fontHeight, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
         
     scroll_ObjHolder.scrollBuffer = dText_Raw;
-    scroll_ObjHolder.writeString(dText);
+    scroll_ObjHolder.mtb_Write_String(dText);
 
     for (int8_t i = 0, response = 0 ; i < 5; i++){         //This codeblock checks if the item to be scrolled matches the position of an item already scrolling. If yes, place
         response = xQueuePeek(scroll_Q[i], &scroller, pdMS_TO_TICKS(100));  //this new item in the queue same as the scrolling item so that it waits for the scrolling item to finish scrolling.
@@ -242,56 +242,56 @@ void ScrollText_t::scroll_This_Text(const char* dText){
     }
 }
 //**************************************************************************************
-void ScrollText_t::scroll_This_Text(const char* dText, uint16_t dcolor){
+void Mtb_ScrollText_t::mtb_Scroll_This_Text(const char* dText, uint16_t dcolor){
     color = dcolor;
-    scroll_This_Text(dText);
+    mtb_Scroll_This_Text(dText);
 }
 //**************************************************************************************
-void ScrollText_t::scroll_This_Text(const char* dText, uint16_t dcolor, uint16_t dPass){
-    color = dcolor;
-    pass = dPass;
-    scroll_This_Text(dText);
-}
-//**************************************************************************************
-void ScrollText_t::scroll_This_Text(const char* dText, uint16_t dcolor, uint16_t dPass, uint8_t dBeep){
+void Mtb_ScrollText_t::mtb_Scroll_This_Text(const char* dText, uint16_t dcolor, uint16_t dPass){
     color = dcolor;
     pass = dPass;
-    beep = dBeep;
-    scroll_This_Text(dText);
+    mtb_Scroll_This_Text(dText);
 }
 //**************************************************************************************
-//**************************************************************************************
-void ScrollText_t::scroll_This_Text(String dText){
-    scroll_This_Text(dText.c_str());
-}
-//**************************************************************************************
-void ScrollText_t::scroll_This_Text(String dText, uint16_t dcolor){
-    color = dcolor;
-    scroll_This_Text(dText.c_str());
-}
-//**************************************************************************************
-void ScrollText_t::scroll_This_Text(String dText, uint16_t dcolor, uint16_t dPass){
-    color = dcolor;
-    pass = dPass;
-    scroll_This_Text(dText.c_str());
-}
-//**************************************************************************************
-void ScrollText_t::scroll_This_Text(String dText, uint16_t dcolor, uint16_t dPass, uint8_t dBeep){
+void Mtb_ScrollText_t::mtb_Scroll_This_Text(const char* dText, uint16_t dcolor, uint16_t dPass, uint8_t dBeep){
     color = dcolor;
     pass = dPass;
     beep = dBeep;
-    scroll_This_Text(dText.c_str());
+    mtb_Scroll_This_Text(dText);
 }
 //**************************************************************************************
-uint8_t ScrollText_t::scroll_Active(uint8_t check_or_stop){
-    ScrollText_t holder;
+//**************************************************************************************
+void Mtb_ScrollText_t::mtb_Scroll_This_Text(String dText){
+    mtb_Scroll_This_Text(dText.c_str());
+}
+//**************************************************************************************
+void Mtb_ScrollText_t::mtb_Scroll_This_Text(String dText, uint16_t dcolor){
+    color = dcolor;
+    mtb_Scroll_This_Text(dText.c_str());
+}
+//**************************************************************************************
+void Mtb_ScrollText_t::mtb_Scroll_This_Text(String dText, uint16_t dcolor, uint16_t dPass){
+    color = dcolor;
+    pass = dPass;
+    mtb_Scroll_This_Text(dText.c_str());
+}
+//**************************************************************************************
+void Mtb_ScrollText_t::mtb_Scroll_This_Text(String dText, uint16_t dcolor, uint16_t dPass, uint8_t dBeep){
+    color = dcolor;
+    pass = dPass;
+    beep = dBeep;
+    mtb_Scroll_This_Text(dText.c_str());
+}
+//**************************************************************************************
+uint8_t Mtb_ScrollText_t::mtb_Scroll_Active(uint8_t check_or_stop){
+    Mtb_ScrollText_t holder;
         for (uint8_t i = 1; i < 5; i++){
         if((scrollText_Handles[i]) != NULL){
             xQueuePeek(scroll_Q[i], &holder, pdMS_TO_TICKS(10));
             if(*this == holder){
                 if(check_or_stop == STOP_SCROLL){
                 while (xQueuePeek(scroll_Q[i], &holder, pdMS_TO_TICKS(10)) == pdTRUE){
-                   ScrollText_t::scrollTask_HolderPointers[i]->scroll_Quit = pdTRUE;
+                   Mtb_ScrollText_t::scrollTask_HolderPointers[i]->scroll_Quit = pdTRUE;
                    delay(1);
                 } 
                 dma_display->fillRect(holder.xPos, holder.yPos, holder.width, holder.height, holder.backgroundColor);
@@ -304,15 +304,15 @@ uint8_t ScrollText_t::scroll_Active(uint8_t check_or_stop){
 }
 
 //**************************************************************************************
-// uint8_t ScrollText_t::clear(){
-//     ScrollText_t holder;
+// uint8_t Mtb_ScrollText_t::clear(){
+//     Mtb_ScrollText_t holder;
 //         for (uint8_t i = 1; i < 5; i++){
 //         if((scrollText_Handles[i]) != NULL){
 //             xQueuePeek(scroll_Q[i], &holder, pdMS_TO_TICKS(10));
 //             if(*this == holder){
                 
 //                 while (xQueuePeek(scroll_Q[i], &holder, pdMS_TO_TICKS(10)) == pdTRUE){
-//                    ScrollText_t::scrollTask_HolderPointers[i]->scroll_Quit = pdTRUE;
+//                    Mtb_ScrollText_t::scrollTask_HolderPointers[i]->scroll_Quit = pdTRUE;
 //                    delay(1);
 //                 } 
 //                 dma_display->fillRect(holder.xPos, holder.yPos, holder.width, holder.height, holder.backgroundColor);

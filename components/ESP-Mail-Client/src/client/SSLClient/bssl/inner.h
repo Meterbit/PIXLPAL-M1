@@ -61,7 +61,7 @@
 /*
  * Minimum size for a RSA modulus (in bits); this value is used only to
  * filter out invalid parameters for key pair generation. Normally,
- * applications should not use RSA keys smaller than 2048 bits; but some
+ * Mtb_Applications should not use RSA keys smaller than 2048 bits; but some
  * specific cases might need shorter keys, for legacy or research
  * purposes.
  */

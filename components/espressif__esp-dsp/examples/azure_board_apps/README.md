@@ -1,6 +1,6 @@
-# ESP-DSP ESP32-Azure IoT kit demo applications
+# ESP-DSP ESP32-Azure IoT kit demo Mtb_Applications
 
-The demo applications are developed for ESP32-Azure IoT kit development board and are demonstrating usage of matrices with ESP-DPS Mat class, Kalman filter and basic
+The demo Mtb_Applications are developed for ESP32-Azure IoT kit development board and are demonstrating usage of matrices with ESP-DPS Mat class, Kalman filter and basic
 3D projection with matrices
 
 ### [3D Graphics demo](apps/3d_graphics)

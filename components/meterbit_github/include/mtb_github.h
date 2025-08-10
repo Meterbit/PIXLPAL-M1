@@ -20,11 +20,11 @@ struct githubStrg_UpDwn_t {
         char githubFilePath[50] = {0};
     };
 
-extern bool downloadPNGImageToPSRAM(const char* url, uint8_t** outBuffer, size_t* outSize, String* outMimeType = nullptr);
+extern bool mtb_Download_Png_Img_To_PSRAM(const char* url, uint8_t** outBuffer, size_t* outSize, String* outMimeType = nullptr);
 extern bool downloadSVGImageToPSRAM(const char* url, uint8_t** outBuffer, size_t* outSize, String* outMimeType = nullptr);
 //extern bool downloadOnlineImageToSPIFFS(const char* url, const char* pathInSPIFFS);
-extern bool prepareFilePath(const char* filePath);
-extern bool downloadGithubStrgFile(githubStrg_UpDwn_t&);
-extern bool downloadGithubStrgFile(String bucketPath, String flashPath);
+extern bool mtb_Prepare_Flash_File_Path(const char* filePath);
+extern bool mtb_Download_Github_Strg_File(githubStrg_UpDwn_t&);
+extern bool mtb_Download_Github_Strg_File(String bucketPath, String flashPath);
 extern bool downloadGithubFileToPSRAM(const String& bucketPath, uint8_t** outBuffer, size_t* outSize);
 #endif

@@ -14,7 +14,7 @@ The library supported external networking devices hat work with Arduino Clients 
 
 Minimum 200k flash space device is recommended for library installation and user code.
 
-The minimum ram requirement is based on the applications (SMTP and IMAP). IMAP application may required up to 20k memory while SMTP application required much less memory.
+The minimum ram requirement is based on the Mtb_Applications (SMTP and IMAP). IMAP application may required up to 20k memory while SMTP application required much less memory.
 
 
 ## Table of Contents

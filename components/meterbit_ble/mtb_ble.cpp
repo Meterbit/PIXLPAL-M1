@@ -13,6 +13,9 @@
 #include "mtb_engine.h"
 #include "mtb_ble.h"
 
+
+static const char TAG[] = "BLE_COMM";
+
 bool isDisconnected = true;
 
 JsonDocument dCommand;
@@ -45,26 +48,26 @@ String setValue = "1";
 #define SETCOM_CHARACTERISTIC_UUID "472a6244-3bb8-4a7e-a107-4b47dea92bc3"
 #define APPCOM_CHARACTERISTIC_UUID "c8f1eead-48b0-449d-accb-5fdb87c4b566"
 
-EXT_RAM_BSS_ATTR Services *ble_SetCom_Parse_Sv = new Services(ble_SetCom_Parse_Task, &ble_SetCom_Parser_Task_Handle, "bleSetCom_parser_task", 6144, 4); // THIS FUNCTIONS CANNOT BE AN PSRAM MEMORY BECAUSE THEY MIGHT ATTEMPT TO WRITE THE ONBOARD FLASH
-EXT_RAM_BSS_ATTR Service_With_Fns *ble_AppCom_Parser_Sv = new Service_With_Fns(ble_AppCom_Parse_Task, &ble_AppCom_Parser_Task_Handle, "bleAppCom_Parser_task", 6144, 4); // THIS FUNCTIONS CANNOT BE AN PSRAM MEMORY BECAUSE THEY MIGHT ATTEMPT TO WRITE THE ONBOARD FLASH
+EXT_RAM_BSS_ATTR Mtb_Services *ble_SetCom_Parse_Sv = new Mtb_Services(ble_SetCom_Parse_Task, &ble_SetCom_Parser_Task_Handle, "bleSetCom_parser_task", 6144, 4); // THIS FUNCTIONS CANNOT BE AN PSRAM MEMORY BECAUSE THEY MIGHT ATTEMPT TO WRITE THE ONBOARD FLASH
+EXT_RAM_BSS_ATTR Service_With_Fns *mtb_Ble_AppComm_Parser_Sv = new Service_With_Fns(ble_AppCom_Parse_Task, &ble_AppCom_Parser_Task_Handle, "bleAppCom_Parser_task", 6144, 4); // THIS FUNCTIONS CANNOT BE AN PSRAM MEMORY BECAUSE THEY MIGHT ATTEMPT TO WRITE THE ONBOARD FLASH
 
 class MyServerCallbacks : public NimBLEServerCallbacks{
   void onConnect(NimBLEServer *pServer, NimBLEConnInfo& connInfo){
     // Request MTU
     NimBLEDevice::setMTU(512); // Request MTU size of 512
     isDisconnected = false;
-    Applications::bleCentralContd = true;
+    Mtb_Applications::bleCentralContd = true;
     connHandle = connInfo.getConnHandle();
     showStatusBarIcon({"/batIcons/phoneCont.png", 18, 1});
-    read_struct_from_nvs("pxpBleDevName", pxp_BLE_Name, sizeof(pxp_BLE_Name));
+    mtb_Read_Nvs_Struct("pxpBleDevName", pxp_BLE_Name, sizeof(pxp_BLE_Name));
     mtb_Current_Ble_Device(pxp_BLE_Name);
-    //printf("Connected\n");
+    //ESP_LOGI(TAG, "Connected\n");
   };
 
   void onDisconnect(NimBLEServer *pServer, NimBLEConnInfo& connInfo, int reason){
-    //printf("Disconnection detected.\n");
+    //ESP_LOGI(TAG, "Disconnection detected.\n");
     isDisconnected = true;
-    Applications::bleCentralContd = false;
+    Mtb_Applications::bleCentralContd = false;
     showStatusBarIcon({"/batIcons/btOn.png", 18, 1});
     // Start advertising
     NimBLEDevice::startAdvertising(); // Start advertising
@@ -74,11 +77,11 @@ class MyServerCallbacks : public NimBLEServerCallbacks{
 class CharacteristicsCallbacks : public NimBLECharacteristicCallbacks{
   void onWrite(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo& connInfo){
 
-    printf("Value Written: %s \n", pCharacteristic->getValue().c_str());
+    ESP_LOGI(TAG, "Value Written: %s \n", pCharacteristic->getValue().c_str());
 
 if(pCharacteristic == setCom_characteristic){
       setValue = pCharacteristic->getValue().c_str();
-      //printf( "SetCom Received Message : %s \n", setValue.c_str());      
+      //ESP_LOGI(TAG,  "SetCom Received Message : %s \n", setValue.c_str());      
 
       setCom_data.pay_size = pCharacteristic->getLength();
       setCom_data.payload = heap_caps_calloc(pCharacteristic->getLength() + 1, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
@@ -88,14 +91,14 @@ if(pCharacteristic == setCom_characteristic){
 
     } else if (pCharacteristic == appCom_characteristic){
       appValue = pCharacteristic->getValue().c_str();
-      //printf( "AppCom Received Message : %s \n", appValue.c_str());
+      //ESP_LOGI(TAG,  "AppCom Received Message : %s \n", appValue.c_str());
 
       appCom_data.pay_size = pCharacteristic->getLength();
       appCom_data.payload = heap_caps_calloc(pCharacteristic->getLength() + 1, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
       memcpy(appCom_data.payload, pCharacteristic->getValue(), pCharacteristic->getLength());
       xQueueSend(appCom_queue, &appCom_data, portMAX_DELAY);
-      start_This_Service(ble_AppCom_Parser_Sv);
-    } else printf("PIXLPAL IS RECEIVING THE COMMAND, BUT IT'S NOT BEING RIGHTLY PARSED.\n");
+      start_This_Service(mtb_Ble_AppComm_Parser_Sv);
+    } else ESP_LOGI(TAG, "PIXLPAL IS RECEIVING THE COMMAND, BUT IT'S NOT BEING RIGHTLY PARSED.\n");
   }
 };
 
@@ -104,7 +107,7 @@ void mtb_Ble_Comm_Init(void){
   if(appCom_queue == NULL) appCom_queue = xQueueCreate(bleCom_queue_size,sizeof(mtb_BleCom_Data_Trans_t));     // A queue of character pointers
 
     // Create the BLE Device
-    read_struct_from_nvs("pxpBleDevName", pxp_BLE_Name, sizeof(pxp_BLE_Name));
+    mtb_Read_Nvs_Struct("pxpBleDevName", pxp_BLE_Name, sizeof(pxp_BLE_Name));
     NimBLEDevice::init(pxp_BLE_Name);
     // Create the BLE Server
     pServer = NimBLEDevice::createServer();
@@ -140,7 +143,7 @@ void mtb_Ble_Comm_Init(void){
     pAdvertising->addServiceUUID(PXP_BLE_SERVICE_UUID); // Add the service UUID to advertising
     pAdvertising->enableScanResponse(true);       // Include scan response if needed
 
-    read_struct_from_nvs("pxpBleDevName", pxp_BLE_Name, sizeof(pxp_BLE_Name));
+    mtb_Read_Nvs_Struct("pxpBleDevName", pxp_BLE_Name, sizeof(pxp_BLE_Name));
     pAdvertising->setName(pxp_BLE_Name); // Set the device name
     NimBLEDevice::startAdvertising(); // Start advertising
 
@@ -150,7 +153,7 @@ void mtb_Ble_Comm_Init(void){
     appCom_characteristic->setValue("AppCom Xter Ready.");
     appCom_characteristic->setCallbacks(new CharacteristicsCallbacks());
 
-    Applications::bleAdvertisingStatus = true;
+    Mtb_Applications::bleAdvertisingStatus = true;
     //showStatusBarIcon({"/batIcons/btOn.png", 18, 1});
 }
 
@@ -179,19 +182,19 @@ void mtb_Ble_Comm_Deinit() {
     // Deinitialize BLE Device
     NimBLEDevice::deinit();
 
-    Applications::bleAdvertisingStatus = false;
+    Mtb_Applications::bleAdvertisingStatus = false;
     showStatusBarIcon({"/batIcons/wipe7x7.png", 18, 1}); 
 }
 
 int bleSettingsComSend(const char* dRoute, String dMessage){
-      if(Applications::bleCentralContd == false) return 0;
+      if(Mtb_Applications::bleCentralContd == false) return 0;
       setCom_characteristic->setValue(String(dRoute) + "|" + dMessage);
       if (!setCom_characteristic->notify()) ESP_LOGW("BLE", "Notify failed for setCom_characteristic");
       return 1;
 }
 
 int bleApplicationComSend(const char* dRoute, String dMessage){
-      if(Applications::bleCentralContd == false) return 0;
+      if(Mtb_Applications::bleCentralContd == false) return 0;
       appCom_characteristic->setValue(String(dRoute) + "|" + dMessage);
       if (!appCom_characteristic->notify()) ESP_LOGW("BLE", "Notify failed for appCom_characteristic");
       return 1;
@@ -224,14 +227,14 @@ int getIntegerAtIndex(const String& data, int index) {
 // This service self-terminates after one queue item.
 // If continuous listening is needed, consider keeping it alive or using a persistent loop task.
 void ble_SetCom_Parse_Task(void* dService){
-  Services *thisService = (Services *)dService;
+  Mtb_Services *thisService = (Mtb_Services *)dService;
   mtb_BleCom_Data_Trans_t qMessage;
   DeserializationError dError;
   String specify_Settings;
   uint16_t dSetCategory = 0;
 
   while (xQueueReceive(setCom_queue, &qMessage, pdMS_TO_TICKS(500))){
-    printf("Settings Payload is: %s\n", (char*) qMessage.payload);
+    ESP_LOGI(TAG, "Settings Payload is: %s\n", (char*) qMessage.payload);
     
     String dInstruction = String((char *)qMessage.payload);
     int charIndex = dInstruction.indexOf('|');             // find index of target character
@@ -251,7 +254,7 @@ void ble_SetCom_Parse_Task(void* dService){
       break;
     case 4: softwareUpdate(dCommand);
       break;
-    default: statusBarNotif.scroll_This_Text("COMMAND IS NOT RECOGNISED.", YELLOW);
+    default: statusBarNotif.mtb_Scroll_This_Text("COMMAND IS NOT RECOGNISED.", YELLOW);
       break;
     }
 
@@ -260,5 +263,5 @@ void ble_SetCom_Parse_Task(void* dService){
     //qMessage.payload = NULL; // Set pointer to NULL to avoid dangling pointer
   }
   
-  kill_This_Service(thisService);
+  mtb_End_This_Service(thisService);
 }

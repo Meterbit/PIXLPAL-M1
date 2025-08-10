@@ -31,7 +31,7 @@ extern uint16_t scrollLength;								//Depicts the span of X axis of the scrolli
 extern uint16_t scrollSpeed;
 extern int16_t scrollCount;
 
-class ScrollText_t {
+class Mtb_ScrollText_t {
         public: 
         uint16_t xPos;
         uint16_t yPos;
@@ -50,18 +50,18 @@ class ScrollText_t {
         uint8_t beep;
 
         uint8_t scrollTaskHandling = 0;      // This is used to set the scroll task that is running the scrolling for this particular object.
-        static ScrollText_t *scrollTask_HolderPointers[];
+        static Mtb_ScrollText_t *scrollTask_HolderPointers[];
 
         void scrollString();
-        void scroll_This_Text(const char*);
-        void scroll_This_Text(const char*, uint16_t c);
-        void scroll_This_Text(const char*, uint16_t c, uint16_t p);
-        void scroll_This_Text(const char*, uint16_t c, uint16_t p, uint8_t b);
-        void scroll_This_Text(String dText);
-        void scroll_This_Text(String, uint16_t c);
-        void scroll_This_Text(String, uint16_t c, uint16_t p);
-        void scroll_This_Text(String, uint16_t c, uint16_t p, uint8_t b);
-        uint8_t scroll_Active(uint8_t check_or_stop = CHECK_SCROLL);    // Checks if the current scrollTextObj is active or not, and decide whether to stop it or not.
+        void mtb_Scroll_This_Text(const char*);
+        void mtb_Scroll_This_Text(const char*, uint16_t c);
+        void mtb_Scroll_This_Text(const char*, uint16_t c, uint16_t p);
+        void mtb_Scroll_This_Text(const char*, uint16_t c, uint16_t p, uint8_t b);
+        void mtb_Scroll_This_Text(String dText);
+        void mtb_Scroll_This_Text(String, uint16_t c);
+        void mtb_Scroll_This_Text(String, uint16_t c, uint16_t p);
+        void mtb_Scroll_This_Text(String, uint16_t c, uint16_t p, uint8_t b);
+        uint8_t mtb_Scroll_Active(uint8_t check_or_stop = CHECK_SCROLL);    // Checks if the current scrollTextObj is active or not, and decide whether to stop it or not.
         //uint8_t clear();    // Checks if the current scrollTextObj is active or not, and decide whether to stop it or not.
         
         // Overload the new operator
@@ -71,21 +71,21 @@ class ScrollText_t {
         void operator delete(void* ptr) {heap_caps_free(ptr);}
 
         // Overload the == operator
-        bool operator==(const ScrollText_t &other) const {
+        bool operator==(const Mtb_ScrollText_t &other) const {
             return (xPos == other.xPos) && (yPos == other.yPos);
         }
 
-        ScrollText_t(){}
-        // ScrollText_t(const uint8_t *f) { font = (uint8_t*) f; }
-        // ScrollText_t(uint16_t x, uint16_t y, uint16_t w, uint16_t c, const uint8_t* f);
-        ScrollText_t(uint16_t xAxis, uint16_t yAxis, uint16_t width, uint16_t color, uint16_t speed, uint16_t pass, const uint8_t* font, uint64_t scr_hld = 0, uint8_t makeBeep = 0);
-        ScrollText_t(uint16_t xAxis, uint16_t yAxis, uint16_t width, uint16_t color);
-        ScrollText_t(uint16_t color, uint16_t pass = 1, uint8_t makeBeep = 0);
+        Mtb_ScrollText_t(){}
+        // Mtb_ScrollText_t(const uint8_t *f) { font = (uint8_t*) f; }
+        // Mtb_ScrollText_t(uint16_t x, uint16_t y, uint16_t w, uint16_t c, const uint8_t* f);
+        Mtb_ScrollText_t(uint16_t xAxis, uint16_t yAxis, uint16_t width, uint16_t color, uint16_t speed, uint16_t pass, const uint8_t* font, uint64_t scr_hld = 0, uint8_t makeBeep = 0);
+        Mtb_ScrollText_t(uint16_t xAxis, uint16_t yAxis, uint16_t width, uint16_t color);
+        Mtb_ScrollText_t(uint16_t color, uint16_t pass = 1, uint8_t makeBeep = 0);
 };
 
 extern void text_Scrolls_Init(void);
 void scrollText_0_Task(void *arguments);
-extern ScrollText_t statusBarNotif;
+extern Mtb_ScrollText_t statusBarNotif;
 
 
 /*
@@ -97,13 +97,13 @@ typedef struct {
 }scroll_Msg_Var_t;
 */
 
-// extern const ScrollText_t calendar_Set;
-// extern const ScrollText_t tempor_Shutdown;
-// extern const ScrollText_t device_Restart;
-// extern const ScrollText_t newOTA_Update;
-// extern const ScrollText_t ntp_Time_Set;
-// extern const ScrollText_t shutDown_Less_2Mins;
-// extern const ScrollText_t file_not_found;
+// extern const Mtb_ScrollText_t calendar_Set;
+// extern const Mtb_ScrollText_t tempor_Shutdown;
+// extern const Mtb_ScrollText_t device_Restart;
+// extern const Mtb_ScrollText_t newOTA_Update;
+// extern const Mtb_ScrollText_t ntp_Time_Set;
+// extern const Mtb_ScrollText_t shutDown_Less_2Mins;
+// extern const Mtb_ScrollText_t file_not_found;
 
 #endif
 

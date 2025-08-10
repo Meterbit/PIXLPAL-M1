@@ -213,7 +213,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Select XCode version
-        run: sudo xcode-select --switch /Applications/Xcode_${{ matrix.xcode }}.app
+        run: sudo xcode-select --switch /Mtb_Applications/Xcode_${{ matrix.xcode }}.app
       - name: Configure
         run: cmake -DCMAKE_BUILD_TYPE=Debug .
       - name: Build

@@ -23,5 +23,5 @@ The expected output is the following:
 Note, that the first line `Selected 3D image` from the expected output depends on the user's Kconfing menu selection
 
 <div align="center">
-  <img src= "applications/azure_board_apps/apps/3d_graphics/3d_graphics.gif">
+  <img src= "Mtb_Applications/azure_board_apps/apps/3d_graphics/3d_graphics.gif">
 </div>

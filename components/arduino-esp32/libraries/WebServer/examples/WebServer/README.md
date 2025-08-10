@@ -58,7 +58,7 @@ In the setup() function in the webserver.ino sketch file the following steps are
 
 * Create a webserver listening to port 80 for HTTP requests.
 * Initialize the access to the filesystem in the free flash memory.
-* Connect to the local Wi-Fi network. Here is only a straight-forward implementation hard-coding network name and passphrase. You may consider to use something like the WiFiManager library in real applications.
+* Connect to the local Wi-Fi network. Here is only a straight-forward implementation hard-coding network name and passphrase. You may consider to use something like the WiFiManager library in real Mtb_Applications.
 * Register the device in DNS using a known hostname.
 * Registering several plug-ins (see below).
 * Starting the web server.

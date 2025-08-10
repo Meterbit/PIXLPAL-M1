@@ -41,7 +41,7 @@
  *
  *     #define FASTLED_RMT_MAX_CHANNELS 1
  *
- * OTHER RMT APPLICATIONS
+ * OTHER RMT Mtb_Applications
  *
  * There may be a performance penalty for using this mode. We need to
  * compute the RMT signal for the entire LED strip ahead of time,

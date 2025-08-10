@@ -268,7 +268,7 @@ void centerBars(int band, int barHeight) {
   int center = TOP/2;
   
   if (barHeight>(kMatrixHeight-6))barHeight=kMatrixHeight-6;
- // Serial.printf( "barheight: %d \n",barHeight);
+ // ESP_LOGI(TAG,  "barheight: %d \n",barHeight);
   for (int x = xStart; x < xStart + BAR_WIDTH; x++) {
   
   for (int y = 0; y <= (barHeight/2); y++) {
@@ -306,7 +306,7 @@ void centerBars2(int band, int barHeight) {
   int center = TOP/2;
   
   if (barHeight>(kMatrixHeight-6))barHeight=kMatrixHeight-6;
- // Serial.printf( "barheight: %d \n",barHeight);
+ // ESP_LOGI(TAG,  "barheight: %d \n",barHeight);
   for (int x = xStart; x < xStart + BAR_WIDTH; x++) {
   
   for (int y = 0; y <= (barHeight/2); y++) {

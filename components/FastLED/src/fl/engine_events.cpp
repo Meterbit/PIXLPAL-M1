@@ -19,7 +19,7 @@ EngineEvents::Listener::~Listener() {
         // Warning, the listener should be removed by the subclass. If we are here
         // then the subclass did not remove the listener and we are now in a partial
         // state of destruction and the results may be undefined for multithreaded
-        // applications. However, for single threaded (the only option as of 2024, October)
+        // Mtb_Applications. However, for single threaded (the only option as of 2024, October)
         // this will be ok.
         ptr->_removeListener(this);
     }

@@ -19,6 +19,8 @@
 #include "mtb_wifi.h"
 #include "mtb_ble.h"
 
+static const char TAG[] = "BLE_WIFI_SETTINGS";
+
 void connect_To_Network(JsonDocument&);
 
 void wifiSettings(JsonDocument& dCommand){
@@ -32,7 +34,7 @@ void wifiSettings(JsonDocument& dCommand){
       break;
     case 2: connect_To_Network(dCommand);
       break;
-    default: printf("Wi-fi Settings Number not Recognised.\n");
+    default: ESP_LOGI(TAG, "Wi-fi Settings Number not Recognised.\n");
       break;
     }
 }

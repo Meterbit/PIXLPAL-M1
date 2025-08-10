@@ -129,7 +129,7 @@ the following:
 
   You may place library facilities that are a work based on the
 Library side by side in a single library together with other library
-facilities that are not Applications and are not covered by this
+facilities that are not Mtb_Applications and are not covered by this
 License, and convey such a combined library under terms of your
 choice, if you do both of the following:
 

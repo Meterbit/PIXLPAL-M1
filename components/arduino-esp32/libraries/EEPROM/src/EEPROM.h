@@ -102,8 +102,8 @@ public:
   size_t writeFloat(int address, float_t value);
   size_t writeDouble(int address, double_t value);
   size_t writeBool(int address, bool value);
-  size_t writeString(int address, const char *value);
-  size_t writeString(int address, String value);
+  size_t mtb_Write_String(int address, const char *value);
+  size_t mtb_Write_String(int address, String value);
   size_t writeBytes(int address, const void *value, size_t len);
   template<class T> T writeAll(int address, const T &);
 

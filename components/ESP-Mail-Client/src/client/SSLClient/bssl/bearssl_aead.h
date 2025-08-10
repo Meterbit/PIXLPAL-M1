@@ -499,7 +499,7 @@ uint32_t br_gcm_check_tag(br_gcm_context *ctx, const void *tag);
  * it may be smaller. Note that decreasing tag length mechanically makes
  * forgeries easier; NIST SP 800-38D specifies that the tag length shall
  * lie between 12 and 16 bytes (inclusive), but may be truncated down to
- * 4 or 8 bytes, for specific applications that can tolerate it. It must
+ * 4 or 8 bytes, for specific Mtb_Applications that can tolerate it. It must
  * also be noted that successful forgeries leak information on the
  * authentication key, making subsequent forgeries easier. Therefore,
  * tag truncation, and in particular truncation to sizes lower than 12
@@ -812,7 +812,7 @@ uint32_t br_eax_check_tag(br_eax_context *ctx, const void *tag);
  * it may be smaller. Note that decreasing tag length mechanically makes
  * forgeries easier; NIST SP 800-38D specifies that the tag length shall
  * lie between 12 and 16 bytes (inclusive), but may be truncated down to
- * 4 or 8 bytes, for specific applications that can tolerate it. It must
+ * 4 or 8 bytes, for specific Mtb_Applications that can tolerate it. It must
  * also be noted that successful forgeries leak information on the
  * authentication key, making subsequent forgeries easier. Therefore,
  * tag truncation, and in particular truncation to sizes lower than 12

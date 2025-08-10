@@ -12,5 +12,5 @@
 #include "freertos/task.h"
 
 extern uint8_t set_Pixel_Change_Duration;
-extern uint8_t drawGIF(const char *dImagePath, uint16_t row, uint16_t column, uint32_t loopCounter);
+extern uint8_t mtb_draw_gif(const char *dImagePath, uint16_t row, uint16_t column, uint32_t loopCounter);
 #endif

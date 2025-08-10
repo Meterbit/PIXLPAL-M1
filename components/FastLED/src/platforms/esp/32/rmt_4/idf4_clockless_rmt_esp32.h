@@ -25,7 +25,7 @@
  * The default FastLED driver takes over control of the RMT interrupt
  * handler, making it hard to use the RMT device for other
  * (non-FastLED) purposes. You can change it's behavior to use the ESP
- * core driver instead, allowing other RMT applications to
+ * core driver instead, allowing other RMT Mtb_Applications to
  * co-exist. To switch to this mode, add the following directive
  * before you include FastLED.h:
  *

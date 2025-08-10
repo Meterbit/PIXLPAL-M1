@@ -13,12 +13,12 @@ void check(const char* input, std::string expected) {
   char output[64] = {0};
   StaticStringWriter sb(output, sizeof(output));
   TextFormatter<StaticStringWriter> writer(sb);
-  writer.writeString(input);
+  writer.mtb_Write_String(input);
   REQUIRE(expected == output);
   REQUIRE(writer.bytesWritten() == expected.size());
 }
 
-TEST_CASE("TextFormatter::writeString()") {
+TEST_CASE("TextFormatter::mtb_Write_String()") {
   SECTION("EmptyString") {
     check("", "\"\"");
   }

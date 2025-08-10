@@ -67,11 +67,11 @@ void setup() {
   address += sizeof(bool);
 
   String sentence = "I love ESP32.";
-  EEPROM.writeString(address, sentence);
+  EEPROM.mtb_Write_String(address, sentence);
   address += sentence.length() + 1;
 
   char gratitude[21] = "Thank You Espressif!";
-  EEPROM.writeString(address, gratitude);
+  EEPROM.mtb_Write_String(address, gratitude);
   address += 21;
 
   // See also the general purpose writeBytes() and readBytes() for BLOB in EEPROM library

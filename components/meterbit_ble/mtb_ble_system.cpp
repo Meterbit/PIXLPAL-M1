@@ -21,6 +21,8 @@
 #include "ESP32-HUB75-MatrixPanel-I2S-DMA.h"
 #include "mtb_graphics.h"
 
+static const char TAG[] = "BLE_SYSTEM_SETTINGS";
+
 void system_Clock_Format_Change(JsonDocument&);
 void system_Device_Brightness(JsonDocument&);
 void system_Silent_Mode(JsonDocument&);
@@ -61,7 +63,7 @@ void systemSettings(JsonDocument& dCommand){
     //     break;
     // case 12: power_Shutdown_Device();
     //     break;
-    default: printf("System Settings Number not Recognised.\n");
+    default: ESP_LOGI(TAG, "System Settings Number not Recognised.\n");
       break;
     }
 }
@@ -76,7 +78,7 @@ tempBrightness = dCommand["value"];
 
 panelBrightness = (tempBrightness * 2.55) + 1; // One (1) is added to make the 100% correspond to 255
 if (panelBrightness == 0)panelBrightness = 5;
-write_struct_to_nvs("pan_brghnss", &panelBrightness, sizeof(uint8_t));
+mtb_Write_Nvs_Struct("pan_brghnss", &panelBrightness, sizeof(uint8_t));
 dma_display->setBrightness(panelBrightness); // 0-255
 set_Status_RGB_LED(currentStatusLEDcolor);
 sprintf(brightnsValue, "%d", (uint8_t)(panelBrightness / 2.55));
@@ -120,7 +122,7 @@ void system_Clock_Format_Change(JsonDocument& dCommand){
 
 //**07*********************************************************************************************************************
 void system_Restart_Device(){
-  statusBarNotif.scroll_This_Text("RESTARTING PIXLPAL", YELLOW);
+  statusBarNotif.mtb_Scroll_This_Text("RESTARTING PIXLPAL", YELLOW);
   String acknowledge = "{\"pxp_command\": 7, \"response:\": 1}";
   bleSettingsComSend(mtb_System_Settings_Route, acknowledge);
   delay(10000);
@@ -128,7 +130,7 @@ void system_Restart_Device(){
 }
 //**08*********************************************************************************************************************
 void system_Shutdown_Device(){
-  statusBarNotif.scroll_This_Text("SHUTTING DOWN PIXLPAL", RED);
+  statusBarNotif.mtb_Scroll_This_Text("SHUTTING DOWN PIXLPAL", RED);
   String acknowledge = "{\"pxp_command\": 8, \"response:\": 1}";
   delay(12000);
   bleSettingsComSend(mtb_System_Settings_Route, acknowledge);

@@ -92,7 +92,7 @@ extern SemaphoreHandle_t mic_Start_Sem_H;
 extern void microphoneProcessing_Task(void *);
 //extern void usb_Speaker_Task(void *);
 extern uint8_t mic_OR_dac;
-extern void use_Mic_OR_Dac(uint8_t);
+extern void mtb_Use_Mic_Or_Dac(uint8_t);
 extern void randomPattern_TimerCallback(TimerHandle_t dHandle);
 extern void init_Mic_DAC_Audio_Processing_Peripherals(void);
 extern void de_init_Mic_DAC_Audio_Processing_Peripherals(void);

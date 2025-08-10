@@ -32,6 +32,8 @@
 #include "nanosvgrast.h"
 #include "mtb_countries.h"
 
+static const char TAG[] = "METERBIT_GRAPHICS";
+
 // SemaphoreHandle_t pngImageDrawer_Sem = NULL;
 //  Define the static queue storage variable
 StaticQueue_t xQueueStorage_PNG_LocalDrawings;
@@ -54,12 +56,12 @@ EXT_RAM_BSS_ATTR PNG_LocalImage_t statusBarItems[11];
 uint16_t currentStatusLEDcolor = BLACK;
 MatrixPanel_I2S_DMA *dma_display;
 uint16_t panelBrightness = 70;
-uint8_t **FixedText_t::scratchPad = nullptr;
+uint8_t **Mtb_FixedText_t::scratchPad = nullptr;
 
 
-EXT_RAM_BSS_ATTR Services *pngLocalImageDrawer_Sv = new Services(drawLocalPNG_Task, &pngLocalImageDrawer_Handle, "PNG Local draw", 12288, 1, pdFALSE, 1); // Keep the task stack size at 12288 for reliability.
-//EXT_RAM_BSS_ATTR Services *pngOnlineImageDrawer_Sv = new Services(drawOnlinePNG_Task, &pngOnlineImageDrawer_Handle, "PNG Online draw", 12288, 4); // Keep the task stack size at 12288 for reliability.
-//EXT_RAM_BSS_ATTR Services *svgOnlineImageDrawer_Sv = new Services(drawOnlineSVG_Task, &svgOnlineImageDrawer_Handle, "SVG Online draw", 12288, 4); // Keep the task stack size at 12288 for reliability.
+EXT_RAM_BSS_ATTR Mtb_Services *pngLocalImageDrawer_Sv = new Mtb_Services(drawLocalPNG_Task, &pngLocalImageDrawer_Handle, "PNG Local draw", 12288, 1, pdFALSE, 1); // Keep the task stack size at 12288 for reliability.
+//EXT_RAM_BSS_ATTR Mtb_Services *pngOnlineImageDrawer_Sv = new Mtb_Services(drawOnlinePNG_Task, &pngOnlineImageDrawer_Handle, "PNG Online draw", 12288, 4); // Keep the task stack size at 12288 for reliability.
+//EXT_RAM_BSS_ATTR Mtb_Services *svgOnlineImageDrawer_Sv = new Mtb_Services(drawOnlineSVG_Task, &svgOnlineImageDrawer_Handle, "SVG Online draw", 12288, 4); // Keep the task stack size at 12288 for reliability.
 
 #define RGB_LED_PIN_R 3
 #define RGB_LED_PIN_G 42
@@ -164,8 +166,8 @@ void set_Status_RGB_LED(uint16_t dColor, uint8_t dBrightness){
 }
 
 void drawStatusBar(void){
-	if (Applications::currentRunningApp->fullScreen == false){
-		for (uint8_t i = 0; i < 11; i++) if (statusBarItems[i].xAxis != 0 && statusBarItems[i].yAxis != 0) drawLocalPNG(statusBarItems[i]);
+	if (Mtb_Applications::currentRunningApp->fullScreen == false){
+		for (uint8_t i = 0; i < 11; i++) if (statusBarItems[i].xAxis != 0 && statusBarItems[i].yAxis != 0) mtb_Draw_Local_Png(statusBarItems[i]);
 		dma_display->drawFastHLine(0, 9, 128, dma_display->color565(35, 35, 35));
 	}
 }
@@ -200,10 +202,10 @@ void Matrix_Panel_t::init_LED_MatrixPanel(){
 	// Display Setup
 	dma_display = new MatrixPanel_I2S_DMA(mxconfig);
 	dma_display->begin();
-	read_struct_from_nvs("pan_brghnss", &panelBrightness, sizeof(uint8_t));
+	mtb_Read_Nvs_Struct("pan_brghnss", &panelBrightness, sizeof(uint8_t));
 	dma_display->setBrightness(panelBrightness); // 0-255
 	set_Status_RGB_LED(currentStatusLEDcolor, panelBrightness);
-	// if(litFS_Ready)drawGIF("/mtblg/mtbStart.gif",0,0,1);
+	// if(litFS_Ready)mtb_draw_gif("/mtblg/mtbStart.gif",0,0,1);
 }
 
 //************************************************
@@ -222,7 +224,7 @@ void Matrix_Panel_t::setfont(const uint8_t *font)
 }
 
 //*************************************************************************************
-void FixedText_t::clearPanelSegment(void)
+void Mtb_FixedText_t::clearPanelSegment(void)
 {
 	for (uint16_t i = x1Seg, p = x1Seg + textHorizSpace; i < p; i++)
 	{
@@ -233,7 +235,7 @@ void FixedText_t::clearPanelSegment(void)
 	}
 }
 //*************************************************************************************
-void FixedText_t::updatePanelSegment(void)
+void Mtb_FixedText_t::updatePanelSegment(void)
 {
 	for (uint16_t i = x1Seg, p = x1Seg + textHorizSpace; i < p; i++)
 	{
@@ -251,7 +253,7 @@ void Matrix_Panel_t::clearScreen(void)
 }
 //**************************************************************************************
 // PASSED
-void FixedText_t::set_Pixel_Data(uint16_t xPs, uint16_t yPs)
+void Mtb_FixedText_t::set_Pixel_Data(uint16_t xPs, uint16_t yPs)
 {
 	dma_display->drawPixel(xPs, yPs, color); // update color
 	scratchPad[xPs][yPs] = 1;
@@ -289,7 +291,7 @@ void Matrix_Panel_t::writeXter(uint16_t character, uint16_t xPixel, uint16_t yPi
 	}
 }
 //**************************************************************************************
-uint16_t Matrix_Panel_t::writeString(const char *myString)
+uint16_t Matrix_Panel_t::mtb_Write_String(const char *myString)
 {
 	uint16_t charCount = strlen(myString);
 	uint16_t row = x1Seg;
@@ -606,37 +608,37 @@ uint16_t Matrix_Panel_t::writeString(const char *myString)
 	return row;
 }
 //**************************************************************************************
-uint16_t Matrix_Panel_t::writeString(String myString)
+uint16_t Matrix_Panel_t::mtb_Write_String(String myString)
 {
-	return writeString(myString.c_str());
+	return mtb_Write_String(myString.c_str());
 }
 //**************************************************************************************
-uint16_t FixedText_t::writeColoredString(const char *myString, uint16_t dColor)
+uint16_t Mtb_FixedText_t::mtb_Write_Colored_String(const char *myString, uint16_t dColor)
 {
 	color = dColor;
-	return writeString(myString);
+	return mtb_Write_String(myString);
 }
-uint16_t FixedText_t::writeColoredString(String myString, uint16_t dColor)
+uint16_t Mtb_FixedText_t::mtb_Write_Colored_String(String myString, uint16_t dColor)
 {
 	color = dColor;
-	return writeString(myString);
+	return mtb_Write_String(myString);
 }
 //**************************************************************************************
-uint16_t FixedText_t::writeColoredString(const char *myString, uint16_t dColor, uint16_t dBackgroundColor)
+uint16_t Mtb_FixedText_t::mtb_Write_Colored_String(const char *myString, uint16_t dColor, uint16_t dBackgroundColor)
 {
 	color = dColor;
 	backgroundColor = dBackgroundColor;
-	return writeString(myString);
+	return mtb_Write_String(myString);
 }
 
-uint16_t FixedText_t::writeColoredString(String myString, uint16_t dColor, uint16_t dBackgroundColor)
+uint16_t Mtb_FixedText_t::mtb_Write_Colored_String(String myString, uint16_t dColor, uint16_t dBackgroundColor)
 {
 	color = dColor;
 	backgroundColor = dBackgroundColor;
-	return writeString(myString);
+	return mtb_Write_String(myString);
 }
 //*************************************************************************************
-void CentreText_t::clearPanelSegment(void)
+void Mtb_CentreText_t::clearPanelSegment(void)
 {
 	for (uint16_t i = x1Seg, p = x1Seg + textHorizSpace; i < p; i++)
 	{
@@ -647,7 +649,7 @@ void CentreText_t::clearPanelSegment(void)
 	}
 }
 //**************************************************************************************
-uint16_t CentreText_t::writeColoredString(const char *myString, uint16_t dColor)
+uint16_t Mtb_CentreText_t::mtb_Write_Colored_String(const char *myString, uint16_t dColor)
 {
 	color = dColor;
 	clearPanelSegment();
@@ -666,10 +668,10 @@ uint16_t CentreText_t::writeColoredString(const char *myString, uint16_t dColor)
 	x1Seg = originX1Seg - row / 2;
 	y1Seg = originY1Seg - yAxis / 2;
 
-	return writeString(myString);
+	return mtb_Write_String(myString);
 }
 //**************************************************************************************
-uint16_t CentreText_t::writeColoredString(String myString, uint16_t dColor)
+uint16_t Mtb_CentreText_t::mtb_Write_Colored_String(String myString, uint16_t dColor)
 {
 	color = dColor;
 	clearPanelSegment();
@@ -688,10 +690,10 @@ uint16_t CentreText_t::writeColoredString(String myString, uint16_t dColor)
 	x1Seg = originX1Seg - row / 2;
 	y1Seg = originY1Seg - yAxis / 2;
 
-	return writeString(myString.c_str());
+	return mtb_Write_String(myString.c_str());
 }
 //**************************************************************************************
-uint16_t CentreText_t::writeColoredString(const char *myString, uint16_t dColor, uint16_t dBackgroundColor){
+uint16_t Mtb_CentreText_t::mtb_Write_Colored_String(const char *myString, uint16_t dColor, uint16_t dBackgroundColor){
 	color = dColor;
 	backgroundColor = dBackgroundColor;
 	clearPanelSegment();
@@ -709,10 +711,10 @@ uint16_t CentreText_t::writeColoredString(const char *myString, uint16_t dColor,
 	x1Seg = originX1Seg - row / 2;
 	y1Seg = originY1Seg - yAxis / 2;
 
-	return writeString(myString);
+	return mtb_Write_String(myString);
 }
 //**************************************************************************************
-uint16_t CentreText_t::writeColoredString(String myString, uint16_t dColor, uint16_t dBackgroundColor){
+uint16_t Mtb_CentreText_t::mtb_Write_Colored_String(String myString, uint16_t dColor, uint16_t dBackgroundColor){
 	color = dColor;
 	backgroundColor = dBackgroundColor;
 	clearPanelSegment();
@@ -730,19 +732,19 @@ uint16_t CentreText_t::writeColoredString(String myString, uint16_t dColor, uint
 	x1Seg = originX1Seg - row / 2;
 	y1Seg = originY1Seg - yAxis / 2;
 
-	return writeString(myString.c_str());
+	return mtb_Write_String(myString.c_str());
 }
 //**************************************************************************************
-uint16_t FixedText_t::clearString()
+uint16_t Mtb_FixedText_t::clearString()
 {
 	color = backgroundColor;
-	writeString(".");
+	mtb_Write_String(".");
 	return 0;
 }
 //************************************************************************************ */
 void drawLocalPNG_Task(void *dService){
-	printf("PNG Local Image Drawer Task Started\n");
-	Services *thisService = (Services *)dService;
+	ESP_LOGI(TAG, "PNG Local Image Drawer Task Started\n");
+	Mtb_Services *thisService = (Mtb_Services *)dService;
 	PNG_LocalImage_t holderItem;
 	unsigned error;
 	unsigned char *image = 0;
@@ -755,16 +757,16 @@ void drawLocalPNG_Task(void *dService){
 		// xQueuePeek(pngLocalImageDrawer_Q, &holderItem, pdMS_TO_TICKS(100));
 		if (!LittleFS.exists(holderItem.imagePath)){
 			bool dwnld_Succeed = false;
-			printf("PNG File Does Not Exist\n");
-			if (Applications::internetConnectStatus == true){
-				printf("Downloading the file......\n");
-				dwnld_Succeed = downloadGithubStrgFile(String(holderItem.imagePath + 1), String(holderItem.imagePath));
+			ESP_LOGI(TAG, "PNG File Does Not Exist\n");
+			if (Mtb_Applications::internetConnectStatus == true){
+				ESP_LOGI(TAG, "Downloading the file......\n");
+				dwnld_Succeed = mtb_Download_Github_Strg_File(String(holderItem.imagePath + 1), String(holderItem.imagePath));
 			}else{
 				File2Download_t dFile;
 				memcpy(dFile.flashFilePath, holderItem.imagePath, 50);
 				memcpy(dFile.githubFilePath, holderItem.imagePath + 1, 50);
 				xQueueSend(files2Download_Q, &dFile, pdMS_TO_TICKS(1));
-				printf("File Queued for later downloading.\n");
+				ESP_LOGI(TAG, "File Queued for later downloading.\n");
 			}
 			// xQueueReceive(pngLocalImageDrawer_Q, &holderItem, pdMS_TO_TICKS(100));
 			if (dwnld_Succeed == false) continue; // Skip to the next item in the queue if the file does not exist.
@@ -773,7 +775,7 @@ void drawLocalPNG_Task(void *dService){
 			String imageFilePath = "/littlefs" + String(holderItem.imagePath);
 			error = lodepng_decode24_file(&image, &width, &height, imageFilePath.c_str());
 			if (error) {
-				printf("error %u: %s\n", error, lodepng_error_text(error));
+				ESP_LOGI(TAG, "error %u: %s\n", error, lodepng_error_text(error));
 				free(image);
 				continue;
 			}
@@ -821,15 +823,15 @@ void drawLocalPNG_Task(void *dService){
 				}
 				free(image);
 			} else {
-			// printf("Image Dimensions are: Width = %d; Height = %d\n", width, height);
+			// ESP_LOGI(TAG, "Image Dimensions are: Width = %d; Height = %d\n", width, height);
 			free(image);
 			}
 	}
 
-	kill_This_Service(thisService);
+	mtb_End_This_Service(thisService);
 }
 
-BaseType_t drawLocalPNG(const PNG_LocalImage_t &dImage){
+BaseType_t mtb_Draw_Local_Png(const PNG_LocalImage_t &dImage){
 	xQueueSend(pngLocalImageDrawer_Q, &dImage, 0);
 	start_This_Service(pngLocalImageDrawer_Sv);
 	return 0;
@@ -838,7 +840,7 @@ BaseType_t drawLocalPNG(const PNG_LocalImage_t &dImage){
 //************************************************************************************ */
 
 // void drawOnlinePNG_Task(void *dService) {
-// 	Services *thisService = (Services *)dService;
+// 	Mtb_Services *thisService = (Mtb_Services *)dService;
 // 	PNG_OnlineImage_t holderItem;
 // 	unsigned error;
 // 	unsigned char *imageData = nullptr;
@@ -853,8 +855,8 @@ BaseType_t drawLocalPNG(const PNG_LocalImage_t &dImage){
 // 	while ((xQueueReceive(pngOnlineImageDrawer_Q, &holderItem, pdMS_TO_TICKS(100)) == pdTRUE) && (litFS_Ready == true)){
 
 		
-// if (downloadPNGImageToPSRAM(holderItem.imageLink, &pngBuffer, &pngSize, &mimeType)) {
-//   printf("Image MIME: %s\n", mimeType.c_str());
+// if (mtb_Download_Png_Img_To_PSRAM(holderItem.imageLink, &pngBuffer, &pngSize, &mimeType)) {
+//   ESP_LOGI(TAG, "Image MIME: %s\n", mimeType.c_str());
 
 //   // Decode with lodepng_decode24(...)
 
@@ -863,7 +865,7 @@ BaseType_t drawLocalPNG(const PNG_LocalImage_t &dImage){
 // 			error = lodepng_decode24(&imageData, &width, &height, pngBuffer, pngSize);
 
 // 			if (error) {
-// 				printf("error %u: %s\n", error, lodepng_error_text(error));
+// 				ESP_LOGI(TAG, "error %u: %s\n", error, lodepng_error_text(error));
 // 				if (imageData) free(imageData);
 // 				if (pngBuffer) free(pngBuffer);
 // 				continue;
@@ -912,17 +914,17 @@ BaseType_t drawLocalPNG(const PNG_LocalImage_t &dImage){
 // 				}
 // 				free(imageData);
 // 			} else {
-// 			// printf("Image Dimensions are: Width = %d; Height = %d\n", width, height);
+// 			// ESP_LOGI(TAG, "Image Dimensions are: Width = %d; Height = %d\n", width, height);
 // 			free(imageData);
 // 			}
 			
 // 			free(pngBuffer);
-// 		} else if (Applications::internetConnectStatus != true){
-// 			statusBarNotif.scroll_This_Text("NO INTERNET CONNECTION TO DOWNLOAD ONLINE IMAGE.", GREEN_LIZARD);
+// 		} else if (Mtb_Applications::internetConnectStatus != true){
+// 			statusBarNotif.mtb_Scroll_This_Text("NO INTERNET CONNECTION TO DOWNLOAD ONLINE IMAGE.", GREEN_LIZARD);
 // 		}
 // 	}
 
-// 	kill_This_Service(thisService);
+// 	mtb_End_This_Service(thisService);
 // }
 
 // BaseType_t drawOnlinePNG(const PNG_OnlineImage_t &dImage){
@@ -939,7 +941,7 @@ void drawDecodedPNG(PNG_PreloadedImage_t& pImg) {
     unsigned error = lodepng_decode24(&imageData, &width, &height, pImg.pngBuffer, pImg.pngSize);
 
     if (error || !imageData) {
-        printf("LodePNG error %u: %s\n", error, lodepng_error_text(error));
+        ESP_LOGI(TAG, "LodePNG error %u: %s\n", error, lodepng_error_text(error));
         return;
     }
 
@@ -998,7 +1000,7 @@ void pngDownloaderWorker(void* param) {
 
         PNG_PreloadedImage_t* img = &preloadedPNGs[myIndex];
         String mime;
-        if (downloadPNGImageToPSRAM(img->meta.imageLink, &img->pngBuffer, &img->pngSize, &mime)) {
+        if (mtb_Download_Png_Img_To_PSRAM(img->meta.imageLink, &img->pngBuffer, &img->pngSize, &mime)) {
             img->isReady = true;
         } else {
             img->failed = true;
@@ -1026,7 +1028,7 @@ void pngDrawerWorker(void* param) {
     vTaskDelete(NULL);  // ✅ Frees stack after work
 }
 
-bool drawMultiplePNGs(size_t drawPNGsCount, ImgWipeFn_ptr wipePreviousImg) {
+bool mtb_Draw_Multiple_Png(size_t drawPNGsCount, ImgWipeFn_ptr wipePreviousImg) {
 
 	while(downloadedPNGs < drawPNGsCount)delay(10); // Wait for all images to be fetched from the internet
 	wipePreviousImg();
@@ -1041,7 +1043,7 @@ bool drawMultiplePNGs(size_t drawPNGsCount, ImgWipeFn_ptr wipePreviousImg) {
 	return true;
 }
 
-void downloadMultipleOnlinePNGs(const PNG_OnlineImage_t* images, size_t count) {
+void mtb_Download_Multi_Png(const PNG_OnlineImage_t* images, size_t count) {
     if (count > MAX_IMAGES) count = MAX_IMAGES;
 	preloadIndex = 0;
 
@@ -1061,12 +1063,12 @@ void downloadMultipleOnlinePNGs(const PNG_OnlineImage_t* images, size_t count) {
 }
 
 void drawOnlinePNGs(const PNG_OnlineImage_t* images, size_t drawPNGsCount, ImgWipeFn_ptr wipePreviousImgs){
-	    downloadMultipleOnlinePNGs(images, drawPNGsCount);
-        drawMultiplePNGs(drawPNGsCount, wipePreviousImgs);
+	    mtb_Download_Multi_Png(images, drawPNGsCount);
+        mtb_Draw_Multiple_Png(drawPNGsCount, wipePreviousImgs);
 }
 
 // void drawOnlineSVG_Task(void *dService) {
-//   Services *thisService = (Services *)dService;
+//   Mtb_Services *thisService = (Mtb_Services *)dService;
 //   PNG_OnlineImage_t holderItem;
 //   uint8_t* svgBuffer = nullptr;
 //   size_t svgSize = 0;
@@ -1075,7 +1077,7 @@ void drawOnlinePNGs(const PNG_OnlineImage_t* images, size_t drawPNGsCount, ImgWi
 //   while ((xQueueReceive(svgOnlineImageDrawer_Q, &holderItem, pdMS_TO_TICKS(100)) == pdTRUE) && (litFS_Ready == true)) {
 
 //     if (downloadSVGImageToPSRAM(holderItem.imageLink, &svgBuffer, &svgSize, &mimeType)) {
-//       printf("SVG MIME: %s\n", mimeType.c_str());
+//       ESP_LOGI(TAG, "SVG MIME: %s\n", mimeType.c_str());
 
 //       // Ensure null-terminated SVG string
 //       svgBuffer[svgSize] = '\0';
@@ -1083,7 +1085,7 @@ void drawOnlinePNGs(const PNG_OnlineImage_t* images, size_t drawPNGsCount, ImgWi
 //       // Parse SVG
 //       NSVGimage* svg = nsvgParse((char*)svgBuffer, "px", 96.0f);
 //       if (!svg) {
-//         printf("Failed to parse SVG\n");
+//         ESP_LOGI(TAG, "Failed to parse SVG\n");
 //         free(svgBuffer);
 //         continue;
 //       }
@@ -1114,7 +1116,7 @@ void drawOnlinePNGs(const PNG_OnlineImage_t* images, size_t drawPNGsCount, ImgWi
 //       unsigned char* bitmap = (unsigned char*)ps_malloc(outputW * outputH * 4);
 
 //       if (!bitmap) {
-//         printf("Failed to allocate bitmap buffer\n");
+//         ESP_LOGI(TAG, "Failed to allocate bitmap buffer\n");
 //         nsvgDelete(svg);
 //         free(svgBuffer);
 //         continue;
@@ -1144,12 +1146,12 @@ void drawOnlinePNGs(const PNG_OnlineImage_t* images, size_t drawPNGsCount, ImgWi
 //       nsvgDelete(svg);
 //       free(svgBuffer);
 //     }
-//     else if (Applications::internetConnectStatus != true) {
-//       statusBarNotif.scroll_This_Text("NO INTERNET CONNECTION TO DOWNLOAD SVG IMAGE.", GREEN_LIZARD);
+//     else if (Mtb_Applications::internetConnectStatus != true) {
+//       statusBarNotif.mtb_Scroll_This_Text("NO INTERNET CONNECTION TO DOWNLOAD SVG IMAGE.", GREEN_LIZARD);
 //     }
 //   }
 
-//   kill_This_Service(thisService);
+//   mtb_End_This_Service(thisService);
 // }
 
 
@@ -1254,7 +1256,7 @@ void svgDrawerWorker(void* param) {
     vTaskDelete(NULL);  // ✅ Frees stack after work
 }
 
-bool drawMultipleSVGs(size_t drawSVGsCount, ImgWipeFn_ptr wipePreviousImg) {
+bool mtb_Draw_Multi_Svg(size_t drawSVGsCount, ImgWipeFn_ptr wipePreviousImg) {
 
 	while(downloadedSVGs < drawSVGsCount)delay(10); // Wait for all images to be fetched from the internet
 	wipePreviousImg();
@@ -1269,7 +1271,7 @@ bool drawMultipleSVGs(size_t drawSVGsCount, ImgWipeFn_ptr wipePreviousImg) {
 	return true;
 }
 
-void downloadMultipleOnlineSVGs(const SVG_OnlineImage_t* images, size_t count) {
+void mtb_Download_Multi_Svg(const SVG_OnlineImage_t* images, size_t count) {
     if (count > MAX_SVG_IMAGES) count = MAX_SVG_IMAGES;
 	preloadIndex = 0;
 	downloadedSVGs = 0;
@@ -1288,8 +1290,8 @@ void downloadMultipleOnlineSVGs(const SVG_OnlineImage_t* images, size_t count) {
 }
 
 void drawOnlineSVGs(const SVG_OnlineImage_t* images, size_t drawSVGsCount, ImgWipeFn_ptr wipePreviousImgs){
-	    downloadMultipleOnlineSVGs(images, drawSVGsCount);
-        drawMultipleSVGs(drawSVGsCount, wipePreviousImgs);
+	    mtb_Download_Multi_Svg(images, drawSVGsCount);
+        mtb_Draw_Multi_Svg(drawSVGsCount, wipePreviousImgs);
 }
 
 //**************************************************************************************
@@ -1297,8 +1299,8 @@ void showStatusBarIcon(const PNG_LocalImage_t &pngImage)
 {
 	uint8_t itemIndex = pngImage.xAxis / 9;
 	memcpy(&statusBarItems[itemIndex], &pngImage, sizeof(PNG_LocalImage_t));
-	if (Applications::currentRunningApp->fullScreen == false)
-		drawLocalPNG(pngImage);
+	if (Mtb_Applications::currentRunningApp->fullScreen == false)
+		mtb_Draw_Local_Png(pngImage);
 }
 
 void wipeStatusBarIcon(const PNG_LocalImage_t &pngImage)
@@ -1308,7 +1310,7 @@ void wipeStatusBarIcon(const PNG_LocalImage_t &pngImage)
 //**************************************************************************************
 
 // Function to extract flag URL
-String getFlagUrlByCountryName(const String& countryName, const String& flagType) {
+String mtb_Get_Flag_Url_By_Country_Name(const String& countryName, const String& flagType) {
   const size_t CAPACITY = 150 * 1024; // ~150 KB, adjust to fit your JSON
   SpiRamJsonDocument doc(CAPACITY);
 

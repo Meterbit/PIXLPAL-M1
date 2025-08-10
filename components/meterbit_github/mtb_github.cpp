@@ -7,13 +7,15 @@
 #include <HTTPClient.h>
 #include "esp_heap_caps.h"  // for PSRAM allocation
 
+static const char TAG[] = "GITHUB_DOWNLOAD";
+
 EXT_RAM_BSS_ATTR QueueHandle_t files2Download_Q = NULL;
 EXT_RAM_BSS_ATTR TaskHandle_t files2Download_Task_H = NULL;
 void files2Download_Task(void*);
 
-EXT_RAM_BSS_ATTR Services *gitHubFileDwnload_Sv = new Services(files2Download_Task, &files2Download_Task_H, "Github Dwnld", 10240, 2, pdFALSE, 1);
+EXT_RAM_BSS_ATTR Mtb_Services *gitHubFileDwnload_Sv = new Mtb_Services(files2Download_Task, &files2Download_Task_H, "Github Dwnld", 10240, 2, pdFALSE, 1);
 
-bool downloadGithubStrgFile(String bucketPath, String flashPath){
+bool mtb_Download_Github_Strg_File(String bucketPath, String flashPath){
     // GitHub repository details
     const char* host = "api.github.com";
     const int httpsPort = 443;
@@ -32,7 +34,7 @@ bool downloadGithubStrgFile(String bucketPath, String flashPath){
   // Build the request URL
   String url = String("https://api.github.com/repos/") + owner + "/" + repo + "/contents/" + path;
 
-  //printf("Requesting URL: %s \n", url.c_str());
+  //ESP_LOGI(TAG, "Requesting URL: %s \n", url.c_str());
 
   // Initialize the HTTP client
   if (!https.begin(client, url)) {
@@ -49,18 +51,18 @@ bool downloadGithubStrgFile(String bucketPath, String flashPath){
 
   if (httpCode == HTTP_CODE_OK) {
     // Open a file on LittleFS to save the downloaded content
-    // printf("The github file path is: %s \n", flashPath.c_str());
+    // ESP_LOGI(TAG, "The github file path is: %s \n", flashPath.c_str());
 
-    if (prepareFilePath(flashPath.c_str())){
+    if (mtb_Prepare_Flash_File_Path(flashPath.c_str())){
       file = LittleFS.open(flashPath, FILE_WRITE);
       if (!file)
       {
-        printf("Failed to open file for writing.\n");
+        ESP_LOGI(TAG, "Failed to open file for writing.\n");
         https.end();
         return false;
       }
     } else {
-      printf("File Path preparation failed.\n");
+      ESP_LOGI(TAG, "File Path preparation failed.\n");
     }
 
     // Get the response stream
@@ -69,7 +71,7 @@ bool downloadGithubStrgFile(String bucketPath, String flashPath){
     // Read data from stream and write to file
     uint8_t buff[128] = { 0 };
     int len = https.getSize();
-    //printf("Filesize length: %d\n", len);
+    //ESP_LOGI(TAG, "Filesize length: %d\n", len);
 
     while (https.connected() && (len > 0 || len == -1)) {
       size_t size = stream->available();
@@ -85,9 +87,9 @@ bool downloadGithubStrgFile(String bucketPath, String flashPath){
     }
 
     file.close();
-    //printf("File downloaded and saved to LittleFS\n");
+    //ESP_LOGI(TAG, "File downloaded and saved to LittleFS\n");
   } else {
-    Serial.printf("HTTP Error: %d\n", httpCode);
+    ESP_LOGI(TAG, "HTTP Error: %d\n", httpCode);
   }
 
   https.end();
@@ -122,7 +124,7 @@ bool downloadGithubFileToPSRAM(const String& bucketPath, uint8_t** outBuffer, si
     int httpCode = https.GET();
 
     if (httpCode != HTTP_CODE_OK) {
-        Serial.printf("HTTP GET failed: %d\n", httpCode);
+        ESP_LOGI(TAG, "HTTP GET failed: %d\n", httpCode);
         https.end();
         return false;
     }
@@ -171,27 +173,27 @@ bool downloadGithubFileToPSRAM(const String& bucketPath, uint8_t** outBuffer, si
     return true;
 }
 
-bool downloadGithubStrgFile(githubStrg_UpDwn_t& downloadPaths){
-    return downloadGithubStrgFile(downloadPaths.bucketFilePath, downloadPaths.flashFilePath);
+bool mtb_Download_Github_Strg_File(githubStrg_UpDwn_t& downloadPaths){
+    return mtb_Download_Github_Strg_File(downloadPaths.bucketFilePath, downloadPaths.flashFilePath);
 }
 
 void files2Download_Task(void* dService){
-	Services *thisService = (Services*) dService;
+	Mtb_Services *thisService = (Mtb_Services*) dService;
   File2Download_t holderItem;
   bool dwnld_Succeed = false;
 
   while (xQueueReceive(files2Download_Q, &holderItem, pdMS_TO_TICKS(100)) == pdTRUE){
-    statusBarNotif.scroll_This_Text("UPDATING FILES", GREEN);
-    dwnld_Succeed = downloadGithubStrgFile(String(holderItem.githubFilePath), String(holderItem.flashFilePath));
-    if(dwnld_Succeed) statusBarNotif.scroll_This_Text("FILE STORAGE UPDATE SUCCESSFUL", SANDY_BROWN);
+    statusBarNotif.mtb_Scroll_This_Text("UPDATING FILES", GREEN);
+    dwnld_Succeed = mtb_Download_Github_Strg_File(String(holderItem.githubFilePath), String(holderItem.flashFilePath));
+    if(dwnld_Succeed) statusBarNotif.mtb_Scroll_This_Text("FILE STORAGE UPDATE SUCCESSFUL", SANDY_BROWN);
   }
 
-  Applications::internetConnectStatus = true;
-	kill_This_Service(thisService);
+  Mtb_Applications::internetConnectStatus = true;
+	mtb_End_This_Service(thisService);
 }
 
 
-bool prepareFilePath(const char* filePath) {
+bool mtb_Prepare_Flash_File_Path(const char* filePath) {
   String path(filePath);
 
   // If file already exists, no need to prepare directories
@@ -215,7 +217,7 @@ bool prepareFilePath(const char* filePath) {
       subPath = dirPath.substring(0, i);
       if (!LittleFS.exists(subPath)) {
         if (!LittleFS.mkdir(subPath)) {
-          printf("Failed to create directory: %s\n", subPath.c_str());
+          ESP_LOGI(TAG, "Failed to create directory: %s\n", subPath.c_str());
           return false;
         }
       }
@@ -225,7 +227,7 @@ bool prepareFilePath(const char* filePath) {
   // Create final directory level if needed
   if (!LittleFS.exists(dirPath)) {
     if (!LittleFS.mkdir(dirPath)) {
-      printf("Failed to create directory: %s\n", dirPath.c_str());
+      ESP_LOGI(TAG, "Failed to create directory: %s\n", dirPath.c_str());
       return false;
     }
   }
@@ -238,28 +240,28 @@ bool prepareFilePath(const char* filePath) {
 // downloadImageToSPIFFS("https://media.api-sports.io//football//teams//45.png", "/team_45.png");
 
 // bool downloadOnlineImageToSPIFFS(const char* url, const char* pathInSPIFFS) {
-//   printf("Downloading: %s\n", url);
+//   ESP_LOGI(TAG, "Downloading: %s\n", url);
 //   File file;
 //   HTTPClient http;
 //   http.begin(url);
 //   int httpCode = http.GET();
 
 //   if (httpCode != HTTP_CODE_OK) {
-//     printf("HTTP GET failed, error: %d\n", httpCode);
+//     ESP_LOGI(TAG, "HTTP GET failed, error: %d\n", httpCode);
 //     http.end();
 //     return false;
 //   }
 
-//   if (prepareFilePath(pathInSPIFFS)){
+//   if (mtb_Prepare_Flash_File_Path(pathInSPIFFS)){
 
 // 	  file = LittleFS.open(pathInSPIFFS, FILE_WRITE);
 // 	  if (!file){
-// 		  printf("Failed to open file for writing\n");
+// 		  ESP_LOGI(TAG, "Failed to open file for writing\n");
 // 		  http.end();
 // 		  return false;
 // 	  }
 //   } else {
-// 	  printf("File Path preparation failed.\n");
+// 	  ESP_LOGI(TAG, "File Path preparation failed.\n");
 //   }
 
 //   int total = http.writeToStream(&file);
@@ -268,26 +270,26 @@ bool prepareFilePath(const char* filePath) {
 //   file.close();
 //   http.end();
 
-//   printf("File saved to %s (%d bytes)\n", pathInSPIFFS, total);
+//   ESP_LOGI(TAG, "File saved to %s (%d bytes)\n", pathInSPIFFS, total);
 //   return true;
 // }
 
 // bool downloadOnlineImageToSPIFFS(const char* url, const char* pathInSPIFFS) {
-//   printf("Downloading: %s\n", url);
+//   ESP_LOGI(TAG, "Downloading: %s\n", url);
 //   File file;
 //   HTTPClient http;
 //   http.begin(url);
 //   int httpCode = http.GET();
 
 //   if (httpCode != HTTP_CODE_OK) {
-//     printf("HTTP GET failed, error: %d\n", httpCode);
+//     ESP_LOGI(TAG, "HTTP GET failed, error: %d\n", httpCode);
 //     http.end();
 //     return false;
 //   }
 
 //   // Check for valid content-type
 //   String contentType = http.header("Content-Type");
-//   printf("Content-Type: %s\n", contentType.c_str());
+//   ESP_LOGI(TAG, "Content-Type: %s\n", contentType.c_str());
 
 //   // Allowed MIME types (add more if needed)
 //   bool validContent =
@@ -296,20 +298,20 @@ bool prepareFilePath(const char* filePath) {
 //     contentType == "application/pdf";
 
 //   if (!validContent) {
-//     printf("Blocked download: Unexpected content type: %s\n", contentType.c_str());
+//     ESP_LOGI(TAG, "Blocked download: Unexpected content type: %s\n", contentType.c_str());
 //     http.end();
 //     return false;
 //   }
 
-//   if (prepareFilePath(pathInSPIFFS)) {
+//   if (mtb_Prepare_Flash_File_Path(pathInSPIFFS)) {
 //     file = LittleFS.open(pathInSPIFFS, FILE_WRITE);
 //     if (!file) {
-//       printf("Failed to open file for writing\n");
+//       ESP_LOGI(TAG, "Failed to open file for writing\n");
 //       http.end();
 //       return false;
 //     }
 //   } else {
-//     printf("File path preparation failed.\n");
+//     ESP_LOGI(TAG, "File path preparation failed.\n");
 //     http.end();
 //     return false;
 //   }
@@ -319,14 +321,14 @@ bool prepareFilePath(const char* filePath) {
 //   file.close();
 //   http.end();
 
-//   printf("File saved to %s (%d bytes)\n", pathInSPIFFS, total);
+//   ESP_LOGI(TAG, "File saved to %s (%d bytes)\n", pathInSPIFFS, total);
 //   return (total > 0);
 // }
 
 
 // Download image to PSRAM or heap with auto fallback, timeout, type detection, and support for chunked transfer
-bool downloadPNGImageToPSRAM(const char* url, uint8_t** outBuffer, size_t* outSize, String* outMimeType) {
-  //printf("[Download] Starting: %s\n", url);
+bool mtb_Download_Png_Img_To_PSRAM(const char* url, uint8_t** outBuffer, size_t* outSize, String* outMimeType) {
+  //ESP_LOGI(TAG, "[Download] Starting: %s\n", url);
 
   HTTPClient http;
   http.setTimeout(15000); // 15-second timeout
@@ -334,37 +336,37 @@ bool downloadPNGImageToPSRAM(const char* url, uint8_t** outBuffer, size_t* outSi
 
   int httpCode = http.GET();
   if (httpCode != HTTP_CODE_OK) {
-    //printf("[Download] HTTP GET failed: %d\n", httpCode);
+    //ESP_LOGI(TAG, "[Download] HTTP GET failed: %d\n", httpCode);
     http.end();
     return false;
   }
 
   String contentType = http.header("Content-Type");
   if (outMimeType) *outMimeType = contentType;
-  //printf("[Download] Content-Type: %s\n", contentType.c_str());
+  //ESP_LOGI(TAG, "[Download] Content-Type: %s\n", contentType.c_str());
 
 if (contentType.length() == 0) {
-  //printf("[Download] Warning: No Content-Type provided. Proceeding anyway...\n");
+  //ESP_LOGI(TAG, "[Download] Warning: No Content-Type provided. Proceeding anyway...\n");
 } else if (!contentType.startsWith("image/") && contentType != "application/octet-stream") {
-  //printf("[Download] Unsupported MIME type: %s. Aborting.\n", contentType.c_str());
+  //ESP_LOGI(TAG, "[Download] Unsupported MIME type: %s. Aborting.\n", contentType.c_str());
   http.end();
   return false;
 }
 
   int contentLen = http.getSize();
   bool isChunked = (contentLen <= 0);
-  if (isChunked) printf("[Download] Chunked transfer detected.\n");
+  if (isChunked) ESP_LOGI(TAG, "[Download] Chunked transfer detected.\n");
 
   const size_t bufferCapacity = isChunked ? 256 * 1024 : contentLen; // Allocate 256KB for chunked by default
   uint8_t* buffer = (uint8_t*)ps_malloc(bufferCapacity);
   bool usedHeap = false;
 
   if (!buffer) {
-    printf("[Download] PSRAM allocation failed. Trying heap...\n");
+    ESP_LOGI(TAG, "[Download] PSRAM allocation failed. Trying heap...\n");
     buffer = (uint8_t*)malloc(bufferCapacity);
     usedHeap = true;
     if (!buffer) {
-      printf("[Download] Memory allocation failed.\n");
+      ESP_LOGI(TAG, "[Download] Memory allocation failed.\n");
       http.end();
       return false;
     }
@@ -387,7 +389,7 @@ if (contentType.length() == 0) {
       if (isChunked && totalRead >= bufferCapacity - 512) break; // Prevent overflow
     } else {
       if (millis() - lastReadTime > 10000) { // 10s timeout
-        printf("[Download] Stream timeout.\n");
+        ESP_LOGI(TAG, "[Download] Stream timeout.\n");
         free(buffer);
         http.end();
         return false;
@@ -399,12 +401,12 @@ if (contentType.length() == 0) {
   http.end();
 
   if (!isChunked && totalRead != contentLen) {
-    printf("[Download] Incomplete: %d/%d bytes\n", totalRead, contentLen);
+    ESP_LOGI(TAG, "[Download] Incomplete: %d/%d bytes\n", totalRead, contentLen);
     free(buffer);
     return false;
   }
 
-  //printf("[Download] Success: %d bytes downloaded to %s\n", totalRead, usedHeap ? "heap" : "PSRAM");
+  //ESP_LOGI(TAG, "[Download] Success: %d bytes downloaded to %s\n", totalRead, usedHeap ? "heap" : "PSRAM");
   *outBuffer = buffer;
   *outSize = totalRead;
   return true;
@@ -412,7 +414,7 @@ if (contentType.length() == 0) {
 
 // Download SVG file to PSRAM or heap with robust checks
 bool downloadSVGImageToPSRAM(const char* url, uint8_t** outBuffer, size_t* outSize, String* outMimeType) {
-  //printf("[Download SVG] Starting: %s\n", url);
+  //ESP_LOGI(TAG, "[Download SVG] Starting: %s\n", url);
 
   HTTPClient http;
   http.setTimeout(15000);
@@ -420,37 +422,37 @@ bool downloadSVGImageToPSRAM(const char* url, uint8_t** outBuffer, size_t* outSi
 
   int httpCode = http.GET();
   if (httpCode != HTTP_CODE_OK) {
-    printf("[Download SVG] HTTP GET failed: %d\n", httpCode);
+    ESP_LOGI(TAG, "[Download SVG] HTTP GET failed: %d\n", httpCode);
     http.end();
     return false;
   }
 
   String contentType = http.header("Content-Type");
   if (outMimeType) *outMimeType = contentType;
-  //printf("[Download SVG] Content-Type: %s\n", contentType.c_str());
+  //ESP_LOGI(TAG, "[Download SVG] Content-Type: %s\n", contentType.c_str());
 
   if (contentType.length() == 0) {
-    //printf("[Download SVG] Warning: No Content-Type provided. Proceeding anyway...\n");
+    //ESP_LOGI(TAG, "[Download SVG] Warning: No Content-Type provided. Proceeding anyway...\n");
   } else if (!contentType.startsWith("image/svg") && contentType != "application/octet-stream" && !contentType.startsWith("text/xml")) {
-    printf("[Download SVG] Unsupported MIME type: %s. Aborting.\n", contentType.c_str());
+    ESP_LOGI(TAG, "[Download SVG] Unsupported MIME type: %s. Aborting.\n", contentType.c_str());
     http.end();
     return false;
   }
 
   int contentLen = http.getSize();
   bool isChunked = (contentLen <= 0);
-  if (isChunked) printf("[Download SVG] Chunked transfer detected.\n");
+  if (isChunked) ESP_LOGI(TAG, "[Download SVG] Chunked transfer detected.\n");
 
   const size_t bufferCapacity = isChunked ? 256 * 1024 : contentLen;
   uint8_t* buffer = (uint8_t*)ps_malloc(bufferCapacity);
   bool usedHeap = false;
 
   if (!buffer) {
-    printf("[Download SVG] PSRAM allocation failed. Trying heap...\n");
+    ESP_LOGI(TAG, "[Download SVG] PSRAM allocation failed. Trying heap...\n");
     buffer = (uint8_t*)malloc(bufferCapacity);
     usedHeap = true;
     if (!buffer) {
-      printf("[Download SVG] Memory allocation failed.\n");
+      ESP_LOGI(TAG, "[Download SVG] Memory allocation failed.\n");
       http.end();
       return false;
     }
@@ -473,7 +475,7 @@ bool downloadSVGImageToPSRAM(const char* url, uint8_t** outBuffer, size_t* outSi
       if (isChunked && totalRead >= bufferCapacity - 512) break;
     } else {
       if (millis() - lastReadTime > 10000) {
-        printf("[Download SVG] Stream timeout.\n");
+        ESP_LOGI(TAG, "[Download SVG] Stream timeout.\n");
         free(buffer);
         http.end();
         return false;
@@ -485,12 +487,12 @@ bool downloadSVGImageToPSRAM(const char* url, uint8_t** outBuffer, size_t* outSi
   http.end();
 
   if (!isChunked && totalRead != contentLen) {
-    printf("[Download SVG] Incomplete: %d/%d bytes\n", totalRead, contentLen);
+    ESP_LOGI(TAG, "[Download SVG] Incomplete: %d/%d bytes\n", totalRead, contentLen);
     free(buffer);
     return false;
   }
 
-  //printf("[Download SVG] Success: %d bytes downloaded to %s\n", totalRead, usedHeap ? "heap" : "PSRAM");
+  //ESP_LOGI(TAG, "[Download SVG] Success: %d bytes downloaded to %s\n", totalRead, usedHeap ? "heap" : "PSRAM");
   *outBuffer = buffer;
   *outSize = totalRead;
   return true;

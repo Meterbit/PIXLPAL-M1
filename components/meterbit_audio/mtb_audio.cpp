@@ -14,6 +14,8 @@
 #include "mtb_engine.h"
 #include "mtb_usb_fs.h"   // make sure this is in your include path
 
+static const char TAG[] = "METERBIT_AUDIO";
+
 EXT_RAM_BSS_ATTR TimerHandle_t showRandomPatternTimer_H = NULL;
 EXT_RAM_BSS_ATTR TaskHandle_t audioProcessing_Task_H = NULL;
 EXT_RAM_BSS_ATTR QueueHandle_t audioTextInfo_Q_H = NULL;
@@ -41,16 +43,16 @@ uint8_t kMatrixWidth = 128; //   PANEL_WIDTH
 uint8_t kMatrixHeight = 64; // PANEL_HEIGHT
 int loopcounter = 0;
 
-EXT_RAM_BSS_ATTR Services *audioOutProcessing_Sv = new Services(audioProcessing_Task, &audioProcessing_Task_H, "Aud Pro Serv.", 6144, 2, pdFALSE, 1);
+EXT_RAM_BSS_ATTR Mtb_Services *mtb_AudioOut_Sv = new Mtb_Services(audioProcessing_Task, &audioProcessing_Task_H, "Aud Pro Serv.", 6144, 2, pdFALSE, 1);
 
 void audioProcessing_Task(void *d_Service){
-  Services *thisServ = (Services *)d_Service;
+  Mtb_Services *thisServ = (Mtb_Services *)d_Service;
   String openai_key = "sk-svcacct-7TDOdEhvwntW7SrC1brgBH2VNmqXXhxKh2bLjobDdiecWv82WIvnNe_yQaFugvaoJFsIT3BlbkFJIa5_gMWvZw31-rfvKtWTAwNAnAK6uMRX1_FV2O-tmixbxpZ5Nfx40dKnHJSMSsaR6VQA";
   mtb_audioPlayer = new MTB_Audio();
   init_Mic_DAC_Audio_Processing_Peripherals();
   if(audioTextInfo_Q_H == NULL) audioTextInfo_Q_H = xQueueCreate(5, sizeof(AudioTextTransfer_T));
-  read_struct_from_nvs("dev_Volume", &deviceVolume, sizeof(uint8_t));
-  while (THIS_SERV_IS_ACTIVE == pdTRUE){
+  mtb_Read_Nvs_Struct("dev_Volume", &deviceVolume, sizeof(uint8_t));
+  while (MTB_SERV_IS_ACTIVE == pdTRUE){
     if(xSemaphoreTake(dac_Start_Sem_H, pdMS_TO_TICKS(50)) != pdTRUE) continue;
     audio = new Audio();
     audio->setConnectionTimeout(65000, 65000);
@@ -72,7 +74,7 @@ void audioProcessing_Task(void *d_Service){
       audio->setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
       audio->setVolume(deviceVolume);
       
-    while(mic_OR_dac == I2S_DAC && THIS_SERV_IS_ACTIVE == pdTRUE){
+    while(mic_OR_dac == I2S_DAC && MTB_SERV_IS_ACTIVE == pdTRUE){
       audio->loop();
       vTaskDelay(1);
     }// loop end
@@ -84,7 +86,7 @@ void audioProcessing_Task(void *d_Service){
   delete mtb_audioPlayer;
   //vQueueDelete(audioTextInfo_Q_H); audioTextInfo_Q_H = NULL; //The Queue remains active for the next audio service. This prevents apps such as the Internet Radio from crashing.
   de_init_Mic_DAC_Audio_Processing_Peripherals();
-  kill_This_Service(thisServ);
+  mtb_End_This_Service(thisServ);
 } 
 
 void init_Mic_DAC_Audio_Processing_Peripherals(void){
@@ -103,7 +105,7 @@ void init_Mic_DAC_Audio_Processing_Peripherals(void){
   if(PeakTimer == nullptr) PeakTimer = (int*)calloc(64, sizeof(int));
 
   srand(time(NULL));
-  read_struct_from_nvs("audioSpecSet", &audioSpecVisual_Set, sizeof(AudioSpectVisual_Set_t));
+  mtb_Read_Nvs_Struct("audioSpecSet", &audioSpecVisual_Set, sizeof(AudioSpectVisual_Set_t));
   if(showRandomPatternTimer_H == NULL) showRandomPatternTimer_H = xTimerCreate("rand pat tim", pdMS_TO_TICKS(audioSpecVisual_Set.randomInterval * 1000), pdTRUE, NULL, randomPattern_TimerCallback);
 }
 
@@ -144,7 +146,7 @@ int BucketFrequency(int iBucket){
  return iOffset * (samplingFrequency / 2) / (SAMPLEBLOCK / 2);
 }
 
-void use_Mic_OR_Dac(uint8_t mtb_i2s_Module){
+void mtb_Use_Mic_Or_Dac(uint8_t mtb_i2s_Module){
   mic_OR_dac = mtb_i2s_Module;
   delay(100);
   switch(mic_OR_dac){
@@ -152,80 +154,80 @@ void use_Mic_OR_Dac(uint8_t mtb_i2s_Module){
       break;
     case I2S_MIC: xSemaphoreGive(mic_Start_Sem_H);
       break;
-    default:  printf("Mic and/or Speakers Deactivated. \n");
+    default:  ESP_LOGI(TAG, "Mic and/or Speakers Deactivated. \n");
       break;
     }
 }
 
 // void audio_info(const char *info){
-//     printf("AudioI2S Info: %s \n",  info);
+//     ESP_LOGI(TAG, "AudioI2S Info: %s \n",  info);
 //     // audioTextTransferBuffer.Audio_Text_type = AUDIO_INFO;
 //     // strcpy(audioTextTransferBuffer.Audio_Text_Data, info);
 //     // xQueueSend(audioTextInfo_Q_H, &audioTextTransferBuffer, 0);
 // }
 // void audio_id3data(const char *info){  //id3 metadata
-//     //printf("id3Data: %s \n",  info);
+//     //ESP_LOGI(TAG, "id3Data: %s \n",  info);
 //     audioTextTransferBuffer.Audio_Text_type = AUDIO_ID3DATA;
 //     strcpy(audioTextTransferBuffer.Audio_Text_Data, info);
 //     xQueueSend(audioTextInfo_Q_H, &audioTextTransferBuffer, 0);
 // }
 // void audio_eof_mp3(const char *info){  //end of mp3 file
-//     //printf("eof_mp3: %s \n",  info);
+//     //ESP_LOGI(TAG, "eof_mp3: %s \n",  info);
 //     audioTextTransferBuffer.Audio_Text_type = AUDIO_EOF_MP3;
 //     strcpy(audioTextTransferBuffer.Audio_Text_Data, info);
 //     xQueueSend(audioTextInfo_Q_H, &audioTextTransferBuffer, 0);
 // }
 void audio_showstation(const char *info){
-    //printf("Station: %s \n",  info);
+    //ESP_LOGI(TAG, "Station: %s \n",  info);
     audioTextTransferBuffer.Audio_Text_type = AUDIO_SHOW_STATION;
     strcpy(audioTextTransferBuffer.Audio_Text_Data, info);
     xQueueSend(audioTextInfo_Q_H, &audioTextTransferBuffer, 0);
 }
 void audio_showstreamtitle(const char *info){
-    //printf("Stream Title: %s \n",  info);
+    //ESP_LOGI(TAG, "Stream Title: %s \n",  info);
     audioTextTransferBuffer.Audio_Text_type = AUDIO_SHOWS_STREAM_TITLE;
     strcpy(audioTextTransferBuffer.Audio_Text_Data, info);
     xQueueSend(audioTextInfo_Q_H, &audioTextTransferBuffer, 0);
 }
 // void audio_bitrate(const char *info){
-//     //printf("Bitrate: %s \n",  info);
+//     //ESP_LOGI(TAG, "Bitrate: %s \n",  info);
 //     audioTextTransferBuffer.Audio_Text_type = AUDIO_BITRATE;
 //     strcpy(audioTextTransferBuffer.Audio_Text_Data, info);
 //     xQueueSend(audioTextInfo_Q_H, &audioTextTransferBuffer, 0);
 // }
 // void audio_commercial(const char *info){  //duration in sec
-//     //printf("Commercial: %s \n",  info);
+//     //ESP_LOGI(TAG, "Commercial: %s \n",  info);
 //     audioTextTransferBuffer.Audio_Text_type = AUDIO_COMMERCIAL;
 //     strcpy(audioTextTransferBuffer.Audio_Text_Data, info);
 //     xQueueSend(audioTextInfo_Q_H, &audioTextTransferBuffer, 0);
 // }
 // void audio_icyurl(const char *info){  //homepage
-//     //printf("ICYURL: %s \n",  info);
+//     //ESP_LOGI(TAG, "ICYURL: %s \n",  info);
 //     audioTextTransferBuffer.Audio_Text_type = AUDIO_ICYURL;
 //     strcpy(audioTextTransferBuffer.Audio_Text_Data, info);
 //     xQueueSend(audioTextInfo_Q_H, &audioTextTransferBuffer, 0);
 // }
 // void audio_icydescription(const char* info){
-//     //printf("ICY DESCRIPTION: %s \n",  info);
+//     //ESP_LOGI(TAG, "ICY DESCRIPTION: %s \n",  info);
 //     audioTextTransferBuffer.Audio_Text_type = AUDIO_ICY_DESCRIPTION;
 //     strcpy(audioTextTransferBuffer.Audio_Text_Data, info);
 //     xQueueSend(audioTextInfo_Q_H, &audioTextTransferBuffer, 0);
 // }
 // void audio_lasthost(const char *info){  //stream URL played
-//     //printf("LastHost: %s \n",  info);
+//     //ESP_LOGI(TAG, "LastHost: %s \n",  info);
 //     audioTextTransferBuffer.Audio_Text_type = AUDIO_LASTHOST;
 //     strcpy(audioTextTransferBuffer.Audio_Text_Data, info);
 //     xQueueSend(audioTextInfo_Q_H, &audioTextTransferBuffer, 0);
 // }
 void audio_eof_speech(const char *info){
-    printf("End Of Speeach: %s \n",  info);
+    ESP_LOGI(TAG, "End Of Speeach: %s \n",  info);
     audioTextTransferBuffer.Audio_Text_type = AUDIO_EOF_SPEECH;
     strcpy(audioTextTransferBuffer.Audio_Text_Data, info);
     xQueueSend(audioTextInfo_Q_H, &audioTextTransferBuffer, 0);
 }
 
 void audio_eof_stream(const char* info){     // The webstream comes to an end
-    printf("End Of Stream: %s \n",  info);
+    ESP_LOGI(TAG, "End Of Stream: %s \n",  info);
     audioTextTransferBuffer.Audio_Text_type = AUDIO_EOF_STREAM;
     strcpy(audioTextTransferBuffer.Audio_Text_Data, info);
     xQueueSend(audioTextInfo_Q_H, &audioTextTransferBuffer, 0);
@@ -235,7 +237,7 @@ void audio_eof_stream(const char* info){     // The webstream comes to an end
 //   memcpy(AudioSamplesTransport.audioBuffer, outBuff, (size_t)validSamples);
 //   AudioSamplesTransport.audioSampleLength_bytes = validSamples;
 //   xSemaphoreGive(audio_Data_Collected_Sem_H);
-//   printf("Bits PerSample: %d,  No of channels: %d, no of valid samples %d\n", bitsPerSample, channels, validSamples);
+//   ESP_LOGI(TAG, "Bits PerSample: %d,  No of channels: %d, no of valid samples %d\n", bitsPerSample, channels, validSamples);
 //    *continueI2S = true;
 // }
 
@@ -297,7 +299,7 @@ void audioVisualizer(){
     // for (int i = 0; i < numBands; i++) {
     // Serial.printf ("Chan[%d]:%d",i,(int)FreqBins[i]);
     // FreqBins[i] = powf(FreqBins[i], gLogScale); // in case we want log scale..i leave it in here as reminder
-    //  Serial.printf( " - log: %d \n",(int)FreqBins[i]);
+    //  ESP_LOGI(TAG,  " - log: %d \n",(int)FreqBins[i]);
     // }
     static float lastAllBandsPeak = 0.0f;
     float allBandsPeak = 0;
@@ -495,7 +497,7 @@ bool MTB_Audio::mtb_Openai_Speech(const String& model, const String& input, cons
   openAI_Speed = speed;
   audioOutMode = OPENAI_SPEECH;
 
-  use_Mic_OR_Dac(I2S_DAC);
+  mtb_Use_Mic_Or_Dac(I2S_DAC);
 
   while (contdSucceed == -1 && countdown-->0) delay(5);
   return (bool) contdSucceed;
@@ -510,7 +512,7 @@ bool MTB_Audio::mtb_ConnectToHost(const char* host, const char* user, const char
   host_Password = String(pwd);
 
   audioOutMode = CONNECT_HOST;
-  use_Mic_OR_Dac(I2S_DAC);
+  mtb_Use_Mic_Or_Dac(I2S_DAC);
 
   while (contdSucceed == -1 && countdown-->0) delay(5);
   return (bool) contdSucceed;
@@ -524,7 +526,7 @@ bool MTB_Audio::mtb_ConnectToSpeech(const char* speech, const char* lang){
   ggle_Lang = String(lang);
 
   audioOutMode = CONNECT_SPEECH;
-  use_Mic_OR_Dac(I2S_DAC);
+  mtb_Use_Mic_Or_Dac(I2S_DAC);
 
   while (contdSucceed == -1 && countdown-->0) delay(5);
   return (bool) contdSucceed;
@@ -540,7 +542,7 @@ bool MTB_Audio::mtb_ConnectToUSB_FS( const char *path, int32_t m_fileStartPos){
   bool isMounted = USBFS.begin("/usb");
   if (isMounted){
         audioOutMode = CONNECT_USB_FS;
-        use_Mic_OR_Dac(I2S_DAC);
+        mtb_Use_Mic_Or_Dac(I2S_DAC);
   }
   else {
     ESP_LOGE("MTB_AUDIO", "USBFS not mounted. Cannot connect to USB_FS.");

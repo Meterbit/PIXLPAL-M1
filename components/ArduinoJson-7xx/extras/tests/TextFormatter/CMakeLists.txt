@@ -5,7 +5,7 @@
 add_executable(TextFormatterTests
 	writeFloat.cpp
 	writeInteger.cpp
-	writeString.cpp
+	mtb_Write_String.cpp
 )
 
 set_target_properties(TextFormatterTests PROPERTIES UNITY_BUILD OFF)

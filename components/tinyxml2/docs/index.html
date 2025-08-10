@@ -117,7 +117,7 @@ $(function() {
 
 &lt;document&gt;&lt;data&gt;1&lt;/data&gt;&lt;data&gt;2&lt;/data&gt;&lt;data&gt;3&lt;/data&gt;&lt;/document&gt;
 </pre> <h3>Whitespace Collapse (COLLAPSE_WHITESPACE)</h3>
-<p>For some applications, it is preferable to collapse whitespace. Collapsing whitespace gives you "HTML-like" behavior, which is sometimes more suitable for hand typed documents.</p>
+<p>For some Mtb_Applications, it is preferable to collapse whitespace. Collapsing whitespace gives you "HTML-like" behavior, which is sometimes more suitable for hand typed documents.</p>
 <p>TinyXML-2 supports this with the 'whitespace' parameter to the XMLDocument constructor. (The default is to preserve whitespace, as described above.)</p>
 <p>However, you may also use COLLAPSE_WHITESPACE, which will:</p>
 <ul>
@@ -127,7 +127,7 @@ $(function() {
 </ul>
 <p>Note that (currently) there is a performance impact for using COLLAPSE_WHITESPACE. It essentially causes the XML to be parsed twice.</p>
 <h3>Pedantic Whitespace (PEDANTIC_WHITESPACE)</h3>
-<p>For applications that need to know about text nodes that are composed entirely of whitespace, PEDANTIC_WHITESPACE is available. PEDANTIC_WHITESPACE maintains all the whilespace between elements.</p>
+<p>For Mtb_Applications that need to know about text nodes that are composed entirely of whitespace, PEDANTIC_WHITESPACE is available. PEDANTIC_WHITESPACE maintains all the whilespace between elements.</p>
 <p>PEDANTIC_WHITESPACE is a new mode and not as tested as the other whitespace modes.</p>
 <h2>Error Reporting</h2>
 <p>TinyXML-2 reports the line number of any errors in an XML document that cannot be parsed correctly. In addition, all nodes (elements, declarations, text, comments etc.) and attributes have a line number recorded as they are parsed. This allows an application that performs additional validation of the parsed XML document (e.g. application-implemented DTD validation) to report line number information for error messages.</p>
@@ -211,7 +211,7 @@ cd vcpkg
 <h1>License </h1>
 <p>TinyXML-2 is released under the zlib license:</p>
 <p>This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.</p>
-<p>Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:</p>
+<p>Permission is granted to anyone to use this software for any purpose, including commercial Mtb_Applications, and to alter it and redistribute it freely, subject to the following restrictions:</p>
 <ol type="1">
 <li>The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.</li>
 <li>Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.</li>

@@ -6,7 +6,6 @@
 #include "mtb_ota.h"
 #include "mtb_littleFs.h"
 #include "mtb_ble.h"
-#include "mtb_buzzer.h"
 using namespace std;
 
 static const char TAG[] = "PXP-MAIN";
@@ -19,9 +18,9 @@ extern "C" void app_main(){
     mtb_Ble_Comm_Init();
 
     mtb_Launch_This_App(firmwareUpdate_App);
-    while(Applications::firmwareOTA_Status != pdFALSE) delay(1000);
+    while(Mtb_Applications::firmwareOTA_Status != pdFALSE) delay(1000);
 
-    read_struct_from_nvs("currentApp", &currentApp, sizeof(CurrentApp_t));
+    mtb_Read_Nvs_Struct("currentApp", &currentApp, sizeof(CurrentApp_t));
     mtb_Wifi_Init();
     mtb_General_App_Lunch(currentApp);
     //mtb_Launch_This_App(worldFlags_App);
@@ -29,7 +28,7 @@ extern "C" void app_main(){
    size_t free_sram = 0;
 
     // while ((Applications::internetConnectStatus != true)){
-    //   printf("Waiting for Internet Connection....\n");
+    //   ESP_LOGI(TAG, "Waiting for Internet Connection....\n");
     //   delay(1000);
     // }
     // drawOnlinePNG({"https://media.api-sports.io//football//teams//165.png", 3, 17, 5});     // Draw the logo on the top left corner of the screen.
@@ -39,11 +38,11 @@ extern "C" void app_main(){
 
     while (1){
     delay(2000);
-    // // //printf("Name of Current App is:  %s \n", Applications::currentRunningApp->appName);
+    // // //ESP_LOGI(TAG, "Name of Current App is:  %s \n", Applications::currentRunningApp->appName);
     // // //Get the total free size of internal SRAM
     free_sram = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
     //Print the free SRAM size
-    printf("#############Free SRAM: %zu bytes\n", free_sram);
+    ESP_LOGI(TAG, "#############Free SRAM: %zu bytes\n", free_sram);
     //ESP_LOGI(TAG, "Memory: Free %dKiB Low: %dKiB\n", (int)xPortGetFreeHeapSize()/1024, (int)xPortGetMinimumEverFreeHeapSize()/1024);
      }
 

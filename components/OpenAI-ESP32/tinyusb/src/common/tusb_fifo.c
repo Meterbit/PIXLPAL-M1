@@ -71,7 +71,7 @@ bool tu_fifo_config(tu_fifo_t *f, void* buffer, uint16_t depth, uint16_t item_si
 {
   // Limit index space to 2*depth - this allows for a fast "modulo" calculation
   // but limits the maximum depth to 2^16/2 = 2^15 and buffer overflows are detectable
-  // only if overflow happens once (important for unsupervised DMA applications)
+  // only if overflow happens once (important for unsupervised DMA Mtb_Applications)
   if (depth > 0x8000) return false;
 
   _ff_lock(f->mutex_wr);

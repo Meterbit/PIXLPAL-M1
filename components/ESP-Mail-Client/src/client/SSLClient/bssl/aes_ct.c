@@ -34,7 +34,7 @@ br_aes_ct_bitslice_Sbox(uint32_t *q)
 	/*
 	 * This S-box implementation is a straightforward translation of
 	 * the circuit described by Boyar and Peralta in "A new
-	 * combinational logic minimization technique with applications
+	 * combinational logic minimization technique with Mtb_Applications
 	 * to cryptology" (https://eprint.iacr.org/2009/191.pdf).
 	 *
 	 * Note that variables x* (input) and s* (output) are numbered

@@ -4914,14 +4914,14 @@ class TextFormatter {
     else
       writeRaw("false");
   }
-  void writeString(const char* value) {
+  void mtb_Write_String(const char* value) {
     ARDUINOJSON_ASSERT(value != NULL);
     writeRaw('\"');
     while (*value)
       writeChar(*value++);
     writeRaw('\"');
   }
-  void writeString(const char* value, size_t n) {
+  void mtb_Write_String(const char* value, size_t n) {
     ARDUINOJSON_ASSERT(value != NULL);
     writeRaw('\"');
     while (n--)
@@ -5256,11 +5256,11 @@ class JsonSerializer : public VariantDataVisitor<size_t> {
     return bytesWritten();
   }
   size_t visit(const char* value) {
-    formatter_.writeString(value);
+    formatter_.mtb_Write_String(value);
     return bytesWritten();
   }
   size_t visit(JsonString value) {
-    formatter_.writeString(value.c_str(), value.size());
+    formatter_.mtb_Write_String(value.c_str(), value.size());
     return bytesWritten();
   }
   size_t visit(RawString value) {

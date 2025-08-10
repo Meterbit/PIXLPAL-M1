@@ -19,6 +19,8 @@
 #include "mtb_wifi.h"
 #include "mtb_ble.h"
 
+static const char TAG[] = "BLE_SETTINGS";
+
 void bleSettings(JsonDocument& dCommand){
     DeserializationError passed;
     uint16_t dCmd_num = 0;
@@ -27,13 +29,13 @@ void bleSettings(JsonDocument& dCommand){
 
     switch(dCmd_num){
     case 1: 
-    read_struct_from_nvs("pxpBleDevName", pxp_BLE_Name, sizeof(pxp_BLE_Name));
+    mtb_Read_Nvs_Struct("pxpBleDevName", pxp_BLE_Name, sizeof(pxp_BLE_Name));
     mtb_Current_Ble_Device(pxp_BLE_Name);
       break;
     case 2:
     mtb_Set_Pxp_Ble_Name(dCommand);
       break;
-    default: printf("pxpBLE Settings Number not Recognised.\n");
+    default: ESP_LOGI(TAG, "pxpBLE Settings Number not Recognised.\n");
       break;
     }
 }
@@ -61,6 +63,6 @@ if (newBleName.length() == 0) {
     return;
 }
 strcpy(pxp_BLE_Name, newBleName.c_str());
-write_struct_to_nvs("pxpBleDevName", pxp_BLE_Name, sizeof(pxp_BLE_Name));
+mtb_Write_Nvs_Struct("pxpBleDevName", pxp_BLE_Name, sizeof(pxp_BLE_Name));
 bleSettingsComSend(mtb_Ble_Settings_Route, success);
 }

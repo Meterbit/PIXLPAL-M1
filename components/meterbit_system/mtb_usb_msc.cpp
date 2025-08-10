@@ -56,10 +56,10 @@ static void msc_event_cb(const msc_host_event_t *event, void *arg);
 void usb_Mass_Strg_Task(void *params);
 static void print_device_info(msc_host_device_info_t *info);
 
-EXT_RAM_BSS_ATTR Services *usb_Mass_Storage_Sv = new Services(usb_Mass_Strg_Task, &usb_Mass_Storage_H, "USB Mass Strg", 4096, 2, pdFALSE, 1);
+EXT_RAM_BSS_ATTR Mtb_Services *usb_Mass_Storage_Sv = new Mtb_Services(usb_Mass_Strg_Task, &usb_Mass_Storage_H, "USB Mass Strg", 4096, 2, pdFALSE, 1);
 
 void usb_Mass_Strg_Task(void* d_Service){
-    Services *thisServ = (Services *)d_Service;
+    Mtb_Services *thisServ = (Mtb_Services *)d_Service;
     // Create FreeRTOS primitives
     app_queue = xQueueCreate(5, sizeof(app_message_t));
     assert(app_queue);
@@ -85,7 +85,7 @@ void usb_Mass_Strg_Task(void* d_Service){
 //************************************************************************************************************ */
     bool has_clients = true;
 
-    while (THIS_SERV_IS_ACTIVE == pdTRUE) {
+    while (MTB_SERV_IS_ACTIVE == pdTRUE) {
         uint32_t event_flags;
         usb_host_lib_handle_events(pdMS_TO_TICKS(200), &event_flags);
 
@@ -104,7 +104,7 @@ void usb_Mass_Strg_Task(void* d_Service){
         BaseType_t success = xQueueReceive(app_queue, &msg, pdMS_TO_TICKS(200));
 
             if(msg.id == (app_message_t::MYVALUES) 1 && success == pdTRUE){
-            printf("Preparing USB flash for mounting at: %s\n", MNT_PATH);
+            ESP_LOGI(TAG, "Preparing USB flash for mounting at: %s\n", MNT_PATH);
 
             // 1. MSC flash drive connected. Open it and map it to Virtual File System
             ESP_ERROR_CHECK(msc_host_install_device(msg.data.new_dev_address, &msc_device));
@@ -116,19 +116,19 @@ void usb_Mass_Strg_Task(void* d_Service){
             ESP_ERROR_CHECK(msc_host_vfs_register(msc_device, MNT_PATH, &mount_config, &vfs_handle));
             // Signal to others that USB is mounted
             xEventGroupSetBits(usb_event_group, USB_MOUNTED_BIT);
-            printf("USB flash drive mounted at %s\n", MNT_PATH);
-            Applications::usbPenDriveMounted = true;
+            ESP_LOGI(TAG, "USB flash drive mounted at %s\n", MNT_PATH);
+            Mtb_Applications::usbPenDriveMounted = true;
             USBFS.begin(MNT_PATH);
             }
             else if(msg.id == (app_message_t::MYVALUES)2 && success == pdTRUE){
-            printf("USB flash drive disconnected\n");
+            ESP_LOGI(TAG, "USB flash drive disconnected\n");
             }
     }
 
         if(vfs_handle != NULL) msc_host_vfs_unregister(vfs_handle);
         if(msc_device != NULL) msc_host_uninstall_device(msc_device);
         USBFS.end();
-        Applications::usbPenDriveMounted = false;
+        Mtb_Applications::usbPenDriveMounted = false;
     // Wait for all clients to deregister
 
         uint32_t event_flags;
@@ -150,7 +150,7 @@ void usb_Mass_Strg_Task(void* d_Service){
     ESP_ERROR_CHECK(usb_host_uninstall());
     vQueueDelete(app_queue);
 
-    kill_This_Service(thisServ);
+    mtb_End_This_Service(thisServ);
 }
 
 
@@ -170,14 +170,14 @@ static void msc_event_cb(const msc_host_event_t *event, void *arg)
             (app_message_t::MYVALUES) 1,
             1
         };
-        Applications::usbPenDriveConnectStatus = true;
+        Mtb_Applications::usbPenDriveConnectStatus = true;
         xQueueSend(app_queue, &msg, portMAX_DELAY);
     } else if (event->event == 1) {
         ESP_LOGI(TAG, "MSC device disconnected");
         app_message_t message = {
             .id = (app_message_t::MYVALUES) 2,
         };
-        Applications::usbPenDriveConnectStatus = false;
+        Mtb_Applications::usbPenDriveConnectStatus = false;
         xQueueSend(app_queue, &message, portMAX_DELAY);
     }
 }
@@ -187,12 +187,12 @@ static void print_device_info(msc_host_device_info_t *info)
     const size_t megabyte = 1024 * 1024;
     uint64_t capacity = ((uint64_t)info->sector_size * info->sector_count) / megabyte;
 
-    printf("Device info:\n");
-    printf("\t Capacity: %llu MB\n", capacity);
-    printf("\t Sector size: %"PRIu32"\n", info->sector_size);
-    printf("\t Sector count: %"PRIu32"\n", info->sector_count);
-    printf("\t PID: 0x%04X \n", info->idProduct);
-    printf("\t VID: 0x%04X \n", info->idVendor);
+    ESP_LOGI(TAG, "Device info:\n");
+    ESP_LOGI(TAG, "\t Capacity: %llu MB\n", capacity);
+    ESP_LOGI(TAG, "\t Sector size: %"PRIu32"\n", info->sector_size);
+    ESP_LOGI(TAG, "\t Sector count: %"PRIu32"\n", info->sector_count);
+    ESP_LOGI(TAG, "\t PID: 0x%04X \n", info->idProduct);
+    ESP_LOGI(TAG, "\t VID: 0x%04X \n", info->idVendor);
 #ifndef CONFIG_NEWLIB_NANO_FORMAT
     wprintf(L"\t iProduct: %S \n", info->iProduct);
     wprintf(L"\t iManufacturer: %S \n", info->iManufacturer);

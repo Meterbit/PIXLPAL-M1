@@ -32,7 +32,7 @@ char serial_No[20] = "MTB-F1-000001";
 char pxp_BLE_Name[20] = "PIXLPAL-M1";
 char ntp_TimeZone[100] = "WAT-1";
 
-// APPLICATIONS DEFAULT SETTINGS *******************************************************************************************
+// Mtb_Applications DEFAULT SETTINGS *******************************************************************************************
 
 Clock_Colors clk_Updt{
     .hourMinColour = LASER_LEMON,
@@ -63,10 +63,10 @@ void init_nvs_mem(void){
         ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK(ret);
-     ret = read_struct_from_nvs("devSerial", (char*) serial_No, sizeof(serial_No));
+     ret = mtb_Read_Nvs_Struct("devSerial", (char*) serial_No, sizeof(serial_No));
      if(ret == ESP_OK){ 
         //set_factory_NVS_parameters();
-        read_struct_from_nvs("litFS_Ready", &litFS_Ready, sizeof(uint8_t));
+        mtb_Read_Nvs_Struct("litFS_Ready", &litFS_Ready, sizeof(uint8_t));
      }
      else {
         set_factory_NVS_parameters();
@@ -76,15 +76,15 @@ void init_nvs_mem(void){
  void set_factory_NVS_parameters(void){
     nvs_flash_erase();
     nvs_flash_init();
-    write_struct_to_nvs("devSerial", (char*) serial_No, sizeof(serial_No));                     // Serial No
-    write_struct_to_nvs("pxpBleDevName", (char*) pxp_BLE_Name, sizeof(pxp_BLE_Name));           // pxp BLE Name
-    write_struct_to_nvs("ntp TimeZone", (char*) ntp_TimeZone, sizeof(ntp_TimeZone));            // NTP Time-Zone
-    write_struct_to_nvs("pan_brghnss", &panelBrightness, sizeof(uint8_t));                      // Panel Brightness
-    write_struct_to_nvs("dev_Volume", &deviceVolume, sizeof(uint8_t));                          // Device volume
-    write_struct_to_nvs("currentApp", &classickClockAppSelect, sizeof(CurrentApp_t));           // Current Running App
-    write_struct_to_nvs("Clock Cols", &clk_Updt, sizeof(Clock_Colors));                         // Clock Colors
-    write_struct_to_nvs("Wifi Cred",&default_Successful_Wifi, sizeof(Wifi_Credentials));        // Successful Wi-Fi Credentials
-    write_struct_to_nvs("wakeState", &wakeState, sizeof(power_States_t));                       // Device Wake State from Power down
-    write_struct_to_nvs("litFS_Ready", &litFS_Ready, sizeof(uint8_t));                          // Spiff health status (Ready or Corrupt)
-    write_struct_to_nvs("Device_muted", &device_Muted, sizeof(uint8_t));                        // Device Muted or Unmuted
+    mtb_Write_Nvs_Struct("devSerial", (char*) serial_No, sizeof(serial_No));                     // Serial No
+    mtb_Write_Nvs_Struct("pxpBleDevName", (char*) pxp_BLE_Name, sizeof(pxp_BLE_Name));           // pxp BLE Name
+    mtb_Write_Nvs_Struct("ntp TimeZone", (char*) ntp_TimeZone, sizeof(ntp_TimeZone));            // NTP Time-Zone
+    mtb_Write_Nvs_Struct("pan_brghnss", &panelBrightness, sizeof(uint8_t));                      // Panel Brightness
+    mtb_Write_Nvs_Struct("dev_Volume", &deviceVolume, sizeof(uint8_t));                          // Device volume
+    mtb_Write_Nvs_Struct("currentApp", &classickClockAppSelect, sizeof(CurrentApp_t));           // Current Running App
+    mtb_Write_Nvs_Struct("Clock Cols", &clk_Updt, sizeof(Clock_Colors));                         // Clock Colors
+    mtb_Write_Nvs_Struct("Wifi Cred",&default_Successful_Wifi, sizeof(Wifi_Credentials));        // Successful Wi-Fi Credentials
+    mtb_Write_Nvs_Struct("wakeState", &wakeState, sizeof(power_States_t));                       // Device Wake State from Power down
+    mtb_Write_Nvs_Struct("litFS_Ready", &litFS_Ready, sizeof(uint8_t));                          // Spiff health status (Ready or Corrupt)
+    mtb_Write_Nvs_Struct("Device_muted", &device_Muted, sizeof(uint8_t));                        // Device Muted or Unmuted
  }

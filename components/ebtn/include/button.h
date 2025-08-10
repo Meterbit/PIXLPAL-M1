@@ -85,7 +85,7 @@ esp_err_t button_free();
 /**
  * @brief Sets the pre-poll callback used for buttons
  *
- * Called just before polling all buttons. Useful for applications such as I2C port expanders.
+ * Called just before polling all buttons. Useful for Mtb_Applications such as I2C port expanders.
  *
  * @param prepoll_callback The prepoll callback function, NULL to disable
  */

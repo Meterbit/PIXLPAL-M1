@@ -125,7 +125,7 @@ valuable. TinyXML-2 sees these as the same XML:
 
 #### Whitespace Collapse (COLLAPSE_WHITESPACE)
 
-For some applications, it is preferable to collapse whitespace. Collapsing
+For some Mtb_Applications, it is preferable to collapse whitespace. Collapsing
 whitespace gives you "HTML-like" behavior, which is sometimes more suitable
 for hand typed documents.
 
@@ -143,7 +143,7 @@ It essentially causes the XML to be parsed twice.
 
 #### Pedantic Whitespace (PEDANTIC_WHITESPACE)
 
-For applications that need to know about text nodes that are composed entirely of 
+For Mtb_Applications that need to know about text nodes that are composed entirely of 
 whitespace, PEDANTIC_WHITESPACE is available. PEDANTIC_WHITESPACE maintains all the
 whilespace between elements. 
 
@@ -304,7 +304,7 @@ warranty. In no event will the authors be held liable for any
 damages arising from the use of this software.
 
 Permission is granted to anyone to use this software for any
-purpose, including commercial applications, and to alter it and
+purpose, including commercial Mtb_Applications, and to alter it and
 redistribute it freely, subject to the following restrictions:
 
 1. The origin of this software must not be misrepresented; you must

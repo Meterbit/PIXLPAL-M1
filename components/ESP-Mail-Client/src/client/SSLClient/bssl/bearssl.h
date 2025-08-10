@@ -53,7 +53,7 @@
  * | bearssl_x509.h  | X.509 certificate decoding and validation         |
  * | bearssl_pem.h   | Base64/PEM decoding support functions             |
  *
- * Applications using BearSSL are supposed to simply include `bearssl.h`
+ * Mtb_Applications using BearSSL are supposed to simply include `bearssl.h`
  * as follows:
  *
  *     #include <bearssl.h>

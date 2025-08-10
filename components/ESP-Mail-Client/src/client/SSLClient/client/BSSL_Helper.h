@@ -158,7 +158,7 @@ static const uint16_t faster_suites_P[] PROGMEM = {
     BR_TLS_RSA_WITH_AES_256_CBC_SHA,
     BR_TLS_RSA_WITH_AES_128_CBC_SHA};
 
-// Internal opaque structures, not needed by user applications
+// Internal opaque structures, not needed by user Mtb_Applications
 namespace key_bssl
 {
     class public_key;

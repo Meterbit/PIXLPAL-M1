@@ -67,7 +67,7 @@ esp_err_t rotary_encoder_free();
 /**
  * @brief Sets the pre-poll callback used for rotary encoders
  *
- * Called just before polling all rotary encoders. Useful for applications such as I2C port expanders.
+ * Called just before polling all rotary encoders. Useful for Mtb_Applications such as I2C port expanders.
  *
  * @param prepoll_callback The prepoll callback function, NULL to disable
  */

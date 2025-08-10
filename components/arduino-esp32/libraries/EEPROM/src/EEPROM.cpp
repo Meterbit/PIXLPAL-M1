@@ -466,7 +466,7 @@ size_t EEPROMClass::writeBool(int address, bool value) {
   return EEPROMClass::writeAll(address, Bool);
 }
 
-size_t EEPROMClass::writeString(int address, const char *value) {
+size_t EEPROMClass::mtb_Write_String(int address, const char *value) {
   if (!value) {
     return 0;
   }
@@ -491,8 +491,8 @@ size_t EEPROMClass::writeString(int address, const char *value) {
   return strlen(value);
 }
 
-size_t EEPROMClass::writeString(int address, String value) {
-  return EEPROMClass::writeString(address, value.c_str());
+size_t EEPROMClass::mtb_Write_String(int address, String value) {
+  return EEPROMClass::mtb_Write_String(address, value.c_str());
 }
 
 size_t EEPROMClass::writeBytes(int address, const void *value, size_t len) {

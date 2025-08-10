@@ -16,6 +16,8 @@
 #include <string>
 //#include "esp_heap_caps.h"
 
+static const char TAG[] = "METERBIT_ENGINE";
+
 CurrentApp_t currentApp{
     .GenApp = 0,
     .SpeApp = 1
@@ -36,25 +38,25 @@ EXT_RAM_BSS_ATTR QueueHandle_t running_App_BLECom_Queue = NULL;
 void (*encoderFn_ptr)(rotary_encoder_rotation_t) = encoderDoNothing;
 void (*buttonFn_ptr)(button_event_t) = buttonDoNothing;
 
-EXT_RAM_BSS_ATTR Services *app_Luncher_Task_Sv = new Services(appLuncherTask, &appLuncher_Task_H, "App Luncher Task", 4096, 3);
-EXT_RAM_BSS_ATTR Services *read_Write_NVS_Sv = new Services(nvsAccessTask, &nvsAccess_Task_Handle, "NVS Access Tsk", 4096, 3);
-EXT_RAM_BSS_ATTR Services *freeServAndAppPSRAM_Sv = new Services(freeServAndAppPSRAM_Task, &freeServAndAppPSRAM_Handle, "Free AppServPSRAM", 4096, 3);
+EXT_RAM_BSS_ATTR Mtb_Services *app_Luncher_Task_Sv = new Mtb_Services(appLuncherTask, &appLuncher_Task_H, "App Luncher Task", 4096, 3);
+EXT_RAM_BSS_ATTR Mtb_Services *read_Write_NVS_Sv = new Mtb_Services(nvsAccessTask, &nvsAccess_Task_Handle, "NVS Access Tsk", 4096, 3);
+EXT_RAM_BSS_ATTR Mtb_Services *freeServAndAppPSRAM_Sv = new Mtb_Services(freeServAndAppPSRAM_Task, &freeServAndAppPSRAM_Handle, "Free AppServPSRAM", 4096, 3);
 
-EXT_RAM_BSS_ATTR Applications* Applications::otaAppHolder = nullptr;
-EXT_RAM_BSS_ATTR Applications* Applications::currentRunningApp = nullptr;
-EXT_RAM_BSS_ATTR Applications* Applications::previousRunningApp = nullptr;
+EXT_RAM_BSS_ATTR Mtb_Applications* Mtb_Applications::otaAppHolder = nullptr;
+EXT_RAM_BSS_ATTR Mtb_Applications* Mtb_Applications::currentRunningApp = nullptr;
+EXT_RAM_BSS_ATTR Mtb_Applications* Mtb_Applications::previousRunningApp = nullptr;
 
 // Device Status Flags
-bool Applications::internetConnectStatus = false;
-bool Applications::usbPenDriveConnectStatus = false;
-bool Applications::usbPenDriveMounted = false;
-bool Applications::pxpWifiConnectStatus = false;
-bool Applications::bleAdvertisingStatus = false;
-bool Applications::bleCentralContd = false;
-uint8_t Applications::firmwareOTA_Status = 6;
-uint8_t Applications::spiffsOTA_Status = 6;
+bool Mtb_Applications::internetConnectStatus = false;
+bool Mtb_Applications::usbPenDriveConnectStatus = false;
+bool Mtb_Applications::usbPenDriveMounted = false;
+bool Mtb_Applications::pxpWifiConnectStatus = false;
+bool Mtb_Applications::bleAdvertisingStatus = false;
+bool Mtb_Applications::bleCentralContd = false;
+uint8_t Mtb_Applications::firmwareOTA_Status = 6;
+uint8_t Mtb_Applications::spiffsOTA_Status = 6;
 
-Applications::Applications(void (*dApplication)(void *), TaskHandle_t* dAppHandle_ptr, const char* dAppName, uint32_t dStackSize, uint8_t psRamStack, uint8_t core){
+Mtb_Applications::Mtb_Applications(void (*dApplication)(void *), TaskHandle_t* dAppHandle_ptr, const char* dAppName, uint32_t dStackSize, uint8_t psRamStack, uint8_t core){
     application = dApplication;
     appHandle_ptr = dAppHandle_ptr;
     strcpy(appName, dAppName);
@@ -75,16 +77,16 @@ Applications::Applications(void (*dApplication)(void *), TaskHandle_t* dAppHandl
 //     memcpy(com_Data.payload, calendarClockAppBleCom, com_Data.pay_size);
 
 //     xQueueSend(appCom_queue, &com_Data, portMAX_DELAY);
-//     start_This_Service(ble_AppCom_Parser_Sv);
+//     start_This_Service(mtb_Ble_AppComm_Parser_Sv);
 // }
 
-void mtb_Launch_This_App(Applications *dApp, do_Prev_App_t do_Prv_App){
+void mtb_Launch_This_App(Mtb_Applications *dApp, do_Prev_App_t do_Prv_App){
     dApp->action_On_Prev_App = do_Prv_App;
     xQueueSend(appLuncherQueue, &dApp, portMAX_DELAY);
     start_This_Service(app_Luncher_Task_Sv);
 }
 
-// void start_This_Service(Services* dService){
+// void start_This_Service(Mtb_Services* dService){
 //     if(*(dService->serviceT_Handle_ptr) == NULL) {
 //         dService->service_is_Running = pdTRUE;
 //         if(dService->usePSRAM_Stack == pdFALSE) xTaskCreatePinnedToCore(dService->service, dService->serviceName, dService->stackSize, dService, dService->servicePriority, dService->serviceT_Handle_ptr, dService->serviceCore);
@@ -92,7 +94,7 @@ void mtb_Launch_This_App(Applications *dApp, do_Prev_App_t do_Prv_App){
 //         dService->task_stack = (StackType_t *)heap_caps_malloc(dService->stackSize, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
 //         dService->tcb_psram = (StaticTask_t *)heap_caps_malloc(sizeof(StaticTask_t), MALLOC_CAP_INTERNAL);
 //         if (dService->task_stack == NULL || dService->tcb_psram == NULL){ 
-//             printf("Failed to allocate task/tcb stack in PSRAM\n"); 
+//             ESP_LOGI(TAG, "Failed to allocate task/tcb stack in PSRAM\n"); 
 //             return;
 //             }
 //         // Create the task with the stack in PSRAM
@@ -101,7 +103,7 @@ void mtb_Launch_This_App(Applications *dApp, do_Prev_App_t do_Prv_App){
 //     }
 // }
 
-void start_This_Service(Services* dService){
+void start_This_Service(Mtb_Services* dService){
     if(*(dService->serviceT_Handle_ptr) == NULL) {  // Prevents the service from being started multiple times
         dService->service_is_Running = pdTRUE;
         if(dService->usePSRAM_Stack == pdFALSE) {
@@ -110,7 +112,7 @@ void start_This_Service(Services* dService){
             dService->task_stack = (StackType_t *)heap_caps_malloc(dService->stackSize, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
             dService->tcb_psram = (StaticTask_t *)heap_caps_malloc(sizeof(StaticTask_t), MALLOC_CAP_INTERNAL);
             if (dService->task_stack == NULL || dService->tcb_psram == NULL){ 
-                printf("Failed to allocate task/tcb stack in PSRAM\n"); 
+                ESP_LOGI(TAG, "Failed to allocate task/tcb stack in PSRAM\n"); 
                 return;
             }
             // Create the task with the stack in PSRAM
@@ -119,41 +121,41 @@ void start_This_Service(Services* dService){
     }
 }
 
-void resume_This_Service(Services* dService){
+void resume_This_Service(Mtb_Services* dService){
     vTaskResume(*(dService->serviceT_Handle_ptr));
 }
 
-void suspend_This_Service(Services* dService){
+void suspend_This_Service(Mtb_Services* dService){
     vTaskSuspend(*(dService->serviceT_Handle_ptr));
 }
 
 void freeServAndAppPSRAM_Task(void * dService){
-    Services *thisService = (Services *)dService;
+    Mtb_Services *thisService = (Mtb_Services *)dService;
     void * dMemorySet = nullptr;
     while (xQueueReceive(freeServAndAppPSRAM_Q, &dMemorySet, pdMS_TO_TICKS(500))){
-    delay(1000); // Wait for 1 seconds before freeing memory of services and applications whose TCB and Stack were allocated in PSRAM.
+    delay(1000); // Wait for 1 seconds before freeing memory of services and Mtb_Applications whose TCB and Stack were allocated in PSRAM.
     heap_caps_free(dMemorySet);
     }
-    kill_This_Service(thisService);
+    mtb_End_This_Service(thisService);
 }
 
 void appLuncherTask(void * dService){
-    Services *thisService = (Services *)dService;
-    Applications *appLunchHolder = nullptr;
+    Mtb_Services *thisService = (Mtb_Services *)dService;
+    Mtb_Applications *appLunchHolder = nullptr;
     while (xQueueReceive(appLuncherQueue, &appLunchHolder, pdMS_TO_TICKS(500))){
-    if (Applications::currentRunningApp != nullptr){
-        Applications::previousRunningApp = Applications::currentRunningApp;
-        Applications::actionOnPreviousApp(appLunchHolder->action_On_Prev_App);
+    if (Mtb_Applications::currentRunningApp != nullptr){
+        Mtb_Applications::previousRunningApp = Mtb_Applications::currentRunningApp;
+        Mtb_Applications::actionOnPreviousApp(appLunchHolder->action_On_Prev_App);
     }
-    //printf("About to run the app: %s\n", appLunchHolder->appName);
+    //ESP_LOGI(TAG, "About to run the app: %s\n", appLunchHolder->appName);
     appLunchHolder->appRunner();       
-    //printf("Application %s has been launched\n", appLunchHolder->appName);
+    //ESP_LOGI(TAG, "Application %s has been launched\n", appLunchHolder->appName);
     }
-    kill_This_Service(thisService);
+    mtb_End_This_Service(thisService);
 }
 
 void nvsAccessTask(void * dService){
-    Services *thisService = (Services *)dService;
+    Mtb_Services *thisService = (Mtb_Services *)dService;
     NvsAccessParams_t nvsAccessObjHolder;
     while (xQueueReceive(nvsAccessQueue, &nvsAccessObjHolder, pdMS_TO_TICKS(500))){     // the pdMS_TO_TICKS(500) here waits for another nvs read/write command to be added before killing the task
         if(nvsAccessObjHolder.read_OR_Write == NVS_MEM_READ){
@@ -170,7 +172,7 @@ void nvsAccessTask(void * dService){
                 nvs_close(write_nvs_handle);
             }
             if(error1 != ESP_OK){
-                printf("Error reading NVS: %s\n", esp_err_to_name(error1));
+                ESP_LOGI(TAG, "Error reading NVS: %s\n", esp_err_to_name(error1));
             }
             xSemaphoreGive(nvsAccessComplete_Sem);
         }
@@ -181,21 +183,21 @@ void nvsAccessTask(void * dService){
                 err = nvs_commit(write_nvs_handle);
                 nvs_close(write_nvs_handle);
                 if(error1 != ESP_OK){
-                printf("Error writing NVS: %s\n", esp_err_to_name(error1));
+                ESP_LOGI(TAG, "Error writing NVS: %s\n", esp_err_to_name(error1));
             }
                 xSemaphoreGive(nvsAccessComplete_Sem);
         }
     }
-        kill_This_Service(thisService);
+        mtb_End_This_Service(thisService);
 }
 
-bool Applications::appRunner(){
+bool Mtb_Applications::appRunner(){
     if (usePSRAM_Stack == pdFALSE) {
         // Dynamic task creation
         if (xTaskCreatePinnedToCore(application, appName, stackSize, this, appPriority, appHandle_ptr, appCore) != pdPASS) {
             return false; // Task creation failed
         }
-        //printf("DSRAM APP CREATED.\n");
+        //ESP_LOGI(TAG, "DSRAM APP CREATED.\n");
     } else {
         // Allocate stack and TCB in PSRAM/internal memory
         task_stack = (StackType_t *)heap_caps_malloc(stackSize * sizeof(StackType_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
@@ -215,13 +217,13 @@ bool Applications::appRunner(){
             free(tcb_psram);
             return false;
         }
-        //printf("PSRAM APP CREATED.\n");
+        //ESP_LOGI(TAG, "PSRAM APP CREATED.\n");
     }
 
     return true; // Task creation successful
 }
 
-void Applications::appResume(Applications* dApp){
+void Mtb_Applications::appResume(Mtb_Applications* dApp){
     appDestroy(currentRunningApp);
     dma_display->clearScreen();
     previousRunningApp = currentRunningApp;
@@ -230,44 +232,44 @@ void Applications::appResume(Applications* dApp){
 
     if(litFS_Ready){
     vTaskResume(*(dApp->appHandle_ptr));
-    for (Services* element : dApp->appServices) if (element != nullptr) resume_This_Service(element);
+    for (Mtb_Services* element : dApp->appServices) if (element != nullptr) resume_This_Service(element);
     }
 
-    encoderFn_ptr = dApp->app_EncoderFn_ptr; // When an app is destroyed, we disable the rotary encoder.
-    buttonFn_ptr = dApp->app_ButtonFn_ptr; // When an app is destroyed, we disable the rotary encoder.
+    encoderFn_ptr = dApp->mtb_App_EncoderFn_ptr; // When an app is destroyed, we disable the rotary encoder.
+    buttonFn_ptr = dApp->mtb_App_ButtonFn_ptr; // When an app is destroyed, we disable the rotary encoder.
     
     currentRunningApp = dApp;
     dApp->elementRefresh = true;
 }
 
-void Applications::appSuspend(Applications* dApp){
-    for (Services* element : dApp->appServices) if (element != nullptr) suspend_This_Service(element);
+void Mtb_Applications::appSuspend(Mtb_Applications* dApp){
+    for (Mtb_Services* element : dApp->appServices) if (element != nullptr) suspend_This_Service(element);
     vTaskSuspend(*(dApp->appHandle_ptr));
 }
 
 
-void Applications::appDestroy(Applications* dApp){
+void Mtb_Applications::appDestroy(Mtb_Applications* dApp){
 
     if(*(dApp->appHandle_ptr) != NULL && dApp->app_is_Running == pdTRUE){
         dApp->app_is_Running = pdFALSE;
         while(*(dApp->appHandle_ptr) != NULL) delay(1);
     }
 
-    printf("APP DESTROY FIRST STAGE COMPLETED\n");
+    ESP_LOGI(TAG, "APP DESTROY FIRST STAGE COMPLETED\n");
 
-    for (Services *element : dApp->appServices){
+    for (Mtb_Services *element : dApp->appServices){
     if(element != nullptr && element->service_is_Running == pdTRUE){
         element->service_is_Running = pdFALSE;
         while(*(element->serviceT_Handle_ptr) != NULL) delay(1);
         }
     }
     
-    printf("APP DESTROY SECOND STAGE COMPLETED\n");
+    ESP_LOGI(TAG, "APP DESTROY SECOND STAGE COMPLETED\n");
 
     // for (uint8_t i = 0; i < 5; i++){
     //     if (*(scroll_Tasks_Sv[i]->serviceT_Handle_ptr) != NULL){
     //         while (*(scroll_Tasks_Sv[i]->serviceT_Handle_ptr) != NULL){
-    //             ScrollText_t::scrollTask_HolderPointers[i]->scroll_Quit = pdTRUE;
+    //             Mtb_ScrollText_t::scrollTask_HolderPointers[i]->scroll_Quit = pdTRUE;
     //             delay(1);
     //         }
     //     }
@@ -275,34 +277,34 @@ void Applications::appDestroy(Applications* dApp){
 
     for (uint8_t i = 0; i < 5; i++){
     if((scrollText_Handles[i]) != NULL){
-        ScrollText_t holder;           
+        Mtb_ScrollText_t holder;           
         while (xQueuePeek(scroll_Q[i], &holder, pdMS_TO_TICKS(1)) == pdTRUE){
-                ScrollText_t::scrollTask_HolderPointers[i]->scroll_Quit = pdTRUE;
+                Mtb_ScrollText_t::scrollTask_HolderPointers[i]->scroll_Quit = pdTRUE;
                 delay(1);
             } 
         }
     }
 
-    printf("APP DESTROY COMPLETED SUCCESSFULLY.\n");
+    ESP_LOGI(TAG, "APP DESTROY COMPLETED SUCCESSFULLY.\n");
 
 }
 
-void Applications::actionOnPreviousApp(do_Prev_App_t dAction){
+void Mtb_Applications::actionOnPreviousApp(do_Prev_App_t dAction){
     if(litFS_Ready){
         switch (dAction){
-        case SUSPEND_PREVIOUS_APP: Applications::appSuspend(currentRunningApp);
+        case SUSPEND_PREVIOUS_APP: Mtb_Applications::appSuspend(currentRunningApp);
             break;
-        case DESTROY_PREVIOUS_APP: Applications::appDestroy(currentRunningApp);
-            //printf("Action on previous App Called.\n");
+        case DESTROY_PREVIOUS_APP: Mtb_Applications::appDestroy(currentRunningApp);
+            //ESP_LOGI(TAG, "Action on previous App Called.\n");
             break;
         default:
-            printf("No action on previous App specified.\n");
+            ESP_LOGI(TAG, "No action on previous App specified.\n");
             break;
         }
     }
 }
 
-void kill_This_App(Applications* dApp){
+void mtb_End_This_App(Mtb_Applications* dApp){
         *(dApp->appHandle_ptr) = NULL;    
         if(dApp->usePSRAM_Stack == pdTRUE){
             xQueueSend(freeServAndAppPSRAM_Q, &dApp->task_stack, pdMS_TO_TICKS(500));
@@ -311,11 +313,11 @@ void kill_This_App(Applications* dApp){
             dApp->task_stack = NULL;
             dApp->tcb_psram = NULL;
         }
-        //printf("@@@@@@@@@@@@@@ THIS APPLICATION HAS BEEN DELETED: %s \n", dApp->appName);
+        //ESP_LOGI(TAG, "@@@@@@@@@@@@@@ THIS APPLICATION HAS BEEN DELETED: %s \n", dApp->appName);
         vTaskDelete(NULL);
 }
 
-void kill_This_Service(Services* dService){
+void mtb_End_This_Service(Mtb_Services* dService){
         *(dService->serviceT_Handle_ptr) = NULL;
         if (dService->usePSRAM_Stack == pdTRUE){
             xQueueSend(freeServAndAppPSRAM_Q, &dService->task_stack, pdMS_TO_TICKS(500));
@@ -324,20 +326,20 @@ void kill_This_Service(Services* dService){
             dService->task_stack = NULL;
             dService->tcb_psram = NULL;
         }
-        //printf("************* THIS SERVICE HAS BEEN DELETED: %s \n", dService->serviceName);
+        //ESP_LOGI(TAG, "************* THIS SERVICE HAS BEEN DELETED: %s \n", dService->serviceName);
         vTaskDelete(NULL);
 }
 
 void encoderDoNothing(rotary_encoder_rotation_t){}
 void buttonDoNothing(button_event_t){}
 
-void brightnessControl(rotary_encoder_rotation_t direction){
+void mtb_Brightness_Control(rotary_encoder_rotation_t direction){
 if (direction == ROT_CLOCKWISE){
     if(panelBrightness <= 250){ 
     panelBrightness += 5;
     dma_display->setBrightness(panelBrightness); // 0-255
     set_Status_RGB_LED(currentStatusLEDcolor);
-    write_struct_to_nvs("pan_brghnss", &panelBrightness, sizeof(uint8_t));
+    mtb_Write_Nvs_Struct("pan_brghnss", &panelBrightness, sizeof(uint8_t));
     }
     if(panelBrightness >= 255) do_beep(CLICK_BEEP);
 } else if(direction == ROT_COUNTERCLOCKWISE){
@@ -345,29 +347,29 @@ if (direction == ROT_CLOCKWISE){
     panelBrightness -= 5;
     dma_display->setBrightness(panelBrightness); //0-255
     set_Status_RGB_LED(currentStatusLEDcolor);
-    write_struct_to_nvs("pan_brghnss", &panelBrightness, sizeof(uint8_t));
+    mtb_Write_Nvs_Struct("pan_brghnss", &panelBrightness, sizeof(uint8_t));
     }
     if(panelBrightness <= 6) do_beep(CLICK_BEEP);
 }
 }
 
-void volumeControl_Encoder(rotary_encoder_rotation_t direction){
+void mtb_Vol_Control_Encoder(rotary_encoder_rotation_t direction){
 if (direction == ROT_CLOCKWISE){
     if(deviceVolume <= 20){ 
     ++deviceVolume;
     if(audio != nullptr) audio->setVolume(deviceVolume);
-    write_struct_to_nvs("dev_Volume", &deviceVolume, sizeof(uint8_t));
+    mtb_Write_Nvs_Struct("dev_Volume", &deviceVolume, sizeof(uint8_t));
     }
     if(deviceVolume >= 21) do_beep(CLICK_BEEP);
 } else if(direction == ROT_COUNTERCLOCKWISE){
     if(deviceVolume >= 1){
     --deviceVolume;
     if(audio != nullptr) audio->setVolume(deviceVolume);
-    write_struct_to_nvs("dev_Volume", &deviceVolume, sizeof(uint8_t));
+    mtb_Write_Nvs_Struct("dev_Volume", &deviceVolume, sizeof(uint8_t));
     }
     if(deviceVolume <= 0) do_beep(CLICK_BEEP);
 }
-    //printf("Device Volume is: %d\n", deviceVolume);
+    //ESP_LOGI(TAG, "Device Volume is: %d\n", deviceVolume);
 }
 
 void randomButtonControl(button_event_t button_Data){
@@ -384,7 +386,7 @@ void randomButtonControl(button_event_t button_Data){
             break;
 
             case BUTTON_CLICKED:
-            //printf("Button Clicked: %d Times\n",button_Data.count);
+            //ESP_LOGI(TAG, "Button Clicked: %d Times\n",button_Data.count);
             switch (button_Data.count){
             case 1:
                 break;
@@ -401,15 +403,15 @@ void randomButtonControl(button_event_t button_Data){
 			}
 }
 //*************************************************************************************************************************************************************
-void appsInitialization(Applications *thisApp, Services* pointer_0, Services* pointer_1,
-    Services* pointer_2, Services* pointer_3, Services* pointer_4,
-    Services* pointer_5, Services* pointer_6, Services* pointer_7, 
-    Services* pointer_8, Services* pointer_9){
+void mtb_App_Init(Mtb_Applications *thisApp, Mtb_Services* pointer_0, Mtb_Services* pointer_1,
+    Mtb_Services* pointer_2, Mtb_Services* pointer_3, Mtb_Services* pointer_4,
+    Mtb_Services* pointer_5, Mtb_Services* pointer_6, Mtb_Services* pointer_7, 
+    Mtb_Services* pointer_8, Mtb_Services* pointer_9){
 
-    Applications::currentRunningApp = thisApp;
+    Mtb_Applications::currentRunningApp = thisApp;
 
-    buttonFn_ptr = thisApp->app_ButtonFn_ptr;
-    encoderFn_ptr = thisApp->app_EncoderFn_ptr;
+    buttonFn_ptr = thisApp->mtb_App_ButtonFn_ptr;
+    encoderFn_ptr = thisApp->mtb_App_EncoderFn_ptr;
 
     thisApp->appServices[0] = pointer_0;
     thisApp->appServices[1] = pointer_1;
@@ -424,12 +426,12 @@ void appsInitialization(Applications *thisApp, Services* pointer_0, Services* po
 
     delay(250);
     dma_display->clearScreen();
-    for (Services *element : thisApp->appServices) if (element != nullptr) start_This_Service(element);
-    if(thisApp->app_ButtonFn_ptr != buttonDoNothing) start_This_Service(button_Task_Sv);
-    if(thisApp->app_EncoderFn_ptr != encoderDoNothing) start_This_Service(encoder_Task_Sv);
+    for (Mtb_Services *element : thisApp->appServices) if (element != nullptr) start_This_Service(element);
+    if(thisApp->mtb_App_ButtonFn_ptr != buttonDoNothing) start_This_Service(button_Task_Sv);
+    if(thisApp->mtb_App_EncoderFn_ptr != encoderDoNothing) start_This_Service(encoder_Task_Sv);
     if(thisApp->fullScreen == false) drawStatusBar();
-    THIS_APP_IS_ACTIVE = pdTRUE;
-    //printf("&&&&&&&&&&&&& THIS APPLICATION HAS BEEN STARTED: %s \n", Applications::currentRunningApp->appName);
+    MTB_APP_IS_ACTIVE = pdTRUE;
+    //ESP_LOGI(TAG, "&&&&&&&&&&&&& THIS APPLICATION HAS BEEN STARTED: %s \n", Mtb_Applications::currentRunningApp->appName);
 }
 
 //*************************************************************************************************************************************************************
@@ -445,7 +447,7 @@ void mtb_Ble_App_Cmd_Respond_Success(const char* appRoute, uint8_t commandNumber
 }
 
 void ble_AppCom_Parse_Task(void* dService){
-    Services *thisService = (Services *)dService;
+    Mtb_Services *thisService = (Mtb_Services *)dService;
     mtb_BleCom_Data_Trans_t qMessage;
     DeserializationError dError;
     String dNewAppParams;
@@ -454,20 +456,20 @@ void ble_AppCom_Parse_Task(void* dService){
     uint16_t dCmd_num = 0;
 
     while(xQueueReceive(appCom_queue, &qMessage, pdMS_TO_TICKS(500))){
-        //printf("Application Payload is:  %s\n", (char*) qMessage.payload);
+        //ESP_LOGI(TAG, "Application Payload is:  %s\n", (char*) qMessage.payload);
         String dInstruction = String((char *)qMessage.payload);
         int charIndex = dInstruction.indexOf('|');             // find index of target character
         String specify_Application = dInstruction.substring(0, charIndex);  // copy up to the target character
         String dJsonPayload = dInstruction.substring(++charIndex);
 
-        // printf("The specific App is: %s\n", specify_Application.c_str());
-        // printf("The dPayload for App is: %s\n", dPayload.c_str());
+        // ESP_LOGI(TAG, "The specific App is: %s\n", specify_Application.c_str());
+        // ESP_LOGI(TAG, "The dPayload for App is: %s\n", dPayload.c_str());
  
         dAppGen = getIntegerAtIndex(specify_Application, 0);
         dAppSpe = getIntegerAtIndex(specify_Application, 1);
 
-        //printf("The dAppGen is: %d\n", dAppGen);
-        //printf("The dAppSpe is: %d\n", dAppSpe);
+        //ESP_LOGI(TAG, "The dAppGen is: %d\n", dAppGen);
+        //ESP_LOGI(TAG, "The dAppSpe is: %d\n", dAppSpe);
 
         if (dAppGen == currentApp.GenApp && dAppSpe == currentApp.SpeApp){
 
@@ -476,51 +478,51 @@ void ble_AppCom_Parse_Task(void* dService){
             else dCmd_num = 0xFFFF;
 
             switch (dCmd_num){
-            case 0: if(ble_AppCom_Parser_Sv->bleAppComServiceFns[0] != nullptr) ble_AppCom_Parser_Sv->bleAppComServiceFns[0](dCommand);
+            case 0: if(mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[0] != nullptr) mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[0](dCommand);
                 break;
-            case 1: if(ble_AppCom_Parser_Sv->bleAppComServiceFns[1] != nullptr) ble_AppCom_Parser_Sv->bleAppComServiceFns[1](dCommand);
+            case 1: if(mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[1] != nullptr) mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[1](dCommand);
                 break;
-            case 2: if(ble_AppCom_Parser_Sv->bleAppComServiceFns[2] != nullptr) ble_AppCom_Parser_Sv->bleAppComServiceFns[2](dCommand);
+            case 2: if(mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[2] != nullptr) mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[2](dCommand);
                 break;
-            case 3: if(ble_AppCom_Parser_Sv->bleAppComServiceFns[3] != nullptr) ble_AppCom_Parser_Sv->bleAppComServiceFns[3](dCommand);
+            case 3: if(mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[3] != nullptr) mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[3](dCommand);
                 break;
-            case 4: if(ble_AppCom_Parser_Sv->bleAppComServiceFns[4] != nullptr) ble_AppCom_Parser_Sv->bleAppComServiceFns[4](dCommand);
+            case 4: if(mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[4] != nullptr) mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[4](dCommand);
               break;
-            case 5: if(ble_AppCom_Parser_Sv->bleAppComServiceFns[5] != nullptr) ble_AppCom_Parser_Sv->bleAppComServiceFns[5](dCommand);
+            case 5: if(mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[5] != nullptr) mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[5](dCommand);
                 break;
-            case 6: if(ble_AppCom_Parser_Sv->bleAppComServiceFns[6] != nullptr) ble_AppCom_Parser_Sv->bleAppComServiceFns[6](dCommand);
+            case 6: if(mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[6] != nullptr) mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[6](dCommand);
                 break;
-            case 7: if(ble_AppCom_Parser_Sv->bleAppComServiceFns[7] != nullptr) ble_AppCom_Parser_Sv->bleAppComServiceFns[7](dCommand);
+            case 7: if(mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[7] != nullptr) mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[7](dCommand);
                 break;
-            case 8: if(ble_AppCom_Parser_Sv->bleAppComServiceFns[8] != nullptr) ble_AppCom_Parser_Sv->bleAppComServiceFns[8](dCommand);
+            case 8: if(mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[8] != nullptr) mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[8](dCommand);
                 break;
-            case 9: if(ble_AppCom_Parser_Sv->bleAppComServiceFns[9] != nullptr) ble_AppCom_Parser_Sv->bleAppComServiceFns[9](dCommand);
+            case 9: if(mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[9] != nullptr) mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[9](dCommand);
                 break;
-            case 10: if(ble_AppCom_Parser_Sv->bleAppComServiceFns[10] != nullptr) ble_AppCom_Parser_Sv->bleAppComServiceFns[10](dCommand);
+            case 10: if(mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[10] != nullptr) mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[10](dCommand);
                 break;
-            case 11: if(ble_AppCom_Parser_Sv->bleAppComServiceFns[11] != nullptr) ble_AppCom_Parser_Sv->bleAppComServiceFns[11](dCommand);
+            case 11: if(mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[11] != nullptr) mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[11](dCommand);
                 break;
-            // case 12: if(ble_AppCom_Parser_Sv->bleAppComServiceFns[12] != nullptr) ble_AppCom_Parser_Sv.bleAppComServiceFns[12](dCommand);;     // These are for extras or future upgrades.
+            // case 12: if(mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[12] != nullptr) mtb_Ble_AppComm_Parser_Sv.bleAppComServiceFns[12](dCommand);;     // These are for extras or future upgrades.
             //     break;
-            // case 13:  if(ble_AppCom_Parser_Sv->bleAppComServiceFns[13] != nullptr) ble_AppCom_Parser_Sv.bleAppComServiceFns[13](dCommand);
+            // case 13:  if(mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[13] != nullptr) mtb_Ble_AppComm_Parser_Sv.bleAppComServiceFns[13](dCommand);
             //     break;
-            // case 14:  if(ble_AppCom_Parser_Sv->bleAppComServiceFns[4] != nullptr) ble_AppCom_Parser_Sv.bleAppComServiceFns[14](dCommand);
+            // case 14:  if(mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[4] != nullptr) mtb_Ble_AppComm_Parser_Sv.bleAppComServiceFns[14](dCommand);
             //     break;
-            // case 15:  if(ble_AppCom_Parser_Sv->bleAppComServiceFns[15] != nullptr) ble_AppCom_Parser_Sv.bleAppComServiceFns[15](dCommand);
+            // case 15:  if(mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[15] != nullptr) mtb_Ble_AppComm_Parser_Sv.bleAppComServiceFns[15](dCommand);
             //     break;
-            // case 16:  if(ble_AppCom_Parser_Sv->bleAppComServiceFns[16] != nullptr) ble_AppCom_Parser_Sv.bleAppComServiceFns[16](dCommand);
+            // case 16:  if(mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[16] != nullptr) mtb_Ble_AppComm_Parser_Sv.bleAppComServiceFns[16](dCommand);
             //     break;
-            // case 17:  if(ble_AppCom_Parser_Sv->bleAppComServiceFns[17] != nullptr) ble_AppCom_Parser_Sv.bleAppComServiceFns[17](dCommand);
+            // case 17:  if(mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[17] != nullptr) mtb_Ble_AppComm_Parser_Sv.bleAppComServiceFns[17](dCommand);
             //     break;
-            // case 18:  if(ble_AppCom_Parser_Sv->bleAppComServiceFns[18] != nullptr) ble_AppCom_Parser_Sv.bleAppComServiceFns[18](dCommand);
+            // case 18:  if(mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[18] != nullptr) mtb_Ble_AppComm_Parser_Sv.bleAppComServiceFns[18](dCommand);
             //     break;
-            // case 19:  if(ble_AppCom_Parser_Sv->bleAppComServiceFns[19] != nullptr) ble_AppCom_Parser_Sv.bleAppComServiceFns[19](dCommand);
+            // case 19:  if(mtb_Ble_AppComm_Parser_Sv->bleAppComServiceFns[19] != nullptr) mtb_Ble_AppComm_Parser_Sv.bleAppComServiceFns[19](dCommand);
             //     break;
             case 255:
-                statusBarNotif.scroll_This_Text("APP IS ALREADY ACTIVE", CYAN);
+                statusBarNotif.mtb_Scroll_This_Text("APP IS ALREADY ACTIVE", CYAN);
                 bleApplicationComSend(specify_Application.c_str(), "{\"pxp_command\": 255}");
                 break;
-            default: statusBarNotif.scroll_This_Text("ERROR: ASSESS COMMAND PARAMETERS", YELLOW);
+            default: statusBarNotif.mtb_Scroll_This_Text("ERROR: ASSESS COMMAND PARAMETERS", YELLOW);
                 break;
             }
         }else{
@@ -531,22 +533,22 @@ void ble_AppCom_Parse_Task(void* dService){
             if (dError.code() == dError.Ok && dCmd_num == 0xFF){
                 currentApp.GenApp = getIntegerAtIndex(specify_Application, 0);
                 currentApp.SpeApp = getIntegerAtIndex(specify_Application, 1);
-                write_struct_to_nvs("currentApp", &currentApp, sizeof(CurrentApp_t));
+                mtb_Write_Nvs_Struct("currentApp", &currentApp, sizeof(CurrentApp_t));
                 mtb_General_App_Lunch(currentApp);
                 bleApplicationComSend(specify_Application.c_str(), "{\"pxp_command\": 253}");
             }else{
                 bleApplicationComSend(specify_Application.c_str(), "{\"pxp_command\": 254}");
-                statusBarNotif.scroll_This_Text("TAP 'LAUNCH' TO START APP", MAGENTA);
+                statusBarNotif.mtb_Scroll_This_Text("TAP 'LAUNCH' TO START APP", MAGENTA);
             } 
         }
     vTaskDelay(1);
     free(qMessage.payload);
     //qMessage.payload = NULL; // Set pointer to NULL to avoid dangling pointer    
   }
-  kill_This_Service(thisService);
+  mtb_End_This_Service(thisService);
 }
 
-void Service_With_Fns::register_BLE_Com_ServiceFns(bleCom_Parser_Fns_Ptr Fn_0, bleCom_Parser_Fns_Ptr Fn_1, bleCom_Parser_Fns_Ptr Fn_2 , bleCom_Parser_Fns_Ptr Fn_3, bleCom_Parser_Fns_Ptr Fn_4, bleCom_Parser_Fns_Ptr Fn_5, bleCom_Parser_Fns_Ptr Fn_6, bleCom_Parser_Fns_Ptr Fn_7, bleCom_Parser_Fns_Ptr Fn_8, bleCom_Parser_Fns_Ptr Fn_9, bleCom_Parser_Fns_Ptr Fn_10, bleCom_Parser_Fns_Ptr Fn_11){
+void Service_With_Fns::mtb_Register_Ble_Comm_ServiceFns(bleCom_Parser_Fns_Ptr Fn_0, bleCom_Parser_Fns_Ptr Fn_1, bleCom_Parser_Fns_Ptr Fn_2 , bleCom_Parser_Fns_Ptr Fn_3, bleCom_Parser_Fns_Ptr Fn_4, bleCom_Parser_Fns_Ptr Fn_5, bleCom_Parser_Fns_Ptr Fn_6, bleCom_Parser_Fns_Ptr Fn_7, bleCom_Parser_Fns_Ptr Fn_8, bleCom_Parser_Fns_Ptr Fn_9, bleCom_Parser_Fns_Ptr Fn_10, bleCom_Parser_Fns_Ptr Fn_11){
     bleAppComServiceFns[0] = Fn_0;
     bleAppComServiceFns[1] = Fn_1;
     bleAppComServiceFns[2] = Fn_2;
@@ -580,8 +582,8 @@ void mtb_General_App_Lunch(CurrentApp_t dAppPath){
     // case 14: specAppLunch(dSpecApp); break;
     // case 15: specAppLunch(dSpecApp); break;
     // case 16: specAppLunch(dSpecApp); break;
-    default: printf("No Apps to Lunch.\n");
-    //statusBarNotif.scroll_This_Text("COMMAND DOES NOT MENTION ANY APP TO LUNCH.", YELLOW);
+    default: ESP_LOGI(TAG, "No Apps to Lunch.\n");
+    //statusBarNotif.mtb_Scroll_This_Text("COMMAND DOES NOT MENTION ANY APP TO LUNCH.", YELLOW);
     }
 }
 
@@ -593,7 +595,7 @@ void clk_Tim_AppLunch(uint16_t dAppNumber){
         case 2: mtb_Launch_This_App(worldClock_App); break;
         case 3: mtb_Launch_This_App(bigClockCalendar_App); break;
         case 4: mtb_Launch_This_App(stopWatch_App); break;
-        default: printf("No Apps to Lunch.\n"); break;
+        default: ESP_LOGI(TAG, "No Apps to Lunch.\n"); break;
         }
 }
 
@@ -603,7 +605,7 @@ void msgAppLunch(uint16_t dAppNumber){
         case 0: mtb_Launch_This_App(googleNews_App); break;
         case 1: mtb_Launch_This_App(rssNewsApp); break;
 
-        default: printf("No Apps to Lunch.\n");
+        default: ESP_LOGI(TAG, "No Apps to Lunch.\n");
             break;
     }
 }
@@ -614,7 +616,7 @@ void calendarAppLunch(uint16_t dAppNumber){
         case 0: mtb_Launch_This_App(google_Calendar_App); break;
         case 1: mtb_Launch_This_App(outlook_Calendar_App); break;
 
-        default: printf("No Apps to Lunch.\n");
+        default: ESP_LOGI(TAG, "No Apps to Lunch.\n");
             break;
     }
 }
@@ -626,7 +628,7 @@ void weatherAppLunch(uint16_t dAppNumber){
         case 1: mtb_Launch_This_App(openMeteo_App); break;
         case 2: mtb_Launch_This_App(googleWeather_App); break; 
 
-        default: printf("No Apps to Lunch.\n");
+        default: ESP_LOGI(TAG, "No Apps to Lunch.\n");
             break;
     }
 }
@@ -639,7 +641,7 @@ void financeAppLunch(uint16_t dAppNumber){
         case 2: mtb_Launch_This_App(currencyExchange_App); break;
         case 3: mtb_Launch_This_App(polygonFX_App); break;
 
-        default: printf("No Apps to Lunch.\n");
+        default: ESP_LOGI(TAG, "No Apps to Lunch.\n");
             break;
     }
 }
@@ -650,7 +652,7 @@ void sportsAppLunch(uint16_t dAppNumber){
         case 0: mtb_Launch_This_App(liveFootbalScores_App); break;
         // case 1: mtb_Launch_This_App(classicClock_App); break;
 
-        default: printf("No Apps to Lunch.\n");
+        default: ESP_LOGI(TAG, "No Apps to Lunch.\n");
             break;
     }
 }
@@ -660,7 +662,7 @@ void animationsAppLunch(uint16_t dAppNumber){
     switch(dAppNumber){
         case 0: mtb_Launch_This_App(studioLight_App); break;   // ABOUT 10KB RAM IS CONSUMED JUST BY HAVING THIS APPLICATION AMONG THE OTHERS
         case 1: mtb_Launch_This_App(worldFlags_App); break;
-        default: printf("No Apps to Lunch.\n");
+        default: ESP_LOGI(TAG, "No Apps to Lunch.\n");
             break;
     }
 }
@@ -676,7 +678,7 @@ void notificationsAppLunch(uint16_t dAppNumber){
         // case 5: mtb_Launch_This_App(classicClock_App); break;
         // case 6: mtb_Launch_This_App(classicClock_App); break;
 
-        default: printf("No Apps to Lunch.\n");
+        default: ESP_LOGI(TAG, "No Apps to Lunch.\n");
             break;
     }
 }
@@ -692,7 +694,7 @@ void ai_AppLunch(uint16_t dAppNumber){
         // case 5: mtb_Launch_This_App(classicClock_App); break; 
         // case 6: mtb_Launch_This_App(classicClock_App); break;
 
-        default: printf("No Apps to Lunch.\n");
+        default: ESP_LOGI(TAG, "No Apps to Lunch.\n");
             break;
     }
 }
@@ -704,7 +706,7 @@ void audioStreamAppLunch(uint16_t dAppNumber){
         case 1: mtb_Launch_This_App(musicPlayer_App); break;
         case 2: mtb_Launch_This_App(audSpecAnalyzer_App); break;
         case 3: mtb_Launch_This_App(spotify_App); break;
-        default: printf("No Apps to Lunch.\n");
+        default: ESP_LOGI(TAG, "No Apps to Lunch.\n");
             break;
     }
 }
@@ -720,7 +722,7 @@ void sMediaAppLunch(uint16_t dAppNumber){
         // case 5: mtb_Launch_This_App(classicClock_App); break;
         // case 6: mtb_Launch_This_App(classicClock_App); break;
 
-        default: printf("No Apps to Lunch.\n");
+        default: ESP_LOGI(TAG, "No Apps to Lunch.\n");
             break;
     }
 }
@@ -736,12 +738,12 @@ void miscellanousAppLunch(uint16_t dAppNumber){
         // case 5: mtb_Launch_This_App(classicClock_App); break;
         // case 6: mtb_Launch_This_App(classicClock_App); break;
 
-        default: printf("No Apps to Lunch.\n");
+        default: ESP_LOGI(TAG, "No Apps to Lunch.\n");
             break;
     }
 }
 
-esp_err_t write_struct_to_nvs(const char* keyIdentifier, void* struct_pointer, size_t struct_sized) {
+esp_err_t mtb_Write_Nvs_Struct(const char* keyIdentifier, void* struct_pointer, size_t struct_sized) {
     NvsAccessParams_t dataWriteHolder{
         .read_OR_Write = NVS_MEM_WRITE,
         .key = keyIdentifier,
@@ -754,7 +756,7 @@ esp_err_t write_struct_to_nvs(const char* keyIdentifier, void* struct_pointer, s
     return 0;
 }
 
-esp_err_t read_struct_from_nvs(const char* keyIdentifier, void* struct_pointer, size_t struct_sized) {
+esp_err_t mtb_Read_Nvs_Struct(const char* keyIdentifier, void* struct_pointer, size_t struct_sized) {
     NvsAccessParams_t dataReadHolder{
         .read_OR_Write = NVS_MEM_READ,
         .key = keyIdentifier,
@@ -932,10 +934,10 @@ String urlencode(const char* str) {
     return encoded;
   }
 
-String getCurrentTimeRFC3339() {
+String mtb_Get_Current_Time_RFC3339() {
     struct tm timeinfo;
     if (!getLocalTime(&timeinfo)) {
-      printf("Failed to obtain time from NTP\n");
+      ESP_LOGI(TAG, "Failed to obtain time from NTP\n");
       return "";
     }
 

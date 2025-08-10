@@ -23,7 +23,7 @@ void mtb_LittleFS_Init(void){
     // esp_err_t ret = esp_vfs_littlefs_register(&myLittleFS);
 
     if (!LittleFS.begin(true)) {
-        printf("An error has occurred while mounting LittleFS..");
+        ESP_LOGI(TAG, "An error has occurred while mounting LittleFS..");
         return;
     }
 
@@ -57,7 +57,7 @@ void mtb_LittleFS_Init(void){
         else ESP_LOGI("mtbLittleFS","LITTLEFS PARTITION MOUNTING FAILED....");
     }else{
         litFS_Ready = pdFALSE;
-        write_struct_to_nvs("litFS_Ready", &litFS_Ready, sizeof(uint8_t));
+        mtb_Write_Nvs_Struct("litFS_Ready", &litFS_Ready, sizeof(uint8_t));
 
         esp_err_t ret1 = esp_littlefs_format("spiffs");
         myLittleFS.format_if_mount_failed = pdTRUE;

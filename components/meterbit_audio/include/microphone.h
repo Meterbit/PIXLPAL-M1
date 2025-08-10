@@ -82,30 +82,8 @@ bool flg_I2S_initialized = false;      // to avoid any runtime errors in case us
 
 // ------------------------------------------------------------------------------------------------------------------------------
 
-bool I2S_Record_Init() {  
-  // Get the default channel configuration by helper macro (defined in 'i2s_common.h')
-  i2s_chan_config_t chan_cfg = I2S_CHANNEL_DEFAULT_CONFIG(I2S_NUM_1, I2S_ROLE_MASTER);
-  
-  i2s_new_channel(&chan_cfg, NULL, &rx_handle);     // Allocate a new RX channel and get the handle of this channel
-  i2s_channel_init_std_mode(rx_handle, &std_cfg);   // Initialize the channel
-  i2s_channel_enable(rx_handle);                    // Before reading data, start the RX channel first
+bool I2S_Record_Init();
 
-  /* Not used: 
-  i2s_channel_disable(rx_handle);                   // Stopping the channel before deleting it 
-  i2s_del_channel(rx_handle);                       // delete handle to release the channel resources */
-  
-  flg_I2S_initialized = true;                       // all is initialized, checked in procedure Record_Start()
-
-  printf("Microphone I2S channel enabled and created.\n");
-
-  return flg_I2S_initialized;  
-}
-
-bool I2S_Record_De_Init(){
-  i2s_channel_disable(rx_handle);
-  i2s_del_channel(rx_handle);
-  printf("Microphone I2S channel disabled and deleted.\n");
-  return true;  
-}
+bool I2S_Record_De_Init();
 
 #endif

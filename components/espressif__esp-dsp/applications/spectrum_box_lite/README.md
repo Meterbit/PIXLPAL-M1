@@ -1,6 +1,6 @@
 # ESP-DSP ESP32-S3-BOX-Lite Board demo application
 
-The demo applications are developed for the ESP32-S3-BOX-Lite development board and demonstrate the usage of FFT functions from the ESP-DSP library.
+The demo Mtb_Applications are developed for the ESP32-S3-BOX-Lite development board and demonstrate the usage of FFT functions from the ESP-DSP library.
 This example showcases how to use FFT functionality to process audio stream data.
 The application record sound from two microphones and show the spectrum from them at display as 2D plot.
 

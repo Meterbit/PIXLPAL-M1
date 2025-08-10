@@ -55,5 +55,5 @@ The expected output is the following:
     I (400912) Kalman filter demo: State vectors saved to NVS
 
 <div align="center">
-  <img src= "applications/azure_board_apps/apps/kalman_filter/kalman_filter.gif">
+  <img src= "Mtb_Applications/azure_board_apps/apps/kalman_filter/kalman_filter.gif">
 </div>

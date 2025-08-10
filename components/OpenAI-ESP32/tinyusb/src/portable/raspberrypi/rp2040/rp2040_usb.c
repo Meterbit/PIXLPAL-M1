@@ -347,7 +347,7 @@ bool __tusb_irq_path_func(hw_endpoint_xfer_continue)(struct hw_endpoint* ep) {
    SOF interrupt is enabled while these transfers are ongoing.
 
    Inherit the top-level enable from the corresponding Pico-SDK flag.
-   Applications that will not use the device in a situation where it could
+   Mtb_Applications that will not use the device in a situation where it could
    be plugged into a Pi 4 or Pi 400 (for example, when directly connected
    to a commodity hub or other host) can turn off the flag in the SDK.
 */

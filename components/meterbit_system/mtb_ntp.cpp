@@ -11,22 +11,22 @@
 #include "mtb_buzzer.h"
 
 EXT_RAM_BSS_ATTR TaskHandle_t sntp_Time_handle = NULL;
-EXT_RAM_BSS_ATTR Services *sntp_Time_Sv = new Services(sntp_Time_init_Task, &sntp_Time_handle, "NTP Init", 4096);
+EXT_RAM_BSS_ATTR Mtb_Services *sntp_Time_Sv = new Mtb_Services(sntp_Time_init_Task, &sntp_Time_handle, "NTP Init", 4096);
 
 void on_got_time(struct timeval* tv){
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-  read_struct_from_nvs("Clock Cols", &clk_Updt, sizeof(Clock_Colors));
+  mtb_Read_Nvs_Struct("Clock Cols", &clk_Updt, sizeof(Clock_Colors));
   xQueueSendFromISR(clock_Update_Q, &clk_Updt, &xHigherPriorityTaskWoken);
   mtb_Launch_This_App(otaUpdateApplication_App, IGNORE_PREVIOUS_APP);
 }
 
 void sntp_Time_init_Task(void* dService){
-  Services *thisService = (Services *)dService;
+  Mtb_Services *thisService = (Mtb_Services *)dService;
   if(clock_Update_Q == NULL) clock_Update_Q = xQueueCreate(10, sizeof(Clock_Colors));
 
-  //printf("ntp time zone is: %s \n", ntp_TimeZone);
+  //ESP_LOGI(TAG, "ntp time zone is: %s \n", ntp_TimeZone);
 
-  read_struct_from_nvs("ntp TimeZone", ntp_TimeZone, sizeof(ntp_TimeZone));
+  mtb_Read_Nvs_Struct("ntp TimeZone", ntp_TimeZone, sizeof(ntp_TimeZone));
   setenv("TZ", ntp_TimeZone, 1);
   tzset();
 
@@ -35,5 +35,5 @@ void sntp_Time_init_Task(void* dService){
   esp_sntp_init();
   sntp_set_time_sync_notification_cb(on_got_time);
 
-  kill_This_Service(thisService);
+  mtb_End_This_Service(thisService);
 }

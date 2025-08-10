@@ -290,7 +290,7 @@
             /* Security attribution of FLWT and FCKMHZ registers. */
 #ifndef BSP_TZ_CFG_FSAR
 /* If the CGC registers are only accessible in Secure mode, than there is no
- * reason for nonsecure applications to access FLWT and FCKMHZ. */
+ * reason for nonsecure Mtb_Applications to access FLWT and FCKMHZ. */
 #define BSP_TZ_CFG_FSAR (\
         ((BSP_CFG_CLOCKS_SECURE == 0) ? (1U << 0) : 0U) | /* FLWTSA */\
         ((RA_NOT_DEFINED) > 0 ? 0U: (1U << 1)) | /* FCACHESA */\
@@ -301,7 +301,7 @@
 
             /* Security attribution for SRAM registers. */
 #ifndef BSP_TZ_CFG_SRAMSAR
-/* If the CGC registers are only accessible in Secure mode, than there is no reason for Non Secure applications to access
+/* If the CGC registers are only accessible in Secure mode, than there is no reason for Non Secure Mtb_Applications to access
  * SRAM0WTEN and therefore there is no reason to access PRCR2. */
     #define BSP_TZ_CFG_SRAMSAR (\
         ((1U) << 0U) | /* SRAMSA0 */\

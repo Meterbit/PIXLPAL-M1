@@ -36,21 +36,21 @@ PicoMQTT::Client mqttClient("broker.hivemq.com");
 void mtb_MQTT_Server::on_connected(const char *client_id){
   showStatusBarIcon({"/batIcons/phoneCont.png", 18, 1});
   //set_Status_RGB_LED(WHITE_SMOKE);
-  //Applications::mqttPhoneConnectStatus = true;
+  //Mtb_Applications::mqttPhoneConnectStatus = true;
 }
 
 void mtb_MQTT_Server::on_disconnected(const char *client_id){
     wipeStatusBarIcon({"/batIcons/phoneCont.png", 18, 1});
     //set_Status_RGB_LED(GREEN);
-    //Applications::mqttPhoneConnectStatus = false;
+    //Mtb_Applications::mqttPhoneConnectStatus = false;
 }
 
 // void mtb_MQTT_Server::on_subscribe(const char *client_id, const char *topic){
-//   printf("client subscribed.\n");
+//   ESP_LOGI(TAG, "client subscribed.\n");
 // }
 
 // void mtb_MQTT_Server::on_unsubscribe(const char *client_id, const char *topic){
-//   printf("client un-subscribed.\n");
+//   ESP_LOGI(TAG, "client un-subscribed.\n");
 // }
 
 // void start_MQTT_Server(){
@@ -95,7 +95,7 @@ void initialize_MQTT(){
 
   // // Subscribe to a topic pattern and attach a callback
   // mqttServer.subscribe("#", [](const char *topic, const void *payload, size_t payload_size){
-  //     printf("\n This Topic: %s came through. \n", topic);
+  //     ESP_LOGI(TAG, "\n This Topic: %s came through. \n", topic);
 
   //     // if(strstr(topic, config_MQTT_Topic) != NULL){
   //     //     if (payload_size){
@@ -129,13 +129,13 @@ void initialize_MQTT(){
     File2Download_t holderItem;
     showStatusBarIcon({"/batIcons/mqttCont2.png", 10, 1});
     if(xQueuePeek(files2Download_Q, &holderItem, pdMS_TO_TICKS(100)) == pdTRUE) start_This_Service(gitHubFileDwnload_Sv);
-    else Applications::internetConnectStatus = true;
+    else Mtb_Applications::internetConnectStatus = true;
     set_Status_RGB_LED(CYAN_PROCESS);
   };
 
   mqttClient.disconnected_callback = []{
     wipeStatusBarIcon({"/batIcons/mqttCont2.png", 10, 1});
-    Applications::internetConnectStatus = false;
+    Mtb_Applications::internetConnectStatus = false;
     set_Status_RGB_LED(WiFi.status() == WL_CONNECTED ? GREEN : BLACK);
   };
   //IMPLEMENT ON_SUBSCRIBE, AND ON_UNSUBSCRIBE H

@@ -17,7 +17,7 @@
       char ipAdr[20];
   };
 
-  // APPLICATIONS DEFAULT SETTINGS *******************************************************************************************    
+  // Mtb_Applications DEFAULT SETTINGS *******************************************************************************************    
   struct Clock_Colors{
       uint16_t hourMinColour;
       uint16_t secColor;

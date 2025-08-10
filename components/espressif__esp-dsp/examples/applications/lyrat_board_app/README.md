@@ -1,6 +1,6 @@
 # ESP-DSP LyraT Board audio processing application
 
-The demo applications are developed for the ESP32-LyraT development board and demonstrate the usage of IIR filters from the ESP-DSP library.
+The demo Mtb_Applications are developed for the ESP32-LyraT development board and demonstrate the usage of IIR filters from the ESP-DSP library.
 This example showcases how to use IIR filter functionality to process audio stream data.
 To hear the audio please connect headphones or speakers to the ESP32-LyraT audio output.
 The example performs the following steps:
@@ -29,7 +29,7 @@ Triple buffering is a technique used in audio processing to minimize latency and
 
 The cycle continues, with the audio system always processing the data from a buffer while the other two buffers are being filled. This approach helps ensure a continuous and uninterrupted audio playback, as there is always a buffer ready to be processed. It reduces the chances of audio glitches or dropouts caused by delays in reading or processing the audio data.
 
-Triple buffering is particularly useful when working with real-time audio processing applications, where low latency and uninterrupted playback are crucial.
+Triple buffering is particularly useful when working with real-time audio processing Mtb_Applications, where low latency and uninterrupted playback are crucial.
 
 ## Audio Processing Flow
 

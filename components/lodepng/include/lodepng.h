@@ -8,7 +8,7 @@ warranty. In no event will the authors be held liable for any damages
 arising from the use of this software.
 
 Permission is granted to anyone to use this software for any purpose,
-including commercial applications, and to alter it and redistribute it
+including commercial Mtb_Applications, and to alter it and redistribute it
 freely, subject to the following restrictions:
 
     1. The origin of this software must not be misrepresented; you must not
@@ -630,7 +630,7 @@ typedef struct LodePNGInfo {
   management and conversions.
 
   For encoding, if iCCP is present, the PNG specification recommends to also add gAMA and cHRM chunks that approximate
-  the ICC profile, for compatibility with applications that don't use the ICC chunk. This is not required, and it's up
+  the ICC profile, for compatibility with Mtb_Applications that don't use the ICC chunk. This is not required, and it's up
   to the user to compute approximate values and set then in the appropriate gama_ and chrm_ fields, LodePNG does not do
   this automatically since it does not interpret the ICC profile.
 
@@ -1708,7 +1708,7 @@ converting to/from all that is outside the scope of LodePNG.
 
 This may mean that, depending on your use case, you may want to convert the big
 endian output of LodePNG to little endian with a for loop. This is certainly not
-always needed, many applications and libraries support big endian 16-bit colors
+always needed, many Mtb_Applications and libraries support big endian 16-bit colors
 anyway, but it means you cannot simply cast the unsigned char* buffer to an
 unsigned short* buffer on x86 CPUs.
 

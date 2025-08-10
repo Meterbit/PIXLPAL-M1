@@ -45,23 +45,23 @@ void mtb_RotaryEncoder_Init(void){
 
 void device_SD_RS(power_States_t wake_Plan){
     if(wake_Plan == TEMP_RS) esp_restart();
-    write_struct_to_nvs("wakeState",&wake_Plan, sizeof(power_States_t));
+    mtb_Write_Nvs_Struct("wakeState",&wake_Plan, sizeof(power_States_t));
     if(wake_Plan == TEMP_SH) esp_light_sleep_start();
     else esp_deep_sleep_start();
 }
 
 void encoder_Task (void* dService){
-    Services *thisServ = (Services *)dService;
+    Mtb_Services *thisServ = (Mtb_Services *)dService;
     rotary_encoder_event_t encoder_Data;
-    while (THIS_SERV_IS_ACTIVE == pdTRUE) if(xQueueReceive(encoderEvent_Q, &encoder_Data, pdMS_TO_TICKS(1)) == pdTRUE) encoderFn_ptr(encoder_Data.dir);
-    kill_This_Service(thisServ);
+    while (MTB_SERV_IS_ACTIVE == pdTRUE) if(xQueueReceive(encoderEvent_Q, &encoder_Data, pdMS_TO_TICKS(1)) == pdTRUE) encoderFn_ptr(encoder_Data.dir);
+    mtb_End_This_Service(thisServ);
 }
 
 void button_Task (void* dService){
-    Services *thisServ = (Services *)dService;
+    Mtb_Services *thisServ = (Mtb_Services *)dService;
 	button_event_t button_Data;
-    while (THIS_SERV_IS_ACTIVE == pdTRUE) if(xQueueReceive(buttonEvent_Q, &button_Data, pdMS_TO_TICKS(1)) == pdTRUE) buttonFn_ptr(button_Data);
-    kill_This_Service(thisServ);
+    while (MTB_SERV_IS_ACTIVE == pdTRUE) if(xQueueReceive(buttonEvent_Q, &button_Data, pdMS_TO_TICKS(1)) == pdTRUE) buttonFn_ptr(button_Data);
+    mtb_End_This_Service(thisServ);
 }
 
 void mtb_System_Init(void){
@@ -70,19 +70,19 @@ void mtb_System_Init(void){
     if(freeServAndAppPSRAM_Q == NULL) freeServAndAppPSRAM_Q = xQueueCreate(26, sizeof(void*));
     if(nvsAccessComplete_Sem == NULL) nvsAccessComplete_Sem = xSemaphoreCreateBinary();
     //if(bleRestoreTimer_H == NULL) bleRestoreTimer_H = xTimerCreate("bleRstoreTim", pdMS_TO_TICKS(1000), pdFALSE, NULL, bleRestoreTimerCallBkFn);
-    if(FixedText_t::scratchPad == nullptr){
+    if(Mtb_FixedText_t::scratchPad == nullptr){
             // Allocate memory for row pointers
-    FixedText_t::scratchPad = (uint8_t **)heap_caps_malloc(MATRIX_WIDTH * sizeof(uint8_t *), MALLOC_CAP_SPIRAM);
-    if (FixedText_t::scratchPad == NULL) {
-        //printf("Failed to allocate memory for row pointers\n");
+    Mtb_FixedText_t::scratchPad = (uint8_t **)heap_caps_malloc(MATRIX_WIDTH * sizeof(uint8_t *), MALLOC_CAP_SPIRAM);
+    if (Mtb_FixedText_t::scratchPad == NULL) {
+        //ESP_LOGI(TAG, "Failed to allocate memory for row pointers\n");
         return;
     }
 
     // Allocate memory for each row
     for (int i = 0; i < MATRIX_WIDTH; i++){
-        FixedText_t::scratchPad[i] = (uint8_t *)heap_caps_malloc(MATRIX_HEIGHT * sizeof(uint8_t), MALLOC_CAP_SPIRAM);
-        if (FixedText_t::scratchPad[i] == NULL) {
-            //printf("Failed to allocate memory for row %d\n", i);
+        Mtb_FixedText_t::scratchPad[i] = (uint8_t *)heap_caps_malloc(MATRIX_HEIGHT * sizeof(uint8_t), MALLOC_CAP_SPIRAM);
+        if (Mtb_FixedText_t::scratchPad[i] == NULL) {
+            //ESP_LOGI(TAG, "Failed to allocate memory for row %d\n", i);
         return;
         }
     }
@@ -90,7 +90,7 @@ void mtb_System_Init(void){
     Matrix_Panel_t::config_ESP32_Panel_Pins();
     init_nvs_mem();
     Matrix_Panel_t::init_LED_MatrixPanel();
-	read_struct_from_nvs("dev_Volume", &deviceVolume, sizeof(uint8_t));
+	mtb_Read_Nvs_Struct("dev_Volume", &deviceVolume, sizeof(uint8_t));
     text_Scrolls_Init();
-    if(appLuncherQueue == NULL) appLuncherQueue = xQueueCreate(4, sizeof(Applications*));
+    if(appLuncherQueue == NULL) appLuncherQueue = xQueueCreate(4, sizeof(Mtb_Applications*));
 }

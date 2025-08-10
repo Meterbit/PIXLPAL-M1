@@ -69,12 +69,12 @@ class JsonSerializer : public VariantDataVisitor<size_t> {
   }
 
   size_t visit(const char* value) {
-    formatter_.writeString(value);
+    formatter_.mtb_Write_String(value);
     return bytesWritten();
   }
 
   size_t visit(JsonString value) {
-    formatter_.writeString(value.c_str(), value.size());
+    formatter_.mtb_Write_String(value.c_str(), value.size());
     return bytesWritten();
   }
 
