@@ -1,4 +1,8 @@
 components/meterbit_ota/include/*
+components/meterbit_graphics/mtb_gif_parser.cpp
+components/meterbit_graphics/mtb_text_scroll.cpp
+components/meterbit_graphics/meterbit_graphics.cpp
+
 build/*
 !build/PIXLPAL-M1.bin
 !build/ota_data_initial.bin
