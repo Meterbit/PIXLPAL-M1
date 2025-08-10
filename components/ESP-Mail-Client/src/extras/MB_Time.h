@@ -99,7 +99,7 @@ public:
 #endif
   }
 
-  void readNTPTime(unsigned long waitMs, bool debugProgress)
+  void readmtb_ntp(unsigned long waitMs, bool debugProgress)
   {
     if (!timeReady())
     {

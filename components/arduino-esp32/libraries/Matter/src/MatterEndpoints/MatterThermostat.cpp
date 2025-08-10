@@ -94,7 +94,7 @@ bool MatterThermostat::attributeChangeCB(uint16_t endpoint_id, uint32_t cluster_
 
   if (cluster_id == Thermostat::Id) {
     switch (attribute_id) {
-      case Thermostat::Attributes::SystemMode::Id:
+      case Thermostat::Attributes::mtb_systemode::Id:
         if (_onChangeModeCB != NULL) {
           ret &= _onChangeModeCB((ThermostatMode_t)val->val.u8);
         }
@@ -251,14 +251,14 @@ bool MatterThermostat::setMode(ThermostatMode_t _mode) {
   }
 
   esp_matter_attr_val_t modeVal = esp_matter_invalid(NULL);
-  if (!getAttributeVal(Thermostat::Id, Thermostat::Attributes::SystemMode::Id, &modeVal)) {
+  if (!getAttributeVal(Thermostat::Id, Thermostat::Attributes::mtb_systemode::Id, &modeVal)) {
     log_e("Failed to get Thermostat Mode Attribute.");
     return false;
   }
   if (modeVal.val.u8 != _mode) {
     modeVal.val.u8 = _mode;
     bool ret;
-    ret = updateAttributeVal(Thermostat::Id, Thermostat::Attributes::SystemMode::Id, &modeVal);
+    ret = updateAttributeVal(Thermostat::Id, Thermostat::Attributes::mtb_systemode::Id, &modeVal);
     if (!ret) {
       log_e("Failed to update Thermostat Mode Attribute.");
       return false;

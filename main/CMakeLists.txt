@@ -1,5 +1,6 @@
-idf_component_register( SRCS "main.cpp" INCLUDE_DIRS "." 
-                        REQUIRES mtbCore ebtn mtbAudio Wifi_Man "nvs_flash" ESP-Mail-Client
+idf_component_register( SRCS "main.cpp" 
+                        INCLUDE_DIRS "." 
+                        REQUIRES meterbit_system ebtn meterbit_audio meterbit_wifi "nvs_flash" ESP-Mail-Client
                         
                         )
 

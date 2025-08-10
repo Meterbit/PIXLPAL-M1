@@ -511,7 +511,7 @@ void ESP_Mail_Client::setTime(const char *TZ_Var, const char *TZ_file, bool wait
 
     if (WiFI_CONNECTED)
     {
-      Time.readNTPTime(wait ? 10000 : 0, debugProgress);
+      Time.readmtb_ntp(wait ? 10000 : 0, debugProgress);
     }
     else
     {

@@ -35,20 +35,20 @@ public:
   };
 
   enum ThermostatMode_t {
-    THERMOSTAT_MODE_OFF            = (uint8_t) Thermostat::SystemModeEnum::kOff,
-    THERMOSTAT_MODE_AUTO           = (uint8_t) Thermostat::SystemModeEnum::kAuto,
-    THERMOSTAT_MODE_COOL           = (uint8_t) Thermostat::SystemModeEnum::kCool,
-    THERMOSTAT_MODE_HEAT           = (uint8_t) Thermostat::SystemModeEnum::kHeat,
-    THERMOSTAT_MODE_EMERGENCY_HEAT = (uint8_t) Thermostat::SystemModeEnum::kEmergencyHeat,
-    THERMOSTAT_MODE_PRECOOLING     = (uint8_t) Thermostat::SystemModeEnum::kPrecooling,
-    THERMOSTAT_MODE_FAN_ONLY       = (uint8_t) Thermostat::SystemModeEnum::kFanOnly,
-    THERMOSTAT_MODE_DRY            = (uint8_t) Thermostat::SystemModeEnum::kDry,
-    THERMOSTAT_MODE_SLEEP          = (uint8_t) Thermostat::SystemModeEnum::kSleep
+    THERMOSTAT_MODE_OFF            = (uint8_t) Thermostat::mtb_systemodeEnum::kOff,
+    THERMOSTAT_MODE_AUTO           = (uint8_t) Thermostat::mtb_systemodeEnum::kAuto,
+    THERMOSTAT_MODE_COOL           = (uint8_t) Thermostat::mtb_systemodeEnum::kCool,
+    THERMOSTAT_MODE_HEAT           = (uint8_t) Thermostat::mtb_systemodeEnum::kHeat,
+    THERMOSTAT_MODE_EMERGENCY_HEAT = (uint8_t) Thermostat::mtb_systemodeEnum::kEmergencyHeat,
+    THERMOSTAT_MODE_PRECOOLING     = (uint8_t) Thermostat::mtb_systemodeEnum::kPrecooling,
+    THERMOSTAT_MODE_FAN_ONLY       = (uint8_t) Thermostat::mtb_systemodeEnum::kFanOnly,
+    THERMOSTAT_MODE_DRY            = (uint8_t) Thermostat::mtb_systemodeEnum::kDry,
+    THERMOSTAT_MODE_SLEEP          = (uint8_t) Thermostat::mtb_systemodeEnum::kSleep
   };
 
   enum ThermostatAutoMode_t {
-    THERMOSTAT_AUTO_MODE_DISABLED = (uint8_t) Thermostat::SystemModeEnum::kOff,
-    THERMOSTAT_AUTO_MODE_ENABLED  = (uint8_t) Thermostat::SystemModeEnum::kAuto,
+    THERMOSTAT_AUTO_MODE_DISABLED = (uint8_t) Thermostat::mtb_systemodeEnum::kOff,
+    THERMOSTAT_AUTO_MODE_ENABLED  = (uint8_t) Thermostat::mtb_systemodeEnum::kAuto,
   };
   // clang-format on
 
