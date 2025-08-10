@@ -29,10 +29,10 @@ void readCurrencySymbols(const char *filename, String currencySymbols[], int &co
 void buttonChangeDisplayCurrency(button_event_t button_Data);
 void currencyChange_TimerCallback(TimerHandle_t);
 
-void showParticularCurrencies(DynamicJsonDocument&);
-void add_RemoveCurrencySymbol(DynamicJsonDocument&);
-void setcurrencyChangeInterval(DynamicJsonDocument&);
-void saveCurrencyAPI_key(DynamicJsonDocument&);
+void showParticularCurrencies(JsonDocument&);
+void add_RemoveCurrencySymbol(JsonDocument&);
+void setcurrencyChangeInterval(JsonDocument&);
+void saveCurrencyAPI_key(JsonDocument&);
 
 EXT_RAM_BSS_ATTR Applications_StatusBar *currencyExchange_App = new Applications_StatusBar(currencyExchange_App_Task, &currencyExchange_Task_H, "currencyEx", 10240);
 
@@ -264,16 +264,16 @@ void currencyChange_TimerCallback(TimerHandle_t currencyPrompt){
     xSemaphoreGive(changeDispCurrency_Sem);
 }
 
-void showParticularCurrencies(DynamicJsonDocument& dCommand){
+void showParticularCurrencies(JsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     const char *currencySymbol = dCommand["stkSymbol"];
     currentCurrencies.currencyID1 = String(currencySymbol);
     write_struct_to_nvs("CurrencysStat", &currentCurrencies, sizeof(Currency_Stat_t));
     xSemaphoreGive(changeDispCurrency_Sem);
-    ble_Application_Command_Respond_Success(currencyExchangeAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(currencyExchangeAppRoute, cmdNumber, pdPASS);
 }
 
-void add_RemoveCurrencySymbol(DynamicJsonDocument& dCommand){
+void add_RemoveCurrencySymbol(JsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     String CurrencySymbol = dCommand["stkList"];
     // if(actionCmd) addCurrencySymbol(currencySymbolsFilePath, String(CurrencySymbol));
@@ -303,10 +303,10 @@ void add_RemoveCurrencySymbol(DynamicJsonDocument& dCommand){
 
     
     // xSemaphoreGive(changeDispCurrency_Sem);
-    ble_Application_Command_Respond_Success(currencyExchangeAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(currencyExchangeAppRoute, cmdNumber, pdPASS);
 }
 
-void setcurrencyChangeInterval(DynamicJsonDocument& dCommand){
+void setcurrencyChangeInterval(JsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     uint8_t setCycle = dCommand["cycleCurrencys"];
     int16_t dInterval = dCommand["dInterval"];
@@ -324,7 +324,7 @@ void setcurrencyChangeInterval(DynamicJsonDocument& dCommand){
         xTimerStart(currencyChangeTimer_H, 0);
     }
     write_struct_to_nvs("CurrencysStat", &currentCurrencies, sizeof(Currency_Stat_t));
-    ble_Application_Command_Respond_Success(currencyExchangeAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(currencyExchangeAppRoute, cmdNumber, pdPASS);
 }
 
 // String convertArrayToJson(String arr[], size_t length) {
@@ -341,17 +341,17 @@ void setcurrencyChangeInterval(DynamicJsonDocument& dCommand){
 //     return json;
 // }
 
-// void loadSavedCurrencys(DynamicJsonDocument& dCommand){
+// void loadSavedCurrencys(JsonDocument& dCommand){
 //     uint8_t cmdNumber = dCommand["app_command"];
 //     String savedSymbols = "{\"pxp_command\":";
 //     savedSymbols += String(cmdNumber) + ",\"savedSymbols\":" + convertArrayToJson(currencySymbols, currencyCount) + "}";
 //     bleApplicationComSend(savedSymbols);
 // }
 
-void saveCurrencyAPI_key(DynamicJsonDocument& dCommand){
+void saveCurrencyAPI_key(JsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     String userAPI_Key = dCommand["api_key"];
     strcpy(currentCurrencies.apiToken, userAPI_Key.c_str());
     write_struct_to_nvs("CurrencysStat", &currentCurrencies, sizeof(Currency_Stat_t));
-    ble_Application_Command_Respond_Success(currencyExchangeAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(currencyExchangeAppRoute, cmdNumber, pdPASS);
 }

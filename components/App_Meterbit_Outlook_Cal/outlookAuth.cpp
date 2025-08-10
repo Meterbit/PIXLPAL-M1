@@ -24,7 +24,7 @@ String getAccessToken(const String& clientId, const String& clientSecret, const 
     return "";
   }
 
-  DynamicJsonDocument doc(2048);
+  JsonDocument doc;
   DeserializationError error = deserializeJson(doc, payload);
   if (error) {
     printf("JSON Parse Error while decoding token response\n");

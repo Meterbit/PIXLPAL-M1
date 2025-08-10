@@ -17,7 +17,7 @@ esp_vfs_littlefs_conf_t myLittleFS = {
         };
 
 
-void init_LittleFS_Mem(void){
+void mtb_LittleFS_Init(void){
     // Use settings defined above to initialize and mount LittleFS filesystem.
     // Note: esp_vfs_littlefs_register is an all-in-one convenience function.
     // esp_err_t ret = esp_vfs_littlefs_register(&myLittleFS);
@@ -69,7 +69,7 @@ void init_LittleFS_Mem(void){
     }
 }
 
-void de_init_LittleFS_Mem(void){
+void mtb_LittleFS_DeInit(void){
     esp_vfs_littlefs_unregister("spiffs");
 }
 

@@ -14,9 +14,9 @@ EXT_RAM_BSS_ATTR TaskHandle_t polygonFX_Task_H = NULL;
 void polygonFX_App_Task(void *);
 
 // BLE command functions
-void setPolygonPair(DynamicJsonDocument &);
-void setPolygonInterval(DynamicJsonDocument &);
-void setPolygonAPIKey(DynamicJsonDocument &);
+void setPolygonPair(JsonDocument &);
+void setPolygonInterval(JsonDocument &);
+void setPolygonAPIKey(JsonDocument &);
 
 EXT_RAM_BSS_ATTR Applications_StatusBar *polygonFX_App = new Applications_StatusBar(polygonFX_App_Task, &polygonFX_Task_H, "Polygon FX", 8192);
 
@@ -83,31 +83,31 @@ void polygonFX_App_Task(void *dApplication){
 }
 
 
-void setPolygonPair(DynamicJsonDocument &dCommand){
+void setPolygonPair(JsonDocument &dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     const char *pair = dCommand["pair"];
     if(pair){
         strncpy(polygonFX.pair, pair, sizeof(polygonFX.pair)-1);
         write_struct_to_nvs("polygonFX", &polygonFX, sizeof(PolygonFX_t));
     }
-    ble_Application_Command_Respond_Success(polygonAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(polygonAppRoute, cmdNumber, pdPASS);
 }
 
-void setPolygonInterval(DynamicJsonDocument &dCommand){
+void setPolygonInterval(JsonDocument &dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     int16_t interval = dCommand["dInterval"];
     if(interval > 0){
         polygonFX.updateInterval = interval;
         write_struct_to_nvs("polygonFX", &polygonFX, sizeof(PolygonFX_t));
     }
-    ble_Application_Command_Respond_Success(polygonAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(polygonAppRoute, cmdNumber, pdPASS);
 }
 
-void setPolygonAPIKey(DynamicJsonDocument &dCommand){
+void setPolygonAPIKey(JsonDocument &dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     String key = dCommand["api_key"];
     strncpy(polygonFX.apiToken, key.c_str(), sizeof(polygonFX.apiToken)-1);
     write_struct_to_nvs("polygonFX", &polygonFX, sizeof(PolygonFX_t));
-    ble_Application_Command_Respond_Success(polygonAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(polygonAppRoute, cmdNumber, pdPASS);
 }
 

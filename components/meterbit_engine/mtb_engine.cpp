@@ -68,7 +68,7 @@ Applications::Applications(void (*dApplication)(void *), TaskHandle_t* dAppHandl
 // void bleRestoreTimerCallBkFn(TimerHandle_t bleRstTim){
 //     //Launch the Calendar Clock App to Restore BLE Link.
 //     const char calendarClockAppBleCom[] = "0/0|{\"app_command\":255}";
-//     bleCom_Data_Trans_t com_Data;
+//     mtb_BleCom_Data_Trans_t com_Data;
 
 //     com_Data.pay_size = strlen(calendarClockAppBleCom);
 //     com_Data.payload = heap_caps_calloc(com_Data.pay_size + 1, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
@@ -78,7 +78,7 @@ Applications::Applications(void (*dApplication)(void *), TaskHandle_t* dAppHandl
 //     start_This_Service(ble_AppCom_Parser_Sv);
 // }
 
-void launchThisApp(Applications *dApp, do_Prev_App_t do_Prv_App){
+void mtb_Launch_This_App(Applications *dApp, do_Prev_App_t do_Prv_App){
     dApp->action_On_Prev_App = do_Prv_App;
     xQueueSend(appLuncherQueue, &dApp, portMAX_DELAY);
     start_This_Service(app_Luncher_Task_Sv);
@@ -376,11 +376,11 @@ void randomButtonControl(button_event_t button_Data){
             break;
 
             case BUTTON_PRESSED:
-            initBLE_Communication();
+            mtb_Ble_Comm_Init();
             break;
 
             case BUTTON_PRESSED_LONG:
-                launchThisApp(pixelAnimClock_App);
+                mtb_Launch_This_App(pixelAnimClock_App);
             break;
 
             case BUTTON_CLICKED:
@@ -434,7 +434,7 @@ void appsInitialization(Applications *thisApp, Services* pointer_0, Services* po
 
 //*************************************************************************************************************************************************************
 
-void ble_Application_Command_Respond_Success(const char* appRoute, uint8_t commandNumber, uint8_t response ){
+void mtb_Ble_App_Cmd_Respond_Success(const char* appRoute, uint8_t commandNumber, uint8_t response ){
     String jsonString;
     StaticJsonDocument<1024> doc;
 
@@ -446,7 +446,7 @@ void ble_Application_Command_Respond_Success(const char* appRoute, uint8_t comma
 
 void ble_AppCom_Parse_Task(void* dService){
     Services *thisService = (Services *)dService;
-    bleCom_Data_Trans_t qMessage;
+    mtb_BleCom_Data_Trans_t qMessage;
     DeserializationError dError;
     String dNewAppParams;
     uint16_t dAppGen = 0;
@@ -532,7 +532,7 @@ void ble_AppCom_Parse_Task(void* dService){
                 currentApp.GenApp = getIntegerAtIndex(specify_Application, 0);
                 currentApp.SpeApp = getIntegerAtIndex(specify_Application, 1);
                 write_struct_to_nvs("currentApp", &currentApp, sizeof(CurrentApp_t));
-                generalAppLunch(currentApp);
+                mtb_General_App_Lunch(currentApp);
                 bleApplicationComSend(specify_Application.c_str(), "{\"pxp_command\": 253}");
             }else{
                 bleApplicationComSend(specify_Application.c_str(), "{\"pxp_command\": 254}");
@@ -561,7 +561,7 @@ void Service_With_Fns::register_BLE_Com_ServiceFns(bleCom_Parser_Fns_Ptr Fn_0, b
     bleAppComServiceFns[11] = Fn_11;
 }
 
-void generalAppLunch(CurrentApp_t dAppPath){
+void mtb_General_App_Lunch(CurrentApp_t dAppPath){
     switch(dAppPath.GenApp){
     case 0: clk_Tim_AppLunch(dAppPath.SpeApp); break;
     case 1: msgAppLunch(dAppPath.SpeApp); break;
@@ -588,11 +588,11 @@ void generalAppLunch(CurrentApp_t dAppPath){
 //********NUMBER 0 */
 void clk_Tim_AppLunch(uint16_t dAppNumber){
     switch(dAppNumber){
-        case 0: launchThisApp(classicClock_App); break;
-        case 1: launchThisApp(pixelAnimClock_App); break;
-        case 2: launchThisApp(worldClock_App); break;
-        case 3: launchThisApp(bigClockCalendar_App); break;
-        case 4: launchThisApp(stopWatch_App); break;
+        case 0: mtb_Launch_This_App(classicClock_App); break;
+        case 1: mtb_Launch_This_App(pixelAnimClock_App); break;
+        case 2: mtb_Launch_This_App(worldClock_App); break;
+        case 3: mtb_Launch_This_App(bigClockCalendar_App); break;
+        case 4: mtb_Launch_This_App(stopWatch_App); break;
         default: printf("No Apps to Lunch.\n"); break;
         }
 }
@@ -600,8 +600,8 @@ void clk_Tim_AppLunch(uint16_t dAppNumber){
 //********NUMBER 1 */
 void msgAppLunch(uint16_t dAppNumber){
     switch(dAppNumber){
-        case 0: launchThisApp(googleNews_App); break;
-        case 1: launchThisApp(rssNewsApp); break;
+        case 0: mtb_Launch_This_App(googleNews_App); break;
+        case 1: mtb_Launch_This_App(rssNewsApp); break;
 
         default: printf("No Apps to Lunch.\n");
             break;
@@ -611,8 +611,8 @@ void msgAppLunch(uint16_t dAppNumber){
 //********NUMBER 2 */
 void calendarAppLunch(uint16_t dAppNumber){
     switch(dAppNumber){
-        case 0: launchThisApp(google_Calendar_App); break;
-        case 1: launchThisApp(outlook_Calendar_App); break;
+        case 0: mtb_Launch_This_App(google_Calendar_App); break;
+        case 1: mtb_Launch_This_App(outlook_Calendar_App); break;
 
         default: printf("No Apps to Lunch.\n");
             break;
@@ -622,9 +622,9 @@ void calendarAppLunch(uint16_t dAppNumber){
 //********NUMBER 3 */
 void weatherAppLunch(uint16_t dAppNumber){
     switch(dAppNumber){
-        case 0: launchThisApp(openWeather_App); break;
-        case 1: launchThisApp(openMeteo_App); break;
-        case 2: launchThisApp(googleWeather_App); break; 
+        case 0: mtb_Launch_This_App(openWeather_App); break;
+        case 1: mtb_Launch_This_App(openMeteo_App); break;
+        case 2: mtb_Launch_This_App(googleWeather_App); break; 
 
         default: printf("No Apps to Lunch.\n");
             break;
@@ -634,10 +634,10 @@ void weatherAppLunch(uint16_t dAppNumber){
 //********NUMBER 4 */
 void financeAppLunch(uint16_t dAppNumber){
     switch(dAppNumber){
-        case 0: launchThisApp(finnhub_Stats_App); break;
-        case 1: launchThisApp(crypto_Stats_App); break; 
-        case 2: launchThisApp(currencyExchange_App); break;
-        case 3: launchThisApp(polygonFX_App); break;
+        case 0: mtb_Launch_This_App(finnhub_Stats_App); break;
+        case 1: mtb_Launch_This_App(crypto_Stats_App); break; 
+        case 2: mtb_Launch_This_App(currencyExchange_App); break;
+        case 3: mtb_Launch_This_App(polygonFX_App); break;
 
         default: printf("No Apps to Lunch.\n");
             break;
@@ -647,8 +647,8 @@ void financeAppLunch(uint16_t dAppNumber){
 //********NUMBER 5 */
 void sportsAppLunch(uint16_t dAppNumber){
     switch(dAppNumber){
-        case 0: launchThisApp(liveFootbalScores_App); break;
-        // case 1: launchThisApp(classicClock_App); break;
+        case 0: mtb_Launch_This_App(liveFootbalScores_App); break;
+        // case 1: mtb_Launch_This_App(classicClock_App); break;
 
         default: printf("No Apps to Lunch.\n");
             break;
@@ -658,8 +658,8 @@ void sportsAppLunch(uint16_t dAppNumber){
 //********NUMBER 6 */
 void animationsAppLunch(uint16_t dAppNumber){
     switch(dAppNumber){
-        case 0: launchThisApp(studioLight_App); break;   // ABOUT 10KB RAM IS CONSUMED JUST BY HAVING THIS APPLICATION AMONG THE OTHERS
-        case 1: launchThisApp(worldFlags_App); break;
+        case 0: mtb_Launch_This_App(studioLight_App); break;   // ABOUT 10KB RAM IS CONSUMED JUST BY HAVING THIS APPLICATION AMONG THE OTHERS
+        case 1: mtb_Launch_This_App(worldFlags_App); break;
         default: printf("No Apps to Lunch.\n");
             break;
     }
@@ -668,13 +668,13 @@ void animationsAppLunch(uint16_t dAppNumber){
 //********NUMBER 7 */
 void notificationsAppLunch(uint16_t dAppNumber){
     switch(dAppNumber){
-        case 0: launchThisApp(apple_Notifications_App); break;
-        // case 1: launchThisApp(classicClock_App); break;
-        // case 2: launchThisApp(classicClock_App); break;
-        // case 3: launchThisApp(classicClock_App); break; 
-        // case 4: launchThisApp(classicClock_App); break; 
-        // case 5: launchThisApp(classicClock_App); break;
-        // case 6: launchThisApp(classicClock_App); break;
+        case 0: mtb_Launch_This_App(apple_Notifications_App); break;
+        // case 1: mtb_Launch_This_App(classicClock_App); break;
+        // case 2: mtb_Launch_This_App(classicClock_App); break;
+        // case 3: mtb_Launch_This_App(classicClock_App); break; 
+        // case 4: mtb_Launch_This_App(classicClock_App); break; 
+        // case 5: mtb_Launch_This_App(classicClock_App); break;
+        // case 6: mtb_Launch_This_App(classicClock_App); break;
 
         default: printf("No Apps to Lunch.\n");
             break;
@@ -684,13 +684,13 @@ void notificationsAppLunch(uint16_t dAppNumber){
 //********NUMBER 8 */
 void ai_AppLunch(uint16_t dAppNumber){
     switch(dAppNumber){
-        case 0: launchThisApp(chatGPT_App); break;
-        // case 1: launchThisApp(classicClock_App); break; 
-        // case 2: launchThisApp(classicClock_App); break; 
-        // case 3: launchThisApp(classicClock_App); break;
-        // case 4: launchThisApp(classicClock_App); break; 
-        // case 5: launchThisApp(classicClock_App); break; 
-        // case 6: launchThisApp(classicClock_App); break;
+        case 0: mtb_Launch_This_App(chatGPT_App); break;
+        // case 1: mtb_Launch_This_App(classicClock_App); break; 
+        // case 2: mtb_Launch_This_App(classicClock_App); break; 
+        // case 3: mtb_Launch_This_App(classicClock_App); break;
+        // case 4: mtb_Launch_This_App(classicClock_App); break; 
+        // case 5: mtb_Launch_This_App(classicClock_App); break; 
+        // case 6: mtb_Launch_This_App(classicClock_App); break;
 
         default: printf("No Apps to Lunch.\n");
             break;
@@ -700,10 +700,10 @@ void ai_AppLunch(uint16_t dAppNumber){
 //********NUMBER 9 */
 void audioStreamAppLunch(uint16_t dAppNumber){
     switch(dAppNumber){
-        case 0: launchThisApp(internetRadio_App); break;
-        case 1: launchThisApp(musicPlayer_App); break;
-        case 2: launchThisApp(audSpecAnalyzer_App); break;
-        case 3: launchThisApp(spotify_App); break;
+        case 0: mtb_Launch_This_App(internetRadio_App); break;
+        case 1: mtb_Launch_This_App(musicPlayer_App); break;
+        case 2: mtb_Launch_This_App(audSpecAnalyzer_App); break;
+        case 3: mtb_Launch_This_App(spotify_App); break;
         default: printf("No Apps to Lunch.\n");
             break;
     }
@@ -712,13 +712,13 @@ void audioStreamAppLunch(uint16_t dAppNumber){
 //********NUMBER 10 */
 void sMediaAppLunch(uint16_t dAppNumber){
     switch(dAppNumber){
-        // case 0: launchThisApp(classicClock_App); break;
-        // case 1: launchThisApp(classicClock_App); break;
-        // case 2: launchThisApp(classicClock_App); break; 
-        // case 3: launchThisApp(classicClock_App); break; 
-        // case 4: launchThisApp(classicClock_App); break;
-        // case 5: launchThisApp(classicClock_App); break;
-        // case 6: launchThisApp(classicClock_App); break;
+        // case 0: mtb_Launch_This_App(classicClock_App); break;
+        // case 1: mtb_Launch_This_App(classicClock_App); break;
+        // case 2: mtb_Launch_This_App(classicClock_App); break; 
+        // case 3: mtb_Launch_This_App(classicClock_App); break; 
+        // case 4: mtb_Launch_This_App(classicClock_App); break;
+        // case 5: mtb_Launch_This_App(classicClock_App); break;
+        // case 6: mtb_Launch_This_App(classicClock_App); break;
 
         default: printf("No Apps to Lunch.\n");
             break;
@@ -728,13 +728,13 @@ void sMediaAppLunch(uint16_t dAppNumber){
 //********NUMBER 11 */
 void miscellanousAppLunch(uint16_t dAppNumber){
     switch(dAppNumber){
-        // case 0: launchThisApp(classicClock_App); break;
-        // case 1: launchThisApp(classicClock_App); break;
-        // case 2: launchThisApp(classicClock_App); break;
-        // case 3: launchThisApp(classicClock_App); break; 
-        // case 4: launchThisApp(classicClock_App); break;
-        // case 5: launchThisApp(classicClock_App); break;
-        // case 6: launchThisApp(classicClock_App); break;
+        // case 0: mtb_Launch_This_App(classicClock_App); break;
+        // case 1: mtb_Launch_This_App(classicClock_App); break;
+        // case 2: mtb_Launch_This_App(classicClock_App); break;
+        // case 3: mtb_Launch_This_App(classicClock_App); break; 
+        // case 4: mtb_Launch_This_App(classicClock_App); break;
+        // case 5: mtb_Launch_This_App(classicClock_App); break;
+        // case 6: mtb_Launch_This_App(classicClock_App); break;
 
         default: printf("No Apps to Lunch.\n");
             break;
@@ -917,7 +917,7 @@ String formatTimeFromTimestamp(time_t timestamp) {
 
 
 
-  String urlencode(const char* str) {
+String urlencode(const char* str) {
     String encoded = "";
     char c;
     while ((c = *str++)) {
@@ -932,7 +932,7 @@ String formatTimeFromTimestamp(time_t timestamp) {
     return encoded;
   }
 
-    String getCurrentTimeRFC3339() {
+String getCurrentTimeRFC3339() {
     struct tm timeinfo;
     if (!getLocalTime(&timeinfo)) {
       printf("Failed to obtain time from NTP\n");

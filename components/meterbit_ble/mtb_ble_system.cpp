@@ -21,16 +21,16 @@
 #include "ESP32-HUB75-MatrixPanel-I2S-DMA.h"
 #include "mtb_graphics.h"
 
-void system_Clock_Format_Change(DynamicJsonDocument&);
-void system_Device_Brightness(DynamicJsonDocument&);
-void system_Silent_Mode(DynamicJsonDocument&);
-void system_PowerSaver_Mode(DynamicJsonDocument&);
-void system_Wifi_Radio(DynamicJsonDocument&);
-void system_Time_Zone(DynamicJsonDocument&);
+void system_Clock_Format_Change(JsonDocument&);
+void system_Device_Brightness(JsonDocument&);
+void system_Silent_Mode(JsonDocument&);
+void system_PowerSaver_Mode(JsonDocument&);
+void system_Wifi_Radio(JsonDocument&);
+void system_Time_Zone(JsonDocument&);
 void system_Restart_Device();
 void system_Shutdown_Device();
 
-void systemSettings(DynamicJsonDocument& dCommand){
+void systemSettings(JsonDocument& dCommand){
     DeserializationError passed;
     uint16_t dCmd_num = 0;
 
@@ -67,7 +67,7 @@ void systemSettings(DynamicJsonDocument& dCommand){
 }
 
 //**01*********************************************************************************************************************
-void system_Device_Brightness(DynamicJsonDocument& dCommand){    // In the App, prevent multiple values from being sent by waiting for response after the first value has been sent.
+void system_Device_Brightness(JsonDocument& dCommand){    // In the App, prevent multiple values from being sent by waiting for response after the first value has been sent.
 int tempBrightness;
 char setPanBrightness[100] = "{\"pxp_command\": 1, \"value\": ";
 char brightnsValue[10];
@@ -82,31 +82,31 @@ set_Status_RGB_LED(currentStatusLEDcolor);
 sprintf(brightnsValue, "%d", (uint8_t)(panelBrightness / 2.55));
 strcat(setPanBrightness, brightnsValue);
 strcat(setPanBrightness, "}");
-bleSettingsComSend(systeSettingsRoute, String(setPanBrightness));
+bleSettingsComSend(mtb_System_Settings_Route, String(setPanBrightness));
 }
 
 //**02*********************************************************************************************************************
-void system_Silent_Mode(DynamicJsonDocument& dCommand){
+void system_Silent_Mode(JsonDocument& dCommand){
   String success = "{\"pxp_command\": 2, \"response\": 1}";
-  bleSettingsComSend(systeSettingsRoute, success);
+  bleSettingsComSend(mtb_System_Settings_Route, success);
 }
 //**03*********************************************************************************************************************
-void system_PowerSaver_Mode(DynamicJsonDocument& dCommand){
+void system_PowerSaver_Mode(JsonDocument& dCommand){
   String success = "{\"pxp_command\": 3, \"response\": 1}";
-  bleSettingsComSend(systeSettingsRoute, success);
+  bleSettingsComSend(mtb_System_Settings_Route, success);
 }
 //**04*********************************************************************************************************************
-void system_Wifi_Radio(DynamicJsonDocument& dCommand){
+void system_Wifi_Radio(JsonDocument& dCommand){
   String success = "{\"pxp_command\": 4, \"response\": 1}";
-  bleSettingsComSend(systeSettingsRoute, success);
+  bleSettingsComSend(mtb_System_Settings_Route, success);
 }
 //**05*********************************************************************************************************************
-void system_Time_Zone(DynamicJsonDocument& dCommand){
+void system_Time_Zone(JsonDocument& dCommand){
   String success = "{\"pxp_command\": 5, \"response\": 1}";
-  bleSettingsComSend(systeSettingsRoute, success);
+  bleSettingsComSend(mtb_System_Settings_Route, success);
 }
 //**06*********************************************************************************************************************
-void system_Clock_Format_Change(DynamicJsonDocument& dCommand){
+void system_Clock_Format_Change(JsonDocument& dCommand){
     String success = "{\"pxp_command\": 6, \"response\": 1}";
     //uint8_t clockType = dCommand["value"];
     // if(clockType == 0){// Start the Classic Clock
@@ -115,14 +115,14 @@ void system_Clock_Format_Change(DynamicJsonDocument& dCommand){
     //   //vTaskSuspend(clockGifHandle);
     // }   
     //else;   // Set the Clock Type
-    bleSettingsComSend(systeSettingsRoute, success);
+    bleSettingsComSend(mtb_System_Settings_Route, success);
 }
 
 //**07*********************************************************************************************************************
 void system_Restart_Device(){
   statusBarNotif.scroll_This_Text("RESTARTING PIXLPAL", YELLOW);
   String acknowledge = "{\"pxp_command\": 7, \"response:\": 1}";
-  bleSettingsComSend(systeSettingsRoute, acknowledge);
+  bleSettingsComSend(mtb_System_Settings_Route, acknowledge);
   delay(10000);
   device_SD_RS(TEMP_RS);
 }
@@ -131,7 +131,7 @@ void system_Shutdown_Device(){
   statusBarNotif.scroll_This_Text("SHUTTING DOWN PIXLPAL", RED);
   String acknowledge = "{\"pxp_command\": 8, \"response:\": 1}";
   delay(12000);
-  bleSettingsComSend(systeSettingsRoute, acknowledge);
+  bleSettingsComSend(mtb_System_Settings_Route, acknowledge);
 	device_SD_RS(PERM_SH);
   set_Status_RGB_LED(RED);
 }

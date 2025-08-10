@@ -13,16 +13,18 @@ static const char TAG[] = "PXP-MAIN";
 
 
 extern "C" void app_main(){
-    init_LittleFS_Mem();
-    rotaryEncoder_Init();
-    system_Init();
-    initBLE_Communication();
-    launchThisApp(firmwareUpdate_App);
+    mtb_LittleFS_Init();
+    mtb_RotaryEncoder_Init();
+    mtb_System_Init();
+    mtb_Ble_Comm_Init();
+
+    mtb_Launch_This_App(firmwareUpdate_App);
     while(Applications::firmwareOTA_Status != pdFALSE) delay(1000);
+
     read_struct_from_nvs("currentApp", &currentApp, sizeof(CurrentApp_t));
-    wifi_Initialize();
-    generalAppLunch(currentApp);
-    //launchThisApp(worldFlags_App);
+    mtb_Wifi_Init();
+    mtb_General_App_Lunch(currentApp);
+    //mtb_Launch_This_App(worldFlags_App);
 
    size_t free_sram = 0;
 

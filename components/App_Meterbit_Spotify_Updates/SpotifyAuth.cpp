@@ -24,7 +24,7 @@ bool getAccessToken(const char* client_id, const char* refresh_token) {
     return false;
   }
 
-  DynamicJsonDocument doc(2048);
+  JsonDocument doc;
   DeserializationError err = deserializeJson(doc, body);
   if (err) {
     printf("Failed to parse JSON: %s\n", err.c_str());

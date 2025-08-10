@@ -58,15 +58,15 @@ String semver_t_ToString(const semver_t &version);
             //latest_softwareVersion(dLatestVersion.c_str());
             //printf("Latest Software Version: %s\n", dLatestVersion.c_str());
             if (latestVer) semver_free(latestVer);
-            bleSettingsComSend(softwareUpdateRoute, updateAvailable); // Send the update available message to the BLE client
+            bleSettingsComSend(mtb_Software_Update_Route, updateAvailable); // Send the update available message to the BLE client
         }
         else if (id == GHOTA_EVENT_NOUPDATE_AVAILABLE){
             //String updateNotAvailable = "{\"pxp_command\": 2, \"response\": 1, \"available\": 0}";
             //statusBarNotif.scroll_This_Text("PIXLPAL IS UP-TO-DATE", LEMON);
-            if(Applications::currentRunningApp == Applications::otaAppHolder) launchThisApp(Applications::previousRunningApp, IGNORE_PREVIOUS_APP);
+            if(Applications::currentRunningApp == Applications::otaAppHolder) mtb_Launch_This_App(Applications::previousRunningApp, IGNORE_PREVIOUS_APP);
             xSemaphoreGiveFromISR(ota_Update_Sem, &xHigherPriorityTaskWoken);
             otaUpdateApplication_App->app_is_Running = pdFALSE;
-            // bleSettingsComSend(softwareUpdateRoute, updateNotAvailable);
+            // bleSettingsComSend(mtb_Software_Update_Route, updateNotAvailable);
             // printf("No new Update available from Ghota.\n");
         }
         else if (id == GHOTA_EVENT_START_UPDATE){
@@ -97,13 +97,13 @@ String semver_t_ToString(const semver_t &version);
         else if (id == GHOTA_EVENT_UPDATE_FAILED){   
             //esp_restart();
             xSemaphoreGiveFromISR(ota_Update_Sem,&xHigherPriorityTaskWoken);
-            launchThisApp(Applications::previousRunningApp, IGNORE_PREVIOUS_APP);
+            mtb_Launch_This_App(Applications::previousRunningApp, IGNORE_PREVIOUS_APP);
             statusBarNotif.scroll_This_Text("SOFTWARE UPDATE FAILED DUE TO POOR NETWORK.    PIXLPAL WILL TRY AGAIN LATER.", RED);
             printf("Firmware Update Failed\n");
             otaUpdateApplication_App->app_is_Running = pdFALSE;
         }
         // else if (id == GHOTA_EVENT_START_STORAGE_UPDATE){
-        //     de_init_LittleFS_Mem();
+        //     mtb_LittleFS_DeInit();
         //     otaUpdateTextTop->writeColoredString("STORAGE UPDATE", MAGENTA);
         //     otaUpdateTextBot->writeColoredString("IN PROGRESS:", MAGENTA);
         //     otaUpdateTextBar->writeString("0%");
@@ -119,7 +119,7 @@ String semver_t_ToString(const semver_t &version);
         // else if(id == GHOTA_EVENT_FINISH_STORAGE_UPDATE){
         //     litFS_Ready = pdTRUE;
         //     write_struct_to_nvs("litFS_Ready", &litFS_Ready, sizeof(uint8_t));
-        //     init_LittleFS_Mem();
+        //     mtb_LittleFS_Init();
         //     printf("Storage Update Finished\n");
         // }
         // else if (id == GHOTA_EVENT_STORAGE_UPDATE_FAILED){

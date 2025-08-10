@@ -74,7 +74,7 @@ struct RawAudioData {
 };
 
 extern RawAudioData AudioSamplesTransport;
-extern uint8_t VisualizeAudio;
+//extern uint8_t VisualizeAudio;
 
 extern TimerHandle_t showRandomPatternTimer_H;
 extern TaskHandle_t audioProcessing_Task_H;
@@ -84,19 +84,18 @@ extern SemaphoreHandle_t dac_Start_Sem_H;
 
 extern void audioProcessing_Task(void *params);
 extern void audioVisualizer();
-extern esp_err_t _audio_player_write_fn(void *audio_buffer, size_t len, size_t *bytes_written, uint32_t timeout_ms);
+//extern esp_err_t _audio_player_write_fn(void *audio_buffer, size_t len, size_t *bytes_written, uint32_t timeout_ms);
 
 extern TaskHandle_t microphone_Task_H;
 extern SemaphoreHandle_t mic_Start_Sem_H;
-extern SemaphoreHandle_t usbSpk_Ready_Sem_H;
+//extern SemaphoreHandle_t usbSpk_Ready_Sem_H;
 extern void microphoneProcessing_Task(void *);
-extern void usb_Speaker_Task(void *);
+//extern void usb_Speaker_Task(void *);
 extern uint8_t mic_OR_dac;
 extern void use_Mic_OR_Dac(uint8_t);
 extern void randomPattern_TimerCallback(TimerHandle_t dHandle);
 extern void init_Mic_DAC_Audio_Processing_Peripherals(void);
 extern void de_init_Mic_DAC_Audio_Processing_Peripherals(void);
-
 
 
 class MTB_Audio {

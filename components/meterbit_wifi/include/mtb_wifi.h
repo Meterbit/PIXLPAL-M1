@@ -13,7 +13,7 @@
 extern struct Wifi_Credentials last_Successful_Wifi;
 extern void wifi_CurrentContdNetwork(void);
 //extern void wifi_ConnectToNetwork(const char *, const char *);
-extern void wifi_Initialize();
+extern void mtb_Wifi_Init();
 extern TaskHandle_t wifi_Ntwks_Scan_Task_H;
 //extern TimerHandle_t reconnect_Last_Station_H;
 //extern void wifi_Scan_Task(void *args);

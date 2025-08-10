@@ -8,8 +8,8 @@
 
 extern esp_vfs_littlefs_conf_t myLittleFS;
 
-extern void init_LittleFS_Mem(void);
-extern void de_init_LittleFS_Mem(void);
+extern void mtb_LittleFS_Init(void);
+extern void mtb_LittleFS_DeInit(void);
 
 extern int fsize(FILE *fp);
 

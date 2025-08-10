@@ -20,7 +20,7 @@ void selectWatchTimeButton(button_event_t button_Data);
 void adjustwatchTimeEncoder(rotary_encoder_rotation_t button_Data);
 
 // bluetooth functions
-void setWatchTime(DynamicJsonDocument&);
+void setWatchTime(JsonDocument&);
 
 EXT_RAM_BSS_ATTR Applications_StatusBar *stopWatch_App = new Applications_StatusBar(realStopwatch_App_Task, &realStopwatch_Task_H, "real Stopwatch", 10240);
 
@@ -92,10 +92,10 @@ if (direction == ROT_CLOCKWISE){
 }
 }
 
-void setWatchTime(DynamicJsonDocument& dCommand){
+void setWatchTime(JsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     String location = dCommand["duration"];
 
     write_struct_to_nvs("realStopWatch", &frequentStopwatchTime, sizeof(RealStopWatch_Data_t));
-    ble_Application_Command_Respond_Success(stopWatchAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(stopWatchAppRoute, cmdNumber, pdPASS);
 }

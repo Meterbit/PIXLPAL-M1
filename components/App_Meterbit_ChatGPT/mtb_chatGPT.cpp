@@ -44,10 +44,10 @@ uint8_t *create_wav_in_psram(const int16_t *buffer, uint32_t numSamples, uint32_
 //uint8_t* convertSamples2Wav(int16_t *audioSamples, int numSamples, size_t*);
 void Listen_Process_Button(button_event_t);
 
-// void selectNumOfBands(DynamicJsonDocument&);
-// void selectPattern(DynamicJsonDocument&);
-// void setRandomPatterns(DynamicJsonDocument&);
-// void setSensitivity(DynamicJsonDocument&);
+// void selectNumOfBands(JsonDocument&);
+// void selectPattern(JsonDocument&);
+// void setRandomPatterns(JsonDocument&);
+// void setSensitivity(JsonDocument&);
 
   ScrollText_t* humanSpeech;
   ScrollText_t* aiResponse;
@@ -370,21 +370,21 @@ uint8_t* create_wav_in_psram(const int16_t* buffer, uint32_t numSamples, uint32_
 
 
 
-// void selectNumOfBands(DynamicJsonDocument& dCommand){
+// void selectNumOfBands(JsonDocument& dCommand){
 //   uint8_t cmd = dCommand["app_command"];
 //   audioSpecVisual_Set.noOfBands = dCommand["numOfBands"];
 //   write_struct_to_nvs("audioSpecSet", &audioSpecVisual_Set, sizeof(AudioSpectVisual_Set_t));        
 //   mqtt_Command_Respond_Success(cmd, pdPASS);
 // }
 
-// void selectPattern(DynamicJsonDocument& dCommand){
+// void selectPattern(JsonDocument& dCommand){
 //   uint8_t cmd = dCommand["app_command"];
 //   audioSpecVisual_Set.selectedPattern = dCommand["selectedPattern"];
 //   write_struct_to_nvs("audioSpecSet", &audioSpecVisual_Set, sizeof(AudioSpectVisual_Set_t));        
 //   mqtt_Command_Respond_Success(cmd, pdPASS);
 // }
 
-// void setRandomPatterns(DynamicJsonDocument& dCommand){
+// void setRandomPatterns(JsonDocument& dCommand){
 //   uint8_t cmd = dCommand["app_command"];
 //   audioSpecVisual_Set.showRandom = dCommand["showRandom"];
 //   if(audioSpecVisual_Set.showRandom) xTimerStart(showRandomPatternTimer_H, 0);
@@ -393,7 +393,7 @@ uint8_t* create_wav_in_psram(const int16_t* buffer, uint32_t numSamples, uint32_
 //   mqtt_Command_Respond_Success(cmd, pdPASS);
 // }
 
-// void setSensitivity(DynamicJsonDocument& dCommand){
+// void setSensitivity(JsonDocument& dCommand){
 //   uint8_t cmd = dCommand["app_command"];
 //   audioSpecVisual_Set.sensitivity = dCommand["sensitivity"];
 //   write_struct_to_nvs("audioSpecSet", &audioSpecVisual_Set, sizeof(AudioSpectVisual_Set_t));        

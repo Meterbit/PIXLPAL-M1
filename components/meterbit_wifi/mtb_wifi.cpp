@@ -70,7 +70,7 @@ void handle_wifi_disconnected(void* arg, esp_event_base_t event_base, int32_t ev
 }
 
 //****************************************************************************************************
-void wifi_Initialize() {
+void mtb_Wifi_Init() {
     WiFi.mode(WIFI_MODE_STA);
     WiFi.setAutoReconnect(true); // Enable auto-reconnect
     // Registering handlers for specific WiFi events

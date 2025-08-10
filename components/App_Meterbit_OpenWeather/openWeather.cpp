@@ -22,7 +22,7 @@ void openWeather_App_Task(void *);
 void changeOpenWeatherLocation(button_event_t button_Data);
 
 // bluetooth functions
-void setOpenWeatherLocation(DynamicJsonDocument&);
+void setOpenWeatherLocation(JsonDocument&);
 
 EXT_RAM_BSS_ATTR Applications_StatusBar *openWeather_App = new Applications_StatusBar(openWeather_App_Task, &openWeather_Task_H, "Open Weather", 10240);
 
@@ -76,9 +76,9 @@ void changeOpenWeatherLocation(button_event_t button_Data){
 			}
 }
 
-void setOpenWeatherLocation(DynamicJsonDocument& dCommand){
+void setOpenWeatherLocation(JsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     String location = dCommand["location"];
     write_struct_to_nvs("openWeather", &currentOpenWeatherData, sizeof(OpenWeatherData_t));
-    ble_Application_Command_Respond_Success(openWeatherAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(openWeatherAppRoute, cmdNumber, pdPASS);
 }

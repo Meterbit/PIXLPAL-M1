@@ -19,9 +19,9 @@
 #include "mtb_wifi.h"
 #include "mtb_ble.h"
 
-void connect_To_Network(DynamicJsonDocument&);
+void connect_To_Network(JsonDocument&);
 
-void wifiSettings(DynamicJsonDocument& dCommand){
+void wifiSettings(JsonDocument& dCommand){
     DeserializationError passed;
     uint16_t dCmd_num = 0;
 
@@ -49,12 +49,12 @@ else if(strlen(networkName) > 0){
   strcat(sta_Contd, "\",\"ipAddress\":\"");
   strcat(sta_Contd, assigned_IP);
   strcat(sta_Contd, "\"}");
-  bleSettingsComSend(wifiSettingsRoute, String(sta_Contd));
+  bleSettingsComSend(mtb_Wifi_Settings_Route, String(sta_Contd));
 }
 }
 
 //**03*********************************************************************************************************************
-void connect_To_Network(DynamicJsonDocument& dCommand){
+void connect_To_Network(JsonDocument& dCommand){
 unsigned long startTime = millis();
 unsigned long timeout = 10000; // 10 seconds timeout
 char sta_Contd[150] = "{\"pxp_command\": 1, \"connected\": 1}";
@@ -65,5 +65,5 @@ strcpy(last_Successful_Wifi.ssid, ssid.c_str());
 strcpy(last_Successful_Wifi.pass, password.c_str());
 WiFi.begin(ssid, password);
 while ((millis() - startTime) < timeout) delay(500);
-if(WiFi.status() != WL_CONNECTED) bleSettingsComSend(wifiSettingsRoute, sta_Nt_Contd);
+if(WiFi.status() != WL_CONNECTED) bleSettingsComSend(mtb_Wifi_Settings_Route, sta_Nt_Contd);
 }

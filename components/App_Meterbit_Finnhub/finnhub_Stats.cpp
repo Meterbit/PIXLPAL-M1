@@ -34,10 +34,10 @@ void readStockSymbols(const char *filename, String stockSymbols[], int &count, c
 void buttonChangeDisplayStock(button_event_t button_Data);
 void stockChange_TimerCallback(TimerHandle_t);
 
-void showParticularStock(DynamicJsonDocument&);
-void add_RemoveStockSymbol(DynamicJsonDocument&);
-void setStockChangeInterval(DynamicJsonDocument&);
-void saveAPI_key(DynamicJsonDocument&);
+void showParticularStock(JsonDocument&);
+void add_RemoveStockSymbol(JsonDocument&);
+void setStockChangeInterval(JsonDocument&);
+void saveAPI_key(JsonDocument&);
 
 EXT_RAM_BSS_ATTR Applications_StatusBar *finnhub_Stats_App = new Applications_StatusBar(finhubStats_App_Task, &finhubStats_Task_H, "Finnhub Stats", 10240);
 
@@ -281,16 +281,16 @@ void stockChange_TimerCallback(TimerHandle_t stockPrompt){
     xSemaphoreGive(changeDispStock_Sem);
 }
 
-void showParticularStock(DynamicJsonDocument& dCommand){
+void showParticularStock(JsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     const char *stockSymbol = dCommand["stkSymbol"];
     currentStocks.stockID = String(stockSymbol);
     write_struct_to_nvs("stocksStat", &currentStocks, sizeof(Stocks_Stat_t));
     xSemaphoreGive(changeDispStock_Sem);
-    ble_Application_Command_Respond_Success(finnhubStatsAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(finnhubStatsAppRoute, cmdNumber, pdPASS);
 }
 
-void add_RemoveStockSymbol(DynamicJsonDocument& dCommand){
+void add_RemoveStockSymbol(JsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     String stockSymbol = dCommand["stkList"];
     // if(actionCmd) addStockSymbol(stockSymbolsFilePath, String(stockSymbol));
@@ -320,10 +320,10 @@ void add_RemoveStockSymbol(DynamicJsonDocument& dCommand){
 
     
     // xSemaphoreGive(changeDispStock_Sem);
-    ble_Application_Command_Respond_Success(finnhubStatsAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(finnhubStatsAppRoute, cmdNumber, pdPASS);
 }
 
-void setStockChangeInterval(DynamicJsonDocument& dCommand){
+void setStockChangeInterval(JsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     uint8_t setCycle = dCommand["cycleStocks"];
     int16_t dInterval = dCommand["dInterval"];
@@ -341,7 +341,7 @@ void setStockChangeInterval(DynamicJsonDocument& dCommand){
         xTimerStart(stockChangeTimer_H, 0);
     }
     write_struct_to_nvs("stocksStat", &currentStocks, sizeof(Stocks_Stat_t));
-    ble_Application_Command_Respond_Success(finnhubStatsAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(finnhubStatsAppRoute, cmdNumber, pdPASS);
 }
 
 // String convertArrayToJson(String arr[], size_t length) {
@@ -358,17 +358,17 @@ void setStockChangeInterval(DynamicJsonDocument& dCommand){
 //     return json;
 // }
 
-// void loadSavedStocks(DynamicJsonDocument& dCommand){
+// void loadSavedStocks(JsonDocument& dCommand){
 //     uint8_t cmdNumber = dCommand["app_command"];
 //     String savedSymbols = "{\"pxp_command\":";
 //     savedSymbols += String(cmdNumber) + ",\"savedSymbols\":" + convertArrayToJson(stockSymbols, stockCount) + "}";
 //     bleApplicationComSend(savedSymbols);
 // }
 
-void saveAPI_key(DynamicJsonDocument& dCommand){
+void saveAPI_key(JsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     String userAPI_Key = dCommand["api_key"];
     strcpy(currentStocks.apiToken, userAPI_Key.c_str());
     write_struct_to_nvs("stocksStat", &currentStocks, sizeof(Stocks_Stat_t));
-    ble_Application_Command_Respond_Success(finnhubStatsAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(finnhubStatsAppRoute, cmdNumber, pdPASS);
 }

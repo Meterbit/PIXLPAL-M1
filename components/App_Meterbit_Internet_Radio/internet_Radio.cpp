@@ -34,10 +34,10 @@ bool radioPlayReady = true;
 static const char favouriteRadioStationsFilePath[] = "/radioStations/favSta.csv";
 //String posterCurrentStation = "/radioStations/currentPoster.png";
 //************************************************************* */
-void selectRadioStations(DynamicJsonDocument&); // This function is called from the App to select a radio station.
-void playRadioStationLink(DynamicJsonDocument&);
-void volumeControl(DynamicJsonDocument&);
-void updateSavedStations(DynamicJsonDocument&);
+void selectRadioStations(JsonDocument&); // This function is called from the App to select a radio station.
+void playRadioStationLink(JsonDocument&);
+void volumeControl(JsonDocument&);
+void updateSavedStations(JsonDocument&);
 //*********************************************************** */
 //void station_Poster_Download_Task(void *);
 void intRadioButtonControl(button_event_t);
@@ -166,13 +166,13 @@ void intRadioButtonControl(button_event_t button_Data){
 
 
 //***************************************************************************************************
-void selectRadioStations(DynamicJsonDocument& dCommand){
+void selectRadioStations(JsonDocument& dCommand){
   uint8_t cmd = dCommand["app_command"];
-  ble_Application_Command_Respond_Success(internetRadioAppRoute, cmd, pdPASS);
+  mtb_Ble_App_Cmd_Respond_Success(internetRadioAppRoute, cmd, pdPASS);
 }
 
 //************************************************************************************************
-void playRadioStationLink(DynamicJsonDocument& dCommand){
+void playRadioStationLink(JsonDocument& dCommand){
   uint8_t cmd = dCommand["app_command"];
   const char* streamLink = dCommand["stationLink"];
   const char* stationName = dCommand["stationName"];
@@ -183,15 +183,15 @@ void playRadioStationLink(DynamicJsonDocument& dCommand){
   printf("Playing Station: %s\n", currentRadioStation.stationName);
   printf("Stream Link: %s\n", currentRadioStation.streamLink);
 
-  ble_Application_Command_Respond_Success(internetRadioAppRoute, cmd, pdPASS);
+  mtb_Ble_App_Cmd_Respond_Success(internetRadioAppRoute, cmd, pdPASS);
   write_struct_to_nvs("currentRadSta", &currentRadioStation, sizeof(RadioStation_t));
   radioPlayReady = false;
 }
 
 // Function to write a RadioStation's info to a CSV file
-void updateSavedStations(DynamicJsonDocument& dCommand){                                 // RECEIVES THE STATION DETAILS AS A JSON.
+void updateSavedStations(JsonDocument& dCommand){                                 // RECEIVES THE STATION DETAILS AS A JSON.
   uint8_t cmd = dCommand["app_command"];
-  ble_Application_Command_Respond_Success(internetRadioAppRoute, cmd, pdPASS);
+  mtb_Ble_App_Cmd_Respond_Success(internetRadioAppRoute, cmd, pdPASS);
   // uint8_t stationNumber = dCommand["serialNumber"];
   // String stationName = dCommand["stationName"];
   // String streamLink = dCommand["streamLink"];
@@ -226,14 +226,14 @@ void updateSavedStations(DynamicJsonDocument& dCommand){                        
 }
 
 //************************************************************************************************
-void volumeControl(DynamicJsonDocument& dCommand){
+void volumeControl(JsonDocument& dCommand){
   uint8_t cmd = dCommand["app_command"];
   uint8_t volumeLevel = dCommand["volume"];
 
   audio->setVolume(volumeLevel);
   write_struct_to_nvs("dev_Volume", &volumeLevel, sizeof(uint8_t));
 
-  ble_Application_Command_Respond_Success(internetRadioAppRoute, cmd, pdPASS);
+  mtb_Ble_App_Cmd_Respond_Success(internetRadioAppRoute, cmd, pdPASS);
 }
 
 // //************************************************************************************************
@@ -253,7 +253,7 @@ void volumeControl(DynamicJsonDocument& dCommand){
 //     int foundSerialNumber = line.substring(0, line.indexOf(',')).toInt();
 //     if (foundSerialNumber == serialNumber) {
 //       // If the serial number matches, parse the line and create a JSON object
-//       DynamicJsonDocument doc(1024);
+//       JsonDocument doc(1024);
 //       // Splitting the CSV line into parts
 //       int startIndex = 0, endIndex = 0;
 //       endIndex = line.indexOf(',', startIndex);
@@ -317,7 +317,7 @@ void volumeControl(DynamicJsonDocument& dCommand){
 
 
 // // Function to remove a Radio Station entry by its serial number
-// void removeFromFavourites(DynamicJsonDocument& dCommand){               //RECEIVES THE STATION SERIAL NUMBER.
+// void removeFromFavourites(JsonDocument& dCommand){               //RECEIVES THE STATION SERIAL NUMBER.
 
 //   int serialNumber = dCommand["serialNumber"];
 
@@ -361,7 +361,7 @@ void volumeControl(DynamicJsonDocument& dCommand){
 
 //************************************************************************************************
 
-// void playRadioStationNew(DynamicJsonDocument& dCommand){ // Play by receiving station name from App.
+// void playRadioStationNew(JsonDocument& dCommand){ // Play by receiving station name from App.
 //   RadioStation_t radioStation;
 //   radioStation.stationName = dCommand["stationName"].as<String>();
 

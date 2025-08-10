@@ -20,7 +20,7 @@ void musicPlayer_App_Task(void *);
 void nextTrackButton(button_event_t button_Data);
 
 // bluetooth functions
-void selectNext_PreviousTrack(DynamicJsonDocument&);
+void selectNext_PreviousTrack(JsonDocument&);
 
 EXT_RAM_BSS_ATTR Applications_StatusBar *musicPlayer_App = new Applications_StatusBar(musicPlayer_App_Task, &musicPlayer_Task_H, "musicPlayer", 10240);
 
@@ -76,10 +76,10 @@ void nextTrackButton(button_event_t button_Data){
 			}
 }
 
-void selectNext_PreviousTrack(DynamicJsonDocument& dCommand){
+void selectNext_PreviousTrack(JsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
 //    String location = dCommand["duration"];
 
     write_struct_to_nvs("musicPlayer", &musicPlayerData, sizeof(MusicPlayer_Data_t));
-    ble_Application_Command_Respond_Success(musicPlayerAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(musicPlayerAppRoute, cmdNumber, pdPASS);
 }

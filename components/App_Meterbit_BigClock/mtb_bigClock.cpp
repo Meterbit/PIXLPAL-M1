@@ -7,8 +7,8 @@
 #include "mtb_engine.h"
 #include "mtb_bigClock.h"
 
-void bigClock_Color_Change(DynamicJsonDocument&);
-void bigClockGet_NTP_Local_Time(DynamicJsonDocument&);
+void bigClock_Color_Change(JsonDocument&);
+void bigClockGet_NTP_Local_Time(JsonDocument&);
 
 EXT_RAM_BSS_ATTR TaskHandle_t bigClockCalendar_Task_H = NULL;
 
@@ -231,14 +231,14 @@ if(pre_Day != now->tm_mday  || thisApp->elementRefresh){
 }
 
 //**13*********************************************************************************************************************
-void showbigClockCalendar(DynamicJsonDocument& dCommand){ //use the radio button selection widget
+void showbigClockCalendar(JsonDocument& dCommand){ //use the radio button selection widget
   uint8_t cmd = dCommand["app_command"];
   //start_This_Service(sntp_Time_Sv);
-  ble_Application_Command_Respond_Success(bigClockCalendarAppRoute, cmd, pdPASS);
+  mtb_Ble_App_Cmd_Respond_Success(bigClockCalendarAppRoute, cmd, pdPASS);
 }
 
 //**11*********************************************************************************************************************
-void bigClock_Color_Change(DynamicJsonDocument& dCommand){
+void bigClock_Color_Change(JsonDocument& dCommand){
   uint8_t cmd = dCommand["app_command"];
   const char *color = NULL;
   const char *name = dCommand["name"];
@@ -276,13 +276,13 @@ void bigClock_Color_Change(DynamicJsonDocument& dCommand){
 
     write_struct_to_nvs("Clock Cols", &clk_Cols, sizeof(Clock_Colors));
     xQueueSend(clock_Update_Q, &clk_Cols, 0);
-    ble_Application_Command_Respond_Success(bigClockCalendarAppRoute, cmd, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(bigClockCalendarAppRoute, cmd, pdPASS);
 }
 //**12*********************************************************************************************************************
 
 //**13*********************************************************************************************************************
-void bigClockGet_NTP_Local_Time(DynamicJsonDocument& dCommand){
+void bigClockGet_NTP_Local_Time(JsonDocument& dCommand){
   uint8_t cmd = dCommand["app_command"];
   start_This_Service(sntp_Time_Sv);
-  ble_Application_Command_Respond_Success(bigClockCalendarAppRoute, cmd, pdPASS);
+  mtb_Ble_App_Cmd_Respond_Success(bigClockCalendarAppRoute, cmd, pdPASS);
 }

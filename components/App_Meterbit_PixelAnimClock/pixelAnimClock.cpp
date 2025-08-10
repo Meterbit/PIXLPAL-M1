@@ -33,12 +33,12 @@ void printPixAnimClkThm(uint16_t*);
 void pixelAnimChangeButton(button_event_t);
 void pixAnimClockGif_Task(void *d_Arguments);
 
-void setClockTitleAndColor(DynamicJsonDocument&);
-void setPixAnimTheme(DynamicJsonDocument&);
-void setPixAnimClkColors(DynamicJsonDocument&);
-void selectDisplayAnimation(DynamicJsonDocument&);
-void setPixAnimInterval(DynamicJsonDocument&);
-void requestNTP_Time(DynamicJsonDocument&);
+void setClockTitleAndColor(JsonDocument&);
+void setPixAnimTheme(JsonDocument&);
+void setPixAnimClkColors(JsonDocument&);
+void selectDisplayAnimation(JsonDocument&);
+void setPixAnimInterval(JsonDocument&);
+void requestNTP_Time(JsonDocument&);
 
 CentreText_t* headerText;
 ScrollText_t* headerTextScroll;
@@ -284,7 +284,7 @@ if(pre_Day != now->tm_mday  || thisApp->elementRefresh){
 }
 
 //**0*********************************************************************************************************************
-void setClockTitleAndColor(DynamicJsonDocument& dCommand){
+void setClockTitleAndColor(JsonDocument& dCommand){
   String success = "{\"pxp_command\":0, \"response\": 1}";
   const char *color = NULL;
   uint16_t titleColor = 0;
@@ -309,7 +309,7 @@ void setClockTitleAndColor(DynamicJsonDocument& dCommand){
   bleApplicationComSend(pixelAnimClockAppRoute, success);
 }
 //**1*********************************************************************************************************************
-void setPixAnimTheme(DynamicJsonDocument& dCommand){
+void setPixAnimTheme(JsonDocument& dCommand){
     String success = "{\"pxp_command\": 1, \"response\": 1}";
     const char* color = NULL;
     const char* name = dCommand["name"];
@@ -351,7 +351,7 @@ void setPixAnimTheme(DynamicJsonDocument& dCommand){
     bleApplicationComSend(pixelAnimClockAppRoute, success);
 }
 //**2*********************************************************************************************************************
-void setPixAnimClkColors(DynamicJsonDocument& dCommand){
+void setPixAnimClkColors(JsonDocument& dCommand){
   uint8_t cmdNumber = dCommand["app_command"];
   const char *color = NULL;
   const char *name = dCommand["name"];
@@ -389,10 +389,10 @@ void setPixAnimClkColors(DynamicJsonDocument& dCommand){
 
     write_struct_to_nvs("Clock Cols", &clk_Cols, sizeof(Clock_Colors));
     xQueueSend(clock_Update_Q, &clk_Cols, 0);
-    ble_Application_Command_Respond_Success(pixelAnimClockAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(pixelAnimClockAppRoute, cmdNumber, pdPASS);
 }
 //**3********************************************************************************************************************************************************
-// void selectDisplayAnimation(DynamicJsonDocument& dCommand){
+// void selectDisplayAnimation(JsonDocument& dCommand){
 //   char success[] = "{\"pxp_command\": 3, \"response\": 1}";
 //   uint8_t direction = dCommand["direction"];
 //   if(direction) printf("Right Hand Direction Selected");
@@ -400,7 +400,7 @@ void setPixAnimClkColors(DynamicJsonDocument& dCommand){
 //   mqttServer.publish(apps_mqtt_data.topic_Response, success);
 // }
 // //**4********************************************************************************************************************************************************
-// void setPixAnimInterval(DynamicJsonDocument& dCommand){
+// void setPixAnimInterval(JsonDocument& dCommand){
 //   char success[] = "{\"pxp_command\": 4, \"response\": 1}";
 //   uint animIntervalHolder = dCommand["value"];
 //   read_struct_from_nvs("pixAnimClk", &savedPixAnimClkSet, sizeof(PixAnimClkSettings_t));
@@ -409,10 +409,10 @@ void setPixAnimClkColors(DynamicJsonDocument& dCommand){
 //   mqttServer.publish(apps_mqtt_data.topic_Response, success);
 // }
 //**5*********************************************************************************************************************
-void requestNTP_Time(DynamicJsonDocument& dCommand){
+void requestNTP_Time(JsonDocument& dCommand){
   uint8_t cmdNumber = dCommand["app_command"];
   start_This_Service(sntp_Time_Sv);
-  ble_Application_Command_Respond_Success(pixelAnimClockAppRoute, cmdNumber, pdPASS);
+  mtb_Ble_App_Cmd_Respond_Success(pixelAnimClockAppRoute, cmdNumber, pdPASS);
 }
 
 void pixelAnimChangeButton(button_event_t button_Data){
@@ -426,7 +426,7 @@ void pixelAnimChangeButton(button_event_t button_Data){
               break;
 
             case BUTTON_PRESSED_LONG:
-              launchThisApp(classicClock_App);
+              mtb_Launch_This_App(classicClock_App);
               break;
 
             case BUTTON_CLICKED:

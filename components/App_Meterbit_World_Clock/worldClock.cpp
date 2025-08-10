@@ -27,7 +27,7 @@ void worldClock_App_Task(void *);
 void selectAM_PMButton(button_event_t button_Data);
 
 // bluetooth functions
-void setWorldClockCities(DynamicJsonDocument&);
+void setWorldClockCities(JsonDocument&);
 
 EXT_RAM_BSS_ATTR Applications_StatusBar *worldClock_App = new Applications_StatusBar(worldClock_App_Task, &worldClock_Task_H, "world Clock", 10240);
 
@@ -81,10 +81,10 @@ void selectAM_PMButton(button_event_t button_Data){
 			}
 }
 
-void setWorldClockCities(DynamicJsonDocument& dCommand){
+void setWorldClockCities(JsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     String location = dCommand["duration"];
 
     write_struct_to_nvs("worldClock", &worldClockCities, sizeof(WorldClock_Data_t));
-    ble_Application_Command_Respond_Success(worldClockAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(worldClockAppRoute, cmdNumber, pdPASS);
 }

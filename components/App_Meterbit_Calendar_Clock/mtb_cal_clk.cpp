@@ -9,8 +9,8 @@
 #include "mtb_cal_clk.h"
 #include "mtb_text_scroll.h"
 
-void clock_Color_Change(DynamicJsonDocument&);
-void get_NTP_Local_Time(DynamicJsonDocument&);
+void clock_Color_Change(JsonDocument&);
+void get_NTP_Local_Time(JsonDocument&);
 
 EXT_RAM_BSS_ATTR TaskHandle_t classicClock_Task_H = NULL;
 
@@ -19,7 +19,7 @@ EXT_RAM_BSS_ATTR Applications_StatusBar *classicClock_App = new Applications_Sta
 void  classicClock_App_Task(void* dApplication){
   Applications *thisApp = (Applications *)dApplication;
   // if(Applications::bleAdvertisingStatus == false){
-  // initBLE_Communication();
+  // mtb_Ble_Comm_Init();
   // statusBarNotif.scroll_This_Text("BLUETOOTH LINK RESTORED", GREEN_YELLOW);
   // } 
   thisApp->app_EncoderFn_ptr = brightnessControl;
@@ -237,7 +237,7 @@ if(pre_Day != now->tm_mday  || thisApp->elementRefresh){
 }
 
 //**11*********************************************************************************************************************
-void clock_Color_Change(DynamicJsonDocument& dCommand){
+void clock_Color_Change(JsonDocument& dCommand){
   uint8_t cmd = dCommand["app_command"];
   const char *color = NULL;
   const char *name = dCommand["name"];
@@ -275,13 +275,13 @@ void clock_Color_Change(DynamicJsonDocument& dCommand){
 
     write_struct_to_nvs("Clock Cols", &clk_Cols, sizeof(Clock_Colors));
     xQueueSend(clock_Update_Q, &clk_Cols, 0);
-    ble_Application_Command_Respond_Success(classicClockAppRoute, cmd, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(classicClockAppRoute, cmd, pdPASS);
 }
 //**12*********************************************************************************************************************
 
 //**13*********************************************************************************************************************
-void get_NTP_Local_Time(DynamicJsonDocument& dCommand){
+void get_NTP_Local_Time(JsonDocument& dCommand){
   uint8_t cmd = dCommand["app_command"];
   start_This_Service(sntp_Time_Sv);
-  ble_Application_Command_Respond_Success(classicClockAppRoute, cmd, pdPASS);
+  mtb_Ble_App_Cmd_Respond_Success(classicClockAppRoute, cmd, pdPASS);
 }

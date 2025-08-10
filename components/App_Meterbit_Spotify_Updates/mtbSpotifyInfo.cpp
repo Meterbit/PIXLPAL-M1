@@ -37,8 +37,8 @@ void spotify_App_Task(void *);
 void performScreenUpdate_Task( void * pvParameters );
 
 //*************************************************************************************************** */
-void link_Spotify(DynamicJsonDocument&);
-void get_Spotify_Refresh_Token(DynamicJsonDocument&);
+void link_Spotify(JsonDocument&);
+void get_Spotify_Refresh_Token(JsonDocument&);
 
 //Services *spotifyScreenUpdate_Sv = new Services(performScreenUpdate_Task, &screenUpdates_Task_H, "screenUpdates", 10240, pdTRUE);
 Applications_StatusBar *spotify_App = new Applications_StatusBar(spotify_App_Task, &spotify_Task_H, "spotify App", 10240); // Review down this stack size later.
@@ -131,18 +131,18 @@ void performScreenUpdate_Task( void * d_Service ){
 }
 
 //***************************************************************************************************
-void link_Spotify(DynamicJsonDocument& dCommand){
+void link_Spotify(JsonDocument& dCommand){
   uint8_t cmd = dCommand["app_command"];
-  ble_Application_Command_Respond_Success(spotifyAppRoute, cmd, pdPASS);
+  mtb_Ble_App_Cmd_Respond_Success(spotifyAppRoute, cmd, pdPASS);
 }
 
 // This function is called when the Spotify refresh token is received
-void get_Spotify_Refresh_Token(DynamicJsonDocument& dCommand){
+void get_Spotify_Refresh_Token(JsonDocument& dCommand){
 uint8_t cmd = dCommand["app_command"];
 const char *refreshToken = dCommand["refreshToken"];
 strcpy(userSpotify.refreshToken, refreshToken);
 write_struct_to_nvs("spotifyData", &userSpotify, sizeof(Spotify_Data_t));
 statusBarNotif.scroll_This_Text("SPOTIFY LINK UPDATED. YOU MAY CLOSE THE BROWSER", GREEN);
 //printf("Refresh Token: %s\n", userSpotify.refreshToken);
-ble_Application_Command_Respond_Success(spotifyAppRoute, cmd, pdPASS);
+mtb_Ble_App_Cmd_Respond_Success(spotifyAppRoute, cmd, pdPASS);
 }

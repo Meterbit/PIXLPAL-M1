@@ -4,7 +4,7 @@
 #include "PicoMQTT.h"
 #include "ArduinoJson.h"
 
-extern DynamicJsonDocument dCommand;
+extern JsonDocument dCommand;
 
 struct mqtt_Data_Trans_t {
 char topic_Listen[200];      // MQTT Topic coming from Client or sender or App

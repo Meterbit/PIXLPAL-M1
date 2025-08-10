@@ -25,9 +25,9 @@
 
 static const char TAG[] = "MTB-FLUTTERBLE-GHOTA";
 
-void attemptSoftwareUpdate(DynamicJsonDocument&);
+void attemptSoftwareUpdate(JsonDocument&);
 
-void softwareUpdate(DynamicJsonDocument& dCommand) {
+void softwareUpdate(JsonDocument& dCommand) {
     DeserializationError passed;
     uint16_t dCmd_num = 0;
 
@@ -37,7 +37,7 @@ void softwareUpdate(DynamicJsonDocument& dCommand) {
         case 1:{
             const esp_app_desc_t *app_desc = esp_app_get_description();
 
-            current_softwareVersion(app_desc->version, app_desc->date, WiFi.macAddress().c_str(), NimBLEDevice::getAddress().toString().c_str());
+            mtb_Current_Software_Version(app_desc->version, app_desc->date, WiFi.macAddress().c_str(), NimBLEDevice::getAddress().toString().c_str());
             break;
         }
         case 2:
@@ -51,21 +51,21 @@ void softwareUpdate(DynamicJsonDocument& dCommand) {
 }
 
 //**01*********************************************************************************************************************
-void current_softwareVersion(const char* curVer, const char* verDate, const char* wifiMac, const char* bleMac) {
+void mtb_Current_Software_Version(const char* curVer, const char* verDate, const char* wifiMac, const char* bleMac) {
 String verHeader = "{\"pxp_command\": 1, \"curVersion\": \"";
 String currentVersion = verHeader + String(curVer) + "\", \"curDate\": \"" + String(verDate) + "\", \"wifiMac\": \"" + String(wifiMac) + "\", \"bleMac\": \"" + String(bleMac) + "\"}";
 //printf("Current Software Version: %s\n", currentVersion.c_str());
-bleSettingsComSend(softwareUpdateRoute, currentVersion);
+bleSettingsComSend(mtb_Software_Update_Route, currentVersion);
 }
 
 // //**02*********************************************************************************************************************
-void attemptSoftwareUpdate(DynamicJsonDocument& dCommand){ 
+void attemptSoftwareUpdate(JsonDocument& dCommand){ 
 
 String failure = "{\"pxp_command\": 2, \"response\": 0}";
 
 if(Applications::internetConnectStatus == pdTRUE){
-  launchThisApp(otaUpdateApplication_App, IGNORE_PREVIOUS_APP);
+  mtb_Launch_This_App(otaUpdateApplication_App, IGNORE_PREVIOUS_APP);
 } else{
-  bleSettingsComSend(softwareUpdateRoute, failure);
+  bleSettingsComSend(mtb_Software_Update_Route, failure);
 }
 }

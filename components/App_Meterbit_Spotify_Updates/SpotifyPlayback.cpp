@@ -33,7 +33,7 @@ void getNowPlaying() {
     String body = http.getString();
     printf("Raw response:\n%s\n", body.c_str());
 
-    DynamicJsonDocument doc(8192);  // allow large metadata
+    JsonDocument doc;  // allow large metadata
     DeserializationError err = deserializeJson(doc, body);
 
     if (err) {

@@ -17,7 +17,7 @@ void appleNotifications_App_Task(void *);
 // supporting functions
 
 // bluetooth functions
-void cancelAppLaunch(DynamicJsonDocument&);
+void cancelAppLaunch(JsonDocument&);
 
 EXT_RAM_BSS_ATTR Applications_StatusBar *apple_Notifications_App = new Applications_StatusBar(appleNotifications_App_Task, &appleNotification_Task_H, "apple Notif", 10240);
 
@@ -41,10 +41,10 @@ while (THIS_APP_IS_ACTIVE == pdTRUE) {
 }
 
 
-void cancelAppLaunch(DynamicJsonDocument& dCommand){
+void cancelAppLaunch(JsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     String location = dCommand["duration"];
 
     write_struct_to_nvs("appleNotif", &appleNotificationInfo, sizeof(AppleNotification_Data_t));
-    ble_Application_Command_Respond_Success(studioLightAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(studioLightAppRoute, cmdNumber, pdPASS);
 }

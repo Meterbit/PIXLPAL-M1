@@ -57,11 +57,11 @@ LiveFootballBackgroundFn_ptr liveFootballBackgroundPtr;
 void changeFootballTeams(button_event_t button_Data);
 
 // bluetooth functions
-void selectFBL_Leagues(DynamicJsonDocument&);
-void setDisplayFBL_League(DynamicJsonDocument &);
-void saveFBL_Leagues(DynamicJsonDocument &);
-void showFBL_Fix_Stnd(DynamicJsonDocument &);
-void setFBL_Token(DynamicJsonDocument &);
+void selectFBL_Leagues(JsonDocument&);
+void setDisplayFBL_League(JsonDocument &);
+void saveFBL_Leagues(JsonDocument &);
+void showFBL_Fix_Stnd(JsonDocument &);
+void setFBL_Token(JsonDocument &);
 
 
 CentreText_t* scoreLineLive;
@@ -650,13 +650,13 @@ void drawStandingsBackground(void){
 //***************************************************************************************************
 
 //******** BLUETOOTH COMMAND 0 **********************/
-void selectFBL_Leagues(DynamicJsonDocument& dCommand){
+void selectFBL_Leagues(JsonDocument& dCommand){
   uint8_t cmd = dCommand["app_command"];
-  ble_Application_Command_Respond_Success(liveFootbalAppRoute, cmd, pdPASS);
+  mtb_Ble_App_Cmd_Respond_Success(liveFootbalAppRoute, cmd, pdPASS);
 }
 
 //******** BLUETOOTH COMMAND 1 **********************/
-void setDisplayFBL_League(DynamicJsonDocument &dCommand){
+void setDisplayFBL_League(JsonDocument &dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     String leagueName = dCommand["leagueName"];
     uint16_t leagueId = dCommand["leagueID"];
@@ -664,16 +664,16 @@ void setDisplayFBL_League(DynamicJsonDocument &dCommand){
     liveFootballData.leagueID = leagueId;
     xSemaphoreGive(changeDispMatch_Sem);
     write_struct_to_nvs("apiFutBall", &liveFootballData, sizeof(LiveFootball_Data_t));
-    ble_Application_Command_Respond_Success(liveFootbalAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(liveFootbalAppRoute, cmdNumber, pdPASS);
 }
 //******** BLUETOOTH COMMAND 2 **********************/
-void saveFBL_Leagues(DynamicJsonDocument &dCommand){
+void saveFBL_Leagues(JsonDocument &dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
-    ble_Application_Command_Respond_Success(liveFootbalAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(liveFootbalAppRoute, cmdNumber, pdPASS);
 }
 
 //******** BLUETOOTH COMMAND 3 **********************/
-void showFBL_Fix_Stnd(DynamicJsonDocument &dCommand){
+void showFBL_Fix_Stnd(JsonDocument &dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     uint8_t showFix_Stnd = dCommand["value"];
 
@@ -690,10 +690,10 @@ void showFBL_Fix_Stnd(DynamicJsonDocument &dCommand){
     }
     xSemaphoreGive(changeDispMatch_Sem); 
     write_struct_to_nvs("apiFutBall", &liveFootballData, sizeof(LiveFootball_Data_t));
-    ble_Application_Command_Respond_Success(liveFootbalAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(liveFootbalAppRoute, cmdNumber, pdPASS);
 }
 //******** BLUETOOTH COMMAND 4 **********************/
-void setFBL_Token(DynamicJsonDocument &dCommand){
+void setFBL_Token(JsonDocument &dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     String liveFootballToken = dCommand["api_key"];
     //strcpy(liveFootballData.userAPI_Token, liveFootballToken.c_str());
@@ -702,5 +702,5 @@ void setFBL_Token(DynamicJsonDocument &dCommand){
 
     xSemaphoreGive(changeDispMatch_Sem); 
     write_struct_to_nvs("apiFutBall", &liveFootballData, sizeof(LiveFootball_Data_t));
-    ble_Application_Command_Respond_Success(liveFootbalAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(liveFootbalAppRoute, cmdNumber, pdPASS);
 }

@@ -74,11 +74,11 @@ void outlookCalButtonControl(button_event_t){}
   //void performScreenUpdate_Task( void * pvParameters );
 
   //*************************************************************************************************** */
-  void link_OutlookCal(DynamicJsonDocument&);
-  void get_OutlookCal_Refresh_Token(DynamicJsonDocument&);
-  void show_OutlookCal_Events(DynamicJsonDocument& dCommand);
-  void show_OutlookCal_Tasks(DynamicJsonDocument& dCommand);
-  void show_OutlookCal_Holidays(DynamicJsonDocument& dCommand);
+  void link_OutlookCal(JsonDocument&);
+  void get_OutlookCal_Refresh_Token(JsonDocument&);
+  void show_OutlookCal_Events(JsonDocument& dCommand);
+  void show_OutlookCal_Tasks(JsonDocument& dCommand);
+  void show_OutlookCal_Holidays(JsonDocument& dCommand);
 
   Applications_StatusBar *outlook_Calendar_App = new Applications_StatusBar(outlookCal_App_Task, &outlookCal_Task_H, "outlookCal App", 10240); // Review down this stack size later.
 
@@ -157,7 +157,7 @@ void fetchEventsForOutlookCalendar(const String& accessToken, const char* calend
     return;
   }
 
-  DynamicJsonDocument doc(8192);
+  JsonDocument doc;
   deserializeJson(doc, http.getString());
   JsonArray events = doc["items"].as<JsonArray>();
 
@@ -202,7 +202,7 @@ void fetchEventsForOutlookCalendar(const String& accessToken, const char* calend
 
 void fetchAllOutlookCalendarEvents(const String& accessToken) {
   HTTPClient http;
-  DynamicJsonDocument doc(8192);
+  JsonDocument doc;
 
   // Step 1: Fetch calendar list
   http.begin("https://www.apis.com/calendar/v3/users/me/calendarList");
@@ -245,7 +245,7 @@ void fetchOutlookTasks(const String& accessToken) {
 
   int code = http.GET();
   if (code == 200) {
-    DynamicJsonDocument doc(8192);
+    JsonDocument doc;
     deserializeJson(doc, http.getString());
     JsonArray items = doc["items"].as<JsonArray>();
 
@@ -304,46 +304,46 @@ void fetchOutlookTasks(const String& accessToken) {
   }
 
   //***************************************************************************************************
-  void link_OutlookCal(DynamicJsonDocument& dCommand){
+  void link_OutlookCal(JsonDocument& dCommand){
     uint8_t cmd = dCommand["app_command"];
-    ble_Application_Command_Respond_Success(outlookCalendarAppRoute, cmd, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(outlookCalendarAppRoute, cmd, pdPASS);
   }
 
-  void get_OutlookCal_Refresh_Token(DynamicJsonDocument& dCommand){
+  void get_OutlookCal_Refresh_Token(JsonDocument& dCommand){
     uint8_t cmd = dCommand["app_command"];
     const char *refreshToken = dCommand["refreshToken"];
     strcpy(userOutlookCal.refreshToken, refreshToken);
     write_struct_to_nvs("outlookCalData", &userOutlookCal, sizeof(OutlookCal_Data_t));
     do_beep(CLICK_BEEP);
     statusBarNotif.scroll_This_Text("OUTLOOK CALENDAR LINK UPDATED. YOU MAY CLOSE THE BROWSER", GREEN_LIZARD);
-    ble_Application_Command_Respond_Success(outlookCalendarAppRoute, cmd, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(outlookCalendarAppRoute, cmd, pdPASS);
   }
 
 
 
-  void show_OutlookCal_Events(DynamicJsonDocument& dCommand){
+  void show_OutlookCal_Events(JsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     uint8_t setCycle = dCommand["showEvents"];
 
 
     write_struct_to_nvs("outlookCalData", &userOutlookCal, sizeof(OutlookCal_Data_t));
-    ble_Application_Command_Respond_Success(outlookCalendarAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(outlookCalendarAppRoute, cmdNumber, pdPASS);
   }
   
-  void show_OutlookCal_Tasks(DynamicJsonDocument& dCommand){
+  void show_OutlookCal_Tasks(JsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     uint8_t setCycle = dCommand["showTasks"];
 
 
     write_struct_to_nvs("outlookCalData", &userOutlookCal, sizeof(OutlookCal_Data_t));
-    ble_Application_Command_Respond_Success(outlookCalendarAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(outlookCalendarAppRoute, cmdNumber, pdPASS);
   }
 
-  void show_OutlookCal_Holidays(DynamicJsonDocument& dCommand){
+  void show_OutlookCal_Holidays(JsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     uint8_t setCycle = dCommand["showHoliday"];
 
 
     write_struct_to_nvs("outlookCalData", &userOutlookCal, sizeof(OutlookCal_Data_t));
-    ble_Application_Command_Respond_Success(outlookCalendarAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(outlookCalendarAppRoute, cmdNumber, pdPASS);
   }

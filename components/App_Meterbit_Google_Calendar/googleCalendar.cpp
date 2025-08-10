@@ -74,12 +74,12 @@ void googleCalButtonControl(button_event_t){}
   //void performScreenUpdate_Task( void * pvParameters );
 
   //*************************************************************************************************** */
-  void link_GoogleCal(DynamicJsonDocument&);
-  void get_GoogleCal_Refresh_Token(DynamicJsonDocument&);
-  void show_GoogleCal_Events(DynamicJsonDocument& dCommand);
-  void show_GoogleCal_Tasks(DynamicJsonDocument& dCommand);
-  void show_GoogleCal_Holidays(DynamicJsonDocument& dCommand);
-  void set_GoogleCal_ThemeColor(DynamicJsonDocument& dCommand);
+  void link_GoogleCal(JsonDocument&);
+  void get_GoogleCal_Refresh_Token(JsonDocument&);
+  void show_GoogleCal_Events(JsonDocument& dCommand);
+  void show_GoogleCal_Tasks(JsonDocument& dCommand);
+  void show_GoogleCal_Holidays(JsonDocument& dCommand);
+  void set_GoogleCal_ThemeColor(JsonDocument& dCommand);
 //*************************************************************************************************** */
 
   //Services *googleCalScreenUpdate_Sv = new Services(performScreenUpdate_Task, &screenUpdates_Task_H, "screenUpdates", 10240, pdTRUE);
@@ -146,7 +146,7 @@ void fetchEventsForCalendar(const String& accessToken, const char* calendarId) {
     return;
   }
 
-  DynamicJsonDocument doc(8192);
+  JsonDocument doc;
   deserializeJson(doc, http.getString());
   JsonArray events = doc["items"].as<JsonArray>();
 
@@ -191,7 +191,7 @@ void fetchEventsForCalendar(const String& accessToken, const char* calendarId) {
 
 void fetchAllCalendarEvents(const String& accessToken) {
   HTTPClient http;
-  DynamicJsonDocument doc(8192);
+  JsonDocument doc;
 
   // Step 1: Fetch calendar list
   http.begin("https://www.googleapis.com/calendar/v3/users/me/calendarList");
@@ -234,7 +234,7 @@ void fetchTasks(const String& accessToken) {
 
   int code = http.GET();
   if (code == 200) {
-    DynamicJsonDocument doc(8192);
+    JsonDocument doc;
     deserializeJson(doc, http.getString());
     JsonArray items = doc["items"].as<JsonArray>();
 
@@ -301,47 +301,47 @@ void fetchTasks(const String& accessToken) {
   }
 
   //***************************************************************************************************
-  void link_GoogleCal(DynamicJsonDocument& dCommand){
+  void link_GoogleCal(JsonDocument& dCommand){
     uint8_t cmd = dCommand["app_command"];
-    ble_Application_Command_Respond_Success(googleCalendarAppRoute, cmd, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(googleCalendarAppRoute, cmd, pdPASS);
   }
 
-  void get_GoogleCal_Refresh_Token(DynamicJsonDocument& dCommand){
+  void get_GoogleCal_Refresh_Token(JsonDocument& dCommand){
     uint8_t cmd = dCommand["app_command"];
     const char *refreshToken = dCommand["refreshToken"];
     strcpy(userGoogleCal.refreshToken, refreshToken);
     write_struct_to_nvs("googleCalData", &userGoogleCal, sizeof(GoogleCal_Data_t));
     do_beep(CLICK_BEEP);
     statusBarNotif.scroll_This_Text("GOOGLE CALENDAR LINK UPDATED. YOU MAY CLOSE THE BROWSER", GREEN_LIZARD);
-    ble_Application_Command_Respond_Success(googleCalendarAppRoute, cmd, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(googleCalendarAppRoute, cmd, pdPASS);
   }
 
-  void show_GoogleCal_Events(DynamicJsonDocument& dCommand){
+  void show_GoogleCal_Events(JsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     uint8_t setCycle = dCommand["showEvents"];
 
 
     write_struct_to_nvs("googleCalData", &userGoogleCal, sizeof(GoogleCal_Data_t));
-    ble_Application_Command_Respond_Success(googleCalendarAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(googleCalendarAppRoute, cmdNumber, pdPASS);
   }
-  void show_GoogleCal_Tasks(DynamicJsonDocument& dCommand){
+  void show_GoogleCal_Tasks(JsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     uint8_t setCycle = dCommand["showTasks"];
 
 
     write_struct_to_nvs("googleCalData", &userGoogleCal, sizeof(GoogleCal_Data_t));
-    ble_Application_Command_Respond_Success(googleCalendarAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(googleCalendarAppRoute, cmdNumber, pdPASS);
   }
-  void show_GoogleCal_Holidays(DynamicJsonDocument& dCommand){
+  void show_GoogleCal_Holidays(JsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     uint8_t setCycle = dCommand["showHoliday"];
 
 
     write_struct_to_nvs("googleCalData", &userGoogleCal, sizeof(GoogleCal_Data_t));
-    ble_Application_Command_Respond_Success(googleCalendarAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(googleCalendarAppRoute, cmdNumber, pdPASS);
   }
 
-  void set_GoogleCal_ThemeColor(DynamicJsonDocument& dCommand){
+  void set_GoogleCal_ThemeColor(JsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     const char *color = dCommand["themeColor"];
     color += 4;
@@ -350,5 +350,5 @@ void fetchTasks(const String& accessToken) {
     event_Task_Name->backgroundColor = userGoogleCal.themeColor;
 
     write_struct_to_nvs("googleCalData", &userGoogleCal, sizeof(GoogleCal_Data_t));
-    ble_Application_Command_Respond_Success(googleCalendarAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(googleCalendarAppRoute, cmdNumber, pdPASS);
   }

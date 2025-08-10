@@ -22,7 +22,7 @@ void googleWeatherUpdate_App_Task(void *);
 void changeGoogleWeatherLocation(button_event_t button_Data);
 
 // bluetooth functions
-void setGoogleWeatherLocation(DynamicJsonDocument&);
+void setGoogleWeatherLocation(JsonDocument&);
 
 EXT_RAM_BSS_ATTR Applications_StatusBar *googleWeather_App = new Applications_StatusBar(googleWeatherUpdate_App_Task, &googleWeather_Task_H, "GoogleWeather", 10240);
 
@@ -76,9 +76,9 @@ void changeGoogleWeatherLocation(button_event_t button_Data){
 			}
 }
 
-void setGoogleWeatherLocation(DynamicJsonDocument& dCommand){
+void setGoogleWeatherLocation(JsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     String location = dCommand["location"];
     write_struct_to_nvs("googleWeather", &currentGoogleWeatherData, sizeof(GoogleWeatherData_t));
-    ble_Application_Command_Respond_Success(googleWeatherAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(googleWeatherAppRoute, cmdNumber, pdPASS);
 }

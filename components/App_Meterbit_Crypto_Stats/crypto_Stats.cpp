@@ -35,10 +35,10 @@ void readCryptoSymbols(const char *filename, String coinSymbols[], int &count, c
 void buttonChangeDisplayCrypto(button_event_t button_Data);
 void crytoChange_TimerCallback(TimerHandle_t);
 
-void showParticularCrypto(DynamicJsonDocument&);
-void add_RemoveCryptoSymbol(DynamicJsonDocument&);
-void setCryptoChangeInterval(DynamicJsonDocument&);
-void setCrytoAPI_key(DynamicJsonDocument&);
+void showParticularCrypto(JsonDocument&);
+void add_RemoveCryptoSymbol(JsonDocument&);
+void setCryptoChangeInterval(JsonDocument&);
+void setCrytoAPI_key(JsonDocument&);
 
 EXT_RAM_BSS_ATTR Applications_StatusBar *crypto_Stats_App = new Applications_StatusBar(cryptoStats_App_Task, &cryptoStats_Task_H, "Crypto Data", 10240);
 
@@ -52,7 +52,7 @@ void cryptoStats_App_Task(void* dApplication){
   read_struct_from_nvs("cryptoCur", &currentCryptoCurrency, sizeof(Crypto_Stat_t));
   if(changeDispCrypto_Sem == NULL) changeDispCrypto_Sem = xSemaphoreCreateBinary();
   if(cryptoChangeTimer_H == NULL) cryptoChangeTimer_H = xTimerCreate("cryptoIntvTim", pdMS_TO_TICKS(currentCryptoCurrency.cryptoChangeInterval>0 ? (currentCryptoCurrency.cryptoChangeInterval * 1000) : (30 * 1000)), true, NULL, crytoChange_TimerCallback);
-  DynamicJsonDocument doc(3072);
+  JsonDocument doc;
   DeserializationError error;
 
   FixedText_t coinSymbol_tag(38, 13, Terminal6x8, YELLOW);
@@ -150,7 +150,7 @@ while (THIS_APP_IS_ACTIVE == pdTRUE) {
 
         if (httpResponseCode == 200) {
             String payload = http.getString();
-            DynamicJsonDocument doc(3000);
+            JsonDocument doc;
             DeserializationError error = deserializeJson(doc, payload);
 
             if (!error && doc.containsKey("data")) {
@@ -310,7 +310,7 @@ void crytoChange_TimerCallback(TimerHandle_t coinPrompt){
     xSemaphoreGive(changeDispCrypto_Sem);
 }
 
-void showParticularCrypto(DynamicJsonDocument& dCommand){
+void showParticularCrypto(JsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     String coinSymbol = dCommand["coinSymbol"];
     currentCryptoCurrency.coinSymbol = coinSymbol;
@@ -318,10 +318,10 @@ void showParticularCrypto(DynamicJsonDocument& dCommand){
     currentCryptoCurrency.coinID = coinIDs;
     write_struct_to_nvs("cryptoCur", &currentCryptoCurrency, sizeof(Crypto_Stat_t));
     xSemaphoreGive(changeDispCrypto_Sem);
-    ble_Application_Command_Respond_Success(cryptoStatsAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(cryptoStatsAppRoute, cmdNumber, pdPASS);
 }
 
-void add_RemoveCryptoSymbol(DynamicJsonDocument& dCommand){
+void add_RemoveCryptoSymbol(JsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     String coinSymbols = dCommand["coinSymbols"];
     String coinIDs = dCommand["coinIDs"];
@@ -370,10 +370,10 @@ void add_RemoveCryptoSymbol(DynamicJsonDocument& dCommand){
         }
     
     //xSemaphoreGive(changeDispCrypto_Sem);
-    ble_Application_Command_Respond_Success(cryptoStatsAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(cryptoStatsAppRoute, cmdNumber, pdPASS);
 }
 
-void setCryptoChangeInterval(DynamicJsonDocument& dCommand){
+void setCryptoChangeInterval(JsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     uint8_t setCycle = dCommand["cycleCoins"];
     int16_t dInterval = dCommand["dInterval"];
@@ -391,12 +391,12 @@ void setCryptoChangeInterval(DynamicJsonDocument& dCommand){
         xTimerStart(cryptoChangeTimer_H, 0);
     }
     write_struct_to_nvs("cryptoCur", &currentCryptoCurrency, sizeof(Crypto_Stat_t));
-    ble_Application_Command_Respond_Success(cryptoStatsAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(cryptoStatsAppRoute, cmdNumber, pdPASS);
 }
 
-void setCrytoAPI_key(DynamicJsonDocument& dCommand){
+void setCrytoAPI_key(JsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     strcpy(currentCryptoCurrency.apiToken, (const char*) dCommand["api_key"]);
     write_struct_to_nvs("cryptoCur", &currentCryptoCurrency, sizeof(Crypto_Stat_t));
-    ble_Application_Command_Respond_Success(cryptoStatsAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(cryptoStatsAppRoute, cmdNumber, pdPASS);
 }

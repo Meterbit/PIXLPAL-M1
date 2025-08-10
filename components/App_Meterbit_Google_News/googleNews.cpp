@@ -23,10 +23,10 @@ uint16_t headlineColors[] = { WHITE, CYAN, GREEN, YELLOW, ORANGE, MAGENTA, BLUE,
 ScrollText_t* headlineScrolls[MAX_HEADLINES] = {0};
 
 // Forward declarations of BLE command functions
-void showLatestNews(DynamicJsonDocument& dCommand);
-void setNewsUpdateInterval(DynamicJsonDocument& dCommand);
-void setNewsAPIKey(DynamicJsonDocument& dCommand);
-void setNewsLanguage(DynamicJsonDocument& dCommand);
+void showLatestNews(JsonDocument& dCommand);
+void setNewsUpdateInterval(JsonDocument& dCommand);
+void setNewsAPIKey(JsonDocument& dCommand);
+void setNewsLanguage(JsonDocument& dCommand);
 
 
 String fetchNewsHeadlines();
@@ -89,7 +89,7 @@ String fetchNewsHeadlines() {
     int httpResponseCode = http.GET();
     if (httpResponseCode > 0){
         String payload = http.getString();
-        DynamicJsonDocument doc(20480);
+        JsonDocument doc;
         DeserializationError error = deserializeJson(doc, payload);
         if (!error) {
             if (doc.containsKey("articles")) {
@@ -172,14 +172,14 @@ void buttonNewsTickerHandler(button_event_t button_Data) {
 // BLE Command Functions
 
 // Command to manually update news headlines.
-void showLatestNews(DynamicJsonDocument& dCommand) {
+void showLatestNews(JsonDocument& dCommand) {
     uint8_t cmdNumber = dCommand["app_command"];
     xSemaphoreGive(googleNewsupdateSem);
-    //ble_Application_Command_Respond_Success(cmdNumber, pdPASS);
+    //mtb_Ble_App_Cmd_Respond_Success(cmdNumber, pdPASS);
 }
 
 // Command to set the news update interval (in milliseconds).
-void setNewsUpdateInterval(DynamicJsonDocument& dCommand) {
+void setNewsUpdateInterval(JsonDocument& dCommand) {
     uint8_t cmdNumber = dCommand["app_command"];
     uint32_t interval = dCommand["interval"];
     googleNewsUpdateInterval = interval;
@@ -187,19 +187,19 @@ void setNewsUpdateInterval(DynamicJsonDocument& dCommand) {
         xTimerStop(googleNewsUpdateTimer_H, 0);
     xTimerChangePeriod(googleNewsUpdateTimer_H, pdMS_TO_TICKS(googleNewsUpdateInterval), 0);
     xTimerStart(googleNewsUpdateTimer_H, 0);
-    //ble_Application_Command_Respond_Success(cmdNumber, pdPASS);
+    //mtb_Ble_App_Cmd_Respond_Success(cmdNumber, pdPASS);
 }
 
 // Command to update the API key for news fetching.
-void setNewsAPIKey(DynamicJsonDocument& dCommand) {
+void setNewsAPIKey(JsonDocument& dCommand) {
     uint8_t cmdNumber = dCommand["app_command"];
     googleNewsAPIKey = String(dCommand["api_key"].as<const char*>());
-    //ble_Application_Command_Respond_Success(cmdNumber, pdPASS);
+    //mtb_Ble_App_Cmd_Respond_Success(cmdNumber, pdPASS);
 }
 
 // Command to update the language code for the news headlines.
-void setNewsLanguage(DynamicJsonDocument& dCommand) {
+void setNewsLanguage(JsonDocument& dCommand) {
     uint8_t cmdNumber = dCommand["app_command"];
     googleNewsLanguage = String(dCommand["language"].as<const char*>());
-    //ble_Application_Command_Respond_Success(cmdNumber, pdPASS);
+    //mtb_Ble_App_Cmd_Respond_Success(cmdNumber, pdPASS);
 }

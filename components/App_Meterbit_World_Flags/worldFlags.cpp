@@ -24,11 +24,11 @@ void wipeFlagBackground(void);
 void changeWorldFlagButton(button_event_t button_Data);
 
 // bluetooth functions
-void selectDisplayFlag(DynamicJsonDocument&);
-void selectPreferredFlags(DynamicJsonDocument&);
-void cycleAllFlags(DynamicJsonDocument&);
-void showCountryName(DynamicJsonDocument&);
-void setFlagChangeIntv(DynamicJsonDocument&);
+void selectDisplayFlag(JsonDocument&);
+void selectPreferredFlags(JsonDocument&);
+void cycleAllFlags(JsonDocument&);
+void showCountryName(JsonDocument&);
+void setFlagChangeIntv(JsonDocument&);
 
 EXT_RAM_BSS_ATTR Applications_FullScreen *worldFlags_App = new Applications_FullScreen(worldFlags_App_Task, &worldFlags_Task_H, "worlfFlagsApp", 4096);
 
@@ -100,7 +100,7 @@ void wipeFlagBackground(void){
 //************************************************************************************ */
 //************************************************************************************ */
 
-void selectDisplayFlag(DynamicJsonDocument& dCommand){
+void selectDisplayFlag(JsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     const char* countryFlag = dCommand["countryName"];
 
@@ -113,35 +113,35 @@ void selectDisplayFlag(DynamicJsonDocument& dCommand){
     drawOnlineSVGs(&imageHolder, 1, wipeFlagBackground); 
 
     write_struct_to_nvs("worldFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
-    ble_Application_Command_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
 }
 
-void selectPreferredFlags(DynamicJsonDocument& dCommand){
+void selectPreferredFlags(JsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     //write_struct_to_nvs("worldFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
-    ble_Application_Command_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
 }
 
-void cycleAllFlags(DynamicJsonDocument&){
+void cycleAllFlags(JsonDocument&){
     uint8_t cmdNumber = dCommand["app_command"];
     worldFlagsInfo.cycleAllFlags = dCommand["cycleFlags"].as<bool>();
     worldFlagsInfo.flagChangeIntv = dCommand["dInterval"].as<uint8_t>();
     write_struct_to_nvs("worldFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
-    ble_Application_Command_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
 }
 
-void showCountryName(DynamicJsonDocument&){
+void showCountryName(JsonDocument&){
     uint8_t cmdNumber = dCommand["app_command"];
     worldFlagsInfo.showCountryName = dCommand["showData"].as<bool>();
     write_struct_to_nvs("worldFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
-    ble_Application_Command_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
 }
 
-void setFlagChangeIntv(DynamicJsonDocument&){
+void setFlagChangeIntv(JsonDocument&){
     uint8_t cmdNumber = dCommand["app_command"];
     worldFlagsInfo.flagChangeIntv = dCommand["dInterval"].as<uint8_t>();
     write_struct_to_nvs("worldFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
-    ble_Application_Command_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
 }
 
 

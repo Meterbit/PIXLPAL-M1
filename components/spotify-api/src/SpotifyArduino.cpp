@@ -200,7 +200,7 @@ bool SpotifyArduino::refreshAccessToken()
         filter["token_type"] = true;
         filter["expires_in"] = true;
 
-        DynamicJsonDocument doc(512);
+        JsonDocument doc;
 
         // Parse JSON object
 #ifndef SPOTIFY_PRINT_JSON_PARSE
@@ -287,7 +287,7 @@ const char *SpotifyArduino::requestAccessTokens(const char *code, const char *re
 
     if (statusCode == 200)
     {
-        DynamicJsonDocument doc(1000);
+        JsonDocument doc;
         // Parse JSON object
 #ifndef SPOTIFY_PRINT_JSON_PARSE
         DeserializationError error = deserializeJson(doc, *client);
@@ -572,8 +572,8 @@ int SpotifyArduino::getCurrentlyPlaying(processCurrentlyPlaying currentlyPlaying
         filter_item_images_0["width"] = true;
         filter_item_images_0["url"] = true;
 
-        // Allocate DynamicJsonDocument
-        DynamicJsonDocument doc(bufferSize);
+        // Allocate JsonDocument
+        JsonDocument doc;
 
         // Parse JSON object
 #ifndef SPOTIFY_PRINT_JSON_PARSE
@@ -781,8 +781,8 @@ int SpotifyArduino::getPlayerDetails(processPlayerDetails playerDetailsCallback,
         filter["shuffle_state"] = true;
         filter["repeat_state"] = true;
 
-        // Allocate DynamicJsonDocument
-        DynamicJsonDocument doc(bufferSize);
+        // Allocate JsonDocument
+        JsonDocument doc;
 
         // Parse JSON object
 #ifndef SPOTIFY_PRINT_JSON_PARSE
@@ -870,8 +870,8 @@ int SpotifyArduino::getDevices(processDevices devicesCallback)
     if (statusCode == 200)
     {
 
-        // Allocate DynamicJsonDocument
-        DynamicJsonDocument doc(bufferSize);
+        // Allocate JsonDocument
+        JsonDocument doc;
 
         // Parse JSON object
 #ifndef SPOTIFY_PRINT_JSON_PARSE
@@ -947,8 +947,8 @@ int SpotifyArduino::searchForSong(String query, int limit, processSearch searchC
     if (statusCode == 200)
     {
 
-        // Allocate DynamicJsonDocument
-        DynamicJsonDocument doc(bufferSize);
+        // Allocate JsonDocument
+        JsonDocument doc;
 
         // Parse JSON object
 #ifndef SPOTIFY_PRINT_JSON_PARSE
@@ -1279,7 +1279,7 @@ void SpotifyArduino::parseError()
 {
     //This method doesn't currently do anything other than print
 #ifdef SPOTIFY_SERIAL_OUTPUT
-    DynamicJsonDocument doc(1000);
+    JsonDocument doc;
     DeserializationError error = deserializeJson(doc, *client);
     if (!error)
     {

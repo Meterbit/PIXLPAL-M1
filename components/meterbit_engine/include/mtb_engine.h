@@ -128,7 +128,7 @@ Services(void (*dService)(void *), TaskHandle_t* dServiceHandle_ptr, const char*
 }
 };
 
-using bleCom_Parser_Fns_Ptr = void (*)(DynamicJsonDocument&);     // Defining the signature of a function pointer.
+using bleCom_Parser_Fns_Ptr = void (*)(JsonDocument&);     // Defining the signature of a function pointer.
 
 class Service_With_Fns : public Services{
     public:
@@ -233,14 +233,14 @@ extern void appsInitialization(Applications*, Services* pointer_0 = nullptr, Ser
 
 
 // App Parser Functions
-extern void launchThisApp(Applications* dApp, do_Prev_App_t do_Prv_App = DESTROY_PREVIOUS_APP);
+extern void mtb_Launch_This_App(Applications* dApp, do_Prev_App_t do_Prv_App = DESTROY_PREVIOUS_APP);
 extern void start_This_Service(Services*);
 extern void resume_This_Service(Services*);
 extern void suspend_This_Service(Services*);
 extern void kill_This_Service(Services *);
 extern void kill_This_App(Applications *);
 
-extern void generalAppLunch(CurrentApp_t);
+extern void mtb_General_App_Lunch(CurrentApp_t);
 
 // Supporting Apps and Tasks
 extern TaskHandle_t statusBarClock_H;

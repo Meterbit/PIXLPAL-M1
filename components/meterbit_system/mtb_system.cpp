@@ -33,7 +33,7 @@ rotary_encoder_t myencoder{
   .active_low = true,
 };
 
-void rotaryEncoder_Init(void){
+void mtb_RotaryEncoder_Init(void){
     //static uint8_t fnCalledTimes = 0;
     if(encoderEvent_Q == NULL) encoderEvent_Q = xQueueCreate(12, sizeof(rotary_encoder_event_t));
     if(buttonEvent_Q == NULL) buttonEvent_Q = xQueueCreate(6, sizeof(button_event_t));
@@ -64,7 +64,7 @@ void button_Task (void* dService){
     kill_This_Service(thisServ);
 }
 
-void system_Init(void){
+void mtb_System_Init(void){
     if(nvsAccessQueue == NULL) nvsAccessQueue = xQueueCreate(20, sizeof(NvsAccessParams_t));
     if(files2Download_Q == NULL) files2Download_Q = xQueueCreate(20, sizeof(File2Download_t));
     if(freeServAndAppPSRAM_Q == NULL) freeServAndAppPSRAM_Q = xQueueCreate(26, sizeof(void*));

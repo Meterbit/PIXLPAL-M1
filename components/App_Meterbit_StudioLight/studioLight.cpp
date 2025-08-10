@@ -20,7 +20,7 @@ void studioLight_App_Task(void *);
 void selectStudioLightPatternButton(button_event_t button_Data);
 
 // bluetooth functions
-void setStudioLightColors(DynamicJsonDocument&);
+void setStudioLightColors(JsonDocument&);
 
 EXT_RAM_BSS_ATTR Applications_FullScreen *studioLight_App = new Applications_FullScreen(studioLight_App_Task, &studioLight_Task_H, "studioLight", 10240);
 
@@ -74,10 +74,10 @@ void selectStudioLightPatternButton(button_event_t button_Data){
 			}
 }
 
-void setStudioLightColors(DynamicJsonDocument& dCommand){
+void setStudioLightColors(JsonDocument& dCommand){
     uint8_t cmdNumber = dCommand["app_command"];
     String location = dCommand["duration"];
 
     write_struct_to_nvs("studioLight", &studioLightsInfo, sizeof(StudioLight_Data_t));
-    ble_Application_Command_Respond_Success(studioLightAppRoute, cmdNumber, pdPASS);
+    mtb_Ble_App_Cmd_Respond_Success(studioLightAppRoute, cmdNumber, pdPASS);
 }

@@ -39,7 +39,7 @@ struct RssSettings_t {
 EXT_RAM_BSS_ATTR RssSettings_t rssSettings = {true, false, false};
 
 void fetchAndDisplayHeadlines(Applications *thisApp);
-void updateSourceSelection(DynamicJsonDocument&);
+void updateSourceSelection(JsonDocument&);
 
 void rssNewsApp_Task(void* dApp) {
   Applications *thisApp = (Applications *) dApp;
@@ -62,14 +62,14 @@ void rssNewsApp_Task(void* dApp) {
   kill_This_App(thisApp);
 }
 
-void updateSourceSelection(DynamicJsonDocument &doc) {
+void updateSourceSelection(JsonDocument &doc) {
   uint8_t cmd = doc["app_command"];
   rssSettings.enable_bbc = doc["bbc"];
   rssSettings.enable_cnn = doc["cnn"];
   rssSettings.enable_reuters = doc["reuters"];
 
   write_struct_to_nvs("rssSettings", &rssSettings, sizeof(RssSettings_t));
-  ble_Application_Command_Respond_Success("rssApp", cmd, pdPASS);
+  mtb_Ble_App_Cmd_Respond_Success("rssApp", cmd, pdPASS);
 }
 
 void parseHeadlinesWithTinyXML2(const String& xml, std::vector<String>& headlines, int maxCount) {

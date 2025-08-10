@@ -15,7 +15,7 @@
 
 bool isDisconnected = true;
 
-DynamicJsonDocument dCommand(1024);
+JsonDocument dCommand;
 
 EXT_RAM_BSS_ATTR TaskHandle_t ble_SetCom_Parser_Task_Handle = NULL;
 EXT_RAM_BSS_ATTR QueueHandle_t setCom_queue = NULL;
@@ -30,8 +30,8 @@ NimBLEService *pService = NULL;
 NimBLECharacteristic *setCom_characteristic = NULL;
 NimBLECharacteristic *appCom_characteristic = NULL;
 
-bleCom_Data_Trans_t setCom_data;
-bleCom_Data_Trans_t appCom_data;
+mtb_BleCom_Data_Trans_t setCom_data;
+mtb_BleCom_Data_Trans_t appCom_data;
 
 int bleCom_queue_size = 6;
 String appValue = "0";
@@ -57,7 +57,7 @@ class MyServerCallbacks : public NimBLEServerCallbacks{
     connHandle = connInfo.getConnHandle();
     showStatusBarIcon({"/batIcons/phoneCont.png", 18, 1});
     read_struct_from_nvs("pxpBleDevName", pxp_BLE_Name, sizeof(pxp_BLE_Name));
-    current_BleDevice(pxp_BLE_Name);
+    mtb_Current_Ble_Device(pxp_BLE_Name);
     //printf("Connected\n");
   };
 
@@ -99,9 +99,9 @@ if(pCharacteristic == setCom_characteristic){
   }
 };
 
-void initBLE_Communication(void){
-  if(setCom_queue == NULL) setCom_queue = xQueueCreate(bleCom_queue_size,sizeof(bleCom_Data_Trans_t));     // A queue of character pointers
-  if(appCom_queue == NULL) appCom_queue = xQueueCreate(bleCom_queue_size,sizeof(bleCom_Data_Trans_t));     // A queue of character pointers
+void mtb_Ble_Comm_Init(void){
+  if(setCom_queue == NULL) setCom_queue = xQueueCreate(bleCom_queue_size,sizeof(mtb_BleCom_Data_Trans_t));     // A queue of character pointers
+  if(appCom_queue == NULL) appCom_queue = xQueueCreate(bleCom_queue_size,sizeof(mtb_BleCom_Data_Trans_t));     // A queue of character pointers
 
     // Create the BLE Device
     read_struct_from_nvs("pxpBleDevName", pxp_BLE_Name, sizeof(pxp_BLE_Name));
@@ -160,7 +160,7 @@ void waitForDisconnections() {
     }
 }
 
-void deinitBLE_Communication() {
+void mtb_Ble_Comm_Deinit() {
     // Disconnect clients
     Serial.println("Waiting for disconnections...");
     if (pServer) {
@@ -225,7 +225,7 @@ int getIntegerAtIndex(const String& data, int index) {
 // If continuous listening is needed, consider keeping it alive or using a persistent loop task.
 void ble_SetCom_Parse_Task(void* dService){
   Services *thisService = (Services *)dService;
-  bleCom_Data_Trans_t qMessage;
+  mtb_BleCom_Data_Trans_t qMessage;
   DeserializationError dError;
   String specify_Settings;
   uint16_t dSetCategory = 0;
