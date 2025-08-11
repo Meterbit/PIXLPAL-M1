@@ -8,7 +8,7 @@
 #include "mtb_ble.h"
 using namespace std;
 
-static const char TAG[] = "PXP-MAIN";
+static const char TAG[] = "PXP- MAIN PROG";
 
 
 extern "C" void app_main(){
