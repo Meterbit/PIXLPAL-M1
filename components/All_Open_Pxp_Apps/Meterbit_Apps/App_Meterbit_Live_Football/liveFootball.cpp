@@ -16,9 +16,6 @@
 
 static const char TAG[] = "LIVE_FOOTBALL";
 
-// Your API-Football subscription key from RapidAPI
-const char *API_KEY = "a2e0674bdfb9d68a5e001e391bcb5160";
-
 // Base URL for API endpoints
 const char* BASE_URL = "https://v3.football.api-sports.io";
 

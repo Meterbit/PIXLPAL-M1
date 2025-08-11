@@ -1,10 +1,10 @@
-components/meterbit_ota/include/*
-components/meterbit_graphics/mtb_gif_parser.cpp
-components/meterbit_graphics/mtb_text_scroll.cpp
-components/meterbit_graphics/mtb_graphics.cpp
-components/All_Open_Pxp_Apps/Meterbit_Apps/App_Meterbit_Google_Calendar/include/*
+/components/meterbit_graphics/*.cpp
+/components/All_Open_Pxp_Apps/Meterbit_Apps/App_Meterbit_Google_Calendar/include/**
+/components/meterbit_audio/include/mtb_audio.h
+/components/meterbit_ota/include/**
 
-build/*
-!build/PIXLPAL-M1.bin
-!build/ota_data_initial.bin
-!build/spiffs.bin
+/build/*
+!/build/PIXLPAL-M1.bin
+!/build/ota_data_initial.bin
+!/build/spiffs.bin
+

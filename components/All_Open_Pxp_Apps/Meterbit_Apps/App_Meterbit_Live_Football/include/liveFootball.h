@@ -14,6 +14,9 @@
 
 static const char liveFootbalAppRoute[] = "5/0";
 
+// Your API-Football subscription key from RapidAPI
+static const char *API_KEY = "a2e0674bdfb9d68a5e001e391bcb5160";
+
 struct LiveFootball_Data_t {
   uint8_t endpointType = 0; // 0: Fixture; 1: Standings
   uint16_t leagueID = 39; // Default league ID for API-Football
