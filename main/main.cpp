@@ -10,7 +10,6 @@ using namespace std;
 
 static const char TAG[] = "PXP- MAIN PROG";
 
-
 extern "C" void app_main(){
     mtb_LittleFS_Init();
     mtb_RotaryEncoder_Init();

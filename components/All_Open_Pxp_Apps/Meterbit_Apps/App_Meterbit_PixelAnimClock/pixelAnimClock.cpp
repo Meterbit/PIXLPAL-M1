@@ -15,6 +15,8 @@
 #include "mtb_text_scroll.h"
 #include "gifdec.h"
 
+static const char TAG[] = "PIXL_ANIM_CLOCK";
+
 using namespace std;
 
 #define HEADER_TEXT_LIMIT    13
@@ -453,43 +455,74 @@ void pixAnimClockGif_Task(void* d_Service){	// Consider using hardware timer for
   uint16_t colorHolder = 0xFF;
 
   while (MTB_SERV_IS_ACTIVE == pdTRUE){
-		DIR *dir = opendir("/littlefs/clkgif");
-		struct dirent* entry;
+DIR *dir = opendir("/littlefs/clkgif");
+if (!dir) {
+  ESP_LOGE(TAG, "Failed to open /littlefs/clkgif");
+  vTaskDelay(pdMS_TO_TICKS(1000));
+  continue;
+}
 
-		while (MTB_SERV_IS_ACTIVE == pdTRUE && (entry = readdir(dir)) != NULL){
-			char fullPath[300];
-			uint16_t width, height;
-			sprintf(fullPath, "/littlefs/clkgif/%s", entry->d_name);
-	
-			gd_GIF *gif = gd_open_gif(fullPath);
-			width = gif->width;
-			height = gif->height;
+struct dirent *entry;
+while (MTB_SERV_IS_ACTIVE == pdTRUE && (entry = readdir(dir)) != NULL) {
+  // Skip "." ".." and hidden/metadata files like .DS_Store
+  if (entry->d_name[0] == '.') continue;
 
-		if (width < 65 && height < 33){
-				uint32_t set_Duration = 60000;
-				uint8_t *buffer = (uint8_t *) malloc(width * height * 3);         // thisServ->serv_Dyn_Mem_Alloc(width * height * 3);
-        
-			for (uint32_t show_Duration = 0; MTB_SERV_IS_ACTIVE == pdTRUE && show_Duration < set_Duration; ){
-				while (MTB_SERV_IS_ACTIVE == pdTRUE && gd_get_frame(gif)){
-					
-					gd_render_frame(gif, buffer);
+  // Only accept *.gif (case-insensitive)
+  const char *name = entry->d_name;
+  size_t n = strlen(name);
+  if (n < 4) continue;
+  const char *ext = name + (n - 4);
+  if (strcasecmp(ext, ".gif") != 0) continue;
 
-					for (uint8_t p = 0, x = 5; p < width; p++, x++){
-						for (uint8_t q = 0, y = 25; q < height; q++, y++){
-                colorHolder = dma_display->color565(buffer[q*width*3 + p*3], buffer[q*width*3 + p*3 + 1], buffer[q*width*3 + p*3 + 2]); 
-                dma_display->drawPixel(x, y, colorHolder);    	// update color
-						}
-					}
-					vTaskDelay((gif->gce.delay * 10) / portTICK_PERIOD_MS);
-					show_Duration += gif->gce.delay * 10;
-				}
-				gd_rewind(gif);
-		}
-		free(buffer);
-		}
-		gd_close_gif(gif);
-		}
-    closedir(dir);
+  char fullPath[300];
+  snprintf(fullPath, sizeof(fullPath), "/littlefs/clkgif/%s", name);
+  ESP_LOGI(TAG, "GIF File: %s", fullPath);
+
+  gd_GIF *gif = gd_open_gif(fullPath);
+  if (!gif) {
+    ESP_LOGW(TAG, "gd_open_gif failed: %s", fullPath);
+    continue;
+  }
+
+  uint16_t width = gif->width;
+  uint16_t height = gif->height;
+  if (width >= 65 || height >= 33) {
+    gd_close_gif(gif);
+    continue;
+  }
+
+  uint8_t *buffer = (uint8_t *)malloc(width * height * 3);
+  if (!buffer) {
+    ESP_LOGE(TAG, "malloc failed (%ux%u)", width, height);
+    gd_close_gif(gif);
+    continue;
+  }
+
+  uint32_t set_Duration = 60000;
+  for (uint32_t show_Duration = 0;
+       MTB_SERV_IS_ACTIVE == pdTRUE && show_Duration < set_Duration; ) {
+    while (MTB_SERV_IS_ACTIVE == pdTRUE && gd_get_frame(gif)) {
+      gd_render_frame(gif, buffer);
+      for (uint8_t p = 0, x = 5; p < width; p++, x++) {
+        for (uint8_t q = 0, y = 25; q < height; q++, y++) {
+          uint16_t c = dma_display->color565(
+              buffer[q*width*3 + p*3],
+              buffer[q*width*3 + p*3 + 1],
+              buffer[q*width*3 + p*3 + 2]);
+          dma_display->drawPixel(x, y, c);
+        }
+      }
+      TickType_t delay_ms = gif->gce.delay * 10;
+      vTaskDelay(pdMS_TO_TICKS(delay_ms));
+      show_Duration += delay_ms;
+    }
+    gd_rewind(gif);
+  }
+
+  free(buffer);
+  gd_close_gif(gif);
+}
+closedir(dir);
 	}
   mtb_End_This_Service(thisServ);
 }
