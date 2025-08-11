@@ -115,7 +115,7 @@ public:
     void setRotation(int rotate); 				// overwrite adafruit implementation
     
 	void fillScreenRGB888(uint8_t r, uint8_t g, uint8_t b);
-    void clearScreen() { display->clearScreen(); }
+    void mtb_Clear_Screen() { display->mtb_Clear_Screen(); }
     void drawPixelRGB888(int16_t x, int16_t y, uint8_t r, uint8_t g, uint8_t b);
 
 #ifdef USE_GFX_ROOT

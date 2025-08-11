@@ -58,7 +58,7 @@ class MyServerCallbacks : public NimBLEServerCallbacks{
     isDisconnected = false;
     Mtb_Applications::bleCentralContd = true;
     connHandle = connInfo.getConnHandle();
-    showStatusBarIcon({"/batIcons/phoneCont.png", 18, 1});
+    mtb_Show_Status_Bar_Icon({"/batIcons/phoneCont.png", 18, 1});
     mtb_Read_Nvs_Struct("pxpBleDevName", pxp_BLE_Name, sizeof(pxp_BLE_Name));
     mtb_Current_Ble_Device(pxp_BLE_Name);
     //ESP_LOGI(TAG, "Connected\n");
@@ -68,7 +68,7 @@ class MyServerCallbacks : public NimBLEServerCallbacks{
     //ESP_LOGI(TAG, "Disconnection detected.\n");
     isDisconnected = true;
     Mtb_Applications::bleCentralContd = false;
-    showStatusBarIcon({"/batIcons/btOn.png", 18, 1});
+    mtb_Show_Status_Bar_Icon({"/batIcons/btOn.png", 18, 1});
     // Start advertising
     NimBLEDevice::startAdvertising(); // Start advertising
   }
@@ -154,7 +154,7 @@ void mtb_Ble_Comm_Init(void){
     appCom_characteristic->setCallbacks(new CharacteristicsCallbacks());
 
     Mtb_Applications::bleAdvertisingStatus = true;
-    //showStatusBarIcon({"/batIcons/btOn.png", 18, 1});
+    //mtb_Show_Status_Bar_Icon({"/batIcons/btOn.png", 18, 1});
 }
 
 void waitForDisconnections() {
@@ -183,7 +183,7 @@ void mtb_Ble_Comm_Deinit() {
     NimBLEDevice::deinit();
 
     Mtb_Applications::bleAdvertisingStatus = false;
-    showStatusBarIcon({"/batIcons/wipe7x7.png", 18, 1}); 
+    mtb_Show_Status_Bar_Icon({"/batIcons/wipe7x7.png", 18, 1}); 
 }
 
 int bleSettingsComSend(const char* dRoute, String dMessage){

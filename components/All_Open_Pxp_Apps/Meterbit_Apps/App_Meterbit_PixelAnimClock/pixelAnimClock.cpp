@@ -108,9 +108,9 @@ void  pixAnimClock_App_Task(void* dApplication){
       time(&present);
       now = localtime(&present);
     }
-    awaitingNTP_Time_Line1.clearString();
-    awaitingNTP_Time_Line2.clearString();
-    awaitingNTP_Time_Line3.clearString();
+    awaitingNTP_Time_Line1.mtb_Clear_String();
+    awaitingNTP_Time_Line2.mtb_Clear_String();
+    awaitingNTP_Time_Line3.mtb_Clear_String();
 //************************************************** */
 
   while (MTB_APP_IS_ACTIVE == pdTRUE){

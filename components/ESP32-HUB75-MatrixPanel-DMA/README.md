@@ -180,7 +180,7 @@ void setup() {
 Serial.begin(115200);
 	dma_display->begin(); // setup the LED matrix
     dma_display->setBrightness8(192); //0-255
-    dma_display->clearScreen();	
+    dma_display->mtb_Clear_Screen();	
 }
 ```
 ![Brightness Samples](https://user-images.githubusercontent.com/55933003/211192894-f90311f5-b6fe-4665-bf26-2f363bb36047.png)

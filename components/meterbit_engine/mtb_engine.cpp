@@ -224,10 +224,10 @@ bool Mtb_Applications::appRunner(){
 
 void Mtb_Applications::appResume(Mtb_Applications* dApp){
     appDestroy(currentRunningApp);
-    dma_display->clearScreen();
+    dma_display->mtb_Clear_Screen();
     previousRunningApp = currentRunningApp;
 
-    if(dApp->fullScreen == false) drawStatusBar();
+    if(dApp->fullScreen == false) mtb_Draw_Status_Bar();
 
     if(litFS_Ready){
     vTaskResume(*(dApp->appHandle_ptr));
@@ -337,7 +337,7 @@ void mtb_Brightness_Control(rotary_encoder_rotation_t direction){
         if(panelBrightness <= 250){ 
         panelBrightness += 5;
         dma_display->setBrightness(panelBrightness); // 0-255
-        set_Status_RGB_LED(currentStatusLEDcolor);
+        mtb_Set_Status_RGB_LED(currentStatusLEDcolor);
         mtb_Write_Nvs_Struct("pan_brghnss", &panelBrightness, sizeof(uint8_t));
         }
         if(panelBrightness >= 255) do_beep(CLICK_BEEP);
@@ -345,7 +345,7 @@ void mtb_Brightness_Control(rotary_encoder_rotation_t direction){
         if(panelBrightness >= 7){
         panelBrightness -= 5;
         dma_display->setBrightness(panelBrightness); //0-255
-        set_Status_RGB_LED(currentStatusLEDcolor);
+        mtb_Set_Status_RGB_LED(currentStatusLEDcolor);
         mtb_Write_Nvs_Struct("pan_brghnss", &panelBrightness, sizeof(uint8_t));
         }
         if(panelBrightness <= 6) do_beep(CLICK_BEEP);
@@ -424,11 +424,11 @@ void mtb_App_Init(Mtb_Applications *thisApp, Mtb_Services* pointer_0, Mtb_Servic
     thisApp->appServices[9] = pointer_9;
 
     delay(250);
-    dma_display->clearScreen();
+    dma_display->mtb_Clear_Screen();
     for (Mtb_Services *element : thisApp->appServices) if (element != nullptr) mtb_Start_This_Service(element);
     if(thisApp->mtb_App_ButtonFn_ptr != buttonDoNothing) mtb_Start_This_Service(button_Task_Sv);
     if(thisApp->mtb_App_EncoderFn_ptr != encoderDoNothing) mtb_Start_This_Service(encoder_Task_Sv);
-    if(thisApp->fullScreen == false) drawStatusBar();
+    if(thisApp->fullScreen == false) mtb_Draw_Status_Bar();
     MTB_APP_IS_ACTIVE = pdTRUE;
     //ESP_LOGI(TAG, "&&&&&&&&&&&&& THIS APPLICATION HAS BEEN STARTED: %s \n", Mtb_Applications::currentRunningApp->appName);
 }

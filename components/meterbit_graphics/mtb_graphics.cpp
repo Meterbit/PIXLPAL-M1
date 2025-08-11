@@ -76,7 +76,7 @@ volatile int downloadedPNGs = 0;
 volatile int downloadedSVGs = 0;
 SemaphoreHandle_t preloadIndexMutex = xSemaphoreCreateMutex();
 
-void doNothingVoidFn(void){}
+void mtb_Do_Nothing_Void_Fn(void){}
 
 // size_t drawPNGsCount = 0; 
 // size_t drawSVGsCount = 0; 
@@ -158,12 +158,12 @@ void rgb_led_task(void *param)
 	}
 }
 
-void set_Status_RGB_LED(uint16_t dColor, uint8_t dBrightness){
+void mtb_Set_Status_RGB_LED(uint16_t dColor, uint8_t dBrightness){
 	rgb_led_message_t message = {.color = dColor, .brightness = dBrightness}; // Red color with half brightness
 	xQueueSend(rgb_led_queue, &message, portMAX_DELAY);
 }
 
-void drawStatusBar(void){
+void mtb_Draw_Status_Bar(void){
 	if (Mtb_Applications::currentRunningApp->fullScreen == false){
 		for (uint8_t i = 0; i < 11; i++) if (statusBarItems[i].xAxis != 0 && statusBarItems[i].yAxis != 0) mtb_Draw_Local_Png(statusBarItems[i]);
 		dma_display->drawFastHLine(0, 9, 128, dma_display->color565(35, 35, 35));
@@ -171,7 +171,7 @@ void drawStatusBar(void){
 }
 
 //***PASSED ********************************************************************
-void Matrix_Panel_t::config_ESP32_Panel_Pins()
+void Matrix_Panel_t::mtb_Config_Disp_Panel_Pins()
 {
 	pinMode(ALM_BUZZER, OUTPUT); // Make the alarm silent at the very start.
 	digitalWrite(ALM_BUZZER, LOW);
@@ -179,11 +179,11 @@ void Matrix_Panel_t::config_ESP32_Panel_Pins()
 		rgb_led_queue = xQueueCreate(5, sizeof(rgb_led_message_t));
 	configure_ledc();
 	xTaskCreatePinnedToCore(rgb_led_task, "rgb_led_task", 2048, NULL, 5, NULL, 0);
-	set_Status_RGB_LED(BLACK);
+	mtb_Set_Status_RGB_LED(BLACK);
 }
 
 // PASSED
-void Matrix_Panel_t::init_LED_MatrixPanel(){
+void Matrix_Panel_t::mtb_Init_Led_Matrix_Panel(){
 	uint8_t *pngLocalItems_buffer = (uint8_t *)heap_caps_malloc(20 * sizeof(PNG_LocalImage_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
 	//uint8_t *pngOnlineItems_buffer = (uint8_t *)heap_caps_malloc(20 * sizeof(PNG_OnlineImage_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
 	//uint8_t *svgOnlineItems_buffer = (uint8_t *)heap_caps_malloc(20 * sizeof(SVG_OnlineImage_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
@@ -202,7 +202,7 @@ void Matrix_Panel_t::init_LED_MatrixPanel(){
 	dma_display->begin();
 	mtb_Read_Nvs_Struct("pan_brghnss", &panelBrightness, sizeof(uint8_t));
 	dma_display->setBrightness(panelBrightness); // 0-255
-	set_Status_RGB_LED(currentStatusLEDcolor, panelBrightness);
+	mtb_Set_Status_RGB_LED(currentStatusLEDcolor, panelBrightness);
 	// if(litFS_Ready)drawGIF("/mtblg/mtbStart.gif",0,0,1);
 }
 
@@ -222,7 +222,7 @@ void Matrix_Panel_t::setfont(const uint8_t *font)
 }
 
 //*************************************************************************************
-void Mtb_FixedText_t::clearPanelSegment(void)
+void Mtb_FixedText_t::mtb_Clear_Panel_Segment(void)
 {
 	for (uint16_t i = x1Seg, p = x1Seg + textHorizSpace; i < p; i++)
 	{
@@ -233,7 +233,7 @@ void Mtb_FixedText_t::clearPanelSegment(void)
 	}
 }
 //*************************************************************************************
-void Mtb_FixedText_t::updatePanelSegment(void)
+void Mtb_FixedText_t::mtb_Update_Panel_Segment(void)
 {
 	for (uint16_t i = x1Seg, p = x1Seg + textHorizSpace; i < p; i++)
 	{
@@ -245,13 +245,13 @@ void Mtb_FixedText_t::updatePanelSegment(void)
 	}
 }
 //**************************************************************************************
-void Matrix_Panel_t::clearScreen(void)
+void Matrix_Panel_t::mtb_Clear_Screen(void)
 {
-	dma_display->clearScreen();
+	dma_display->mtb_Clear_Screen();
 }
 //**************************************************************************************
 // PASSED
-void Mtb_FixedText_t::set_Pixel_Data(uint16_t xPs, uint16_t yPs)
+void Mtb_FixedText_t::mtb_Set_Pixel_Data(uint16_t xPs, uint16_t yPs)
 {
 	dma_display->drawPixel(xPs, yPs, color); // update color
 	scratchPad[xPs][yPs] = 1;
@@ -259,7 +259,7 @@ void Mtb_FixedText_t::set_Pixel_Data(uint16_t xPs, uint16_t yPs)
 
 //**************************************************************************************
 // PASSED
-void ScrollTextHelper_t::set_Pixel_Data(uint16_t xPs, uint16_t yPs)
+void ScrollTextHelper_t::mtb_Set_Pixel_Data(uint16_t xPs, uint16_t yPs)
 {
 	scrollBuffer[xPs][yPs] = 1;
 }
@@ -282,21 +282,20 @@ void Matrix_Panel_t::writeXter(uint16_t character, uint16_t xPixel, uint16_t yPi
 			for (uint8_t j = 0; j < 8; ++j, ++xPixel)
 			{
 				if (masker & 0x01)
-					set_Pixel_Data(xPixel, yPixel);
+					mtb_Set_Pixel_Data(xPixel, yPixel);
 				masker >>= 1;
 			}
 		}
 	}
 }
 //**************************************************************************************
-uint16_t Matrix_Panel_t::mtb_Write_String(const char *myString)
-{
+uint16_t Matrix_Panel_t::mtb_Write_String(const char *myString){
 	uint16_t charCount = strlen(myString);
 	uint16_t row = x1Seg;
 	uint16_t position = textStyle ? y1Seg : 0;
 
 	if (textStyle)
-		clearPanelSegment();
+		mtb_Clear_Panel_Segment();
 
 	for (uint16_t i = 0; i < charCount; row += fontMain[(myString[i] - 32) * 4 + 8] + charSpacing, ++i)
 	{
@@ -596,12 +595,12 @@ uint16_t Matrix_Panel_t::mtb_Write_String(const char *myString)
 			writeXter(94, row, position);
 			continue;
 		default:
-			continue; // Write the # symbol if the alphabet or symbol is not found.
+			continue; // Consider writing the # symbol if the alphabet or symbol is not found.
 		}
 	}
 
 	if (textStyle)
-		updatePanelSegment();
+		mtb_Update_Panel_Segment();
 	textHorizSpace = row - x1Seg;
 	return row;
 }
@@ -636,7 +635,7 @@ uint16_t Mtb_FixedText_t::mtb_Write_Colored_String(String myString, uint16_t dCo
 	return mtb_Write_String(myString);
 }
 //*************************************************************************************
-void Mtb_CentreText_t::clearPanelSegment(void)
+void Mtb_CentreText_t::mtb_Clear_Panel_Segment(void)
 {
 	for (uint16_t i = x1Seg, p = x1Seg + textHorizSpace; i < p; i++)
 	{
@@ -650,7 +649,7 @@ void Mtb_CentreText_t::clearPanelSegment(void)
 uint16_t Mtb_CentreText_t::mtb_Write_Colored_String(const char *myString, uint16_t dColor)
 {
 	color = dColor;
-	clearPanelSegment();
+	mtb_Clear_Panel_Segment();
 
 	uint16_t charCount = strlen(myString);
 	uint16_t row = 0;
@@ -672,7 +671,7 @@ uint16_t Mtb_CentreText_t::mtb_Write_Colored_String(const char *myString, uint16
 uint16_t Mtb_CentreText_t::mtb_Write_Colored_String(String myString, uint16_t dColor)
 {
 	color = dColor;
-	clearPanelSegment();
+	mtb_Clear_Panel_Segment();
 
 	uint16_t charCount = strlen(myString.c_str());
 	uint16_t row = 0;
@@ -694,7 +693,7 @@ uint16_t Mtb_CentreText_t::mtb_Write_Colored_String(String myString, uint16_t dC
 uint16_t Mtb_CentreText_t::mtb_Write_Colored_String(const char *myString, uint16_t dColor, uint16_t dBackgroundColor){
 	color = dColor;
 	backgroundColor = dBackgroundColor;
-	clearPanelSegment();
+	mtb_Clear_Panel_Segment();
 
 	uint16_t charCount = strlen(myString);
 	uint16_t row = 0;
@@ -715,7 +714,7 @@ uint16_t Mtb_CentreText_t::mtb_Write_Colored_String(const char *myString, uint16
 uint16_t Mtb_CentreText_t::mtb_Write_Colored_String(String myString, uint16_t dColor, uint16_t dBackgroundColor){
 	color = dColor;
 	backgroundColor = dBackgroundColor;
-	clearPanelSegment();
+	mtb_Clear_Panel_Segment();
 
 	uint16_t charCount = strlen(myString.c_str());
 	uint16_t row = 0;
@@ -733,7 +732,7 @@ uint16_t Mtb_CentreText_t::mtb_Write_Colored_String(String myString, uint16_t dC
 	return mtb_Write_String(myString.c_str());
 }
 //**************************************************************************************
-uint16_t Mtb_FixedText_t::clearString()
+uint16_t Mtb_FixedText_t::mtb_Clear_String()
 {
 	color = backgroundColor;
 	mtb_Write_String(".");
@@ -1293,7 +1292,7 @@ void mtb_Draw_Online_Svg(const SVG_OnlineImage_t* images, size_t drawSVGsCount, 
 }
 
 //**************************************************************************************
-void showStatusBarIcon(const PNG_LocalImage_t &pngImage)
+void mtb_Show_Status_Bar_Icon(const PNG_LocalImage_t &pngImage)
 {
 	uint8_t itemIndex = pngImage.xAxis / 9;
 	memcpy(&statusBarItems[itemIndex], &pngImage, sizeof(PNG_LocalImage_t));
@@ -1301,9 +1300,9 @@ void showStatusBarIcon(const PNG_LocalImage_t &pngImage)
 		mtb_Draw_Local_Png(pngImage);
 }
 
-void wipeStatusBarIcon(const PNG_LocalImage_t &pngImage)
+void mtb_Wipe_Status_Bar_Icon(const PNG_LocalImage_t &pngImage)
 {
-	showStatusBarIcon({"/batIcons/wipe7x7.png", pngImage.xAxis, pngImage.yAxis});
+	mtb_Show_Status_Bar_Icon({"/batIcons/wipe7x7.png", pngImage.xAxis, pngImage.yAxis});
 }
 //**************************************************************************************
 

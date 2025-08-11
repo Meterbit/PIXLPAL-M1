@@ -83,8 +83,8 @@ typedef struct
 	uint8_t brightness; // 0-255
 } rgb_led_message_t;
 
-    extern void doNothingVoidFn(void);
-typedef void (*ImgWipeFn_ptr)(void);
+    extern void mtb_Do_Nothing_Void_Fn(void);
+    typedef void (*ImgWipeFn_ptr)(void);
 
     extern PNG_LocalImage_t statusBarItems[];
     extern uint16_t panelBrightness;
@@ -95,27 +95,19 @@ typedef void (*ImgWipeFn_ptr)(void);
     extern BaseType_t mtb_Draw_Local_Png(const PNG_LocalImage_t&);
     extern void mtb_Draw_Local_Png_Task(void *);   
 
-
-    // extern BaseType_t drawOnlinePNG(const PNG_OnlineImage_t&);
-    // extern void drawOnlinePNG_Task(void *);
-
-    extern void mtb_Draw_Online_Png(const PNG_OnlineImage_t* images, size_t drawPNGsCount = 1, ImgWipeFn_ptr wipePreviousImgs = doNothingVoidFn);
+    extern void mtb_Draw_Online_Png(const PNG_OnlineImage_t* images, size_t drawPNGsCount = 1, ImgWipeFn_ptr wipePreviousImgs = mtb_Do_Nothing_Void_Fn);
     extern void mtb_Download_Multi_Png(const PNG_OnlineImage_t* images, size_t drawPNGsCount);
-    extern bool mtb_Draw_Multi_Png(size_t drawPNGsCount, ImgWipeFn_ptr wipePreviousImgs = doNothingVoidFn);
+    extern bool mtb_Draw_Multi_Png(size_t drawPNGsCount, ImgWipeFn_ptr wipePreviousImgs = mtb_Do_Nothing_Void_Fn);
 
-    // extern BaseType_t drawOnlineSVG(const SVG_OnlineImage_t&);
-    // extern void drawOnlineSVG_Task(void *);
-
-    extern void mtb_Draw_Online_Svg(const SVG_OnlineImage_t* images, size_t drawSVGsCount = 1, ImgWipeFn_ptr wipePreviousImgs = doNothingVoidFn);
+    extern void mtb_Draw_Online_Svg(const SVG_OnlineImage_t* images, size_t drawSVGsCount = 1, ImgWipeFn_ptr wipePreviousImgs = mtb_Do_Nothing_Void_Fn);
     extern void mtb_Download_Multi_Svg(const SVG_OnlineImage_t* images, size_t drawSVGsCount);
-    extern bool mtb_Draw_Multi_Svg(size_t drawSVGsCount, ImgWipeFn_ptr wipePreviousImgs = doNothingVoidFn);
+    extern bool mtb_Draw_Multi_Svg(size_t drawSVGsCount, ImgWipeFn_ptr wipePreviousImgs = mtb_Do_Nothing_Void_Fn);
 
+    extern void mtb_Show_Status_Bar_Icon(const PNG_LocalImage_t&);
+    extern void mtb_Wipe_Status_Bar_Icon(const PNG_LocalImage_t &);
 
-    extern void showStatusBarIcon(const PNG_LocalImage_t&);
-    extern void wipeStatusBarIcon(const PNG_LocalImage_t &);
-
-    extern void set_Status_RGB_LED(uint16_t color, uint8_t brightness = (uint8_t) panelBrightness/2);
-    extern void drawStatusBar(void);
+    extern void mtb_Set_Status_RGB_LED(uint16_t color, uint8_t brightness = (uint8_t) panelBrightness/2);
+    extern void mtb_Draw_Status_Bar(void);
 
     extern String mtb_Get_Flag_Url_By_Country_Name(const String& countryName, const String& flagType);
 
@@ -130,18 +122,18 @@ typedef void (*ImgWipeFn_ptr)(void);
     uint8_t textStyle;
     uint16_t textHorizSpace = 0;
 
-    static void config_ESP32_Panel_Pins(void);
-    static void init_LED_MatrixPanel();
-    static void clearScreen(void);
+    static void mtb_Config_Disp_Panel_Pins(void);
+    static void mtb_Init_Led_Matrix_Panel();
+    static void mtb_Clear_Screen(void);
 
     void setfont(const uint8_t *font);
     void writeXter(uint16_t a, uint16_t x, uint16_t y);
     uint16_t mtb_Write_String(const char *myString);
     uint16_t mtb_Write_String(String myString);
 
-    virtual void set_Pixel_Data(uint16_t, uint16_t){}
-    virtual void updatePanelSegment(void){}
-    virtual void clearPanelSegment(void){}
+    virtual void mtb_Set_Pixel_Data(uint16_t, uint16_t){}
+    virtual void mtb_Update_Panel_Segment(void){}
+    virtual void mtb_Clear_Panel_Segment(void){}
 
     Matrix_Panel_t();
     Matrix_Panel_t(uint16_t x1, uint16_t y1, const uint8_t *font = Terminal6x8);
@@ -154,14 +146,14 @@ class Mtb_FixedText_t : public Matrix_Panel_t {
     static uint8_t** scratchPad;
     uint16_t color;
     uint16_t backgroundColor = BLACK;
-    virtual void set_Pixel_Data(uint16_t, uint16_t);
+    virtual void mtb_Set_Pixel_Data(uint16_t, uint16_t);
     virtual uint16_t mtb_Write_Colored_String(const char *myString, uint16_t dColor);
     virtual uint16_t mtb_Write_Colored_String(const char *myString, uint16_t dColor, uint16_t dBackgroundColor);
     virtual uint16_t mtb_Write_Colored_String(String myString, uint16_t dColor);
     virtual uint16_t mtb_Write_Colored_String(String myString, uint16_t dColor, uint16_t dBackgroundColor);
-    virtual uint16_t clearString();
-    virtual void updatePanelSegment(void);
-    virtual void clearPanelSegment(void);
+    virtual uint16_t mtb_Clear_String();
+    virtual void mtb_Update_Panel_Segment(void);
+    virtual void mtb_Clear_Panel_Segment(void);
     Mtb_FixedText_t();
     Mtb_FixedText_t(uint16_t x1, uint16_t y1, const uint8_t *font = Terminal6x8, uint16_t dColor = OLIVE_GREEN, uint16_t dBackGrndColor = BLACK) : Matrix_Panel_t(x1, y1, font){
         textStyle = STATIC_STYLE;
@@ -184,8 +176,8 @@ class Mtb_CentreText_t : public Mtb_FixedText_t {
     uint16_t mtb_Write_Colored_String(const char *myString, uint16_t dColor, uint16_t dBackgroundColor);
     uint16_t mtb_Write_Colored_String(String myString, uint16_t dColor);
     uint16_t mtb_Write_Colored_String(String myString, uint16_t dColor, uint16_t dBackgroundColor);
-    void updatePanelSegment(void){}
-    void clearPanelSegment(void);
+    void mtb_Update_Panel_Segment(void){}
+    void mtb_Clear_Panel_Segment(void);
     Mtb_CentreText_t();
     Mtb_CentreText_t(uint16_t x1, uint16_t y1, const uint8_t *font = Terminal6x8, uint16_t dColor = OLIVE_GREEN, uint16_t dBackGrndColor = BLACK) : Mtb_FixedText_t(x1, y1, font,dColor,dBackGrndColor){}
 
@@ -199,7 +191,7 @@ class Mtb_CentreText_t : public Mtb_FixedText_t {
 class ScrollTextHelper_t : public Matrix_Panel_t {
     public:
     uint8_t ** scrollBuffer;
-    virtual void set_Pixel_Data(uint16_t, uint16_t);
+    virtual void mtb_Set_Pixel_Data(uint16_t, uint16_t);
     ScrollTextHelper_t();
     ScrollTextHelper_t(uint16_t x1, uint16_t y1, const uint8_t *font = Terminal6x8) : Matrix_Panel_t(x1, y1, font) {
         textStyle = DYNAMIC_STYLE;

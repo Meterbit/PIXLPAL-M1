@@ -51,9 +51,9 @@ void handle_ip_address_obtained(void* arg, esp_event_base_t event_base, int32_t 
     // ESP_LOGI(TAG, "Got IP address: %s ", ipStr.c_str());
     ipStr = WiFi.localIP().toString();
     current_Network(WiFi.SSID().c_str(), ipStr.c_str());
-    showStatusBarIcon({"/batIcons/sta_mode.png", 1, 1});
+    mtb_Show_Status_Bar_Icon({"/batIcons/sta_mode.png", 1, 1});
     mtb_Write_Nvs_Struct("Wifi Cred", &last_Successful_Wifi, sizeof(Wifi_Credentials));
-    set_Status_RGB_LED(GREEN);
+    mtb_Set_Status_RGB_LED(GREEN);
 }
 
 void handle_wifi_disconnected(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data) {
@@ -62,11 +62,11 @@ void handle_wifi_disconnected(void* arg, esp_event_base_t event_base, int32_t ev
     if(mtb_MQTT_Client_Task_Handle != NULL) stop_MQTT_Client();
     Mtb_Applications::internetConnectStatus = false;
     if(Mtb_Applications::pxpWifiConnectStatus == true){
-        showStatusBarIcon({"/batIcons/wipe7x7.png", 1, 1});
-        showStatusBarIcon({"/batIcons/wipe7x7.png", 10, 1});
+        mtb_Show_Status_Bar_Icon({"/batIcons/wipe7x7.png", 1, 1});
+        mtb_Show_Status_Bar_Icon({"/batIcons/wipe7x7.png", 10, 1});
         Mtb_Applications::pxpWifiConnectStatus = false;
     }
-    set_Status_RGB_LED(YELLOW);
+    mtb_Set_Status_RGB_LED(YELLOW);
 }
 
 //****************************************************************************************************

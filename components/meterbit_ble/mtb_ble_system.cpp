@@ -80,7 +80,7 @@ panelBrightness = (tempBrightness * 2.55) + 1; // One (1) is added to make the 1
 if (panelBrightness == 0)panelBrightness = 5;
 mtb_Write_Nvs_Struct("pan_brghnss", &panelBrightness, sizeof(uint8_t));
 dma_display->setBrightness(panelBrightness); // 0-255
-set_Status_RGB_LED(currentStatusLEDcolor);
+mtb_Set_Status_RGB_LED(currentStatusLEDcolor);
 sprintf(brightnsValue, "%d", (uint8_t)(panelBrightness / 2.55));
 strcat(setPanBrightness, brightnsValue);
 strcat(setPanBrightness, "}");
@@ -135,5 +135,5 @@ void system_Shutdown_Device(){
   delay(12000);
   bleSettingsComSend(mtb_System_Settings_Route, acknowledge);
 	device_SD_RS(PERM_SH);
-  set_Status_RGB_LED(RED);
+  mtb_Set_Status_RGB_LED(RED);
 }

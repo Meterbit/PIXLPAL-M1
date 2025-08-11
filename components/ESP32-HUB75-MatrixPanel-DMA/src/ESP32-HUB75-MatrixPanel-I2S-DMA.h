@@ -494,7 +494,7 @@ public:
   /**
    * A wrapper to fill whatever selected DMA buffer / screen with black
    */
-  inline void clearScreen() { updateMatrixDMABuffer(0, 0, 0); };
+  inline void mtb_Clear_Screen() { updateMatrixDMABuffer(0, 0, 0); };
 
 #ifndef NO_FAST_FUNCTIONS
   /**

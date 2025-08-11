@@ -112,7 +112,7 @@ void scrollText_0_Task(void* dService){
             for(int i = 0; i < holder.stretch; i++) free(holder.dText_Raw[i]);
             free(holder.dText_Raw);
         }
-    drawStatusBar();
+    mtb_Draw_Status_Bar();
     if(Mtb_Applications::currentRunningApp->showStatusBarClock == pdTRUE) mtb_Start_This_Service(mtb_Status_Bar_Clock_Sv);
     //delay(1000); // Wait for 1 second before killing the service.
     mtb_End_This_Service(thisService);

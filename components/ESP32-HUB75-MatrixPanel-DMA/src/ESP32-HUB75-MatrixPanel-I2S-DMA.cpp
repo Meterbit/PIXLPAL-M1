@@ -311,7 +311,7 @@ void MatrixPanel_I2S_DMA::configureDMA(const HUB75_I2S_CFG &_cfg)
  *  Critical dependency: That 'updateMatrixDMABuffer(uint8_t red, uint8_t green, uint8_t blue)' has been run at least once over the
  *                       entire frameBuffer to ensure all the non R,G,B bitmasks are in place (i.e. like OE, Address Lines etc.)
  *
- *  Note: If you change the brightness with setBrightness() you MUST then clearScreen() and repaint / flush the entire framebuffer.
+ *  Note: If you change the brightness with setBrightness() you MUST then mtb_Clear_Screen() and repaint / flush the entire framebuffer.
  */
 
 /** @brief - Update pixel at specific co-ordinate in the DMA buffer

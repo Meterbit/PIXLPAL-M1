@@ -34,14 +34,14 @@ PicoMQTT::Client mqttClient("broker.hivemq.com");
 //PicoMQTT::Client mqttClient("test.mosquitto.org");
 
 void mtb_MQTT_Server::on_connected(const char *client_id){
-  showStatusBarIcon({"/batIcons/phoneCont.png", 18, 1});
-  //set_Status_RGB_LED(WHITE_SMOKE);
+  mtb_Show_Status_Bar_Icon({"/batIcons/phoneCont.png", 18, 1});
+  //mtb_Set_Status_RGB_LED(WHITE_SMOKE);
   //Mtb_Applications::mqttPhoneConnectStatus = true;
 }
 
 void mtb_MQTT_Server::on_disconnected(const char *client_id){
-    wipeStatusBarIcon({"/batIcons/phoneCont.png", 18, 1});
-    //set_Status_RGB_LED(GREEN);
+    mtb_Wipe_Status_Bar_Icon({"/batIcons/phoneCont.png", 18, 1});
+    //mtb_Set_Status_RGB_LED(GREEN);
     //Mtb_Applications::mqttPhoneConnectStatus = false;
 }
 
@@ -127,16 +127,16 @@ void initialize_MQTT(){
 
   mqttClient.connected_callback = []{
     File2Download_t holderItem;
-    showStatusBarIcon({"/batIcons/mqttCont2.png", 10, 1});
+    mtb_Show_Status_Bar_Icon({"/batIcons/mqttCont2.png", 10, 1});
     if(xQueuePeek(files2Download_Q, &holderItem, pdMS_TO_TICKS(100)) == pdTRUE) mtb_Start_This_Service(gitHubFileDwnload_Sv);
     else Mtb_Applications::internetConnectStatus = true;
-    set_Status_RGB_LED(CYAN_PROCESS);
+    mtb_Set_Status_RGB_LED(CYAN_PROCESS);
   };
 
   mqttClient.disconnected_callback = []{
-    wipeStatusBarIcon({"/batIcons/mqttCont2.png", 10, 1});
+    mtb_Wipe_Status_Bar_Icon({"/batIcons/mqttCont2.png", 10, 1});
     Mtb_Applications::internetConnectStatus = false;
-    set_Status_RGB_LED(WiFi.status() == WL_CONNECTED ? GREEN : BLACK);
+    mtb_Set_Status_RGB_LED(WiFi.status() == WL_CONNECTED ? GREEN : BLACK);
   };
   //IMPLEMENT ON_SUBSCRIBE, AND ON_UNSUBSCRIBE H
 }

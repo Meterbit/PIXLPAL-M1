@@ -65,8 +65,8 @@ void  classicClock_App_Task(void* dApplication){
       time(&present);
       now = localtime(&present);
     }
-    awaitingNTP_Time_Top.clearString();
-    awaitingNTP_Time_But.clearString();
+    awaitingNTP_Time_Top.mtb_Clear_String();
+    awaitingNTP_Time_But.mtb_Clear_String();
 //************************************************** */
   while (MTB_APP_IS_ACTIVE == pdTRUE){
     time(&present);
