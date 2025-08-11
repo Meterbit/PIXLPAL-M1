@@ -42,7 +42,7 @@ extern "C" void app_main(){
     // // //Get the total free size of internal SRAM
     free_sram = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
     //Print the free SRAM size
-    ESP_LOGI(TAG, "########### Free SRAM: %zu bytes\n", free_sram);
+    ESP_LOGI(TAG, "############ Free SRAM: %zu bytes\n", free_sram);
     //ESP_LOGI(TAG, "Memory: Free %dKiB Low: %dKiB\n", (int)xPortGetFreeHeapSize()/1024, (int)xPortGetMinimumEverFreeHeapSize()/1024);
      }
 
