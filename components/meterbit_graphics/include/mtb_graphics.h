@@ -93,20 +93,20 @@ typedef void (*ImgWipeFn_ptr)(void);
     extern void mtb_Time_Setup_Init(void);
 
     extern BaseType_t mtb_Draw_Local_Png(const PNG_LocalImage_t&);
-    extern void drawLocalPNG_Task(void *);   
+    extern void mtb_Draw_Local_Png_Task(void *);   
 
 
     // extern BaseType_t drawOnlinePNG(const PNG_OnlineImage_t&);
     // extern void drawOnlinePNG_Task(void *);
 
-    extern void drawOnlinePNGs(const PNG_OnlineImage_t* images, size_t drawPNGsCount = 1, ImgWipeFn_ptr wipePreviousImgs = doNothingVoidFn);
+    extern void mtb_Draw_Online_Png(const PNG_OnlineImage_t* images, size_t drawPNGsCount = 1, ImgWipeFn_ptr wipePreviousImgs = doNothingVoidFn);
     extern void mtb_Download_Multi_Png(const PNG_OnlineImage_t* images, size_t drawPNGsCount);
-    extern bool mtb_Draw_Multiple_Png(size_t drawPNGsCount, ImgWipeFn_ptr wipePreviousImgs = doNothingVoidFn);
+    extern bool mtb_Draw_Multi_Png(size_t drawPNGsCount, ImgWipeFn_ptr wipePreviousImgs = doNothingVoidFn);
 
     // extern BaseType_t drawOnlineSVG(const SVG_OnlineImage_t&);
     // extern void drawOnlineSVG_Task(void *);
 
-    extern void drawOnlineSVGs(const SVG_OnlineImage_t* images, size_t drawSVGsCount = 1, ImgWipeFn_ptr wipePreviousImgs = doNothingVoidFn);
+    extern void mtb_Draw_Online_Svg(const SVG_OnlineImage_t* images, size_t drawSVGsCount = 1, ImgWipeFn_ptr wipePreviousImgs = doNothingVoidFn);
     extern void mtb_Download_Multi_Svg(const SVG_OnlineImage_t* images, size_t drawSVGsCount);
     extern bool mtb_Draw_Multi_Svg(size_t drawSVGsCount, ImgWipeFn_ptr wipePreviousImgs = doNothingVoidFn);
 

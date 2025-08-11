@@ -50,13 +50,13 @@ while (MTB_APP_IS_ACTIVE == pdTRUE){
     while ((Mtb_Applications::internetConnectStatus != true) && (MTB_APP_IS_ACTIVE == pdTRUE)) delay(1000);
 
         strcpy(imageHolder.imageLink, getFlag4x3ByCountry(worldFlagsInfo.countryName).c_str());
-        drawOnlineSVGs(&imageHolder, 1, wipeFlagBackground); 
+        mtb_Draw_Online_Svg(&imageHolder, 1, wipeFlagBackground); 
 
     while (MTB_APP_IS_ACTIVE == pdTRUE && Mtb_Applications::internetConnectStatus == true) {
         if (worldFlagsInfo.cycleAllFlags == true) {
             uint8_t changeIntv = worldFlagsInfo.flagChangeIntv;
             strcpy(imageHolder.imageLink, getRandomFlag4x3().c_str());
-            drawOnlineSVGs(&imageHolder, 1, wipeFlagBackground);
+            mtb_Draw_Online_Svg(&imageHolder, 1, wipeFlagBackground);
             while(changeIntv-->0 && Mtb_Applications::internetConnectStatus == true && MTB_APP_IS_ACTIVE == pdTRUE) delay(1000);
         } else delay(1000);
         if (worldFlagsInfo.showCountryName == true) {
@@ -112,7 +112,7 @@ void selectDisplayFlag(JsonDocument& dCommand){
     
     strcpy(worldFlagsInfo.countryName, countryFlag);
     strcpy(imageHolder.imageLink, getFlag4x3ByCountry(countryFlag).c_str());
-    drawOnlineSVGs(&imageHolder, 1, wipeFlagBackground); 
+    mtb_Draw_Online_Svg(&imageHolder, 1, wipeFlagBackground); 
 
     mtb_Write_Nvs_Struct("worldFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
     mtb_Ble_App_Cmd_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
