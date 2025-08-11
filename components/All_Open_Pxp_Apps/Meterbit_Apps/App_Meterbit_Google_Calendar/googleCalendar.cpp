@@ -27,9 +27,6 @@ GoogleCal_Data_t userGoogleCal = {
     "no_Refresh_Token_Saved_Yet"
 };
 
-const String CLIENT_ID = "1073159638977-j08khjg9s60i37g5386odt2vps0oko97.apps.googleusercontent.com";
-const String CLIENT_SECRET = "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";
-
 // === User Settings ===
 // Modify these flags to show/hide specific data
 // === User Preferences ===

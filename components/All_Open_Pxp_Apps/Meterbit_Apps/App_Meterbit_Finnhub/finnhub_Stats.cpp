@@ -16,7 +16,7 @@ Stocks_Stat_t currentStocks = {
     "AAPL",
     "USD",
     "/stocks/stocksIcon_1.png",
-    "crs3eq1r01qohu2r66c0crs3eq1r01qohu2r66cg",
+    "get free key @ finnhub.io/register",
     1,
     30
 };

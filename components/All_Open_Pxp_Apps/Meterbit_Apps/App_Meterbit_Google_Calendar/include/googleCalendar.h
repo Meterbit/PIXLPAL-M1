@@ -3,12 +3,16 @@
 
 // #include <stdio.h>
 // #include <stdlib.h>
+#include "Arduino.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 // #include "encoder.h"
 // #include "button.h"
 
 static const char googleCalendarAppRoute[] = "2/0";
+
+static const String CLIENT_ID = "your_client_id_here"; // Replace with your actual client ID
+static const String CLIENT_SECRET = "your_client_secret_here"; // Replace with your actual client secret
 
 struct GoogleCal_Data_t {
 char refreshToken[250] = {0};
