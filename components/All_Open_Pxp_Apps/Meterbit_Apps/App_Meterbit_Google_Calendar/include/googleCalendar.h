@@ -11,8 +11,8 @@
 
 static const char googleCalendarAppRoute[] = "2/0";
 
-static const String CLIENT_ID = "1073159638977-j08khjg9s60i37g5386odt2vps0oko97.apps.googleusercontent.com";
-static const String CLIENT_SECRET = "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";
+static const String CLIENT_ID = "your_client_id_here.apps.googleusercontent.com";
+static const String CLIENT_SECRET = "your_client_secret_here";
 
 struct GoogleCal_Data_t {
 char refreshToken[250] = {0};
