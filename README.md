@@ -1,4 +1,4 @@
-# Pixlpal - Interactive AIoT Display
+# PIXLPAL - Interactive AIoT Display
 
 Pixlpal is a smart AIoT desktop companion with an interactive LED display. This Pixlpal repo is an ESP-IDF Project consisting of a collection of ESP‑IDF/Arduino components and applications designed for a 128×64 RGB LED matrix display. Each application runs as a standalone task that can be launched from the Android or iOS mobile app - "Pixlpal" via BLE commands. 
 The project demonstrates how to build network enabled visual applications such as clocks, calendars, stocks and crypto tickers, AI-powered conversational assistant and various API integrations for the PIXLPAL hardware platform.
