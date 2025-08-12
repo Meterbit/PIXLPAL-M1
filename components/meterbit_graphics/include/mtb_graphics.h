@@ -114,7 +114,7 @@ typedef struct
     extern QueueHandle_t nvsAccessQueue;
     extern QueueHandle_t rgb_led_queue;
 
-    class Matrix_Panel_t{
+    class Mtb_Static_Text_t{
     public:
     uint8_t yAxis, xAxis, charSpacing;
     uint8_t *fontMain;
@@ -135,13 +135,13 @@ typedef struct
     virtual void mtb_Update_Panel_Segment(void){}
     virtual void mtb_Clear_Panel_Segment(void){}
 
-    Matrix_Panel_t();
-    Matrix_Panel_t(uint16_t x1, uint16_t y1, const uint8_t *font = Terminal6x8);
+    Mtb_Static_Text_t();
+    Mtb_Static_Text_t(uint16_t x1, uint16_t y1, const uint8_t *font = Terminal6x8);
 
-    virtual ~Matrix_Panel_t() {}  // Add this line
+    virtual ~Mtb_Static_Text_t() {}  // Add this line
 };
 
-class Mtb_FixedText_t : public Matrix_Panel_t {
+class Mtb_FixedText_t : public Mtb_Static_Text_t {
     public:
     static uint8_t** scratchPad;
     uint16_t color;
@@ -155,7 +155,7 @@ class Mtb_FixedText_t : public Matrix_Panel_t {
     virtual void mtb_Update_Panel_Segment(void);
     virtual void mtb_Clear_Panel_Segment(void);
     Mtb_FixedText_t();
-    Mtb_FixedText_t(uint16_t x1, uint16_t y1, const uint8_t *font = Terminal6x8, uint16_t dColor = OLIVE_GREEN, uint16_t dBackGrndColor = BLACK) : Matrix_Panel_t(x1, y1, font){
+    Mtb_FixedText_t(uint16_t x1, uint16_t y1, const uint8_t *font = Terminal6x8, uint16_t dColor = OLIVE_GREEN, uint16_t dBackGrndColor = BLACK) : Mtb_Static_Text_t(x1, y1, font){
         textStyle = STATIC_STYLE;
         color = dColor;
         backgroundColor = dBackGrndColor;
@@ -188,12 +188,12 @@ class Mtb_CentreText_t : public Mtb_FixedText_t {
     void operator delete(void* ptr) {heap_caps_free(ptr);}
 };
 
-class ScrollTextHelper_t : public Matrix_Panel_t {
+class ScrollTextHelper_t : public Mtb_Static_Text_t {
     public:
     uint8_t ** scrollBuffer;
     virtual void mtb_Set_Pixel_Data(uint16_t, uint16_t);
     ScrollTextHelper_t();
-    ScrollTextHelper_t(uint16_t x1, uint16_t y1, const uint8_t *font = Terminal6x8) : Matrix_Panel_t(x1, y1, font) {
+    ScrollTextHelper_t(uint16_t x1, uint16_t y1, const uint8_t *font = Terminal6x8) : Mtb_Static_Text_t(x1, y1, font) {
         textStyle = DYNAMIC_STYLE;
         }
 };

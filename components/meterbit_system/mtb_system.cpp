@@ -87,9 +87,9 @@ void mtb_System_Init(void){
         }
     }
     }
-    Matrix_Panel_t::mtb_Config_Disp_Panel_Pins();
+    Mtb_Static_Text_t::mtb_Config_Disp_Panel_Pins();
     init_nvs_mem();
-    Matrix_Panel_t::mtb_Init_Led_Matrix_Panel();
+    Mtb_Static_Text_t::mtb_Init_Led_Matrix_Panel();
 	mtb_Read_Nvs_Struct("dev_Volume", &deviceVolume, sizeof(uint8_t));
     mtb_Text_Scrolls_Init();
     if(appLuncherQueue == NULL) appLuncherQueue = xQueueCreate(4, sizeof(Mtb_Applications*));

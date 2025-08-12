@@ -171,7 +171,7 @@ void mtb_Draw_Status_Bar(void){
 }
 
 //***PASSED ********************************************************************
-void Matrix_Panel_t::mtb_Config_Disp_Panel_Pins()
+void Mtb_Static_Text_t::mtb_Config_Disp_Panel_Pins()
 {
 	pinMode(ALM_BUZZER, OUTPUT); // Make the alarm silent at the very start.
 	digitalWrite(ALM_BUZZER, LOW);
@@ -183,7 +183,7 @@ void Matrix_Panel_t::mtb_Config_Disp_Panel_Pins()
 }
 
 // PASSED
-void Matrix_Panel_t::mtb_Init_Led_Matrix_Panel(){
+void Mtb_Static_Text_t::mtb_Init_Led_Matrix_Panel(){
 	uint8_t *pngLocalItems_buffer = (uint8_t *)heap_caps_malloc(20 * sizeof(PNG_LocalImage_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
 	//uint8_t *pngOnlineItems_buffer = (uint8_t *)heap_caps_malloc(20 * sizeof(PNG_OnlineImage_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
 	//uint8_t *svgOnlineItems_buffer = (uint8_t *)heap_caps_malloc(20 * sizeof(SVG_OnlineImage_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
@@ -207,14 +207,14 @@ void Matrix_Panel_t::mtb_Init_Led_Matrix_Panel(){
 }
 
 //************************************************
-Matrix_Panel_t::Matrix_Panel_t(uint16_t x1, uint16_t y1, const uint8_t *font)
+Mtb_Static_Text_t::Mtb_Static_Text_t(uint16_t x1, uint16_t y1, const uint8_t *font)
 {
 	setfont(font);
 	x1Seg = originX1Seg = x1;
 	y1Seg = originY1Seg = y1;
 }
 
-void Matrix_Panel_t::setfont(const uint8_t *font)
+void Mtb_Static_Text_t::setfont(const uint8_t *font)
 {
 	fontMain = (uint8_t *)font;
 	yAxis = font[6];
@@ -245,7 +245,7 @@ void Mtb_FixedText_t::mtb_Update_Panel_Segment(void)
 	}
 }
 //**************************************************************************************
-void Matrix_Panel_t::mtb_Clear_Screen(void)
+void Mtb_Static_Text_t::mtb_Clear_Screen(void)
 {
 	dma_display->mtb_Clear_Screen();
 }
@@ -265,7 +265,7 @@ void ScrollTextHelper_t::mtb_Set_Pixel_Data(uint16_t xPs, uint16_t yPs)
 }
 //**************************************************************************************
 // write character function
-void Matrix_Panel_t::writeXter(uint16_t character, uint16_t xPixel, uint16_t yPixel)
+void Mtb_Static_Text_t::writeXter(uint16_t character, uint16_t xPixel, uint16_t yPixel)
 {
 	uint16_t xOrigin = xPixel;
 	uint8_t masker = 0;
@@ -289,7 +289,7 @@ void Matrix_Panel_t::writeXter(uint16_t character, uint16_t xPixel, uint16_t yPi
 	}
 }
 //**************************************************************************************
-uint16_t Matrix_Panel_t::mtb_Write_String(const char *myString){
+uint16_t Mtb_Static_Text_t::mtb_Write_String(const char *myString){
 	uint16_t charCount = strlen(myString);
 	uint16_t row = x1Seg;
 	uint16_t position = textStyle ? y1Seg : 0;
@@ -605,7 +605,7 @@ uint16_t Matrix_Panel_t::mtb_Write_String(const char *myString){
 	return row;
 }
 //**************************************************************************************
-uint16_t Matrix_Panel_t::mtb_Write_String(String myString)
+uint16_t Mtb_Static_Text_t::mtb_Write_String(String myString)
 {
 	return mtb_Write_String(myString.c_str());
 }
