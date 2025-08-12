@@ -19,7 +19,7 @@ extern "C" void app_main(){
     mtb_Launch_This_App(firmwareUpdate_App);
     while(Mtb_Applications::firmwareOTA_Status != pdFALSE) delay(1000);
 
-    mtb_Read_Nvs_Struct("currentApp", &currentApp, sizeof(CurrentApp_t));
+    mtb_Read_Nvs_Struct("currentApp", &currentApp, sizeof(Mtb_CurrentApp_t));
     mtb_Wifi_Init();
     mtb_General_App_Lunch(currentApp);
     //mtb_Launch_This_App(worldFlags_App);

@@ -11,9 +11,9 @@
 
 EXT_RAM_BSS_ATTR TaskHandle_t statusBarClock_H = NULL;
 
-EXT_RAM_BSS_ATTR Mtb_Services *mtb_Status_Bar_Clock_Sv = new Mtb_Services(statusBarClock, &statusBarClock_H, "StatBar Clk Serv.", 4096, 1, pdTRUE);
+EXT_RAM_BSS_ATTR Mtb_Services *mtb_Status_Bar_Clock_Sv = new Mtb_Services(mtb_StatusBar_Clock, &statusBarClock_H, "StatBar Clk Serv.", 4096, 1, pdTRUE);
 
-void statusBarClock(void* dService){
+void mtb_StatusBar_Clock(void* dService){
   Mtb_Services *thisServ = (Mtb_Services *)dService;
   Mtb_Applications::currentRunningApp->showStatusBarClock = pdTRUE;
     uint8_t timeRefresh = pdTRUE;

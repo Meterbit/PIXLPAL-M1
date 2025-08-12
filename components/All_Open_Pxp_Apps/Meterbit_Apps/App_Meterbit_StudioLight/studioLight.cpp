@@ -22,7 +22,7 @@ void selectStudioLightPatternButton(button_event_t button_Data);
 // bluetooth functions
 void setStudioLightColors(JsonDocument&);
 
-EXT_RAM_BSS_ATTR Applications_FullScreen *studioLight_App = new Applications_FullScreen(studioLight_App_Task, &studioLight_Task_H, "studioLight", 10240);
+EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *studioLight_App = new Mtb_Applications_FullScreen(studioLight_App_Task, &studioLight_Task_H, "studioLight", 10240);
 
 void studioLight_App_Task(void* dApplication){
   Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;

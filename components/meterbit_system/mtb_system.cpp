@@ -15,8 +15,8 @@
 EXT_RAM_BSS_ATTR TaskHandle_t encoder_Task_H = NULL;
 EXT_RAM_BSS_ATTR TaskHandle_t button_Task_H = NULL;
 
-EXT_RAM_BSS_ATTR Service_With_Fns *encoder_Task_Sv = new Service_With_Fns(encoder_Task, &encoder_Task_H, "Encoder Task", 10240, 0, pdTRUE, 1); // Review this task Stack Size
-EXT_RAM_BSS_ATTR Service_With_Fns *button_Task_Sv = new Service_With_Fns(button_Task, &button_Task_H, "Button Task", 10240, 0, pdTRUE, 1); // Review this task Stack Size
+EXT_RAM_BSS_ATTR Mtb_Service_With_Fns *encoder_Task_Sv = new Mtb_Service_With_Fns(encoder_Task, &encoder_Task_H, "Encoder Task", 10240, 0, pdTRUE, 1); // Review this task Stack Size
+EXT_RAM_BSS_ATTR Mtb_Service_With_Fns *button_Task_Sv = new Mtb_Service_With_Fns(button_Task, &button_Task_H, "Button Task", 10240, 0, pdTRUE, 1); // Review this task Stack Size
 
 button_t pressButton{
   .pin = (gpio_num_t)GPIO_NUM_0,

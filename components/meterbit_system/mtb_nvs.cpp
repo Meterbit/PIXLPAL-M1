@@ -50,7 +50,7 @@ Wifi_Credentials default_Successful_Wifi{
     // "connected",
 };
 
-CurrentApp_t classickClockAppSelect{
+Mtb_CurrentApp_t classickClockAppSelect{
     .GenApp = 0,
     .SpeApp = 0
     };
@@ -81,7 +81,7 @@ void init_nvs_mem(void){
     mtb_Write_Nvs_Struct("ntp TimeZone", (char*) ntp_TimeZone, sizeof(ntp_TimeZone));            // NTP Time-Zone
     mtb_Write_Nvs_Struct("pan_brghnss", &panelBrightness, sizeof(uint8_t));                      // Panel Brightness
     mtb_Write_Nvs_Struct("dev_Volume", &deviceVolume, sizeof(uint8_t));                          // Device volume
-    mtb_Write_Nvs_Struct("currentApp", &classickClockAppSelect, sizeof(CurrentApp_t));           // Current Running App
+    mtb_Write_Nvs_Struct("currentApp", &classickClockAppSelect, sizeof(Mtb_CurrentApp_t));           // Current Running App
     mtb_Write_Nvs_Struct("Clock Cols", &clk_Updt, sizeof(Clock_Colors));                         // Clock Colors
     mtb_Write_Nvs_Struct("Wifi Cred",&default_Successful_Wifi, sizeof(Wifi_Credentials));        // Successful Wi-Fi Credentials
     mtb_Write_Nvs_Struct("wakeState", &wakeState, sizeof(power_States_t));                       // Device Wake State from Power down

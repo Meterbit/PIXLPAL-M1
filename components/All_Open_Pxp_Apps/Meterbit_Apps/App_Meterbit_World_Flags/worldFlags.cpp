@@ -32,7 +32,7 @@ void cycleAllFlags(JsonDocument&);
 void showCountryName(JsonDocument&);
 void setFlagChangeIntv(JsonDocument&);
 
-EXT_RAM_BSS_ATTR Applications_FullScreen *worldFlags_App = new Applications_FullScreen(worldFlags_App_Task, &worldFlags_Task_H, "worlfFlagsApp", 4096);
+EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *worldFlags_App = new Mtb_Applications_FullScreen(worldFlags_App_Task, &worldFlags_Task_H, "worlfFlagsApp", 4096);
 
 void worldFlags_App_Task(void* dApplication){
   Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;

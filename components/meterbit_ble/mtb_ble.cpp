@@ -49,7 +49,7 @@ String setValue = "1";
 #define APPCOM_CHARACTERISTIC_UUID "c8f1eead-48b0-449d-accb-5fdb87c4b566"
 
 EXT_RAM_BSS_ATTR Mtb_Services *ble_SetCom_Parse_Sv = new Mtb_Services(ble_SetCom_Parse_Task, &ble_SetCom_Parser_Task_Handle, "bleSetCom_parser_task", 6144, 4); // THIS FUNCTIONS CANNOT BE AN PSRAM MEMORY BECAUSE THEY MIGHT ATTEMPT TO WRITE THE ONBOARD FLASH
-EXT_RAM_BSS_ATTR Service_With_Fns *mtb_Ble_AppComm_Parser_Sv = new Service_With_Fns(ble_AppCom_Parse_Task, &ble_AppCom_Parser_Task_Handle, "bleAppCom_Parser_task", 6144, 4); // THIS FUNCTIONS CANNOT BE AN PSRAM MEMORY BECAUSE THEY MIGHT ATTEMPT TO WRITE THE ONBOARD FLASH
+EXT_RAM_BSS_ATTR Mtb_Service_With_Fns *mtb_Ble_AppComm_Parser_Sv = new Mtb_Service_With_Fns(ble_AppCom_Parse_Task, &ble_AppCom_Parser_Task_Handle, "bleAppCom_Parser_task", 6144, 4); // THIS FUNCTIONS CANNOT BE AN PSRAM MEMORY BECAUSE THEY MIGHT ATTEMPT TO WRITE THE ONBOARD FLASH
 
 class MyServerCallbacks : public NimBLEServerCallbacks{
   void onConnect(NimBLEServer *pServer, NimBLEConnInfo& connInfo){

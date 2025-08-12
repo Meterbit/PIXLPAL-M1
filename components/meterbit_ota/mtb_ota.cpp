@@ -30,7 +30,7 @@ static const char TAG[] = "MTB-GHOTA";
     };
 
 EXT_RAM_BSS_ATTR TaskHandle_t ota_Updating = NULL;
-EXT_RAM_BSS_ATTR Applications_FullScreen *otaUpdateApplication_App = new Applications_FullScreen(ota_Update_Task, &ota_Updating, "GHOTA Update");
+EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *otaUpdateApplication_App = new Mtb_Applications_FullScreen(ota_Update_Task, &ota_Updating, "GHOTA Update");
 
 Mtb_FixedText_t* otaUpdateTextTop = new Mtb_FixedText_t(8, 39, Terminal8x12, GREEN);  //FREE THESE VARIABLES WHEN DONE WITH THE OTA APPLICATION
 Mtb_FixedText_t* otaUpdateTextBot = new Mtb_FixedText_t(8, 52, Terminal8x12, GREEN);

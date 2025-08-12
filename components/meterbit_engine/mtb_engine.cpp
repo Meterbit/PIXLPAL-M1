@@ -18,7 +18,7 @@
 
 static const char TAG[] = "METERBIT_ENGINE";
 
-CurrentApp_t currentApp{
+Mtb_CurrentApp_t currentApp{
     .GenApp = 0,
     .SpeApp = 1
     };
@@ -80,7 +80,7 @@ Mtb_Applications::Mtb_Applications(void (*dApplication)(void *), TaskHandle_t* d
 //     mtb_Start_This_Service(mtb_Ble_AppComm_Parser_Sv);
 // }
 
-void mtb_Launch_This_App(Mtb_Applications *dApp, do_Prev_App_t do_Prv_App){
+void mtb_Launch_This_App(Mtb_Applications *dApp, Mtb_Do_Prev_App_t do_Prv_App){
     dApp->action_On_Prev_App = do_Prv_App;
     xQueueSend(appLuncherQueue, &dApp, portMAX_DELAY);
     mtb_Start_This_Service(app_Luncher_Task_Sv);
@@ -120,11 +120,11 @@ void mtb_Start_This_Service(Mtb_Services* dService){
     }
 }
 
-void resume_This_Service(Mtb_Services* dService){
+void mtb_Resume_This_Service(Mtb_Services* dService){
     vTaskResume(*(dService->serviceT_Handle_ptr));
 }
 
-void suspend_This_Service(Mtb_Services* dService){
+void mtb_Suspend_This_Service(Mtb_Services* dService){
     vTaskSuspend(*(dService->serviceT_Handle_ptr));
 }
 
@@ -231,7 +231,7 @@ void Mtb_Applications::appResume(Mtb_Applications* dApp){
 
     if(litFS_Ready){
     vTaskResume(*(dApp->appHandle_ptr));
-    for (Mtb_Services* element : dApp->appServices) if (element != nullptr) resume_This_Service(element);
+    for (Mtb_Services* element : dApp->appServices) if (element != nullptr) mtb_Resume_This_Service(element);
     }
 
     encoderFn_ptr = dApp->mtb_App_EncoderFn_ptr; // When an app is destroyed, we disable the rotary encoder.
@@ -242,7 +242,7 @@ void Mtb_Applications::appResume(Mtb_Applications* dApp){
 }
 
 void Mtb_Applications::appSuspend(Mtb_Applications* dApp){
-    for (Mtb_Services* element : dApp->appServices) if (element != nullptr) suspend_This_Service(element);
+    for (Mtb_Services* element : dApp->appServices) if (element != nullptr) mtb_Suspend_This_Service(element);
     vTaskSuspend(*(dApp->appHandle_ptr));
 }
 
@@ -288,7 +288,7 @@ void Mtb_Applications::appDestroy(Mtb_Applications* dApp){
 
 }
 
-void Mtb_Applications::actionOnPreviousApp(do_Prev_App_t dAction){
+void Mtb_Applications::actionOnPreviousApp(Mtb_Do_Prev_App_t dAction){
     if(litFS_Ready){
         switch (dAction){
         case SUSPEND_PREVIOUS_APP: Mtb_Applications::appSuspend(currentRunningApp);
@@ -531,7 +531,7 @@ void ble_AppCom_Parse_Task(void* dService){
             if (dError.code() == dError.Ok && dCmd_num == 0xFF){
                 currentApp.GenApp = getIntegerAtIndex(specify_Application, 0);
                 currentApp.SpeApp = getIntegerAtIndex(specify_Application, 1);
-                mtb_Write_Nvs_Struct("currentApp", &currentApp, sizeof(CurrentApp_t));
+                mtb_Write_Nvs_Struct("currentApp", &currentApp, sizeof(Mtb_CurrentApp_t));
                 mtb_General_App_Lunch(currentApp);
                 bleApplicationComSend(specify_Application.c_str(), "{\"pxp_command\": 253}");
             }else{
@@ -546,7 +546,7 @@ void ble_AppCom_Parse_Task(void* dService){
   mtb_End_This_Service(thisService);
 }
 
-void Service_With_Fns::mtb_Register_Ble_Comm_ServiceFns(bleCom_Parser_Fns_Ptr Fn_0, bleCom_Parser_Fns_Ptr Fn_1, bleCom_Parser_Fns_Ptr Fn_2 , bleCom_Parser_Fns_Ptr Fn_3, bleCom_Parser_Fns_Ptr Fn_4, bleCom_Parser_Fns_Ptr Fn_5, bleCom_Parser_Fns_Ptr Fn_6, bleCom_Parser_Fns_Ptr Fn_7, bleCom_Parser_Fns_Ptr Fn_8, bleCom_Parser_Fns_Ptr Fn_9, bleCom_Parser_Fns_Ptr Fn_10, bleCom_Parser_Fns_Ptr Fn_11){
+void Mtb_Service_With_Fns::mtb_Register_Ble_Comm_ServiceFns(bleCom_Parser_Fns_Ptr Fn_0, bleCom_Parser_Fns_Ptr Fn_1, bleCom_Parser_Fns_Ptr Fn_2 , bleCom_Parser_Fns_Ptr Fn_3, bleCom_Parser_Fns_Ptr Fn_4, bleCom_Parser_Fns_Ptr Fn_5, bleCom_Parser_Fns_Ptr Fn_6, bleCom_Parser_Fns_Ptr Fn_7, bleCom_Parser_Fns_Ptr Fn_8, bleCom_Parser_Fns_Ptr Fn_9, bleCom_Parser_Fns_Ptr Fn_10, bleCom_Parser_Fns_Ptr Fn_11){
     bleAppComServiceFns[0] = Fn_0;
     bleAppComServiceFns[1] = Fn_1;
     bleAppComServiceFns[2] = Fn_2;
@@ -561,20 +561,20 @@ void Service_With_Fns::mtb_Register_Ble_Comm_ServiceFns(bleCom_Parser_Fns_Ptr Fn
     bleAppComServiceFns[11] = Fn_11;
 }
 
-void mtb_General_App_Lunch(CurrentApp_t dAppPath){
+void mtb_General_App_Lunch(Mtb_CurrentApp_t dAppPath){
     switch(dAppPath.GenApp){
-    case 0: clk_Tim_AppLunch(dAppPath.SpeApp); break;
-    case 1: msgAppLunch(dAppPath.SpeApp); break;
-    case 2: calendarAppLunch(dAppPath.SpeApp); break;
-    case 3: weatherAppLunch(dAppPath.SpeApp); break;
-    case 4: financeAppLunch(dAppPath.SpeApp); break;
-    case 5: sportsAppLunch(dAppPath.SpeApp); break;
-    case 6: animationsAppLunch(dAppPath.SpeApp); break;
-    case 7: notificationsAppLunch(dAppPath.SpeApp); break;
-    case 8: ai_AppLunch(dAppPath.SpeApp); break;
-    case 9: audioStreamAppLunch(dAppPath.SpeApp); break;
-    case 10: sMediaAppLunch(dAppPath.SpeApp); break;
-    case 11: miscellanousAppLunch(dAppPath.SpeApp); break;
+    case 0: mtb_Clk_Tim_AppLunch(dAppPath.SpeApp); break;
+    case 1: mtb_Msg_App_Lunch(dAppPath.SpeApp); break;
+    case 2: mtb_Calendar_App_Lunch(dAppPath.SpeApp); break;
+    case 3: mtb_Weather_App_Lunch(dAppPath.SpeApp); break;
+    case 4: mtb_Finance_App_Lunch(dAppPath.SpeApp); break;
+    case 5: mtb_Sports_App_Lunch(dAppPath.SpeApp); break;
+    case 6: mtb_Animations_App_Lunch(dAppPath.SpeApp); break;
+    case 7: mtb_Notifications_App_Lunch(dAppPath.SpeApp); break;
+    case 8: mtb_Ai_App_Lunch(dAppPath.SpeApp); break;
+    case 9: mtb_Audio_Stream_App_Lunch(dAppPath.SpeApp); break;
+    case 10: mtb_sMedia_App_Lunch(dAppPath.SpeApp); break;
+    case 11: mtb_Miscellanous_App_Lunch(dAppPath.SpeApp); break;
     // case 12: specAppLunch(dSpecApp); break;
     // case 13: specAppLunch(dSpecApp); break;
     // case 14: specAppLunch(dSpecApp); break;
@@ -586,7 +586,7 @@ void mtb_General_App_Lunch(CurrentApp_t dAppPath){
 }
 
 //********NUMBER 0 */
-void clk_Tim_AppLunch(uint16_t dAppNumber){
+void mtb_Clk_Tim_AppLunch(uint16_t dAppNumber){
     switch(dAppNumber){
         case 0: mtb_Launch_This_App(classicClock_App); break;
         case 1: mtb_Launch_This_App(pixelAnimClock_App); break;
@@ -598,7 +598,7 @@ void clk_Tim_AppLunch(uint16_t dAppNumber){
 }
 
 //********NUMBER 1 */
-void msgAppLunch(uint16_t dAppNumber){
+void mtb_Msg_App_Lunch(uint16_t dAppNumber){
     switch(dAppNumber){
         case 0: mtb_Launch_This_App(googleNews_App); break;
         case 1: mtb_Launch_This_App(rssNewsApp); break;
@@ -609,7 +609,7 @@ void msgAppLunch(uint16_t dAppNumber){
 }
 
 //********NUMBER 2 */
-void calendarAppLunch(uint16_t dAppNumber){
+void mtb_Calendar_App_Lunch(uint16_t dAppNumber){
     switch(dAppNumber){
         case 0: mtb_Launch_This_App(google_Calendar_App); break;
         case 1: mtb_Launch_This_App(outlook_Calendar_App); break;
@@ -620,7 +620,7 @@ void calendarAppLunch(uint16_t dAppNumber){
 }
 
 //********NUMBER 3 */
-void weatherAppLunch(uint16_t dAppNumber){
+void mtb_Weather_App_Lunch(uint16_t dAppNumber){
     switch(dAppNumber){
         case 0: mtb_Launch_This_App(openWeather_App); break;
         case 1: mtb_Launch_This_App(openMeteo_App); break;
@@ -632,7 +632,7 @@ void weatherAppLunch(uint16_t dAppNumber){
 }
 
 //********NUMBER 4 */
-void financeAppLunch(uint16_t dAppNumber){
+void mtb_Finance_App_Lunch(uint16_t dAppNumber){
     switch(dAppNumber){
         case 0: mtb_Launch_This_App(finnhub_Stats_App); break;
         case 1: mtb_Launch_This_App(crypto_Stats_App); break; 
@@ -645,7 +645,7 @@ void financeAppLunch(uint16_t dAppNumber){
 }
 
 //********NUMBER 5 */
-void sportsAppLunch(uint16_t dAppNumber){
+void mtb_Sports_App_Lunch(uint16_t dAppNumber){
     switch(dAppNumber){
         case 0: mtb_Launch_This_App(liveFootbalScores_App); break;
         // case 1: mtb_Launch_This_App(classicClock_App); break;
@@ -656,7 +656,7 @@ void sportsAppLunch(uint16_t dAppNumber){
 }
 
 //********NUMBER 6 */
-void animationsAppLunch(uint16_t dAppNumber){
+void mtb_Animations_App_Lunch(uint16_t dAppNumber){
     switch(dAppNumber){
         case 0: mtb_Launch_This_App(studioLight_App); break;   // ABOUT 10KB RAM IS CONSUMED JUST BY HAVING THIS APPLICATION AMONG THE OTHERS
         case 1: mtb_Launch_This_App(worldFlags_App); break;
@@ -666,7 +666,7 @@ void animationsAppLunch(uint16_t dAppNumber){
 }
 
 //********NUMBER 7 */
-void notificationsAppLunch(uint16_t dAppNumber){
+void mtb_Notifications_App_Lunch(uint16_t dAppNumber){
     switch(dAppNumber){
         case 0: mtb_Launch_This_App(apple_Notifications_App); break;
         // case 1: mtb_Launch_This_App(classicClock_App); break;
@@ -682,7 +682,7 @@ void notificationsAppLunch(uint16_t dAppNumber){
 }
 
 //********NUMBER 8 */
-void ai_AppLunch(uint16_t dAppNumber){
+void mtb_Ai_App_Lunch(uint16_t dAppNumber){
     switch(dAppNumber){
         case 0: mtb_Launch_This_App(chatGPT_App); break;
         // case 1: mtb_Launch_This_App(classicClock_App); break; 
@@ -698,7 +698,7 @@ void ai_AppLunch(uint16_t dAppNumber){
 }
 
 //********NUMBER 9 */
-void audioStreamAppLunch(uint16_t dAppNumber){
+void mtb_Audio_Stream_App_Lunch(uint16_t dAppNumber){
     switch(dAppNumber){
         case 0: mtb_Launch_This_App(internetRadio_App); break;
         case 1: mtb_Launch_This_App(musicPlayer_App); break;
@@ -710,7 +710,7 @@ void audioStreamAppLunch(uint16_t dAppNumber){
 }
 
 //********NUMBER 10 */
-void sMediaAppLunch(uint16_t dAppNumber){
+void mtb_sMedia_App_Lunch(uint16_t dAppNumber){
     switch(dAppNumber){
         // case 0: mtb_Launch_This_App(classicClock_App); break;
         // case 1: mtb_Launch_This_App(classicClock_App); break;
@@ -726,7 +726,7 @@ void sMediaAppLunch(uint16_t dAppNumber){
 }
 
 //********NUMBER 11 */
-void miscellanousAppLunch(uint16_t dAppNumber){
+void mtb_Miscellanous_App_Lunch(uint16_t dAppNumber){
     switch(dAppNumber){
         // case 0: mtb_Launch_This_App(classicClock_App); break;
         // case 1: mtb_Launch_This_App(classicClock_App); break;
