@@ -91,6 +91,6 @@ void mtb_System_Init(void){
     init_nvs_mem();
     Matrix_Panel_t::mtb_Init_Led_Matrix_Panel();
 	mtb_Read_Nvs_Struct("dev_Volume", &deviceVolume, sizeof(uint8_t));
-    text_Scrolls_Init();
+    mtb_Text_Scrolls_Init();
     if(appLuncherQueue == NULL) appLuncherQueue = xQueueCreate(4, sizeof(Mtb_Applications*));
 }

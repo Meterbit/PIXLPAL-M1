@@ -52,7 +52,7 @@ class Mtb_ScrollText_t {
         uint8_t scrollTaskHandling = 0;      // This is used to set the scroll task that is running the scrolling for this particular object.
         static Mtb_ScrollText_t *scrollTask_HolderPointers[];
 
-        void scrollString();
+        void mtb_Scroll_String();
         void mtb_Scroll_This_Text(const char*);
         void mtb_Scroll_This_Text(const char*, uint16_t c);
         void mtb_Scroll_This_Text(const char*, uint16_t c, uint16_t p);
@@ -83,8 +83,8 @@ class Mtb_ScrollText_t {
         Mtb_ScrollText_t(uint16_t color, uint16_t pass = 1, uint8_t makeBeep = 0);
 };
 
-extern void text_Scrolls_Init(void);
-void scrollText_0_Task(void *arguments);
+extern void mtb_Text_Scrolls_Init(void);
+void mtb_Scroll_Text_0_Task(void *arguments);
 extern Mtb_ScrollText_t statusBarNotif;
 
 

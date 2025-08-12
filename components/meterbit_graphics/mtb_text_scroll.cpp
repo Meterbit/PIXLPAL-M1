@@ -68,7 +68,7 @@ int countCharOccurrences(const char *str, char ch) {
     return count;
 }
 //**************************************************************************************
-void Mtb_ScrollText_t::scrollString(){
+void Mtb_ScrollText_t::mtb_Scroll_String(){
     uint32_t scroll_Length = span + width;
     uint8_t yPos2 = font[6] + yPos;
     uint8_t xPos2 = width + xPos;
@@ -99,7 +99,7 @@ void Mtb_ScrollText_t::scrollString(){
     }
 }
 //**************************************************************************************
-void scrollText_0_Task(void* dService){
+void mtb_Scroll_Text_0_Task(void* dService){
     Mtb_Services *thisService = (Mtb_Services*) dService;
     if(Mtb_Applications::currentRunningApp->showStatusBarClock == pdTRUE) mtb_Status_Bar_Clock_Sv->service_is_Running = pdFALSE;      // End the status bar clock service.
 
@@ -107,7 +107,7 @@ void scrollText_0_Task(void* dService){
     Mtb_ScrollText_t::scrollTask_HolderPointers[0] = &holder;
 
     while ((xQueuePeek(scroll_Q[0], &holder, pdMS_TO_TICKS(100)) == pdTRUE)){
-        if(Mtb_Applications::currentRunningApp->fullScreen == false) holder.scrollString();
+        if(Mtb_Applications::currentRunningApp->fullScreen == false) holder.mtb_Scroll_String();
             xQueueReceive(scroll_Q[0], &holder, pdMS_TO_TICKS(100));
             for(int i = 0; i < holder.stretch; i++) free(holder.dText_Raw[i]);
             free(holder.dText_Raw);
@@ -124,7 +124,7 @@ void scrollText_1_Task(void* dService){
     Mtb_ScrollText_t::scrollTask_HolderPointers[1] = &holder;
     
     while(xQueuePeek(scroll_Q[1], &holder, pdMS_TO_TICKS(100)) == pdTRUE){
-    holder.scrollString();
+    holder.mtb_Scroll_String();
     xQueueReceive(scroll_Q[1], &holder, pdMS_TO_TICKS(100));
     for(int i = 0; i < holder.stretch; i++) free(holder.dText_Raw[i]);
     free(holder.dText_Raw);
@@ -138,7 +138,7 @@ void scrollText_2_Task(void* dService){
     Mtb_ScrollText_t::scrollTask_HolderPointers[2] = &holder;
 
     while(xQueuePeek(scroll_Q[2], &holder, pdMS_TO_TICKS(100)) == pdTRUE){
-        holder.scrollString();
+        holder.mtb_Scroll_String();
         xQueueReceive(scroll_Q[2], &holder, pdMS_TO_TICKS(100));
     for(int i = 0; i < holder.stretch; i++) free(holder.dText_Raw[i]);
     free(holder.dText_Raw);
@@ -152,7 +152,7 @@ void scrollText_3_Task(void* dService){
     Mtb_ScrollText_t::scrollTask_HolderPointers[3] = &holder;
 
     while(xQueuePeek(scroll_Q[3], &holder, pdMS_TO_TICKS(100)) == pdTRUE){
-        holder.scrollString();
+        holder.mtb_Scroll_String();
         xQueueReceive(scroll_Q[3], &holder, pdMS_TO_TICKS(100));
     for(int i = 0; i < holder.stretch; i++) free(holder.dText_Raw[i]);
     free(holder.dText_Raw);
@@ -167,7 +167,7 @@ void scrollText_4_Task(void* dService){
     Mtb_ScrollText_t::scrollTask_HolderPointers[4] = &holder;
 
     while(xQueuePeek(scroll_Q[4], &holder, pdMS_TO_TICKS(100)) == pdTRUE){
-        holder.scrollString();
+        holder.mtb_Scroll_String();
         xQueueReceive(scroll_Q[4], &holder, pdMS_TO_TICKS(100));
     for(int i = 0; i < holder.stretch; i++) free(holder.dText_Raw[i]);
     free(holder.dText_Raw);
@@ -176,7 +176,7 @@ void scrollText_4_Task(void* dService){
     mtb_End_This_Service(thisService);
 }
 //**************************************************************************************
-void  text_Scrolls_Init(void){
+void  mtb_Text_Scrolls_Init(void){
     for (uint8_t i = 0; i < 5; i++){
     uint8_t *scrollQueues_buffer = (uint8_t *)heap_caps_malloc(40 * sizeof(Mtb_ScrollText_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
     scroll_Q[i] = xQueueCreateStatic(40, sizeof(Mtb_ScrollText_t), scrollQueues_buffer, &xQueueStorage_Scrolls[i]); // These Queues live forever on device startup.
@@ -191,7 +191,7 @@ void  text_Scrolls_Init(void){
         strcat(scroll_Tasks_Sv[v]->serviceName, " Scrl Txt Tsk");
         scroll_Tasks_Sv[v]->usePSRAM_Stack = pdTRUE;
     }
-    scroll_Tasks_Sv[0]->service = scrollText_0_Task;
+    scroll_Tasks_Sv[0]->service = mtb_Scroll_Text_0_Task;
     scroll_Tasks_Sv[1]->service = scrollText_1_Task;
     scroll_Tasks_Sv[2]->service = scrollText_2_Task;
     scroll_Tasks_Sv[3]->service = scrollText_3_Task;
