@@ -1073,7 +1073,7 @@ void mtb_Draw_Online_Png(const PNG_OnlineImage_t* images, size_t drawPNGsCount, 
 
 //   while ((xQueueReceive(svgOnlineImageDrawer_Q, &holderItem, pdMS_TO_TICKS(100)) == pdTRUE) && (litFS_Ready == true)) {
 
-//     if (downloadSVGImageToPSRAM(holderItem.imageLink, &svgBuffer, &svgSize, &mimeType)) {
+//     if (mtb_Download_Svg_Img_To_PSRAM(holderItem.imageLink, &svgBuffer, &svgSize, &mimeType)) {
 //       printf("SVG MIME: %s\n", mimeType.c_str());
 
 //       // Ensure null-terminated SVG string
@@ -1225,7 +1225,7 @@ void svgDownloaderWorker(void* param) {
         // Proceed to download this image
         SVG_PreloadedImage_t* img = &preloadedSVGs[myIndex];
         String mime;
-        if (downloadSVGImageToPSRAM(img->meta.imageLink, &img->svgBuffer, &img->svgSize, &mime)) {
+        if (mtb_Download_Svg_Img_To_PSRAM(img->meta.imageLink, &img->svgBuffer, &img->svgSize, &mime)) {
             img->isReady = true;
         } else {
             img->failed = true;

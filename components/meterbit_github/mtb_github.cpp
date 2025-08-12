@@ -96,7 +96,7 @@ bool mtb_Download_Github_Strg_File(String bucketPath, String flashPath){
   return true;
 }
 
-bool downloadGithubFileToPSRAM(const String& bucketPath, uint8_t** outBuffer, size_t* outSize) {
+bool mtb_Download_Github_File_To_PSRAM(const String& bucketPath, uint8_t** outBuffer, size_t* outSize) {
     // GitHub repo details
     const char* host = "api.github.com";
     const int httpsPort = 443;
@@ -236,94 +236,56 @@ bool mtb_Prepare_Flash_File_Path(const char* filePath) {
 }
 
 
-// Example usage:
-// downloadImageToSPIFFS("https://media.api-sports.io//football//teams//45.png", "/team_45.png");
+bool mtb_Download_Online_Image_To_SPIFFS(const char* url, const char* pathInSPIFFS) {
+  ESP_LOGI(TAG, "Downloading: %s\n", url);
+  File file;
+  HTTPClient http;
+  http.begin(url);
+  int httpCode = http.GET();
 
-// bool downloadOnlineImageToSPIFFS(const char* url, const char* pathInSPIFFS) {
-//   ESP_LOGI(TAG, "Downloading: %s\n", url);
-//   File file;
-//   HTTPClient http;
-//   http.begin(url);
-//   int httpCode = http.GET();
+  if (httpCode != HTTP_CODE_OK) {
+    ESP_LOGI(TAG, "HTTP GET failed, error: %d\n", httpCode);
+    http.end();
+    return false;
+  }
 
-//   if (httpCode != HTTP_CODE_OK) {
-//     ESP_LOGI(TAG, "HTTP GET failed, error: %d\n", httpCode);
-//     http.end();
-//     return false;
-//   }
+  // Check for valid content-type
+  String contentType = http.header("Content-Type");
+  ESP_LOGI(TAG, "Content-Type: %s\n", contentType.c_str());
 
-//   if (mtb_Prepare_Flash_File_Path(pathInSPIFFS)){
+  // Allowed MIME types (add more if needed)
+  bool validContent =
+    contentType.startsWith("image/") ||
+    contentType == "application/octet-stream" ||
+    contentType == "application/pdf";
 
-// 	  file = LittleFS.open(pathInSPIFFS, FILE_WRITE);
-// 	  if (!file){
-// 		  ESP_LOGI(TAG, "Failed to open file for writing\n");
-// 		  http.end();
-// 		  return false;
-// 	  }
-//   } else {
-// 	  ESP_LOGI(TAG, "File Path preparation failed.\n");
-//   }
+  if (!validContent) {
+    ESP_LOGI(TAG, "Blocked download: Unexpected content type: %s\n", contentType.c_str());
+    http.end();
+    return false;
+  }
 
-//   int total = http.writeToStream(&file);
+  if (mtb_Prepare_Flash_File_Path(pathInSPIFFS)) {
+    file = LittleFS.open(pathInSPIFFS, FILE_WRITE);
+    if (!file) {
+      ESP_LOGI(TAG, "Failed to open file for writing\n");
+      http.end();
+      return false;
+    }
+  } else {
+    ESP_LOGI(TAG, "File path preparation failed.\n");
+    http.end();
+    return false;
+  }
 
+  int total = http.writeToStream(&file);
 
-//   file.close();
-//   http.end();
+  file.close();
+  http.end();
 
-//   ESP_LOGI(TAG, "File saved to %s (%d bytes)\n", pathInSPIFFS, total);
-//   return true;
-// }
-
-// bool downloadOnlineImageToSPIFFS(const char* url, const char* pathInSPIFFS) {
-//   ESP_LOGI(TAG, "Downloading: %s\n", url);
-//   File file;
-//   HTTPClient http;
-//   http.begin(url);
-//   int httpCode = http.GET();
-
-//   if (httpCode != HTTP_CODE_OK) {
-//     ESP_LOGI(TAG, "HTTP GET failed, error: %d\n", httpCode);
-//     http.end();
-//     return false;
-//   }
-
-//   // Check for valid content-type
-//   String contentType = http.header("Content-Type");
-//   ESP_LOGI(TAG, "Content-Type: %s\n", contentType.c_str());
-
-//   // Allowed MIME types (add more if needed)
-//   bool validContent =
-//     contentType.startsWith("image/") ||
-//     contentType == "application/octet-stream" ||
-//     contentType == "application/pdf";
-
-//   if (!validContent) {
-//     ESP_LOGI(TAG, "Blocked download: Unexpected content type: %s\n", contentType.c_str());
-//     http.end();
-//     return false;
-//   }
-
-//   if (mtb_Prepare_Flash_File_Path(pathInSPIFFS)) {
-//     file = LittleFS.open(pathInSPIFFS, FILE_WRITE);
-//     if (!file) {
-//       ESP_LOGI(TAG, "Failed to open file for writing\n");
-//       http.end();
-//       return false;
-//     }
-//   } else {
-//     ESP_LOGI(TAG, "File path preparation failed.\n");
-//     http.end();
-//     return false;
-//   }
-
-//   int total = http.writeToStream(&file);
-
-//   file.close();
-//   http.end();
-
-//   ESP_LOGI(TAG, "File saved to %s (%d bytes)\n", pathInSPIFFS, total);
-//   return (total > 0);
-// }
+  ESP_LOGI(TAG, "File saved to %s (%d bytes)\n", pathInSPIFFS, total);
+  return (total > 0);
+}
 
 
 // Download image to PSRAM or heap with auto fallback, timeout, type detection, and support for chunked transfer
@@ -413,7 +375,7 @@ if (contentType.length() == 0) {
 }
 
 // Download SVG file to PSRAM or heap with robust checks
-bool downloadSVGImageToPSRAM(const char* url, uint8_t** outBuffer, size_t* outSize, String* outMimeType) {
+bool mtb_Download_Svg_Img_To_PSRAM(const char* url, uint8_t** outBuffer, size_t* outSize, String* outMimeType) {
   //ESP_LOGI(TAG, "[Download SVG] Starting: %s\n", url);
 
   HTTPClient http;
