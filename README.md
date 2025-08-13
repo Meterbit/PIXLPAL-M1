@@ -37,7 +37,7 @@ Pixlpal is a smart AIoT desktop companion with an interactive LED display. This 
 
 ## Quick Start
 This project uses the ESP‑IDF build system with the Arduino framework as a component. To build you need the ESP‑IDF v5.3.2 release with its tools installed on your MAC or Windows PC (Install on Microsoft VS Code).
-Follow [this instruction](https://github.com/espressif/vscode-esp-idf-extension) provided by espressif to install the ESP-IDF on your MAC/Windows. Windows users can follow the instructions on [this video](https://www.youtube.com/watch?v=D0fRc4XHBNk) 
+Follow [this instruction](https://github.com/espressif/vscode-esp-idf-extension) provided by espressif to install the ESP-IDF on your MAC/Windows. Windows users can follow the instructions on [this video](https://www.youtube.com/watch?v=D0fRc4XHBNk).  
 Clone/download this repo to a folder in your computer. While in VSCode window, click File>Open Folder>  and locate the folder containing the Pixlpal-M1 project. When the project folder is opened on your machine, attempt to compile the project by clicking on the build button (spanner) at the bottom of your Vscode IDE window.
 
 
