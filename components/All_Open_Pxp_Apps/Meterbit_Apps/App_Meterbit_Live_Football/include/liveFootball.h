@@ -15,7 +15,7 @@
 static const char liveFootbalAppRoute[] = "5/0";
 
 // Your API-Football subscription key from RapidAPI
-static const char *API_KEY = "Plug your api key here all from api- football.com";
+static const char *API_KEY = "Plug your api key here all from api- football.com ";
 
 struct LiveFootball_Data_t {
   uint8_t endpointType = 0; // 0: Fixture; 1: Standings
