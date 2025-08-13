@@ -1,7 +1,11 @@
-# PIXLPAL - A project by Meterbit Cybernetics
+# PIXLPAL - A project by [Meterbit Cybernetics](https://meterbitcyb.com)
 
 ## Pixlpal Firmware
 Pixlpal is a smart AIoT desktop companion with an interactive LED display. This Pixlpal-M1 firmware is an ESP-IDF Project consisting of a collection of ESP‑IDF/Arduino components and applications designed for the 128×64 RGB LED matrix display and targeting the Esp32s3 SoC. Each application runs as a standalone task that can be launched from the Android or iOS mobile app - "Pixlpal" via BLE commands. The project demonstrates how to build network enabled visual applications such as clocks, calendars, stocks and crypto tickers, AI-powered conversational assistant and various API integrations for the PIXLPAL hardware platform.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/livegrid/OpenMatrix/main/docs/images/Features.webp" alt="Cover Image">
+</p>
 
 ## Features
 
@@ -117,6 +121,7 @@ void exampleApp_Task(void* dApplication){
   Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
   thisApp->mtb_App_EncoderFn_ptr = exampleAppEncoder;
   thisApp->mtb_App_ButtonFn_ptr = exampleAppButton;
+  //mtb_Ble_AppComm_Parser_Sv->mtb_Register_Ble_Comm_ServiceFns(exampleAppBleComTest);
   mtb_App_Init(thisApp);
 // End of App parameter initialization
 

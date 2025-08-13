@@ -22,6 +22,7 @@ void exampleApp_Task(void* dApplication){
   Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
   thisApp->mtb_App_EncoderFn_ptr = exampleAppEncoder;
   thisApp->mtb_App_ButtonFn_ptr = exampleAppButton;
+  //mtb_Ble_AppComm_Parser_Sv->mtb_Register_Ble_Comm_ServiceFns(exampleAppBleComTest);
   mtb_App_Init(thisApp);
 // End of App parameter initialization
 
