@@ -356,4 +356,6 @@ extern Mtb_Applications_StatusBar* internetRadio_App;           // App Communica
 extern Mtb_Applications_StatusBar* musicPlayer_App;             // App Communication Route: 9/1
 extern Mtb_Applications_FullScreen* audSpecAnalyzer_App;        // App Communication Route: 9/2
 extern Mtb_Applications_StatusBar *spotify_App;                 // App Communication Route: 9/3
+
+extern Mtb_Applications_FullScreen* exampleWriteTextApp;                  // App Communication Route: 10/0
 #endif

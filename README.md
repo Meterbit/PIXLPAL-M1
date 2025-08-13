@@ -34,7 +34,7 @@ Pixlpal is a smart AIoT desktop companion with an interactive LED display. This 
 ## Quick Start
 This project uses the ESP‑IDF build system with the Arduino framework as a component. To build you need the ESP‑IDF v5.3.2 release with its tools installed on your MAC or Windows PC (Install on Microsoft VS Code).
 Follow [this instruction](https://github.com/espressif/vscode-esp-idf-extension) provided by espressif to install the ESP-IDF on your MAC/Windows. Windows users can follow the instructions on [this video](https://www.youtube.com/watch?v=D0fRc4XHBNk) 
-Clone/download this repo to a folder in your computer. While in VSCode window, click File>Open Folder>  and locate the folder containing the Pixlpal-M1 project. When the project folder is open on your machine, attempt to compile the project by clicking on the build button at the bottom of your Vscode ide window.
+Clone/download this repo to a folder in your computer. While in VSCode window, click File>Open Folder>  and locate the folder containing the Pixlpal-M1 project. When the project folder is opened on your machine, attempt to compile the project by clicking on the build button (spanner) at the bottom of your Vscode IDE window.
 
 ```bash
 cd PIXLPAL-M1
@@ -42,16 +42,3 @@ idf.py set-target esp32
 idf.py menuconfig   # optional project configuration
 idf.py build
 ```
-
-Connect your PIXLPAL‑M1 board and run:
-
-```bash
-idf.py -p PORT flash monitor
-```
-
-Replace `PORT` with the serial port of your device.
-
-## BLE Control
-
-The firmware exposes a set of BLE characteristics allowing a mobile app to switch between applications and change their settings. Each app documents the commands it accepts in its own README. Most settings are saved to NVS so they persist across reboots.
-
