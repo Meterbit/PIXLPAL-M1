@@ -1,6 +1,6 @@
 # PIXLPAL - A project by [Meterbit Cybernetics](https://meterbitcyb.com)
 
-## Pixlpal Firmware
+## Pixlpal Firmware v1.2.0
 Pixlpal is a smart AIoT desktop companion with an interactive LED display. This Pixlpal-M1 firmware is an ESP-IDF Project consisting of a collection of ESP‑IDF/Arduino components and applications designed for the 128×64 RGB LED matrix display and targeting the Esp32s3 SoC. Each application runs as a standalone task that can be launched from the Android or iOS mobile app - "Pixlpal" via BLE commands. The project demonstrates how to build network enabled visual applications such as clocks, calendars, stocks and crypto tickers, AI-powered conversational assistant and various API integrations for the PIXLPAL hardware platform.
 
 <p align="center">
@@ -23,7 +23,7 @@ Pixlpal is a smart AIoT desktop companion with an interactive LED display. This 
 ## Limitations
 
 - Requires PSRAM (Project tested on the ESP32-S3 SoC Module with 16MB flash and 8MB PSRAM - N16R8 variant)
-- No Bluetooth Classic Capabilities (ESP32-S# features Bluetooth LE 5.0 only) - Use externa Bluetooth transmitter module for wireless audio transmission
+- No Bluetooth Classic Capabilities (ESP32-S3 features Bluetooth LE 5.0 only) - Use externa Bluetooth transmitter module for wireless audio transmission
 - No batteries management system (The PIXLPAL-M1 has no internal batteries)
 
 ## To-Dos
@@ -34,6 +34,7 @@ Pixlpal is a smart AIoT desktop companion with an interactive LED display. This 
 - Implement external speakers and mice support
 - Complete apps currently in development - iOS notifications, Google and Outlook Calendars, News RSS, OpenWeather and World Clock Apps.
 - Implement Bluetooth LE Central mode for wireless sensor interfacing 
+- Add BOM to the Hardware design files
 
 ## Quick Start
 This project uses the ESP‑IDF build system with the Arduino framework as a component. To build you need the ESP‑IDF v5.3.2 release with its tools installed on your MAC or Windows PC (Install on Microsoft VS Code).
@@ -201,3 +202,8 @@ void exampleAppButton(button_event_t button_Data){
 //     mtb_Ble_App_Cmd_Respond_Success(exampleAppRouteRoute, cmdNumber, pdPASS);
 // }
 ````
+
+## Licenses
+
+- Hardware Design Licensed under the [CERN-OHL-W](https://gitlab.com/ohwr/project/cernohl/-/wikis/uploads/f773df342791cc55b35ac4f907c78602/cern_ohl_w_v2.pdf)
+- Software/Firmware Design Licensed under the [LGPL v3.0](https://www.gnu.org/licenses/lgpl-3.0.en.html?utm_source=chatgpt.com#license-text)
