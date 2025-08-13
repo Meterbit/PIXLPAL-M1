@@ -29,15 +29,15 @@ void exampleApp_Task(void* dApplication){
 // mtb_Write_Nvs_Struct("exampleAppData", &exampleAppInfo, sizeof(exampleAppInfo));
 
 // Declare Fixed and Scroll Text Variables
-Mtb_FixedText_t exampleFixedText(20,15, Terminal8x12, GREEN);
-Mtb_ScrollText_t exampleScrollText (0, 40, 128, WHITE, 20, 1, Terminal6x8);
+Mtb_FixedText_t exampleFixedText(24,15, Terminal8x12, GREEN);
+Mtb_ScrollText_t exampleScrollText (5, 40, 118, WHITE, 20, 1, Terminal6x8);
 
 // Write Fixed Text to display
 exampleFixedText.mtb_Write_String("Hello World");
 
 while (MTB_APP_IS_ACTIVE == pdTRUE) {
 // Scroll the ScrollText Variable on display every 15 seconds
-exampleScrollText.mtb_Scroll_This_Text("Heaven is in the heart");
+exampleScrollText.mtb_Scroll_This_Text("PIXLPAL - A project by Meterbit Cybernetics");
 delay(15000);
 }
 

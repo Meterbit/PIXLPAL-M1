@@ -2,10 +2,10 @@
 #include "mtb_system.h"
 #include "mtb_engine.h"
 #include "mtb_wifi.h"
-#include "esp_heap_caps.h"
 #include "mtb_ota.h"
 #include "mtb_littleFs.h"
 #include "mtb_ble.h"
+#include "esp_heap_caps.h"
 using namespace std;
 
 static const char TAG[] = "PXP-MAIN PROG";
@@ -41,7 +41,7 @@ extern "C" void app_main(){
 
     // Print the free SRAM size
     ESP_LOGI(TAG, "############ Free Internal SRAM: %zu bytes\n", free_sram);
-    ESP_LOGI(TAG, "Memory: Free %dKiB Low: %dKiB\n", (int)xPortGetFreeHeapSize()/1024, (int)xPortGetMinimumEverFreeHeapSize()/1024);
+    //ESP_LOGI(TAG, "Memory: Free %dKiB Low: %dKiB\n", (int)xPortGetFreeHeapSize()/1024, (int)xPortGetMinimumEverFreeHeapSize()/1024);
 
     // delay 2 seconds
     delay(2000);
