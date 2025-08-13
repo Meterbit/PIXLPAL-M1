@@ -203,6 +203,11 @@ void exampleAppButton(button_event_t button_Data){
 // }
 ````
 
+## Control Circuit Schematic
+<p align="center">
+  <img src="https://github.com/Meterbit/PIXLPAL-M1/blob/af65b201861f3fa28d05fecc5947d0f03bc81e3b/Pixlpal%20Schematic%20-%20BOM%20-%20Enclosure%20files/Pixlpal-M1%20Schematic.png" alt="Pixlpal Control Schematic">
+</p>
+
 ## Licenses
 
 - Hardware Design Licensed under the [CERN-OHL-W](https://gitlab.com/ohwr/project/cernohl/-/wikis/uploads/f773df342791cc55b35ac4f907c78602/cern_ohl_w_v2.pdf)
