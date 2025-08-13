@@ -38,12 +38,61 @@ Clone/download this repo to a folder in your computer. While in VSCode window, c
 
 
 ### Main.cpp - Program Execution StartPoint
-```
+```c++
+#include "Arduino.h"
+#include "mtb_system.h"
+#include "mtb_engine.h"
+#include "mtb_wifi.h"
+#include "mtb_ota.h"
+#include "mtb_littleFs.h"
+#include "mtb_ble.h"
+#include "esp_heap_caps.h"
+using namespace std;
 
+static const char TAG[] = "PXP-MAIN PROG";
+
+extern "C" void app_main(){
+    // Initialize Pixlpal System
+    mtb_LittleFS_Init();
+    mtb_RotaryEncoder_Init();
+    mtb_System_Init();
+    mtb_Ble_Comm_Init();
+
+    // Attempt OTA Update from USB Flash Drive
+    mtb_Launch_This_App(firmwareUpdate_App);
+    while(Mtb_Applications::firmwareOTA_Status != pdFALSE) delay(1000);
+
+    // Read the last executed App from NVS
+    mtb_Read_Nvs_Struct("currentApp", &currentApp, sizeof(Mtb_CurrentApp_t));
+
+    // Initialize Wifi
+    mtb_Wifi_Init();
+
+    // Launch the Last Executed App or Launch a particular App after boot-up
+    // mtb_General_App_Lunch(currentApp);
+    mtb_Launch_This_App(exampleWriteTextApp);
+
+    // Declare Variable for monitoring Free/Available internal SRAM
+    size_t free_sram = 0;
+
+    // While Loop prints available Internal SRAM every 2 seconds
+    while (1){
+    // Get the total free size of internal SRAM
+    free_sram = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
+
+    // Print the free SRAM size
+    ESP_LOGI(TAG, "############ Free Internal SRAM: %zu bytes\n", free_sram);
+    //ESP_LOGI(TAG, "Memory: Free %dKiB Low: %dKiB\n", (int)xPortGetFreeHeapSize()/1024, (int)xPortGetMinimumEverFreeHeapSize()/1024);
+
+    // delay 2 seconds
+    delay(2000);
+     }
+
+}
 ```
 
 ### Example Application - Write_Text_App
-```
+````c++
 #include <Arduino.h>
 #include "mtb_text_scroll.h"
 #include "mtb_engine.h"
@@ -146,4 +195,4 @@ void exampleAppButton(button_event_t button_Data){
 //     mtb_Write_Nvs_Struct("exampleAppData", &exampleAppInfo, sizeof(exampleAppInfo));
 //     mtb_Ble_App_Cmd_Respond_Success(exampleAppRouteRoute, cmdNumber, pdPASS);
 // }
-```
+````
