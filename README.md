@@ -4,7 +4,7 @@
 Pixlpal is a smart AIoT desktop companion with an interactive LED display. This Pixlpal-M1 firmware is an ESP-IDF Project consisting of a collection of ESP‑IDF/Arduino components and applications designed for the 128×64 RGB LED matrix display and targeting the Esp32s3 SoC. Each application runs as a standalone task that can be launched from the Android or iOS mobile app - "Pixlpal" via BLE commands. The project demonstrates how to build network enabled visual applications such as clocks, calendars, stocks and crypto tickers, AI-powered conversational assistant and various API integrations for the PIXLPAL hardware platform.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Meterbit/PIXLPAL-M1/main/Pixlpal-Github.jpeg" alt="Cover Image">
+  <img src="https://github.com/Meterbit/PIXLPAL-M1/blob/2076007f27073ba415204921fb2bb9618e2c804c/Pixpal-Github.jpeg" alt="Cover Image">
 </p>
 
 ## Features
