@@ -102,7 +102,8 @@ extern "C" void app_main() {
 
 ```
 
-### Example Application - Write_Text_App
+### Example Application
+**`exampleWriteTextApp.cpp` – Displaying Fixed & Scrolling Text**
 ````c++
 #include <Arduino.h>
 #include "mtb_text_scroll.h"
