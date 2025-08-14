@@ -161,8 +161,6 @@ void ota_Update_Task(void* dApplication){
      * 
      * Be carefull, as the PAT token will be stored in your firmware etc and can be used to access your github account.
      */
-    //ESP_ERROR_CHECK(ghota_set_auth(ghota_client, "Meterbit", "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"));
-    //ESP_ERROR_CHECK(ghota_set_auth(ghota_client, "Meterbit", "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"));
     ESP_ERROR_CHECK(ghota_set_auth(ghota_client, "Meterbit", github_Token));
     /* or do a check/update now
     * This runs in a new task under freeRTOS, so you can do other things while it is running.    */
