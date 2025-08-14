@@ -21,10 +21,7 @@ static const char *TAG = "PXP_SPOTIFY";
 
 char* spotify_root_ca;
 
-static const char client_id[] = "3086b005f2b9432d9a6a4222c28f4b87";     // Your client ID of your spotify APP
-// static const char clientSecret[] = "a67d4bb0b6874677b4f8cceb273cdaaa"; // Your client Secret of your spotify APP (Do Not share this!)
-
-
+static const char client_id[] = "insert your spotify client id";     // Your client ID of your spotify APP
 //*************************************************************************************************** */
 
 Spotify_Data_t userSpotify = {
