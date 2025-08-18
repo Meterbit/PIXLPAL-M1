@@ -1,8 +1,5 @@
 /components/meterbit_graphics/*.cpp
-/components/All_Open_Pxp_Apps/Meterbit_Apps/App_Meterbit_Google_Calendar/include/*
-/components/meterbit_audio/include/*
-/components/All_Open_Pxp_Apps/Meterbit_Apps/App_Meterbit_Live_Football/include/*
-/components/meterbit_ota/include/*
+/components/meterbit_engine/include/pxp_secret_keys.h
 
 /build/*
 !/build/PIXLPAL-M1.bin

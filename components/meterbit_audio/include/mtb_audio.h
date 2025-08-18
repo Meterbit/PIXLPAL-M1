@@ -27,7 +27,7 @@
 extern bool completedAudioMicConfig;
 extern Audio* audio;
 
-static const String openai_key = "your_openai_api_key_here";
+//static const String openai_key = "INSERT YOUR OPENAI KEY HERE";
 
 struct AudioSpectVisual_Set_t {
     uint8_t selectedPattern;

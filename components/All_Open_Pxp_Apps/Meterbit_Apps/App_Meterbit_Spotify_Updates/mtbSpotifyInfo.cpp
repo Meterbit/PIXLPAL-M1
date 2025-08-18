@@ -16,12 +16,13 @@
 #include "SpotifyAuth.h"
 #include "SpotifyPlayback.h"
 #include "mtbSpotifyInfo.h"
+#include "pxp_secret_keys.h"
 
 static const char *TAG = "PXP_SPOTIFY";
 
 char* spotify_root_ca;
 
-static const char client_id[] = "insert your spotify client id";     // Your client ID of your spotify APP
+//static const char client_id[] = "insert your client ID here";     // Your client ID of your spotify APP
 //*************************************************************************************************** */
 
 Spotify_Data_t userSpotify = {

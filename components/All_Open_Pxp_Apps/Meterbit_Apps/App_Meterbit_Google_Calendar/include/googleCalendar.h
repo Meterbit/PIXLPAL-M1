@@ -11,8 +11,8 @@
 
 static const char googleCalendarAppRoute[] = "2/0";
 
-static const String CLIENT_ID = "your_client_id_here.apps.googleusercontent.com";
-static const String CLIENT_SECRET = "your_client_secret_here";
+// static const String CLIENT_ID = "insert your google cloud client id here";
+// static const String CLIENT_SECRET = "Insert your google cloud app secret here";
 
 struct GoogleCal_Data_t {
 char refreshToken[250] = {0};

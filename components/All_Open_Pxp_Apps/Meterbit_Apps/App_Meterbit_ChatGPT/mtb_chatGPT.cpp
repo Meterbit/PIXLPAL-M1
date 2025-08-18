@@ -17,6 +17,7 @@
 #include "LittleFS.h"
 #include "esp_heap_caps.h"
 #include "mtb_ble.h"
+#include "pxp_secret_keys.h"
 
 //#define NUM_CHANNELS 1
 #define REC_DURATION_SECONDS_MAX 15
@@ -62,7 +63,7 @@ void delete_file(const char *path) {
     }
 }
 
-OpenAI openai(openai_key.c_str());
+OpenAI openai(openai_key);
 OpenAI_ChatCompletion chat(openai);
 
 

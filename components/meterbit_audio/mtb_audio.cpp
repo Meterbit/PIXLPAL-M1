@@ -13,6 +13,7 @@
 #include "lib8tion.h"
 #include "mtb_engine.h"
 #include "mtb_usb_fs.h"   // make sure this is in your include path
+#include "pxp_secret_keys.h"
 
 static const char TAG[] = "METERBIT_AUDIO";
 
@@ -59,7 +60,7 @@ void audioProcessing_Task(void *d_Service){
     switch(audioOutMode){
       case CONNECT_HOST: mtb_audioPlayer->contdSucceed = (int8_t) audio->connecttohost(mtb_audioPlayer->host_Url.c_str(), mtb_audioPlayer->host_Username.c_str(), mtb_audioPlayer->host_Password.c_str());
         break;
-      case OPENAI_SPEECH: mtb_audioPlayer->contdSucceed = (int8_t) audio->openai_speech(openai_key , mtb_audioPlayer->openAI_Model, mtb_audioPlayer->speech_Message, mtb_audioPlayer->openAI_Voice,mtb_audioPlayer->openAI_ResponseFormat, mtb_audioPlayer->openAI_Speed);
+      case OPENAI_SPEECH: mtb_audioPlayer->contdSucceed = (int8_t) audio->openai_speech(String(openai_key) , mtb_audioPlayer->openAI_Model, mtb_audioPlayer->speech_Message, mtb_audioPlayer->openAI_Voice,mtb_audioPlayer->openAI_ResponseFormat, mtb_audioPlayer->openAI_Speed);
         break;
       case CONNECT_SPEECH: mtb_audioPlayer->contdSucceed = (int8_t) audio->connecttospeech(mtb_audioPlayer->speech_Message.c_str(), mtb_audioPlayer->ggle_Lang.c_str());
         break;

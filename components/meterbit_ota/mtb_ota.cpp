@@ -15,6 +15,7 @@
 #include "mtb_gif_parser.h"
 #include "mtb_nvs.h"
 #include "mtb_buzzer.h"
+#include "pxp_secret_keys.h"
 
 static const char TAG[] = "MTB-GHOTA";
 

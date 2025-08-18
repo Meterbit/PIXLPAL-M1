@@ -19,6 +19,7 @@
 #include "googleAuth.h"
 #include "googleCalendar.h"
 #include "mtb_graphics.h"
+#include "pxp_secret_keys.h"
 
 
 static const char *TAG = "PXP_GOOGLE_CAL";
