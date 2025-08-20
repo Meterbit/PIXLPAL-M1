@@ -8,7 +8,7 @@
 #include "esp_heap_caps.h"
 using namespace std;
 
-static const char TAG[] = "PXP-MAIN PROG";
+static const char TAG[] = "PXP-MAIN_PROG";
 
 extern "C" void app_main(){
     // Initialize Pixlpal System
