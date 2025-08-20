@@ -1,11 +1,7 @@
 /components/meterbit_graphics/*.cpp
 /components/meterbit_engine/include/pxp_secret_keys.h
-build/PIXLPAL-M1.bin
 
 /build/*
 #!/build/PIXLPAL-M1.bin
 #!/build/ota_data_initial.bin
 #!/build/spiffs.bin
-
-/build/
-*.bin
