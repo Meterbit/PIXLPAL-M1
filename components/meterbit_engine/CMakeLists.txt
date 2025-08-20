@@ -31,6 +31,7 @@ idf_component_register(SRCS "mtb_usb_ota.cpp" "mtb_engine.cpp" "mtb_status_bar_c
                     App_Meterbit_World_Flags
 
                     App_Example_Write_Text
+                    App_Example_Draw_Shapes
                     )
 
                 

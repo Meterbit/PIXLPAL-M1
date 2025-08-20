@@ -63,14 +63,14 @@ void  firmwareUpdateTask(void* dApplication){
 do{
     if(Mtb_Applications::firmwareOTA_Status > 6){
         ESP_LOGI(TAG, "Code entered USB Firmware Update\n");
-        dma_display->mtb_Clear_Screen();
+        dma_display->clearScreen();
         uint8_t attemptResult = attemptUSB_FirmwareUpdate();
         if(attemptResult == pdPASS) attemptUSB_SPIFFSUpdate();
         else break;
         Mtb_Applications::firmwareOTA_Status = pdTRUE;
     } else if (Mtb_Applications::spiffsOTA_Status > 6){
         ESP_LOGI(TAG, "Code entered USB Firmware Update\n");
-        dma_display->mtb_Clear_Screen();
+        dma_display->clearScreen();
         mtb_Start_This_Service(usb_Mass_Storage_Sv);
         uint8_t attemptResult = attemptUSB_SPIFFSUpdate();
         if(attemptResult != pdPASS) break;

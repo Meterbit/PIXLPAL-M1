@@ -26,12 +26,14 @@ class GFX : public Print
     virtual void drawPixel(int16_t x, int16_t y, uint16_t color) = 0;		
     virtual void fillScreen(uint16_t color);
 	  virtual void fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
+    //virtual void drawCircle(int16_t x0, int16_t y0, int16_t r, uint16_t color);
 
 
     // + FastLED colour implementations as well.
     virtual void drawPixel(int16_t x, int16_t y, CRGB color) = 0;	
     virtual void fillScreen(CRGB color);	
 	  virtual void fillRect(int16_t x, int16_t y, int16_t w, int16_t h, CRGB color);
+    //virtual void drawCircle(int16_t x0, int16_t y0, int16_t r, CRGB color);
 
     // CONTROL API
     // These MAY be overridden by the subclass to provide device-specific

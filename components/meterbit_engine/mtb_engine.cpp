@@ -224,7 +224,7 @@ bool Mtb_Applications::appRunner(){
 
 void Mtb_Applications::appResume(Mtb_Applications* dApp){
     appDestroy(currentRunningApp);
-    dma_display->mtb_Clear_Screen();
+    dma_display->clearScreen();
     previousRunningApp = currentRunningApp;
 
     if(dApp->fullScreen == false) mtb_Draw_Status_Bar();
@@ -424,7 +424,7 @@ void mtb_App_Init(Mtb_Applications *thisApp, Mtb_Services* pointer_0, Mtb_Servic
     thisApp->appServices[9] = pointer_9;
 
     delay(250);
-    dma_display->mtb_Clear_Screen();
+    dma_display->clearScreen();
     for (Mtb_Services *element : thisApp->appServices) if (element != nullptr) mtb_Start_This_Service(element);
     if(thisApp->mtb_App_ButtonFn_ptr != buttonDoNothing) mtb_Start_This_Service(button_Task_Sv);
     if(thisApp->mtb_App_EncoderFn_ptr != encoderDoNothing) mtb_Start_This_Service(encoder_Task_Sv);
@@ -712,8 +712,8 @@ void mtb_Audio_Stream_App_Lunch(uint16_t dAppNumber){
 //********NUMBER 10 */
 void mtb_sMedia_App_Lunch(uint16_t dAppNumber){
     switch(dAppNumber){
-        // case 0: mtb_Launch_This_App(classicClock_App); break;
-        // case 1: mtb_Launch_This_App(classicClock_App); break;
+        case 0: mtb_Launch_This_App(exampleWriteTextApp); break;
+        case 1: mtb_Launch_This_App(exampleDrawShapes_App); break;
         // case 2: mtb_Launch_This_App(classicClock_App); break; 
         // case 3: mtb_Launch_This_App(classicClock_App); break; 
         // case 4: mtb_Launch_This_App(classicClock_App); break;

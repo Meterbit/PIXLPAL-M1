@@ -308,9 +308,9 @@ void processFituresMatches(SpiRamJsonDocument& doc, void* dApplication){
   Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
   JsonArray matches = doc["response"].as<JsonArray>();
   int results = doc["results"] | 0;
-  uint8_t noOfShowCycles = 5;
+//   uint8_t noOfShowCycles = 5;
 
-while(noOfShowCycles-->0){
+// while(noOfShowCycles-->0){
     int matchIndex = 0;
   for (JsonObject match : matches) {
     liveFootballDispChangeIntv = 30;
@@ -352,8 +352,8 @@ while(noOfShowCycles-->0){
     while(liveFootballDispChangeIntv-->0 && xSemaphoreTake(changeDispMatch_Sem, 0) != pdTRUE && MTB_APP_IS_ACTIVE == pdTRUE) delay(100);
     if(liveFootballDispChangeIntv > 0) break;
   }
-  if(liveFootballDispChangeIntv > 0) break;
-}
+//   if(liveFootballDispChangeIntv > 0) break;
+// }
   moreDataScroll->mtb_Scroll_Active(STOP_SCROLL);
 }
 

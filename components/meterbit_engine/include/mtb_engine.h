@@ -10,7 +10,7 @@
 #include "button.h"
 #include "mtb_ble.h"
 #include "Arduino.h"
-#include "ArduinoJson.h"
+#include <ArduinoJson.h>
 #include "mtb_nvs.h"
 #include "mtb_graphics.h"
 #include "esp_heap_caps.h"
@@ -357,5 +357,7 @@ extern Mtb_Applications_StatusBar* musicPlayer_App;             // App Communica
 extern Mtb_Applications_FullScreen* audSpecAnalyzer_App;        // App Communication Route: 9/2
 extern Mtb_Applications_StatusBar *spotify_App;                 // App Communication Route: 9/3
 
+// Example Apps
 extern Mtb_Applications_FullScreen* exampleWriteTextApp;                  // App Communication Route: 10/0
+extern Mtb_Applications_StatusBar* exampleDrawShapes_App;                // App Communication Route: 10/1
 #endif
