@@ -2,7 +2,7 @@
 /components/meterbit_engine/include/pxp_secret_keys.h
 
 /build/*
-!/build/PIXLPAL-M1.bin
-!/build/ota_data_initial.bin
-!/build/spiffs.bin
+#!/build/PIXLPAL-M1.bin
+#!/build/ota_data_initial.bin
+#!/build/spiffs.bin
 
