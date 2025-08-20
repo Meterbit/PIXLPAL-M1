@@ -28,7 +28,7 @@ dma_display->fillTriangle(64, 16, 34, 56, 94, 56, CYAN_PROCESS);
 // // // Draw a rounded rectangle
 dma_display->drawRoundRect(94, 16, 30, 40, 5, PINK);
 // // // Draw a filled rounded rectangle
-// dma_display->fillRoundRect(70, 10, 50, 30, 5, WHITE);
+dma_display->fillRoundRect(97, 19, 24, 34, 5, ORANGE_PANTONE);
 // // // Draw a triangle with a different color
 // dma_display->fillScreen(GREEN_LIZARD); // Clear the screen before drawing
 // dma_display->write("The devil is in the details. ");
