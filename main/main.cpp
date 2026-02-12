@@ -44,7 +44,7 @@ extern "C" void app_main(){
     // Print the free SRAM size
     printf("############ Free Internal SRAM: %zu bytes\n", free_sram);
 
-    // delay 2 seconds
+    // delay 5 seconds
     delay(5000);
      }
 }
