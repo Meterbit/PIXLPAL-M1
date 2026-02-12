@@ -472,7 +472,10 @@ uint16_t Mtb_Static_Text_t::mtb_Write_String(const char *myString){
 	uint16_t position = textStyle ? y1Seg : 0;
 
 	if(x1Seg > PANEL_RES_X || y1Seg > PANEL_RES_Y){
-		ESP_LOGE(TAG, "Text position out of bounds: x1Seg=%d, y1Seg=%d", x1Seg, y1Seg);
+		Mtb_ScrollText_t moreCryptoData (0, y1Seg, 128, fontMain, color, 20, 1);
+		moreCryptoData.backgroundColor = backgroundColor;
+		moreCryptoData.mtb_Scroll_This_Text(myString);
+		ESP_LOGI(TAG, "Text position out of bounds. Text will scroll instead");
 		return 0; // Out of bounds check
 	}
 

@@ -297,9 +297,10 @@ extern Mtb_Service_With_Fns* mtb_Button_Task_Sv;
 // Mtb_Applications SECTION (USERS AND SYSTEM APPS)
 
 // Application Mtb_Services
-extern Mtb_Services* pixAnimClkGif_Sv;
+            extern Mtb_Services* pixAnimClkGif_Sv;
 extern Mtb_Services* spotifyScreenUpdate_Sv;    
 extern Mtb_Services* mtb_Audio_Listening_Sv;
+
 extern Mtb_Services* mtb_Status_Bar_Clock_Sv;    
 extern Mtb_Services* mtb_Status_Bar_Calendar_Sv; 
 

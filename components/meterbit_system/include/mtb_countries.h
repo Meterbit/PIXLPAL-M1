@@ -1,6 +1,8 @@
 #ifndef WORLD_COUNTRIES_JSON
 #define WORLD_COUNTRIES_JSON
 
+// Get flag links from this website and add to the JSON array below: http://lascarid.es/fussyflags/
+
 const char* jsonWorldCountries = R"json(
 [
   {
@@ -729,7 +731,7 @@ const char* jsonWorldCountries = R"json(
     "name": "Falkland Islands"
   },
   {
-    "capital": "Tórshavn",
+    "capital": "Torshavn",
     "code": "fo",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/fo.svg",
@@ -792,7 +794,7 @@ const char* jsonWorldCountries = R"json(
     "name": "French Polynesia"
   },
   {
-    "capital": "Port-aux-Français",
+    "capital": "Port-aux-Francais",
     "code": "tf",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/tf.svg",
@@ -898,7 +900,7 @@ const char* jsonWorldCountries = R"json(
     "name": "Guadeloupe"
   },
   {
-    "capital": "Hagåtña",
+    "capital": "Hagatna",
     "code": "gu",
     "continent": "Oceania",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/gu.svg",
@@ -1299,7 +1301,7 @@ const char* jsonWorldCountries = R"json(
     "name": "Malaysia"
   },
   {
-    "capital": "Malé",
+    "capital": "Male",
     "code": "mv",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/mv.svg",
@@ -1374,8 +1376,8 @@ const char* jsonWorldCountries = R"json(
     "capital": "Mexico City",
     "code": "mx",
     "continent": "North America",
-    "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/mx.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/mx.svg",
+    "flag_1x1": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/1x1/mx.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/4x3/mx.svg",
     "iso": true,
     "name": "Mexico"
   },
@@ -1855,7 +1857,7 @@ const char* jsonWorldCountries = R"json(
     "name": "San Marino"
   },
   {
-    "capital": "São Tomé",
+    "capital": "Sao Tome",
     "code": "st",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/st.svg",

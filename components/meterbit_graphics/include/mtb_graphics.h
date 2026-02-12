@@ -137,6 +137,9 @@
     uint8_t textStyle;
     uint16_t textHorizSpace = 0;
 
+    uint16_t color;
+    uint16_t backgroundColor = BLACK;
+
     static void mtb_Config_Disp_Panel_Pins(void);
     static void mtb_Init_Led_Matrix_Panel();
     static void mtb_Clear_Screen(void);
@@ -162,8 +165,6 @@
 class Mtb_FixedText_t : public Mtb_Static_Text_t {
     public:
     static uint8_t** scratchPad;
-    uint16_t color;
-    uint16_t backgroundColor = BLACK;
     virtual void mtb_Set_Pixel_Data(uint16_t, uint16_t) override;
     virtual void mtb_Update_Panel_Segment(void) override;
     virtual void mtb_Clear_Panel_Segment(void) override;
