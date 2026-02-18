@@ -356,7 +356,7 @@ void ble_AppCom_Parse_Task(void* dService){
                 currentApp.GenApp = getIntegerAtIndex(specify_Application, 0);
                 currentApp.SpeApp = getIntegerAtIndex(specify_Application, 1);
                 mtb_Write_Nvs_Struct("currentApp", &currentApp, sizeof(Mtb_CurrentApp_t));
-                mtb_General_App_Lunch(currentApp);
+                mtb_General_App_Launch(currentApp);
                 bleApplicationComSend(specify_Application.c_str(), "{\"pxp_command\": 253}");
             }else{
                 bleApplicationComSend(specify_Application.c_str(), "{\"pxp_command\": 254}");

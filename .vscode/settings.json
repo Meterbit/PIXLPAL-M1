@@ -109,5 +109,6 @@
     "idf.port": "/dev/tty.usbmodem1101",
     "idf.espIdfPath": "/Users/stephengata/esp/v5.5.1/esp-idf",
     "idf.toolsPath": "/Users/stephengata/.espressif",
-    "idf.pythonInstallPath": "/usr/local/bin/python3"
+    "idf.pythonInstallPath": "/usr/local/bin/python3",
+    "idf.currentSetup": "/Users/stephengata/esp/v5.5.1/esp-idf"
 }

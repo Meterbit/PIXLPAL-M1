@@ -23,7 +23,7 @@ EXT_RAM_BSS_ATTR StaticQueue_t xQueueStorage_ButtonEvent;
 EXT_RAM_BSS_ATTR StaticQueue_t xQueueStorage_NvsAccess;
 EXT_RAM_BSS_ATTR StaticQueue_t xQueueStorage_File2Download;
 
-EXT_RAM_BSS_ATTR StaticQueue_t xQueueStorage_AppLuncher;
+EXT_RAM_BSS_ATTR StaticQueue_t xQueueStorage_AppLauncher;
 
 EXT_RAM_BSS_ATTR Mtb_Service_With_Fns *mtb_Encoder_Task_Sv = new Mtb_Service_With_Fns(encoder_Task, &encoder_Task_H, "Encoder Task", 6144, 0, 1); // Review this task Stack Size // REVISIT -> CHECK IF THIS APP GETS CLOSED WHEN AN APP USING IT IS ENDED.
 EXT_RAM_BSS_ATTR Mtb_Service_With_Fns *mtb_Button_Task_Sv = new Mtb_Service_With_Fns(button_Task, &button_Task_H, "Button Task", 6144, 0, 1); // Review this task Stack Size    // REVISIT -> CHECK IF THIS APP GETS CLOSED WHEN AN APP USING IT IS ENDED.
@@ -104,10 +104,10 @@ void mtb_System_Init(void){
     }
 
     Mtb_Static_Text_t::mtb_Config_Disp_Panel_Pins();
-    uint8_t *appLuncherQueue_buffer = (uint8_t *)heap_caps_malloc(4 * sizeof(Mtb_Applications*), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+    uint8_t *appLauncherQueue_buffer = (uint8_t *)heap_caps_malloc(4 * sizeof(Mtb_Applications*), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
     init_nvs_mem();
     Mtb_Static_Text_t::mtb_Init_Led_Matrix_Panel();
 	mtb_Read_Nvs_Struct("dev_Volume", &deviceVolume, sizeof(uint8_t));
     mtb_Text_Scrolls_Init();
-    if(appLuncherQueue == NULL) appLuncherQueue = xQueueCreateStatic(4, sizeof(Mtb_Applications*), appLuncherQueue_buffer, &xQueueStorage_AppLuncher); 
+    if(appLauncherQueue == NULL) appLauncherQueue = xQueueCreateStatic(4, sizeof(Mtb_Applications*), appLauncherQueue_buffer, &xQueueStorage_AppLauncher); 
 }

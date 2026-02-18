@@ -23,10 +23,10 @@
 #define MTB_SERV_IS_ACTIVE (thisServ->service_is_Running)
 
 extern QueueHandle_t clock_Update_Q;
-extern TaskHandle_t appLuncher_Task_H;
-//extern TaskHandle_t servLuncher_Task_H;
-extern QueueHandle_t appLuncherQueue;
-extern QueueHandle_t servLuncherQueue;
+extern TaskHandle_t appLauncher_Task_H;
+//extern TaskHandle_t servLauncher_Task_H;
+extern QueueHandle_t appLauncherQueue;
+extern QueueHandle_t servLauncherQueue;
 extern QueueHandle_t nvsAccessQueue;
 extern SemaphoreHandle_t nvsAccessComplete_Sem;
 extern QueueHandle_t running_App_BLECom_Queue;
@@ -50,8 +50,8 @@ struct NvsAccessParams_t{
   size_t struct_size;
 };
 
-extern void appLuncherTask(void *);
-//extern void servLuncherTask(void *);
+extern void appLauncherTask(void *);
+//extern void servLauncherTask(void *);
 extern void nvsAccessTask(void *);
 
 //**************************************************************************************************************************
@@ -247,7 +247,7 @@ extern void mtb_Delete_This_Service(Mtb_Services *);
 extern void mtb_Kill_This_Service(Mtb_Services* );
 extern void mtb_Delete_This_App(Mtb_Applications *);
 
-extern void mtb_General_App_Lunch(Mtb_CurrentApp_t);
+extern void mtb_General_App_Launch(Mtb_CurrentApp_t);
 
 // Supporting Apps and Tasks
 extern TaskHandle_t statusBarClock_H;
@@ -255,23 +255,23 @@ extern void mtb_StatusBar_Clock_Task(void*);
 extern void mtb_StatusBar_Calendar_Task(void*);
 
 // All Apps Categories
-extern void mtb_Clk_Tim_AppLunch(uint16_t);
-extern void mtb_Msg_App_Lunch(uint16_t);
-extern void mtb_Calendar_App_Lunch(uint16_t);
-extern void mtb_Weather_App_Lunch(uint16_t);
-extern void mtb_Sports_App_Lunch(uint16_t);
-extern void mtb_Animations_App_Lunch(uint16_t);
-extern void mtb_Finance_App_Lunch(uint16_t);
-extern void mtb_sMedia_App_Lunch(uint16_t);
-extern void mtb_Notifications_App_Lunch(uint16_t);
-extern void mtb_Ai_App_Lunch(uint16_t);
-extern void mtb_Audio_Stream_App_Lunch(uint16_t);
-extern void mtb_Miscellanous_App_Lunch(uint16_t);
+extern void mtb_Clk_Tim_AppLaunch(uint16_t);
+extern void mtb_Msg_App_Launch(uint16_t);
+extern void mtb_Calendar_App_Launch(uint16_t);
+extern void mtb_Weather_App_Launch(uint16_t);
+extern void mtb_Sports_App_Launch(uint16_t);
+extern void mtb_Animations_App_Launch(uint16_t);
+extern void mtb_Finance_App_Launch(uint16_t);
+extern void mtb_sMedia_App_Launch(uint16_t);
+extern void mtb_Notifications_App_Launch(uint16_t);
+extern void mtb_Ai_App_Launch(uint16_t);
+extern void mtb_Audio_Stream_App_Launch(uint16_t);
+extern void mtb_Miscellanous_App_Launch(uint16_t);
 
 // System Sevices
 
 // Fast Executing Services.
-extern Mtb_Services* mtb_App_Luncher_Sv;
+extern Mtb_Services* mtb_App_Launcher_Sv;
 extern Mtb_Service_With_Fns* mtb_App_BleComm_Parser_Sv;
 extern Mtb_Services* mtb_Sett_BleComm_Parser_Sv;           
 extern Mtb_Services* mtb_Beep_Buzzer_Sv;                     
@@ -282,7 +282,7 @@ extern Mtb_Services* mtb_SvgLocal_ImageDrawer_Sv;
 extern Mtb_Services* mtb_Mqtt_Client_Sv;
 
 // Slow Executing Services
-//extern Mtb_Services* mtb_Serv_Luncher_Sv;
+//extern Mtb_Services* mtb_Serv_Launcher_Sv;
 extern Mtb_Services *mtb_GitHub_File_Dwnload_Sv;
 extern Mtb_Services* mtb_Audio_Out_Sv;
 extern Mtb_Services* mtb_Audio_In_Sv;

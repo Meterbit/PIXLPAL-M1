@@ -64,7 +64,8 @@ while (MTB_APP_IS_ACTIVE == pdTRUE){
 
     while (MTB_APP_IS_ACTIVE == pdTRUE && Mtb_Applications::internetConnectStatus == true) {
         if (worldFlagsInfo.cycleAllFlags == true) {
-            uint8_t changeIntv = worldFlagsInfo.flagChangeIntv;
+            uint8_t changeIntv = 5;
+            // uint8_t changeIntv = worldFlagsInfo.flagChangeIntv;
             getRandomCountryAndFlag4x3(country, flagLink);
             strcpy(large_Flag.imageLink, flagLink.c_str());
             mtb_Draw_Online_Svg(&large_Flag, 1, wipeFlagBackground);

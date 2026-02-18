@@ -40,7 +40,7 @@ PicoMQTT::Client mqttClient("broker.hivemq.com");
 
 
 //EXT_RAM_BSS_ATTR Mtb_Services *mtb_Mqtt_Server_Sv = new Mtb_Services(mqtt_Server_Task, &mtb_MQTT_Server_Task_H, "MQTT Server Sv", 6144, 0, 1);
-EXT_RAM_BSS_ATTR Mtb_Services *mtb_Mqtt_Client_Sv = new Mtb_Services(mqtt_Client_Task, &mtb_MQTT_Client_Task_H, "MQTT Client Sv", 6144, 0, 1);
+EXT_RAM_BSS_ATTR Mtb_Services *mtb_Mqtt_Client_Sv = new Mtb_Services(mqtt_Client_Task, &mtb_MQTT_Client_Task_H, "MQTT Client Sv", 4096, 0, 1);
 
 // void mqtt_Server_Task(void* d_Service){
 //   Mtb_Services *thisServ = (Mtb_Services *)d_Service;
