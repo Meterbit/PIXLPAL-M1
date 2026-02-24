@@ -55,7 +55,7 @@ const char* jsonWorldCountries = R"json(
     "code": "ad",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/ad.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ad.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/4x3/ad.svg",
     "iso": true,
     "name": "Andorra"
   },
@@ -304,7 +304,7 @@ const char* jsonWorldCountries = R"json(
     "name": "Bouvet Island"
   },
   {
-    "capital": "Brasília",
+    "capital": "Brasilia",
     "code": "br",
     "continent": "South America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/br.svg",
@@ -376,7 +376,7 @@ const char* jsonWorldCountries = R"json(
     "name": "Cambodia"
   },
   {
-    "capital": "Yaoundé",
+    "capital": "Yaounde",
     "code": "cm",
     "continent": "Africa",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/cm.svg",
@@ -485,7 +485,7 @@ const char* jsonWorldCountries = R"json(
     "name": "Cocos (Keeling) Islands"
   },
   {
-    "capital": "Bogotá",
+    "capital": "Bogota",
     "code": "co",
     "continent": "South America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/co.svg",
@@ -512,7 +512,7 @@ const char* jsonWorldCountries = R"json(
     "name": "Cook Islands"
   },
   {
-    "capital": "San José",
+    "capital": "San Jose",
     "code": "cr",
     "continent": "North America",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/cr.svg",
@@ -1382,11 +1382,11 @@ const char* jsonWorldCountries = R"json(
     "name": "Mexico"
   },
   {
-    "capital": "Chișinău",
+    "capital": "Chisinau",
     "code": "md",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/md.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/md.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/4x3/md.svg",
     "iso": true,
     "name": "Moldova"
   },
@@ -1490,7 +1490,7 @@ const char* jsonWorldCountries = R"json(
     "name": "Netherlands"
   },
   {
-    "capital": "Nouméa",
+    "capital": "Noumea",
     "code": "nc",
     "continent": "Oceania",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/nc.svg",
@@ -1764,7 +1764,7 @@ const char* jsonWorldCountries = R"json(
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/re.svg",
     "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/re.svg",
     "iso": true,
-    "name": "Réunion"
+    "name": "Reunion"
   },
   {
     "capital": "Gustavia",
@@ -1773,7 +1773,7 @@ const char* jsonWorldCountries = R"json(
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/bl.svg",
     "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/bl.svg",
     "iso": true,
-    "name": "Saint Barthélemy"
+    "name": "Saint Barthelemy"
   },
   {
     "capital": "Jamestown",

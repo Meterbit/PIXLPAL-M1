@@ -22,11 +22,11 @@ extern "C" void app_main(){
     mtb_Launch_This_App(usbOTA_Update_App);
     while(Mtb_Applications::firmwareOTA_Status != pdFALSE) delay(1000);
 
-    // Read the last executed App from NVS
-    mtb_Read_Nvs_Struct("currentApp", &currentApp, sizeof(Mtb_CurrentApp_t));
-
     // Initialize Wifi
     mtb_Wifi_Init();
+
+    // Read the last executed App from NVS
+    mtb_Read_Nvs_Struct("currentApp", &currentApp, sizeof(Mtb_CurrentApp_t));
 
     // Launch the Last Executed App or Launch a particular App after boot-up
     mtb_General_App_Launch(currentApp);
@@ -41,7 +41,7 @@ extern "C" void app_main(){
     // Get the total free size of internal SRAM
     free_sram = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
     
-    // Print the free SRAM size
+    // Print the free SRAM size to the console.
     printf("############ Free Internal SRAM: %zu bytes\n", free_sram);
 
     // delay 5 seconds

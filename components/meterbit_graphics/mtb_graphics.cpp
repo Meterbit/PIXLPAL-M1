@@ -76,13 +76,6 @@ volatile int downloadedPNGs = 0;
 volatile int downloadedSVGs = 0;
 SemaphoreHandle_t preloadIndexMutex = xSemaphoreCreateMutex();
 
-// Parameters passed to static worker tasks so they can free their PSRAM stack/TCB when done
-struct StaticTaskParams {
-	size_t drawCount;
-	StackType_t* stack_ptr;
-	StaticTask_t* tcb_ptr;
-};
-
 void mtb_Do_Nothing_Void_Fn(void){}
 
 // Simple error codes (extend as you like)
@@ -1309,12 +1302,24 @@ void pngDrawerWorker(void* param) {
 
 bool mtb_Draw_Multi_Png(size_t drawPNGsCount, ImgWipeFn_ptr wipePreviousImg) {
 
-	while(downloadedPNGs < drawPNGsCount)delay(10); // Wait for all images to be fetched from the internet
+	uint16_t imageDrawElapseTimer = 6000;
+	TaskHandle_t h = NULL;
+
+	while(downloadedPNGs < drawPNGsCount &&  imageDrawElapseTimer --> 0) delay(10); // Wait 1 minute for all images to be fetched from the internet
+	if (downloadedPNGs < drawPNGsCount){
+	ESP_LOGI(TAG,"Online PNG Download and Draw Timed-Out.\n");
+	return false;
+	} 
+	
 	wipePreviousImg();
 
 	    // Start download worker tasks (e.g. 2 workers)
     for (int i = 0; i < drawPNGsCount; ++i) {
-        xTaskCreatePinnedToCore(pngDrawerWorker, "IMG_DR", 4096, (void*)drawPNGsCount, 1, NULL, 1);
+        xTaskCreatePinnedToCore(pngDrawerWorker, "PNG IMG_DR", 4096, (void*)drawPNGsCount, 1, NULL, 1);
+				if (h == NULL) {
+			ESP_LOGE(TAG, "Failed to create PNG drawer worker task");
+			continue;
+		}
 		delay(1); // This delay is necessary to allow the task to start ahead of the next, so more than one task doesn't an image more than once.
     }
 
@@ -1428,8 +1433,8 @@ void svgDownloaderWorker(void* param) {
 
 void svgDrawerWorker(void* param) {
 	// param is a pointer to StaticTaskParams which carries stack/tcb ptrs
-	StaticTaskParams* args = (StaticTaskParams*)param;
-	size_t drawSVGsCount = args ? args->drawCount : 0;
+	size_t* args = (size_t*)param;
+	size_t drawSVGsCount = args ? *args : 0;
 	//log_i("SVG Drawer Worker started processing %d images", drawSVGsCount);
 	// Now decode & draw
 	for (int i = 0; i < drawSVGsCount; ++i){
@@ -1445,6 +1450,8 @@ void svgDrawerWorker(void* param) {
 
 bool mtb_Draw_Multi_Svg(size_t drawSVGsCount, ImgWipeFn_ptr wipePreviousImg) {
 	uint16_t imageDrawElapseTimer = 6000;
+	TaskHandle_t h = NULL;
+
 	while(downloadedSVGs < drawSVGsCount &&  imageDrawElapseTimer --> 0) delay(10); // Wait 1 minute for all images to be fetched from the internet
 	if (downloadedSVGs < drawSVGsCount){
 		ESP_LOGI(TAG,"Online SVG Download and Draw Timed-Out.\n");
@@ -1455,33 +1462,9 @@ bool mtb_Draw_Multi_Svg(size_t drawSVGsCount, ImgWipeFn_ptr wipePreviousImg) {
 
 	    // Start download worker tasks (e.g. 2 workers)
     for (int i = 0; i < drawSVGsCount; ++i) {
-		const uint32_t stackDepth = 4096;
-		StackType_t* task_stack = (StackType_t*)heap_caps_malloc(stackDepth * sizeof(StackType_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
-		StaticTask_t* tcb = (StaticTask_t*)heap_caps_malloc(sizeof(StaticTask_t), MALLOC_CAP_INTERNAL);
-		if (!task_stack || !tcb) {
-			ESP_LOGE(TAG, "Failed to allocate PSRAM stack or TCB for SVG drawer worker");
-			if (task_stack) heap_caps_free(task_stack);
-			if (tcb) heap_caps_free(tcb);
-			continue;
-		}
-
-		StaticTaskParams* args = (StaticTaskParams*)heap_caps_malloc(sizeof(StaticTaskParams), MALLOC_CAP_INTERNAL);
-		if (!args) {
-			ESP_LOGE(TAG, "Failed to allocate args for SVG drawer worker");
-			heap_caps_free(task_stack);
-			heap_caps_free(tcb);
-			continue;
-		}
-		args->drawCount = drawSVGsCount;
-		args->stack_ptr = task_stack;
-		args->tcb_ptr = tcb;
-
-		TaskHandle_t h = xTaskCreateStaticPinnedToCore(svgDrawerWorker, "SVG IMG_DR", stackDepth, (void*)args, 1, task_stack, tcb, 1);
+		xTaskCreatePinnedToCore(svgDrawerWorker, "SVG IMG_DR", 4096, &drawSVGsCount, 1, &h, 1);
 		if (h == NULL) {
-			ESP_LOGE(TAG, "Failed to create static SVG drawer worker task");
-			heap_caps_free(task_stack);
-			heap_caps_free(tcb);
-			heap_caps_free(args);
+			ESP_LOGE(TAG, "Failed to create SVG drawer worker task");
 			continue;
 		}
 		delay(1); // This delay is necessary to allow one task start ahead of the next, so two or more tasks doesn't draw the same image at the same time.

@@ -177,8 +177,13 @@ void exampleWriteTextApp_Task(void* dApplication){
 
 ## Support Pixlpal Project
 
-The Pixlpal AIoT Display is being hosted by the crowd funding platform Crowd Supply. The pre-launch campaign is live and you can use this medium to
-support the project by becoming a backer. If you wish to support this project, simply visit the [pre-launch page](https://www.crowdsupply.com/meterbit-cybernetics/pixlpal) and subscribe to be notified when the crowd funding campaign goes live. Thanks for the anticipated support....!!!
+We’re excited to officially announce that the Pixlpal AIoT Display has launched on Crowd Supply!
+
+Pixlpal is now live on the crowdfunding platform, and you can support the project by becoming a backer. If you’d like to be part of this journey and help bring Pixlpal to more homes, workspaces, and maker communities, simply visit the campaign page here:
+
+👉 https://www.crowdsupply.com/meterbit-cybernetics/pixlpal
+
+Thank you for your support and for being part of the Pixlpal story! 🚀
 
 ## Licenses
 
