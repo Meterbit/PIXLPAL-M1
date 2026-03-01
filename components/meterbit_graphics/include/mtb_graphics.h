@@ -173,10 +173,10 @@ class Mtb_FixedText_t : public Mtb_Static_Text_t {
     virtual uint16_t mtb_Write_String(String myString) override {return Mtb_Static_Text_t::mtb_Write_String(myString);}
         
     // FIXED TEXT USER FUNCTIONS ********************************************************************************
-    virtual uint16_t mtb_Write_Colored_String(const char *myString, uint16_t dColor);
-    virtual uint16_t mtb_Write_Colored_String(const char *myString, uint16_t dColor, uint16_t dBackgroundColor);
-    virtual uint16_t mtb_Write_Colored_String(String myString, uint16_t dColor);
-    virtual uint16_t mtb_Write_Colored_String(String myString, uint16_t dColor, uint16_t dBackgroundColor);
+    virtual uint16_t mtb_Write_Colored_Text(const char *myString, uint16_t dColor);
+    virtual uint16_t mtb_Write_Colored_Text(const char *myString, uint16_t dColor, uint16_t dBackgroundColor);
+    virtual uint16_t mtb_Write_Colored_Text(String myString, uint16_t dColor);
+    virtual uint16_t mtb_Write_Colored_Text(String myString, uint16_t dColor, uint16_t dBackgroundColor);
     virtual uint16_t mtb_Clear_String();
     // END OF FIXED TEXT USER FUNCTIONS *********************************************************************************************************
 
@@ -205,10 +205,10 @@ class Mtb_CentreText_t : public Mtb_FixedText_t {
     uint16_t mtb_Write_String(String myString) override;         // Write a String object to the display
 
     // FIXED TEXT USER FUNCTIONS ********************************************************************************
-    uint16_t mtb_Write_Colored_String(const char *myString, uint16_t dColor);
-    uint16_t mtb_Write_Colored_String(const char *myString, uint16_t dColor, uint16_t dBackgroundColor);
-    uint16_t mtb_Write_Colored_String(String myString, uint16_t dColor);
-    uint16_t mtb_Write_Colored_String(String myString, uint16_t dColor, uint16_t dBackgroundColor);
+    uint16_t mtb_Write_Colored_Text(const char *myString, uint16_t dColor);
+    uint16_t mtb_Write_Colored_Text(const char *myString, uint16_t dColor, uint16_t dBackgroundColor);
+    uint16_t mtb_Write_Colored_Text(String myString, uint16_t dColor);
+    uint16_t mtb_Write_Colored_Text(String myString, uint16_t dColor, uint16_t dBackgroundColor);
     // END OF FIXED TEXT USER FUNCTIONS *********************************************************************************************************
 
     void mtb_Update_Panel_Segment(void) override {}

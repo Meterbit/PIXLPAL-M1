@@ -18,12 +18,10 @@
 
 EXT_RAM_BSS_ATTR TaskHandle_t worldClock_Task_H = NULL;
 EXT_RAM_BSS_ATTR WorldClock_Data_t worldClockCities;
-//EXT_RAM_BSS_ATTR SemaphoreHandle_t studioLightMode_Sem_H = NULL;
 void worldClock_App_Task(void *);
-// supporting functions
 
 // button and encoder functions
-// void selectAM_PMButton(button_event_t button_Data);
+void change_City_Button(button_event_t button_Data);
 
 // bluetooth functions
 void setWorldClockCities(JsonDocument&);
@@ -34,35 +32,17 @@ void requestWorldClkNTP_Time(JsonDocument&);
 // Helper Functions
 void drawWorldClock5CitiesBkgd(void);
 void drawWorldClockSingleCity(void);
-//char* getCityLocalTime(const char* cityTimeZone,  char* timeTextBuffer);
 
-// EXT_RAM_BSS_ATTR Mtb_FixedText_t* cityName0;
-// EXT_RAM_BSS_ATTR Mtb_FixedText_t* cityTime0;
-
-// EXT_RAM_BSS_ATTR Mtb_FixedText_t* cityName1;
-// EXT_RAM_BSS_ATTR Mtb_FixedText_t* cityTime1;
-
-// EXT_RAM_BSS_ATTR Mtb_FixedText_t* cityName2;
-// EXT_RAM_BSS_ATTR Mtb_FixedText_t* cityTime2;
-
-// EXT_RAM_BSS_ATTR Mtb_FixedText_t* cityName3;
-// EXT_RAM_BSS_ATTR Mtb_FixedText_t* cityTime3;
-
-// EXT_RAM_BSS_ATTR Mtb_FixedText_t* cityName4;
-// EXT_RAM_BSS_ATTR Mtb_FixedText_t* cityTime4;
-
+// Declare the World Clock App in Status Bar Mode
 EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *worldClock_App = new Mtb_Applications_StatusBar(worldClock_App_Task, &worldClock_Task_H, "world Clock", 10240);
 
 void worldClock_App_Task(void* dApplication){
   Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
-  thisApp->mtb_App_EncoderFn_ptr = mtb_Brightness_Control;
-  //thisApp->mtb_App_ButtonFn_ptr = selectAM_PMButton;
+  thisApp->mtb_App_Set_EC11_Cb_Fns(change_City_Button, mtb_Brightness_Control);
   mtb_App_BleComm_Parser_Sv->mtb_Register_Ble_Comm_ServiceFns(setWorldClockCities, setWorldClockColors, setWorldClockMode, requestWorldClkNTP_Time);
   mtb_App_Init(thisApp, mtb_Status_Bar_Calendar_Sv);
   //************************************************************************************ */
-    //if(studioLightMode_Sem_H == NULL) studioLightMode_Sem_H = xSemaphoreCreateBinary();
-    mtb_Read_Nvs_Struct("Clock Cols", &clk_Updt, sizeof(Clock_Colors));
-    char rtc_Hr_Min[10] = {0};
+    char worldCity_Hr_Min[10] = {0};
 
     worldClockCities = (WorldClock_Data_t){
     {"New York", "London", "Tokyo", "Sydney", "Moscow"},
@@ -78,23 +58,23 @@ void worldClock_App_Task(void* dApplication){
     0
     };
 
-    Mtb_FixedText_t dispCityTime(70, 21, Terminal10x17, GREEN);
-    Mtb_CentreText_t dispCityName(65, 57, Terminal8x12, WHITE);
+    Mtb_FixedText_t dispSingleCityTime(70, 21, Terminal10x17, GREEN);
+    Mtb_CentreText_t dispSingleCityName(65, 57, Terminal8x12, WHITE);
 
-    Mtb_FixedText_t cityName0(3, 12, Terminal6x8, GREEN_LIZARD);
-    Mtb_FixedText_t cityTime0(100, 12, Terminal6x8, WHITE);
+    Mtb_FixedText_t cityMultiName0(3, 12, Terminal6x8, GREEN_LIZARD);
+    Mtb_FixedText_t cityMultiTime0(100, 12, Terminal6x8, WHITE);
 
-    Mtb_FixedText_t cityName1(3, 23, Terminal6x8, GREEN_LIZARD);
-    Mtb_FixedText_t cityTime1(100, 23, Terminal6x8, WHITE);
+    Mtb_FixedText_t cityMultiName1(3, 23, Terminal6x8, GREEN_LIZARD);
+    Mtb_FixedText_t cityMultiTime1(100, 23, Terminal6x8, WHITE);
 
-    Mtb_FixedText_t cityName2(3, 34, Terminal6x8, GREEN_LIZARD);
-    Mtb_FixedText_t cityTime2(100, 34, Terminal6x8, WHITE);
+    Mtb_FixedText_t cityMultiName2(3, 34, Terminal6x8, GREEN_LIZARD);
+    Mtb_FixedText_t cityMultiTime2(100, 34, Terminal6x8, WHITE);
 
-    Mtb_FixedText_t cityName3(3, 45, Terminal6x8, GREEN_LIZARD);
-    Mtb_FixedText_t cityTime3(100, 45, Terminal6x8, WHITE);
+    Mtb_FixedText_t cityMultiName3(3, 45, Terminal6x8, GREEN_LIZARD);
+    Mtb_FixedText_t cityMultiTime3(100, 45, Terminal6x8, WHITE);
 
-    Mtb_FixedText_t cityName4(3, 56, Terminal6x8, GREEN_LIZARD);
-    Mtb_FixedText_t cityTime4(100, 56, Terminal6x8, WHITE);
+    Mtb_FixedText_t cityMultiName4(3, 56, Terminal6x8, GREEN_LIZARD);
+    Mtb_FixedText_t cityMultiTime4(100, 56, Terminal6x8, WHITE);
 
     Mtb_OnlineImage_t worldCountryFlag{
       "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/ng.svg",
@@ -112,12 +92,12 @@ else drawWorldClockSingleCity();
 while (MTB_APP_IS_ACTIVE == pdTRUE) {
     thisApp->elementRefresh = false;
     if(worldClockCities.worldClockMode == FIVE_CLOCK_MODE){
-      // MEMORY LEAKING OBSERVED IN THIS LOOP - NEEDS FIXING LATER
-      cityName0.mtb_Write_Colored_String(worldClockCities.worldCapitals[0], worldClockCities.worldColors[0]);
-      cityName1.mtb_Write_Colored_String(worldClockCities.worldCapitals[1], worldClockCities.worldColors[1]);
-      cityName2.mtb_Write_Colored_String(worldClockCities.worldCapitals[2], worldClockCities.worldColors[2]);
-      cityName3.mtb_Write_Colored_String(worldClockCities.worldCapitals[3], worldClockCities.worldColors[3]);
-      cityName4.mtb_Write_Colored_String(worldClockCities.worldCapitals[4], worldClockCities.worldColors[4]);
+                                                                                                                // MEMORY LEAKING OBSERVED IN THIS LOOP - NEEDS FIXING LATER
+      cityMultiName0.mtb_Write_Colored_Text(worldClockCities.worldCapitals[0], worldClockCities.worldColors[0]);
+      cityMultiName1.mtb_Write_Colored_Text(worldClockCities.worldCapitals[1], worldClockCities.worldColors[1]);
+      cityMultiName2.mtb_Write_Colored_Text(worldClockCities.worldCapitals[2], worldClockCities.worldColors[2]);
+      cityMultiName3.mtb_Write_Colored_Text(worldClockCities.worldCapitals[3], worldClockCities.worldColors[3]);
+      cityMultiName4.mtb_Write_Colored_Text(worldClockCities.worldCapitals[4], worldClockCities.worldColors[4]);
 
       while ((Mtb_Applications::internetConnectStatus != true) && (MTB_APP_IS_ACTIVE == pdTRUE)) delay(1000);
 
@@ -129,16 +109,16 @@ while (MTB_APP_IS_ACTIVE == pdTRUE) {
       cacheTimezone(worldClockCities.worldTimeZones[4]);
 
       while (MTB_APP_IS_ACTIVE == pdTRUE && thisApp->elementRefresh == false) {
-        cityTime0.mtb_Write_Colored_String(getCityLocalTime(worldClockCities.worldTimeZones[0], rtc_Hr_Min), worldClockCities.worldColors[0]);
-        cityTime1.mtb_Write_Colored_String(getCityLocalTime(worldClockCities.worldTimeZones[1], rtc_Hr_Min), worldClockCities.worldColors[1]);
-        cityTime2.mtb_Write_Colored_String(getCityLocalTime(worldClockCities.worldTimeZones[2], rtc_Hr_Min), worldClockCities.worldColors[2]);
-        cityTime3.mtb_Write_Colored_String(getCityLocalTime(worldClockCities.worldTimeZones[3], rtc_Hr_Min), worldClockCities.worldColors[3]);
-        cityTime4.mtb_Write_Colored_String(getCityLocalTime(worldClockCities.worldTimeZones[4], rtc_Hr_Min), worldClockCities.worldColors[4]);
+        cityMultiTime0.mtb_Write_Colored_Text(getCityLocalTime(worldClockCities.worldTimeZones[0], worldCity_Hr_Min), worldClockCities.worldColors[0]);
+        cityMultiTime1.mtb_Write_Colored_Text(getCityLocalTime(worldClockCities.worldTimeZones[1], worldCity_Hr_Min), worldClockCities.worldColors[1]);
+        cityMultiTime2.mtb_Write_Colored_Text(getCityLocalTime(worldClockCities.worldTimeZones[2], worldCity_Hr_Min), worldClockCities.worldColors[2]);
+        cityMultiTime3.mtb_Write_Colored_Text(getCityLocalTime(worldClockCities.worldTimeZones[3], worldCity_Hr_Min), worldClockCities.worldColors[3]);
+        cityMultiTime4.mtb_Write_Colored_Text(getCityLocalTime(worldClockCities.worldTimeZones[4], worldCity_Hr_Min), worldClockCities.worldColors[4]);
         delay(1000);
       }
     } else {
       
-      dispCityName.mtb_Write_Colored_String(worldClockCities.worldCapitals[0], WHITE);
+      dispSingleCityName.mtb_Write_Colored_Text(worldClockCities.worldCapitals[0], WHITE);
 
       while ((Mtb_Applications::internetConnectStatus != true) && (MTB_APP_IS_ACTIVE == pdTRUE)) delay(1000);
       
@@ -149,7 +129,7 @@ while (MTB_APP_IS_ACTIVE == pdTRUE) {
       cacheTimezone(worldClockCities.worldTimeZones[0]);
 
       while (MTB_APP_IS_ACTIVE == pdTRUE && thisApp->elementRefresh == false) {
-        dispCityTime.mtb_Write_Colored_String(getCityLocalTime(worldClockCities.worldTimeZones[0], rtc_Hr_Min), worldClockCities.worldColors[0]);
+        dispSingleCityTime.mtb_Write_Colored_Text(getCityLocalTime(worldClockCities.worldTimeZones[0], worldCity_Hr_Min), worldClockCities.worldColors[0]);
         delay(1000);
       }
     }
@@ -158,6 +138,36 @@ while (MTB_APP_IS_ACTIVE == pdTRUE) {
   mtb_Delete_This_App(thisApp);
 }
 
+void change_City_Button(button_event_t button_Data){
+            switch (button_Data.type){
+            case BUTTON_RELEASED:
+            break;
+
+            case BUTTON_PRESSED:
+            //mtb_Ble_Comm_Init();
+            break;
+
+            case BUTTON_PRESSED_LONG:
+            //mtb_Launch_This_App(pixelAnimClock_App);
+            break;
+
+            case BUTTON_CLICKED:
+            //ESP_LOGI(TAG, "Button Clicked: %d Times\n",button_Data.count);
+            switch (button_Data.count){
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            default:
+                break;
+            }
+                break;
+            default:
+            break;
+			}
+}
 
 void drawWorldClock5CitiesBkgd(void){
     mtb_Panel_Fill_Rect(0, 10, 127, 63, BLACK);   
@@ -172,50 +182,6 @@ void drawWorldClockSingleCity(void){
     mtb_Panel_Fill_Rect(0, 10, 127, 63, BLACK);
     mtb_Draw_Local_Png({"/batIcons/worldClk.png", 59, 14});
 }
-
-// char* getCityLocalTime(const char* cityTimeZone, char* timeTextBuffer){
-//     setenv("TZ", cityTimeZone, 1);
-//     tzset();
-
-//     time_t present = 0;
-//     struct tm *now = nullptr;
-//     //    char AM_or_PM;
-//     static uint8_t pre_Hr = 111;
-//     uint8_t pre_Min = 111;
-
-//     time(&present);
-//     now = localtime(&present);
-
-//   if (pre_Hr != now->tm_hour){
-// 	pre_Hr = now->tm_hour;
-
-//     if(pre_Hr == 0){
-//     timeTextBuffer[0] = '0';
-//     timeTextBuffer[1] = '0';
-//     //sprintf(timeTextBuffer, "%d", pre_Hr );
-//     } else if (pre_Hr < 10){
-//     timeTextBuffer[0] = '0';
-//     sprintf(&timeTextBuffer[1], "%d", pre_Hr);
-//     } else {
-//         sprintf(timeTextBuffer, "%d", pre_Hr );
-// 	}	
-//     pre_Hr = now->tm_hour;        // Code is placed here because pre_Hr was changed.
-//   }
-
-//   	if (pre_Min != now->tm_min){
-//   pre_Min = now->tm_min;
-
-//   if (pre_Min < 10){
-// 		timeTextBuffer[3] = '0';
-//     sprintf(&timeTextBuffer[4], "%d", pre_Min);
-// 		} else {
-//     sprintf(&timeTextBuffer[3], "%d", pre_Min);
-// 	}
-//   timeTextBuffer[2] = ':';
-//   timeTextBuffer[5] = 0;
-// }
-// return timeTextBuffer;
-// }
 
 void setWorldClockCities(JsonDocument& dCommand){
   uint8_t cmdNumber = dCommand["app_command"];

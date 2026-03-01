@@ -98,7 +98,7 @@ void  pixAnimClock_App_Task(void* dApplication){
   
   printPixAnimClkThm(savedPixAnimClkSet.themeColor);
   if(strlen(savedPixAnimClkSet.headerText) < HEADER_TEXT_LIMIT){
-    headerText->mtb_Write_Colored_String(savedPixAnimClkSet.headerText, savedPixAnimClkSet.headerTextColor, savedPixAnimClkSet.themeColor[0]);
+    headerText->mtb_Write_Colored_Text(savedPixAnimClkSet.headerText, savedPixAnimClkSet.headerTextColor, savedPixAnimClkSet.themeColor[0]);
   } else {
     headerTextScroll->backgroundColor = savedPixAnimClkSet.themeColor[0];
     headerTextScroll->mtb_Scroll_This_Text(savedPixAnimClkSet.headerText, savedPixAnimClkSet.headerTextColor);
@@ -307,7 +307,7 @@ void setClockTitleAndColor(JsonDocument& dCommand){
 
   if(strlen(title) < HEADER_TEXT_LIMIT){
     headerTextScroll->mtb_Scroll_Active(STOP_SCROLL);
-    headerText->mtb_Write_Colored_String(title, titleColor, savedPixAnimClkSet.themeColor[0]);
+    headerText->mtb_Write_Colored_Text(title, titleColor, savedPixAnimClkSet.themeColor[0]);
   }else{
     headerTextScroll->backgroundColor = savedPixAnimClkSet.themeColor[0];
     headerTextScroll->mtb_Scroll_Active(STOP_SCROLL);
@@ -343,7 +343,7 @@ void setPixAnimTheme(JsonDocument& dCommand){
 
   if(strlen(savedPixAnimClkSet.headerText) < HEADER_TEXT_LIMIT){
     headerTextScroll->mtb_Scroll_Active(STOP_SCROLL);
-    headerText->mtb_Write_Colored_String(savedPixAnimClkSet.headerText, savedPixAnimClkSet.headerTextColor, savedPixAnimClkSet.themeColor[0]);
+    headerText->mtb_Write_Colored_Text(savedPixAnimClkSet.headerText, savedPixAnimClkSet.headerTextColor, savedPixAnimClkSet.themeColor[0]);
   } else {
     headerTextScroll->backgroundColor = savedPixAnimClkSet.themeColor[0];
     headerTextScroll->mtb_Scroll_Active(STOP_SCROLL);

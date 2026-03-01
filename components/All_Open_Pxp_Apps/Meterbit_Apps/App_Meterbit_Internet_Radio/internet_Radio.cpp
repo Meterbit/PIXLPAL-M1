@@ -62,8 +62,8 @@ void  internetRadio_App_Task(void* dApplication){
 
     //statusBarNotif.mtb_Scroll_This_Text("BLUETOOTH LINK DISABLED FOR SEAMLESS AUDIO STREAMING", BLUE_GREEN);
     
-    internet_Text.mtb_Write_Colored_String("Internet", FLORAL_WHITE);
-    radio_Text.mtb_Write_Colored_String("Radio", FLORAL_WHITE);
+    internet_Text.mtb_Write_Colored_Text("Internet", FLORAL_WHITE);
+    radio_Text.mtb_Write_Colored_Text("Radio", FLORAL_WHITE);
     mtb_Draw_Local_Png({"/batIcons/fmRadio.png", 68, 10});
     mtb_Draw_Local_Png({"/batIcons/radStation.png", 2, 46});
     mtb_Draw_Local_Png({"/batIcons/radStrmTitle.png", 2, 55});

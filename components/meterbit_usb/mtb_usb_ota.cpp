@@ -116,7 +116,7 @@ static void msc_ota_event_handler(void *arg, esp_event_base_t event_base, int32_
         break;}
     case ESP_MSC_OTA_FAILED:
         ESP_LOGI(TAG, "ESP_MSC_OTA_FAILED");
-        otaProgressText.mtb_Write_Colored_String("FAILED... ", RED);
+        otaProgressText.mtb_Write_Colored_Text("FAILED... ", RED);
         break;
     case ESP_MSC_OTA_GET_IMG_DESC:
         ESP_LOGI(TAG, "ESP_MSC_OTA_GET_IMG_DESC");
@@ -131,11 +131,11 @@ static void msc_ota_event_handler(void *arg, esp_event_base_t event_base, int32_
         break;}
     case ESP_MSC_OTA_FINISH:
         ESP_LOGI(TAG, "ESP_MSC_OTA_FINISH");
-        otaProgressText.mtb_Write_Colored_String("SUCCESSFUL", CYAN);
+        otaProgressText.mtb_Write_Colored_Text("SUCCESSFUL", CYAN);
         break;
     case ESP_MSC_OTA_ABORT:
         ESP_LOGI(TAG, "ESP_MSC_OTA_ABORT");
-        otaProgressText.mtb_Write_Colored_String("ABORTED... ", ORANGE);
+        otaProgressText.mtb_Write_Colored_Text("ABORTED... ", ORANGE);
         break;
     }
 }

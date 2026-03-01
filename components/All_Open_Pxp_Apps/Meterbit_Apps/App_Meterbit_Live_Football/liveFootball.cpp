@@ -272,8 +272,8 @@ void processLiveMatches(SpiRamJsonDocument& doc, void* dApplication){
         String venue = match["fixture"]["venue"]["name"].as<String>();
 
         String scoreText = String(homeGoals) + "-" + String(awayGoals);
-        scoreLineLive->mtb_Write_Colored_String(scoreText.c_str(), WHITE);
-        elapsedTimeLive->mtb_Write_Colored_String(matchStatus.c_str(), CYAN);
+        scoreLineLive->mtb_Write_Colored_Text(scoreText.c_str(), WHITE);
+        elapsedTimeLive->mtb_Write_Colored_Text(matchStatus.c_str(), CYAN);
 
         String dLeague = leagueName + " (" + String(round) + ")";
         moreDataScroll->mtb_Scroll_This_Text(dLeague, CYAN);
@@ -335,12 +335,12 @@ void processFituresMatches(SpiRamJsonDocument& doc, void* dApplication){
     String awayTeam = match["teams"]["away"]["name"];
     String round = match["league"]["round"];
 
-    statsTitle->mtb_Write_Colored_String(leagueName, BLACK, TEAL);
+    statsTitle->mtb_Write_Colored_Text(leagueName, BLACK, TEAL);
 
-    serialFixtures->mtb_Write_Colored_String(String(++matchIndex) + "/" + String(results), BLUE_GRAY);
-    dateFixtures->mtb_Write_Colored_String(mtb_Format_Date_From_Timestamp(time), GREEN_LIZARD);
-    timeFixtures->mtb_Write_Colored_String(mtb_Format_Time_From_Timestamp(time), CYAN);
-    vsFixtures->mtb_Write_Colored_String("vs", ASH_GRAY);
+    serialFixtures->mtb_Write_Colored_Text(String(++matchIndex) + "/" + String(results), BLUE_GRAY);
+    dateFixtures->mtb_Write_Colored_Text(mtb_Format_Date_From_Timestamp(time), GREEN_LIZARD);
+    timeFixtures->mtb_Write_Colored_Text(mtb_Format_Time_From_Timestamp(time), CYAN);
+    vsFixtures->mtb_Write_Colored_Text("vs", ASH_GRAY);
 
     String dTeams = homeTeam + " vs " + awayTeam;
 
@@ -368,27 +368,27 @@ void processStandingsTable(SpiRamJsonDocument& doc, void* dApplication){
               int standingIndex = 0;
         for (JsonArray group : standings) {
           String groupName = group[0]["group"];
-        //titleStandings->mtb_Write_Colored_String(leagueName, BLACK);
-          statsTitle->mtb_Write_Colored_String(groupName, BLACK, TURTLE_GREEN);
+        //titleStandings->mtb_Write_Colored_Text(leagueName, BLACK);
+          statsTitle->mtb_Write_Colored_Text(groupName, BLACK, TURTLE_GREEN);
           for (JsonObject team : group) {
             liveFootballDispChangeIntv = 75;
 
             if ((standingIndex % 4) == 0) {
-              rankStandings1->mtb_Write_Colored_String(String(team["rank"].as<int>()).c_str(), YELLOW_CRAYOLA);
-              teamStandings1->mtb_Write_Colored_String(team["team"]["name"].as<const char*>(), GREEN_LIZARD);
-              pointsStandings1->mtb_Write_Colored_String(String(team["points"].as<int>()), WHITE);
+              rankStandings1->mtb_Write_Colored_Text(String(team["rank"].as<int>()).c_str(), YELLOW_CRAYOLA);
+              teamStandings1->mtb_Write_Colored_Text(team["team"]["name"].as<const char*>(), GREEN_LIZARD);
+              pointsStandings1->mtb_Write_Colored_Text(String(team["points"].as<int>()), WHITE);
             } else if ((standingIndex % 4) == 1) {
-              rankStandings2->mtb_Write_Colored_String(String(team["rank"].as<int>()).c_str(), YELLOW_CRAYOLA);
-              teamStandings2->mtb_Write_Colored_String(team["team"]["name"].as<const char*>(), GREEN_LIZARD);
-              pointsStandings2->mtb_Write_Colored_String(String(team["points"].as<int>()), WHITE);
+              rankStandings2->mtb_Write_Colored_Text(String(team["rank"].as<int>()).c_str(), YELLOW_CRAYOLA);
+              teamStandings2->mtb_Write_Colored_Text(team["team"]["name"].as<const char*>(), GREEN_LIZARD);
+              pointsStandings2->mtb_Write_Colored_Text(String(team["points"].as<int>()), WHITE);
             } else if ((standingIndex % 4) == 2) {
-              rankStandings3->mtb_Write_Colored_String(String(team["rank"].as<int>()).c_str(), YELLOW_CRAYOLA);
-              teamStandings3->mtb_Write_Colored_String(team["team"]["name"].as<const char*>(), GREEN_LIZARD);
-              pointsStandings3->mtb_Write_Colored_String(String(team["points"].as<int>()), WHITE);
+              rankStandings3->mtb_Write_Colored_Text(String(team["rank"].as<int>()).c_str(), YELLOW_CRAYOLA);
+              teamStandings3->mtb_Write_Colored_Text(team["team"]["name"].as<const char*>(), GREEN_LIZARD);
+              pointsStandings3->mtb_Write_Colored_Text(String(team["points"].as<int>()), WHITE);
             } else if ((standingIndex % 4) == 3) {
-              rankStandings4->mtb_Write_Colored_String(String(team["rank"].as<int>()).c_str(), YELLOW_CRAYOLA);
-              teamStandings4->mtb_Write_Colored_String(team["team"]["name"].as<const char*>(), GREEN_LIZARD);
-              pointsStandings4->mtb_Write_Colored_String(String(team["points"].as<int>()), WHITE);
+              rankStandings4->mtb_Write_Colored_Text(String(team["rank"].as<int>()).c_str(), YELLOW_CRAYOLA);
+              teamStandings4->mtb_Write_Colored_Text(team["team"]["name"].as<const char*>(), GREEN_LIZARD);
+              pointsStandings4->mtb_Write_Colored_Text(String(team["points"].as<int>()), WHITE);
             }
 
             // Delay after every 4 teams

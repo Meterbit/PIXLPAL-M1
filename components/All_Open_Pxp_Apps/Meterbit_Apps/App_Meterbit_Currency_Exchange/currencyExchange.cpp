@@ -143,10 +143,10 @@ while (MTB_APP_IS_ACTIVE == pdTRUE){
             mtb_Draw_Local_Png({"/Currencys/CurrencysIcon_1.png", 4, 4});
             CurrencyID1_txt.mtb_Write_String(currentCurrencies.currencyID1);
             current_price_txt.mtb_Write_String(String(current_price));
-            cPrice_diff_tag.mtb_Write_Colored_String("DPR:", price_Diff < 0 ? RED : GREEN);
-            cPrice_diff_txt.mtb_Write_Colored_String(String(price_Diff), price_Diff < 0 ? RED : GREEN);
-            priceChangePercent_tag.mtb_Write_Colored_String("G/L:", price_change_percentage_24h < 0 ? ORANGE : YELLOW_GREEN);
-            priceChangePercent_txt.mtb_Write_Colored_String(String(price_change_percentage_24h) + "%", price_change_percentage_24h < 0 ? ORANGE : YELLOW_GREEN);
+            cPrice_diff_tag.mtb_Write_Colored_Text("DPR:", price_Diff < 0 ? RED : GREEN);
+            cPrice_diff_txt.mtb_Write_Colored_Text(String(price_Diff), price_Diff < 0 ? RED : GREEN);
+            priceChangePercent_tag.mtb_Write_Colored_Text("G/L:", price_change_percentage_24h < 0 ? ORANGE : YELLOW_GREEN);
+            priceChangePercent_txt.mtb_Write_Colored_Text(String(price_change_percentage_24h) + "%", price_change_percentage_24h < 0 ? ORANGE : YELLOW_GREEN);
 
             moreCurrencyData.mtb_Scroll_This_Text("CURR: " + currentCurrencies.currencyID1, CYAN);
             moreCurrencyData.mtb_Scroll_This_Text("HIGH: " + String(high24), GREEN);

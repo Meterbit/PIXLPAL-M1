@@ -205,7 +205,7 @@ const char* jsonWorldCountries = R"json(
     "flag_4x3": "https://raw.githubusercontent.com/lipis/flag-icons/refs/heads/main/flags/4x3/es-pv.svg",
     "iso": false,
     "name": "Basque Country"
-  },
+  }, 
   {
     "capital": "Minsk",
     "code": "by",
@@ -1897,7 +1897,7 @@ const char* jsonWorldCountries = R"json(
     "code": "rs",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/rs.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/rs.svg",
+    "flag_4x3": "http://lascarid.es/fussyflags/svg/serbia.svg",
     "iso": true,
     "name": "Serbia"
   },

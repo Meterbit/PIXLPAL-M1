@@ -222,6 +222,11 @@ void Mtb_Applications::actionOnPreviousApp(Mtb_Do_Prev_App_t dAction){
     }
 }
 
+void Mtb_Applications::mtb_App_Set_EC11_Cb_Fns(buttonFn_ptr_t but_Fn, encoderFn_ptr_t enc_Fn){
+    mtb_App_EncoderFn_ptr = enc_Fn;
+    mtb_App_ButtonFn_ptr = but_Fn;
+}
+
 void mtb_Delete_This_App(Mtb_Applications* dApp){
         *(dApp->appHandle_ptr) = NULL;
         ESP_LOGI(TAG, "THIS APPLICATION HAS BEEN DELETED: %s \n", dApp->appName);

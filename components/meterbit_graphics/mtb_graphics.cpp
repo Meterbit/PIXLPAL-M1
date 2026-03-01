@@ -782,22 +782,22 @@ uint16_t Mtb_Static_Text_t::mtb_Write_String(String myString){
 	return mtb_Write_String(myString.c_str());
 }
 //**************************************************************************************
-uint16_t Mtb_FixedText_t::mtb_Write_Colored_String(const char *myString, uint16_t dColor){
+uint16_t Mtb_FixedText_t::mtb_Write_Colored_Text(const char *myString, uint16_t dColor){
 	color = dColor;
 	return mtb_Write_String(myString);
 }
-uint16_t Mtb_FixedText_t::mtb_Write_Colored_String(String myString, uint16_t dColor){
+uint16_t Mtb_FixedText_t::mtb_Write_Colored_Text(String myString, uint16_t dColor){
 	color = dColor;
 	return mtb_Write_String(myString);
 }
 //**************************************************************************************
-uint16_t Mtb_FixedText_t::mtb_Write_Colored_String(const char *myString, uint16_t dColor, uint16_t dBackgroundColor){
+uint16_t Mtb_FixedText_t::mtb_Write_Colored_Text(const char *myString, uint16_t dColor, uint16_t dBackgroundColor){
 	color = dColor;
 	backgroundColor = dBackgroundColor;
 	return mtb_Write_String(myString);
 }
 
-uint16_t Mtb_FixedText_t::mtb_Write_Colored_String(String myString, uint16_t dColor, uint16_t dBackgroundColor){
+uint16_t Mtb_FixedText_t::mtb_Write_Colored_Text(String myString, uint16_t dColor, uint16_t dBackgroundColor){
 	color = dColor;
 	backgroundColor = dBackgroundColor;
 	return mtb_Write_String(myString);
@@ -855,7 +855,7 @@ uint16_t Mtb_CentreText_t::mtb_Write_String(String myString)
 	return Mtb_FixedText_t::mtb_Write_String(myString.c_str());
 }
 //**************************************************************************************
-uint16_t Mtb_CentreText_t::mtb_Write_Colored_String(const char *myString, uint16_t dColor)
+uint16_t Mtb_CentreText_t::mtb_Write_Colored_Text(const char *myString, uint16_t dColor)
 {
 	color = dColor;
 	mtb_Clear_Panel_Segment();
@@ -877,7 +877,7 @@ uint16_t Mtb_CentreText_t::mtb_Write_Colored_String(const char *myString, uint16
 	return Mtb_FixedText_t::mtb_Write_String(myString);
 }
 //**************************************************************************************
-uint16_t Mtb_CentreText_t::mtb_Write_Colored_String(String myString, uint16_t dColor)
+uint16_t Mtb_CentreText_t::mtb_Write_Colored_Text(String myString, uint16_t dColor)
 {
 	color = dColor;
 	mtb_Clear_Panel_Segment();
@@ -899,7 +899,7 @@ uint16_t Mtb_CentreText_t::mtb_Write_Colored_String(String myString, uint16_t dC
 	return Mtb_FixedText_t::mtb_Write_String(myString.c_str());
 }
 //**************************************************************************************
-uint16_t Mtb_CentreText_t::mtb_Write_Colored_String(const char *myString, uint16_t dColor, uint16_t dBackgroundColor){
+uint16_t Mtb_CentreText_t::mtb_Write_Colored_Text(const char *myString, uint16_t dColor, uint16_t dBackgroundColor){
 	color = dColor;
 	backgroundColor = dBackgroundColor;
 	mtb_Clear_Panel_Segment();
@@ -920,7 +920,7 @@ uint16_t Mtb_CentreText_t::mtb_Write_Colored_String(const char *myString, uint16
 	return Mtb_FixedText_t::mtb_Write_String(myString);
 }
 //**************************************************************************************
-uint16_t Mtb_CentreText_t::mtb_Write_Colored_String(String myString, uint16_t dColor, uint16_t dBackgroundColor){
+uint16_t Mtb_CentreText_t::mtb_Write_Colored_Text(String myString, uint16_t dColor, uint16_t dBackgroundColor){
 	color = dColor;
 	backgroundColor = dBackgroundColor;
 	mtb_Clear_Panel_Segment();

@@ -19,7 +19,7 @@ void exampleWriteTextApp_Task(void* dApplication){
 
 // Write Fixed Text to display
   exampleFixedText.mtb_Write_String("Hello World."); // Write text in default color
-//exampleFixedText.mtb_Write_Colored_String(" in Color!", PURPLE);     // Write text in different color
+//exampleFixedText.mtb_Write_Colored_Text(" in Color!", PURPLE);     // Write text in different color
 
   while (MTB_APP_IS_ACTIVE == pdTRUE) {
 

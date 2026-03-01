@@ -22,11 +22,11 @@ extern "C" void app_main(){
     mtb_Launch_This_App(usbOTA_Update_App);
     while(Mtb_Applications::firmwareOTA_Status != pdFALSE) delay(1000);
 
-    // Initialize Wifi
-    mtb_Wifi_Init();
-
     // Read the last executed App from NVS
     mtb_Read_Nvs_Struct("currentApp", &currentApp, sizeof(Mtb_CurrentApp_t));
+
+    // Initialize Wifi
+    mtb_Wifi_Init();
 
     // Launch the Last Executed App or Launch a particular App after boot-up
     mtb_General_App_Launch(currentApp);

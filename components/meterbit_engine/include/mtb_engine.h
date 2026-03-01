@@ -161,8 +161,8 @@ public:
     uint8_t appCore;                    // Core on which the application task is running on.
 
     Mtb_Services* appServices[10] = {nullptr};  // An array of 10 Service Pointers. This will hold pointers to the Mtb_Services tasks both generic and perculiar. e.g. Mic Service 
-    void (*mtb_App_EncoderFn_ptr)(rotary_encoder_rotation_t) = encoderDoNothing;        // Pointer to the function that will be called when the rotary encoder is rotated.
-    void (*mtb_App_ButtonFn_ptr)(button_event_t) = buttonDoNothing;                     // Pointer to the function that will be called when the button is pressed.
+    void (*mtb_App_EncoderFn_ptr)(rotary_encoder_rotation_t) = encoderDoNothing;     // Pointer to the function that will be called when the rotary encoder is rotated.
+    void (*mtb_App_ButtonFn_ptr)(button_event_t) = buttonDoNothing;                  // Pointer to the function that will be called when the button is pressed.
     void *parameters;                                               // Pointer to the parameters that will be passed to the application task.
     bool fullScreen = false;                                        // If true, the application will run in full screen mode, otherwise it will run in status bar mode.
     bool elementRefresh;                                            // Refresh the various elements/components displayed onscreen by the app.
@@ -192,6 +192,8 @@ public:
     static void appSuspend(Mtb_Applications *);                     // The function that suspends the app.
     static void appDestroy(Mtb_Applications *);
     static void actionOnPreviousApp(Mtb_Do_Prev_App_t);             // This function is used to take action on the previous application when a new application is launched. It can be set to SUSPEND_PREVIOUS_APP, DESTROY_PREVIOUS_APP, or IGNORE_PREVIOUS_APP.
+
+    void mtb_App_Set_EC11_Cb_Fns(buttonFn_ptr_t but_Fn = buttonDoNothing, encoderFn_ptr_t enc_Fn = mtb_Brightness_Control); // This function is used to set the encoder and button functions for the application.
 
     // Overload the new operator
     void* operator new(size_t size) {
