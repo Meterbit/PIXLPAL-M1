@@ -36,16 +36,15 @@ EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *worldFlags_App = new Mtb_Applicati
 
 void worldFlags_App_Task(void* dApplication){
   Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
-  thisApp->mtb_App_EncoderFn_ptr = mtb_Brightness_Control;
-  thisApp->mtb_App_ButtonFn_ptr = changeWorldFlagButton;
+  thisApp->mtb_App_Set_EC11_Cb_Fns(changeWorldFlagButton, mtb_Brightness_Control);
   mtb_App_BleComm_Parser_Sv->mtb_Register_Ble_Comm_ServiceFns(selectDisplayFlag, selectPreferredFlags, cycleAllFlags, showCountryName, setFlagChangeIntv);
   mtb_App_Init(thisApp);
   //************************************************************************************ */
   worldFlagsInfo = (WorldFlags_Data_t){
-        "Nigeria",    // 
-        100,       // 0-255
-        true,         // true or false
-        false       // true or false
+        "Nigeria",    // Country Name
+        100,       // Flag Change interval in seconds
+        true,         // Show Country Name
+        false       // Cycle All Flags
     };
   mtb_Read_Nvs_Struct("worldFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
 
@@ -64,19 +63,19 @@ while (MTB_APP_IS_ACTIVE == pdTRUE){
 
     while (MTB_APP_IS_ACTIVE == pdTRUE && Mtb_Applications::internetConnectStatus == true) {
         if (worldFlagsInfo.cycleAllFlags == true) {
-            uint8_t changeIntv = 5;
-            // uint8_t changeIntv = worldFlagsInfo.flagChangeIntv;
+            uint8_t changeLargeFlagIntv = worldFlagsInfo.flagChangeIntv;
             getRandomCountryAndFlag4x3(country, flagLink);
             strcpy(large_Flag.imageLink, flagLink.c_str());
             mtb_Draw_Online_Svg(&large_Flag, 1, wipeFlagBackground);
-            while(changeIntv-->0 && Mtb_Applications::internetConnectStatus == true && MTB_APP_IS_ACTIVE == pdTRUE) delay(1000);
+            while(changeLargeFlagIntv-->0 && MTB_APP_IS_ACTIVE == pdTRUE) delay(1000);
         } else delay(1000);
         if (worldFlagsInfo.showCountryName == true) {
-            uint8_t changeIntv = worldFlagsInfo.flagChangeIntv/2;
+            uint8_t changeSmallFlagIntv = 10;
+            //uint8_t changeIntv = worldFlagsInfo.flagChangeIntv/2;
             strcpy(small_Flag.imageLink, large_Flag.imageLink);
             mtb_Draw_Online_Svg(&small_Flag, 1, wipeFlagBackground);
             dispCountryName.mtb_Write_Colored_Text(country.c_str(), WHITE, mtb_Panel_Color565(0, 0, 16));
-            while(changeIntv-->0 && Mtb_Applications::internetConnectStatus == true && MTB_APP_IS_ACTIVE == pdTRUE) delay(1000);
+            while(changeSmallFlagIntv-->0 && MTB_APP_IS_ACTIVE == pdTRUE) delay(1000);
         } 
     }
 }
@@ -143,9 +142,11 @@ void selectPreferredFlags(JsonDocument& dCommand){
 void cycleAllFlags(JsonDocument&){
     uint8_t cmdNumber = dCommand["app_command"];
     worldFlagsInfo.cycleAllFlags = dCommand["cycleFlags"].as<bool>();
+    worldFlagsInfo.showCountryName = dCommand["showData"].as<bool>();
     worldFlagsInfo.flagChangeIntv = dCommand["dInterval"].as<uint8_t>();
     mtb_Write_Nvs_Struct("worldFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
     mtb_Ble_App_Cmd_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
+    printf("cycleAllFlags: %d; showData: %d\n", worldFlagsInfo.cycleAllFlags, worldFlagsInfo.showCountryName);
 }
 
 void showCountryName(JsonDocument&){
@@ -153,6 +154,7 @@ void showCountryName(JsonDocument&){
     worldFlagsInfo.showCountryName = dCommand["showData"].as<bool>();
     mtb_Write_Nvs_Struct("worldFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
     mtb_Ble_App_Cmd_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
+    printf("showCountryName: %d\n", worldFlagsInfo.showCountryName);
 }
 
 void setFlagChangeIntv(JsonDocument&){
@@ -160,6 +162,7 @@ void setFlagChangeIntv(JsonDocument&){
     worldFlagsInfo.flagChangeIntv = dCommand["dInterval"].as<uint8_t>();
     mtb_Write_Nvs_Struct("worldFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
     mtb_Ble_App_Cmd_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
+    printf("flagChangeIntv: %d\n", worldFlagsInfo.flagChangeIntv);
 }
 
 

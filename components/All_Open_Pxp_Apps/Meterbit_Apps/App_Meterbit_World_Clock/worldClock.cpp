@@ -89,7 +89,7 @@ void worldClock_App_Task(void* dApplication){
 if(worldClockCities.worldClockMode == FIVE_CLOCK_MODE) drawWorldClock5CitiesBkgd();
 else drawWorldClockSingleCity();
 
-while (MTB_APP_IS_ACTIVE == pdTRUE) {
+while (MTB_APP_IS_ACTIVE == pdTRUE){
     thisApp->elementRefresh = false;
     if(worldClockCities.worldClockMode == FIVE_CLOCK_MODE){
                                                                                                                 // MEMORY LEAKING OBSERVED IN THIS LOOP - NEEDS FIXING LATER
@@ -124,7 +124,7 @@ while (MTB_APP_IS_ACTIVE == pdTRUE) {
       
       strcpy(worldCountryFlag.imageLink, getFlag4x3ByCountry(worldClockCities.firstCountryName).c_str());
 
-      mtb_Draw_Online_Svg(&worldCountryFlag);             // IF FLAG IS NOT DRAWN, IT MEANS THE NAME OF THE COUNTRY WAS NOT FOUND AMONG THE COUNTRIES FLAG LISTS/JSON.
+      mtb_Draw_Online_Svg(&worldCountryFlag);       // IF FLAG IS NOT DRAWN, IT MEANS THE NAME OF THE COUNTRY WAS NOT FOUND AMONG THE COUNTRIES FLAG LISTS/JSON.
 
       cacheTimezone(worldClockCities.worldTimeZones[0]);
 

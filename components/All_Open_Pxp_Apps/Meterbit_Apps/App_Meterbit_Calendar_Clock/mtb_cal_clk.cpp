@@ -18,12 +18,7 @@ EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *calendarClock_App = new Mtb_Applica
 //***************************************************************************************************
 void  calendarClock_App_Task(void* dApplication){
   Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
-  // if(Mtb_Applications::bleAdvertisingStatus == false){
-  // mtb_Ble_Comm_Init();
-  // statusBarNotif.mtb_Scroll_This_Text("BLUETOOTH LINK RESTORED", GREEN_YELLOW);
-  // } 
-  thisApp->mtb_App_EncoderFn_ptr = mtb_Brightness_Control;
-  thisApp->mtb_App_ButtonFn_ptr = randomButtonControl;
+  thisApp->mtb_App_Set_EC11_Cb_Fns(randomButtonControl, mtb_Brightness_Control);
   mtb_App_BleComm_Parser_Sv->mtb_Register_Ble_Comm_ServiceFns(clock_Color_Change, get_NTP_Local_Time);
   mtb_App_Init(thisApp);
   //**************************************************************************************************************************

@@ -16,8 +16,7 @@ EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *exampleEncoderBeep_App = new Mtb_Ap
 void exampleEncoderBeepApp_Task(void* dApplication){
 // ****** Initialize the App Parameters
   Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
-  thisApp->mtb_App_EncoderFn_ptr = exampleAppEncoderFn;
-  thisApp->mtb_App_ButtonFn_ptr = exampleAppButtonFn;
+  thisApp->mtb_App_Set_EC11_Cb_Fns(exampleAppButtonFn, exampleAppEncoderFn);
   mtb_App_Init(thisApp, mtb_Status_Bar_Clock_Sv);
 // End of App parameter initialization
 

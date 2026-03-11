@@ -2,6 +2,7 @@
 #define WORLD_COUNTRIES_JSON
 
 // Get flag links from this website and add to the JSON array below: http://lascarid.es/fussyflags/
+// Alternative site for flag links: https://github.com/hampusborgos/country-flags/tree/main/svg
 
 const char* jsonWorldCountries = R"json(
 [
@@ -545,7 +546,7 @@ const char* jsonWorldCountries = R"json(
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/cw.svg",
     "flag_4x3": "https://raw.githubusercontent.com/woble/flags/refs/heads/master/SVG/3x2/cw.svg",
     "iso": true,
-    "name": "Curaçao"
+    "name": "Curacao"
   },
   {
     "capital": "Nicosia",
@@ -1019,7 +1020,7 @@ const char* jsonWorldCountries = R"json(
     "code": "in",
     "continent": "Asia",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/in.svg",
-    "flag_4x3": "https://raw.githubusercontent.com/shandriy/flags/refs/heads/master/India.svg",
+    "flag_4x3": "http://lascarid.es/fussyflags/svg/india.svg",
     "iso": true,
     "name": "India"
   },
@@ -1897,7 +1898,7 @@ const char* jsonWorldCountries = R"json(
     "code": "rs",
     "continent": "Europe",
     "flag_1x1": "https://raw.githubusercontent.com/joielechong/iso-country-flags-svg-collection/master/svg/country-squared/rs.svg",
-    "flag_4x3": "http://lascarid.es/fussyflags/svg/serbia.svg",
+    "flag_4x3": "https://raw.githubusercontent.com/hampusborgos/country-flags/master/svg/rs.svg",
     "iso": true,
     "name": "Serbia"
   },

@@ -45,8 +45,8 @@ EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *pixelAnimClock_App = new Mtb_Appli
 
 void  pixAnimClock_App_Task(void* dApplication){
   Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
-  thisApp->mtb_App_EncoderFn_ptr = mtb_Brightness_Control;
-  thisApp->mtb_App_ButtonFn_ptr = pixelAnimChangeButton;
+  thisApp->mtb_App_Set_EC11_Cb_Fns(pixelAnimChangeButton, mtb_Brightness_Control);
+
   mtb_App_BleComm_Parser_Sv->mtb_Register_Ble_Comm_ServiceFns(setClockTitleAndColor, setPixAnimTheme, setPixAnimClkColors, requestNTP_Time);
 
   mtb_App_Init(thisApp, pixAnimClkGif_Sv);
