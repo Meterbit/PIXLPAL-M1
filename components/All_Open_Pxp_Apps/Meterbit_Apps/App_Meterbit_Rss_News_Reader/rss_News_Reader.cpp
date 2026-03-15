@@ -45,9 +45,9 @@ void updateSourceSelection(JsonDocument&);
 
 void rssNewsApp_Task(void* dApp) {
   Mtb_Applications *thisApp = (Mtb_Applications *) dApp;
-  mtb_App_BleComm_Parser_Sv->mtb_Register_Ble_Comm_ServiceFns(updateSourceSelection);
+  thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(updateSourceSelection);
 
-  mtb_App_Init(thisApp, mtb_Status_Bar_Clock_Sv);
+  thisApp->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
   mtb_Read_Nvs_Struct("rssSettings", &rssSettings, sizeof(RssSettings_t));
 
   // Wait for internet connection before proceeding

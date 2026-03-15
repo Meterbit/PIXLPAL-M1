@@ -47,9 +47,9 @@ void  pixAnimClock_App_Task(void* dApplication){
   Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
   thisApp->mtb_App_Set_EC11_Cb_Fns(pixelAnimChangeButton, mtb_Brightness_Control);
 
-  mtb_App_BleComm_Parser_Sv->mtb_Register_Ble_Comm_ServiceFns(setClockTitleAndColor, setPixAnimTheme, setPixAnimClkColors, requestNTP_Time);
+  thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(setClockTitleAndColor, setPixAnimTheme, setPixAnimClkColors, requestNTP_Time);
 
-  mtb_App_Init(thisApp, pixAnimClkGif_Sv);
+  thisApp->mtb_App_Init(pixAnimClkGif_Sv);
   //************************************************************************************************************************ */
   ESP_LOGW(TAG, "THE PROGRAM GOT TO THIS POINT 0\n");
   mtb_Read_Nvs_Struct("Clock Cols", &clk_Updt, sizeof(Clock_Colors));

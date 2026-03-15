@@ -61,7 +61,7 @@ String semver_t_ToString(const semver_t &version);
         else if (id == GHOTA_EVENT_START_UPDATE){
             do_beep(CLICK_BEEP);
             Mtb_Applications::appDestroy(Mtb_Applications::currentRunningApp);
-            mtb_App_Init(Mtb_Applications::otaAppHolder);
+            otaUpdateApplication_App->mtb_App_Init();
             if(litFS_Ready) mtb_Draw_Local_Png({"/batIcons/otaStatus.png", 0, 0});
             otaUpdateTextTop->mtb_Write_String("SOFTWARE UPDATE");
             otaUpdateTextBot->mtb_Write_String("IN PROGRESS:");

@@ -38,9 +38,13 @@ enum Mtb_Do_Prev_App_t{
     IGNORE_PREVIOUS_APP,
 };
 
-struct Mtb_CurrentApp_t{
+struct Mtb_UserApp_t{
     uint16_t GenApp;
     uint16_t SpeApp;
+
+    bool operator==(const Mtb_UserApp_t& other) const {
+    return (GenApp == other.GenApp) && (SpeApp == other.SpeApp);
+    }
 };
 
 struct NvsAccessParams_t{
@@ -56,7 +60,8 @@ extern void nvsAccessTask(void *);
 
 //**************************************************************************************************************************
 
-extern Mtb_CurrentApp_t currentApp;
+extern Mtb_UserApp_t showUserApp;
+extern Mtb_UserApp_t showApp_UI;
 extern esp_err_t mtb_Read_Nvs_Struct(const char* key, void* struct_ptr, size_t struct_size);
 extern esp_err_t mtb_Write_Nvs_Struct(const char *key, void *struct_ptr, size_t struct_size);
 extern void (*encoderFn_ptr)(rotary_encoder_rotation_t);
@@ -129,27 +134,6 @@ Mtb_Services(void (*dService)(void *), TaskHandle_t* dServiceHandle_ptr, const c
 
 using bleCom_Parser_Fns_Ptr = void (*)(JsonDocument&);     // Defining the signature of a function pointer.
 
-
-// Services with Functions Class.
-class Mtb_Service_With_Fns : public Mtb_Services{
-    public:
-        bleCom_Parser_Fns_Ptr bleAppComServiceFns[12] = {nullptr};
-        void mtb_Register_Ble_Comm_ServiceFns(bleCom_Parser_Fns_Ptr Fn_0, bleCom_Parser_Fns_Ptr Fn_1 = nullptr, bleCom_Parser_Fns_Ptr Fn_2 = nullptr, bleCom_Parser_Fns_Ptr Fn_3 = nullptr, bleCom_Parser_Fns_Ptr Fn_4 = nullptr, bleCom_Parser_Fns_Ptr Fn_5 = nullptr, bleCom_Parser_Fns_Ptr Fn_6 = nullptr, bleCom_Parser_Fns_Ptr Fn_7 = nullptr, bleCom_Parser_Fns_Ptr Fn_8 = nullptr, bleCom_Parser_Fns_Ptr Fn_9 = nullptr, bleCom_Parser_Fns_Ptr Fn_10 = nullptr, bleCom_Parser_Fns_Ptr Fn_11 = nullptr);
-    // Overload the new operator
-    void* operator new(size_t size) {
-        return heap_caps_malloc(size, MALLOC_CAP_SPIRAM);
-    }
-
-    // Overload the delete operator
-    void operator delete(void* ptr) {
-        heap_caps_free(ptr);
-    }
-        // Services with Functions Constructors
-        Mtb_Service_With_Fns();
-        Mtb_Service_With_Fns(void (*dService)(void *), TaskHandle_t *dServiceHandle_ptr, const char *dServiceName, uint32_t dStackSize, uint8_t dServicePriority = 1, uint8_t dServiceCore = 0) : Mtb_Services(dService, dServiceHandle_ptr,dServiceName, dStackSize, dServicePriority, dServiceCore){}
-};
-
-
 // The Applications Class
 class Mtb_Applications{
 public:
@@ -159,6 +143,10 @@ public:
     uint8_t appPriority;                // Priority of the application
     TaskHandle_t* appHandle_ptr;        // Pointer to the application task handle.
     uint8_t appCore;                    // Core on which the application task is running on.
+
+    const char* appMobile_Manifest;
+    const char* appMobile_api;
+    const char* appMobile_ui;
 
     Mtb_Services* appServices[10] = {nullptr};  // An array of 10 Service Pointers. This will hold pointers to the Mtb_Services tasks both generic and perculiar. e.g. Mic Service 
     void (*mtb_App_EncoderFn_ptr)(rotary_encoder_rotation_t) = encoderDoNothing;     // Pointer to the function that will be called when the rotary encoder is rotated.
@@ -186,6 +174,8 @@ public:
     static uint8_t spiffsOTA_Status;                                // This is used to check the status of the SPIFFS OTA update. It is set to 6 when the OTA update is not started, and it can be set to other values to indicate the status of the OTA update.
     //void *app_Dyn_Mems[5] = {nullptr};
 
+    bleCom_Parser_Fns_Ptr bleAppComServiceFns[12] = {nullptr};
+
     bool appRunner();                                               // The function that runs any selected application. It creates the task with the application function, name, stack size, priority, and core.     
     //bool appRunner(void*);                                        // The function that runs any selected.
     static void appResume(Mtb_Applications *);                      // The function that resumes the app after being suspended.
@@ -193,7 +183,19 @@ public:
     static void appDestroy(Mtb_Applications *);
     static void actionOnPreviousApp(Mtb_Do_Prev_App_t);             // This function is used to take action on the previous application when a new application is launched. It can be set to SUSPEND_PREVIOUS_APP, DESTROY_PREVIOUS_APP, or IGNORE_PREVIOUS_APP.
 
+    void mtb_App_Set_UI_Components(void);
+
     void mtb_App_Set_EC11_Cb_Fns(buttonFn_ptr_t but_Fn = buttonDoNothing, encoderFn_ptr_t enc_Fn = mtb_Brightness_Control); // This function is used to set the encoder and button functions for the application.
+
+    void mtb_App_Set_Mobile_UI(const char*, const char*, const char*);
+
+    void mtb_App_Set_Ble_Comm_Sv_Fns(bleCom_Parser_Fns_Ptr Fn_0, bleCom_Parser_Fns_Ptr Fn_1 = nullptr, bleCom_Parser_Fns_Ptr Fn_2 = nullptr, bleCom_Parser_Fns_Ptr Fn_3 = nullptr, bleCom_Parser_Fns_Ptr Fn_4 = nullptr, bleCom_Parser_Fns_Ptr Fn_5 = nullptr, bleCom_Parser_Fns_Ptr Fn_6 = nullptr, bleCom_Parser_Fns_Ptr Fn_7 = nullptr, bleCom_Parser_Fns_Ptr Fn_8 = nullptr, bleCom_Parser_Fns_Ptr Fn_9 = nullptr, bleCom_Parser_Fns_Ptr Fn_10 = nullptr, bleCom_Parser_Fns_Ptr Fn_11 = nullptr);
+
+    // Mtb_Applications Init Function
+    void mtb_App_Init(Mtb_Services* pointer_0 = nullptr, Mtb_Services* pointer_1 = nullptr,Mtb_Services* pointer_2 = nullptr,
+                                    Mtb_Services* pointer_3 = nullptr, Mtb_Services* pointer_4 = nullptr, Mtb_Services* pointer_5 = nullptr,
+                                    Mtb_Services* pointer_6 = nullptr, Mtb_Services* pointer_7 = nullptr, Mtb_Services* pointer_8 = nullptr, 
+                                    Mtb_Services* pointer_9 = nullptr);
 
     // Overload the new operator
     void* operator new(size_t size) {
@@ -231,13 +233,7 @@ class Mtb_Applications_StatusBar : public Mtb_Applications{
         }
 };
 
-
 //*********************************************************************************** */
-// Mtb_Applications Init Function
-extern void mtb_App_Init(Mtb_Applications*, Mtb_Services* pointer_0 = nullptr, Mtb_Services* pointer_1 = nullptr,Mtb_Services* pointer_2 = nullptr,
-                                 Mtb_Services* pointer_3 = nullptr, Mtb_Services* pointer_4 = nullptr, Mtb_Services* pointer_5 = nullptr,
-                                 Mtb_Services* pointer_6 = nullptr, Mtb_Services* pointer_7 = nullptr, Mtb_Services* pointer_8 = nullptr, 
-                                Mtb_Services* pointer_9 = nullptr);
 
 // App Parser Functions
 extern void mtb_Launch_This_App(Mtb_Applications* dApp, Mtb_Do_Prev_App_t do_Prv_App = DESTROY_PREVIOUS_APP);
@@ -249,7 +245,7 @@ extern void mtb_Delete_This_Service(Mtb_Services *);
 extern void mtb_Kill_This_Service(Mtb_Services* );
 extern void mtb_Delete_This_App(Mtb_Applications *);
 
-extern void mtb_General_App_Launch(Mtb_CurrentApp_t);
+extern void mtb_General_App_Register(Mtb_UserApp_t);
 
 // Supporting Apps and Tasks
 extern TaskHandle_t statusBarClock_H;
@@ -274,7 +270,7 @@ extern void mtb_Miscellanous_App_Launch(uint16_t);
 
 // Fast Executing Services.
 extern Mtb_Services* mtb_App_Launcher_Sv;
-extern Mtb_Service_With_Fns* mtb_App_BleComm_Parser_Sv;
+extern Mtb_Services* mtb_App_BleComm_Parser_Sv;
 extern Mtb_Services* mtb_Sett_BleComm_Parser_Sv;           
 extern Mtb_Services* mtb_Beep_Buzzer_Sv;                     
 extern Mtb_Services* mtb_Sntp_Time_Sv;                             
@@ -292,8 +288,8 @@ extern Mtb_Services* mtb_Usb_Audio_Sv;
 extern Mtb_Services* mtb_Usb_Mass_Storage_Sv;   
 //extern Mtb_Services* UAC_Speaker_Sv;
 extern Mtb_Services* mtb_Scroll_Tasks_Sv[];   
-extern Mtb_Service_With_Fns* mtb_Encoder_Task_Sv;       
-extern Mtb_Service_With_Fns* mtb_Button_Task_Sv;        
+extern Mtb_Services* mtb_Encoder_Task_Sv;       
+extern Mtb_Services* mtb_Button_Task_Sv;        
    
 //*********************************************************************************** */
 // Mtb_Applications SECTION (USERS AND SYSTEM APPS)

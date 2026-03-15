@@ -49,7 +49,7 @@ EXT_RAM_BSS_ATTR String setValue;
 #define APPCOM_CHARACTERISTIC_UUID "c8f1eead-48b0-449d-accb-5fdb87c4b566"
 
 EXT_RAM_BSS_ATTR Mtb_Services *mtb_Sett_BleComm_Parser_Sv = new Mtb_Services(ble_SetCom_Parse_Task, &ble_SetCom_Parser_Task_Handle, "bleSetCom_parser_task", 4096, 4); // THIS FUNCTIONS CANNOT BE AN PSRAM MEMORY BECAUSE THEY MIGHT ATTEMPT TO WRITE THE ONBOARD FLASH
-EXT_RAM_BSS_ATTR Mtb_Service_With_Fns *mtb_App_BleComm_Parser_Sv = new Mtb_Service_With_Fns(ble_AppCom_Parse_Task, &ble_AppCom_Parser_Task_Handle, "bleAppCom_Parser_task", 4096, 4); // THIS FUNCTIONS CANNOT BE AN PSRAM MEMORY BECAUSE THEY MIGHT ATTEMPT TO WRITE THE ONBOARD FLASH
+EXT_RAM_BSS_ATTR Mtb_Services *mtb_App_BleComm_Parser_Sv = new Mtb_Services(ble_AppCom_Parse_Task, &ble_AppCom_Parser_Task_Handle, "bleAppCom_Parser_task", 4096, 4); // THIS FUNCTIONS CANNOT BE AN PSRAM MEMORY BECAUSE THEY MIGHT ATTEMPT TO WRITE THE ONBOARD FLASH
 
 class MyServerCallbacks : public NimBLEServerCallbacks{
   void onConnect(NimBLEServer *pServer, NimBLEConnInfo& connInfo){
@@ -294,53 +294,57 @@ void ble_AppCom_Parse_Task(void* dService){
         //ESP_LOGI(TAG, "The dAppGen is: %d\n", dAppGen);
         //ESP_LOGI(TAG, "The dAppSpe is: %d\n", dAppSpe);
 
-        if (dAppGen == currentApp.GenApp && dAppSpe == currentApp.SpeApp){
+        if (dAppGen == showUserApp.GenApp && dAppSpe == showUserApp.SpeApp){
 
             dError = deserializeJson(dCommand, dJsonPayload);
             if(dError.code() == dError.Ok) dCmd_num = dCommand["app_command"];
             else dCmd_num = 0xFFFF;
 
             switch (dCmd_num){
-            case 0: if(mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[0] != nullptr) mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[0](dCommand);
+            case 0: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[0] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[0](dCommand);
                 break;
-            case 1: if(mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[1] != nullptr) mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[1](dCommand);
+            case 1: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[1] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[1](dCommand);
                 break;
-            case 2: if(mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[2] != nullptr) mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[2](dCommand);
+            case 2: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[2] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[2](dCommand);
                 break;
-            case 3: if(mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[3] != nullptr) mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[3](dCommand);
+            case 3: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[3] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[3](dCommand);
                 break;
-            case 4: if(mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[4] != nullptr) mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[4](dCommand);
+            case 4: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[4] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[4](dCommand);
               break;
-            case 5: if(mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[5] != nullptr) mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[5](dCommand);
+            case 5: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[5] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[5](dCommand);
                 break;
-            case 6: if(mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[6] != nullptr) mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[6](dCommand);
+            case 6: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[6] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[6](dCommand);
                 break;
-            case 7: if(mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[7] != nullptr) mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[7](dCommand);
+            case 7: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[7] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[7](dCommand);
                 break;
-            case 8: if(mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[8] != nullptr) mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[8](dCommand);
+            case 8: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[8] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[8](dCommand);
                 break;
-            case 9: if(mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[9] != nullptr) mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[9](dCommand);
+            case 9: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[9] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[9](dCommand);
                 break;
-            case 10: if(mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[10] != nullptr) mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[10](dCommand);
+            case 10: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[10] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[10](dCommand);
                 break;
-            case 11: if(mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[11] != nullptr) mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[11](dCommand);
+            case 11: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[11] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[11](dCommand);
                 break;
-            // case 12: if(mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[12] != nullptr) mtb_App_BleComm_Parser_Sv.bleAppComServiceFns[12](dCommand);;     // These are for extras or future upgrades.
+            // case 12: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[12] != nullptr) Mtb_Applications::currentRunningApp.bleAppComServiceFns[12](dCommand);;     // These are for extras or future upgrades.
             //     break;
-            // case 13:  if(mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[13] != nullptr) mtb_App_BleComm_Parser_Sv.bleAppComServiceFns[13](dCommand);
+            // case 13:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[13] != nullptr) Mtb_Applications::currentRunningApp.bleAppComServiceFns[13](dCommand);
             //     break;
-            // case 14:  if(mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[4] != nullptr) mtb_App_BleComm_Parser_Sv.bleAppComServiceFns[14](dCommand);
+            // case 14:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[4] != nullptr) Mtb_Applications::currentRunningApp.bleAppComServiceFns[14](dCommand);
             //     break;
-            // case 15:  if(mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[15] != nullptr) mtb_App_BleComm_Parser_Sv.bleAppComServiceFns[15](dCommand);
+            // case 15:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[15] != nullptr) Mtb_Applications::currentRunningApp.bleAppComServiceFns[15](dCommand);
             //     break;
-            // case 16:  if(mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[16] != nullptr) mtb_App_BleComm_Parser_Sv.bleAppComServiceFns[16](dCommand);
+            // case 16:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[16] != nullptr) Mtb_Applications::currentRunningApp.bleAppComServiceFns[16](dCommand);
             //     break;
-            // case 17:  if(mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[17] != nullptr) mtb_App_BleComm_Parser_Sv.bleAppComServiceFns[17](dCommand);
+            // case 17:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[17] != nullptr) Mtb_Applications::currentRunningApp.bleAppComServiceFns[17](dCommand);
             //     break;
-            // case 18:  if(mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[18] != nullptr) mtb_App_BleComm_Parser_Sv.bleAppComServiceFns[18](dCommand);
+            // case 18:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[18] != nullptr) Mtb_Applications::currentRunningApp.bleAppComServiceFns[18](dCommand);
             //     break;
-            // case 19:  if(mtb_App_BleComm_Parser_Sv->bleAppComServiceFns[19] != nullptr) mtb_App_BleComm_Parser_Sv.bleAppComServiceFns[19](dCommand);
+            // case 19:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[19] != nullptr) Mtb_Applications::currentRunningApp.bleAppComServiceFns[19](dCommand);
             //     break;
+            case 254:
+                statusBarNotif.mtb_Scroll_This_Text("APP IS ALREADY ACTIVE", CYAN);
+                bleApplicationComSend(specify_Application.c_str(), "{\"pxp_command\": 252}");
+                break;
             case 255:
                 statusBarNotif.mtb_Scroll_This_Text("APP IS ALREADY ACTIVE", CYAN);
                 bleApplicationComSend(specify_Application.c_str(), "{\"pxp_command\": 255}");
@@ -352,13 +356,18 @@ void ble_AppCom_Parse_Task(void* dService){
             dError = deserializeJson(dCommand, dJsonPayload);
             dCmd_num = dCommand["app_command"];
 
-            if (dError.code() == dError.Ok && dCmd_num == 0xFF){
-                currentApp.GenApp = getIntegerAtIndex(specify_Application, 0);
-                currentApp.SpeApp = getIntegerAtIndex(specify_Application, 1);
-                mtb_Write_Nvs_Struct("currentApp", &currentApp, sizeof(Mtb_CurrentApp_t));
-                mtb_General_App_Launch(currentApp);
+            if (dError.code() == dError.Ok && dCmd_num == 255){
+                showApp_UI.GenApp = showUserApp.GenApp = getIntegerAtIndex(specify_Application, 0);
+                showApp_UI.SpeApp = showUserApp.SpeApp = getIntegerAtIndex(specify_Application, 1);
+                mtb_Write_Nvs_Struct("showUserApp", &showUserApp, sizeof(Mtb_UserApp_t));
+                mtb_General_App_Register(showUserApp);
                 bleApplicationComSend(specify_Application.c_str(), "{\"pxp_command\": 253}");
-            }else{
+            }else if(dError.code() == dError.Ok && dCmd_num == 252){
+                showApp_UI.GenApp = getIntegerAtIndex(specify_Application, 0);
+                showApp_UI.SpeApp = getIntegerAtIndex(specify_Application, 1);
+                mtb_General_App_Register(showApp_UI);
+                bleApplicationComSend(specify_Application.c_str(), "{\"pxp_command\": 252}");
+          }else{
                 bleApplicationComSend(specify_Application.c_str(), "{\"pxp_command\": 254}");
                 statusBarNotif.mtb_Scroll_This_Text("TAP 'LAUNCH' TO START APP", MAGENTA);
             } 

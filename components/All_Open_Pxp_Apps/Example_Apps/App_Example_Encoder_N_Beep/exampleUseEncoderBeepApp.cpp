@@ -17,7 +17,7 @@ void exampleEncoderBeepApp_Task(void* dApplication){
 // ****** Initialize the App Parameters
   Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
   thisApp->mtb_App_Set_EC11_Cb_Fns(exampleAppButtonFn, exampleAppEncoderFn);
-  mtb_App_Init(thisApp, mtb_Status_Bar_Clock_Sv);
+  thisApp->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
 // End of App parameter initialization
 
 // Declare Fixed and Scroll Text Variables

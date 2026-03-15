@@ -49,8 +49,8 @@ EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *internetRadio_App = new Mtb_Applica
 void  internetRadio_App_Task(void* dApplication){
     Mtb_Applications *thisApp = (Mtb_Applications *) dApplication;
     thisApp->mtb_App_Set_EC11_Cb_Fns(intRadioButtonControl, mtb_Vol_Control_Encoder);
-    mtb_App_BleComm_Parser_Sv->mtb_Register_Ble_Comm_ServiceFns(selectRadioStations, playRadioStationLink, updateSavedStations, volumeControl);
-    mtb_App_Init(thisApp, mtb_Status_Bar_Clock_Sv, mtb_Audio_Out_Sv);
+    thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(selectRadioStations, playRadioStationLink, updateSavedStations, volumeControl);
+    thisApp->mtb_App_Init(mtb_Status_Bar_Clock_Sv, mtb_Audio_Out_Sv);
   //*************************************************************************************************
     AudioTextTransfer_T audioTextReceiver;
     Mtb_ScrollText_t fmStation(11, 46, 116, Terminal6x8, CYAN, 15, 20000, 20000);

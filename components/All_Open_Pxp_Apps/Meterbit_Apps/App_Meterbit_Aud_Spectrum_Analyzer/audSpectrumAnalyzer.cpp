@@ -32,8 +32,8 @@ uint32_t counterValue1 = 0;
 void  audSpecAnalyzer_App_Task(void* dApplication){
   Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
   thisApp->mtb_App_Set_EC11_Cb_Fns(changePattern_Button, mtb_Brightness_Control);
-  mtb_App_BleComm_Parser_Sv->mtb_Register_Ble_Comm_ServiceFns(selectPattern, selectNumOfBands, setRandomPatterns, setRandomInterval);
-  mtb_App_Init(thisApp, mtb_Audio_In_Sv);
+  thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(selectPattern, selectNumOfBands, setRandomPatterns, setRandomInterval);
+  thisApp->mtb_App_Init(mtb_Audio_In_Sv);
 
   initAudioVisualPattern();
   //**************************************************************************************************************************

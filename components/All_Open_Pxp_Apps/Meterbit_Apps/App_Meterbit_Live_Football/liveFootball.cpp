@@ -94,8 +94,8 @@ void liveFootball_App_Task(void *dApplication){
     Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
     thisApp->mtb_App_Set_EC11_Cb_Fns(changeFootballTeams, mtb_Brightness_Control);
 
-    mtb_App_BleComm_Parser_Sv->mtb_Register_Ble_Comm_ServiceFns(selectFBL_Leagues, setDisplayFBL_League, saveFBL_Leagues, showFBL_Fix_Stnd, setFBL_Token);
-    mtb_App_Init(thisApp, mtb_Status_Bar_Clock_Sv);
+    thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(selectFBL_Leagues, setDisplayFBL_League, saveFBL_Leagues, showFBL_Fix_Stnd, setFBL_Token);
+    thisApp->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
     //************************************************************************************ */
 
     if(changeDispMatch_Sem == NULL) changeDispMatch_Sem = xSemaphoreCreateBinary();

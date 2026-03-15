@@ -14,7 +14,6 @@
 #include "mtb_engine.h"
 #include "mtb_usb_fs.h"   // make sure this is in your include path
 #include "microphone.h"
-//#include "my_secret_keys.h"
 #include "my_secret_keys.h"
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++=

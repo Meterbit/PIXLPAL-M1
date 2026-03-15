@@ -40,8 +40,8 @@ EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *currencyExchange_App = new Mtb_Appl
 void currencyExchange_App_Task(void* dApplication){
   Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
   thisApp->mtb_App_Set_EC11_Cb_Fns(buttonChangeDisplayCurrency, mtb_Brightness_Control);
-  mtb_App_BleComm_Parser_Sv->mtb_Register_Ble_Comm_ServiceFns(showParticularCurrencies, add_RemoveCurrencySymbol, setcurrencyChangeInterval, saveCurrencyAPI_key);
-  mtb_App_Init(thisApp);
+  thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(showParticularCurrencies, add_RemoveCurrencySymbol, setcurrencyChangeInterval, saveCurrencyAPI_key);
+  thisApp->mtb_App_Init();
   //************************************************************************************ */
   currentCurrencies = (Currency_Stat_t){};
   mtb_Read_Nvs_Struct("currencyStat", &currentCurrencies, sizeof(Currency_Stat_t));

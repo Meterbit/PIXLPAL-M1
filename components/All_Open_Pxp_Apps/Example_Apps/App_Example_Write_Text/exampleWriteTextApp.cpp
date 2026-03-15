@@ -10,7 +10,7 @@ EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *exampleWriteText_App = new Mtb_App
 void exampleWriteTextApp_Task(void* dApplication){
 // ****** Initialize the App Parameters
   Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
-  mtb_App_Init(thisApp);
+  thisApp->mtb_App_Init();
 // End of App parameter initialization
 
 // Declare Fixed and Scroll Text Variables

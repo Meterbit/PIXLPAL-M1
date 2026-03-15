@@ -12,7 +12,7 @@ EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *exampleDrawImages_App = new Mtb_Ap
 void exampleDrawImageApp_Task(void* dApplication){
 // ****** Initialize the App Parameters
   Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
-  mtb_App_Init(thisApp);
+  thisApp->mtb_App_Init();
 // End of App parameter initialization
 
     while ((Mtb_Applications::internetConnectStatus != true) && (MTB_APP_IS_ACTIVE == pdTRUE)){

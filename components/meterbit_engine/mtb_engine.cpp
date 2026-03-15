@@ -18,11 +18,16 @@
 
 static const char TAG[] = "METERBIT_ENGINE";
 
-Mtb_CurrentApp_t currentApp{
+Mtb_UserApp_t showUserApp{
     .GenApp = 0,
     .SpeApp = 1
     };
-    
+
+Mtb_UserApp_t showApp_UI{
+    .GenApp = 255,
+    .SpeApp = 255
+    };
+
 EXT_RAM_BSS_ATTR QueueHandle_t clock_Update_Q = NULL;
 EXT_RAM_BSS_ATTR TaskHandle_t ble_AppCom_Parser_Task_Handle = NULL;
 EXT_RAM_BSS_ATTR TaskHandle_t appLauncher_Task_H = NULL;
@@ -65,9 +70,9 @@ Mtb_Applications::Mtb_Applications(void (*dApplication)(void *), TaskHandle_t* d
 }
 
 void mtb_Launch_This_App(Mtb_Applications *dApp, Mtb_Do_Prev_App_t do_Prv_App){
-    dApp->action_On_Prev_App = do_Prv_App;
-    xQueueSend(appLauncherQueue, &dApp, portMAX_DELAY);
-    mtb_Launch_This_Service(mtb_App_Launcher_Sv);
+        dApp->action_On_Prev_App = do_Prv_App;
+        xQueueSend(appLauncherQueue, &dApp, portMAX_DELAY);
+        mtb_Launch_This_Service(mtb_App_Launcher_Sv);
 }
 
 void mtb_Launch_This_Service(Mtb_Services* dService){
@@ -97,12 +102,12 @@ void appLauncherTask(void * dService){
     Mtb_Services *thisService = (Mtb_Services *)dService;
     Mtb_Applications *appLaunchHolder = nullptr;
     while (xQueueReceive(appLauncherQueue, &appLaunchHolder, pdMS_TO_TICKS(500))){
-    if (Mtb_Applications::currentRunningApp != nullptr){
+    if (Mtb_Applications::currentRunningApp != nullptr && showApp_UI == showUserApp){
         Mtb_Applications::previousRunningApp = Mtb_Applications::currentRunningApp;
         Mtb_Applications::actionOnPreviousApp(appLaunchHolder->action_On_Prev_App);
     }
     //ESP_LOGI(TAG, "About to run the app: %s\n", appLaunchHolder->appName);
-    appLaunchHolder->appRunner();       
+        appLaunchHolder->appRunner();
     //ESP_LOGI(TAG, "Application %s has been launched\n", appLaunchHolder->appName);
     }
     mtb_Delete_This_Service(thisService);
@@ -207,6 +212,10 @@ void Mtb_Applications::appDestroy(Mtb_Applications* dApp){
     //ESP_LOGI(TAG, "APP DESTROY COMPLETED SUCCESSFULLY.\n");
 }
 
+void Mtb_Applications::mtb_App_Set_UI_Components(void){
+
+}
+
 void Mtb_Applications::actionOnPreviousApp(Mtb_Do_Prev_App_t dAction){
     if(litFS_Ready){
         switch (dAction){
@@ -225,6 +234,12 @@ void Mtb_Applications::actionOnPreviousApp(Mtb_Do_Prev_App_t dAction){
 void Mtb_Applications::mtb_App_Set_EC11_Cb_Fns(buttonFn_ptr_t but_Fn, encoderFn_ptr_t enc_Fn){
     mtb_App_EncoderFn_ptr = enc_Fn;
     mtb_App_ButtonFn_ptr = but_Fn;
+}
+
+void Mtb_Applications::mtb_App_Set_Mobile_UI(const char* manifest, const char* api, const char* ui){
+    appMobile_Manifest = manifest;
+    appMobile_api = api;
+    appMobile_ui = ui;
 }
 
 void mtb_Delete_This_App(Mtb_Applications* dApp){
@@ -317,34 +332,41 @@ void randomButtonControl(button_event_t button_Data){
 			}
 }
 //*************************************************************************************************************************************************************
-void mtb_App_Init(Mtb_Applications *thisApp, Mtb_Services* pointer_0, Mtb_Services* pointer_1,
+void Mtb_Applications::mtb_App_Init(Mtb_Services* pointer_0, Mtb_Services* pointer_1,
     Mtb_Services* pointer_2, Mtb_Services* pointer_3, Mtb_Services* pointer_4,
     Mtb_Services* pointer_5, Mtb_Services* pointer_6, Mtb_Services* pointer_7, 
     Mtb_Services* pointer_8, Mtb_Services* pointer_9){
 
-    Mtb_Applications::currentRunningApp = thisApp;
+    if(!(showApp_UI == showUserApp)){
+        //mtb_App_Set_UI_Components();
+        printf("Show the User the Application's interface \n");
+        mtb_Delete_This_App(this);
+        return;
+    } 
 
-    buttonFn_ptr = thisApp->mtb_App_ButtonFn_ptr;
-    encoderFn_ptr = thisApp->mtb_App_EncoderFn_ptr;
+    Mtb_Applications::currentRunningApp = this;
 
-    thisApp->appServices[0] = pointer_0;
-    thisApp->appServices[1] = pointer_1;
-    thisApp->appServices[2] = pointer_2;
-    thisApp->appServices[3] = pointer_3;
-    thisApp->appServices[4] = pointer_4;
-    thisApp->appServices[5] = pointer_5;
-    thisApp->appServices[6] = pointer_6;
-    thisApp->appServices[7] = pointer_7;
-    thisApp->appServices[8] = pointer_8;
-    thisApp->appServices[9] = pointer_9;
+    buttonFn_ptr = mtb_App_ButtonFn_ptr;
+    encoderFn_ptr = mtb_App_EncoderFn_ptr;
+
+    appServices[0] = pointer_0;
+    appServices[1] = pointer_1;
+    appServices[2] = pointer_2;
+    appServices[3] = pointer_3;
+    appServices[4] = pointer_4;
+    appServices[5] = pointer_5;
+    appServices[6] = pointer_6;
+    appServices[7] = pointer_7;
+    appServices[8] = pointer_8;
+    appServices[9] = pointer_9;
 
     delay(250);
     mtb_Panel_Clear_Screen();
-    for (Mtb_Services *element : thisApp->appServices) if (element != nullptr) mtb_Launch_This_Service(element);
-    if(thisApp->mtb_App_ButtonFn_ptr != buttonDoNothing) mtb_Launch_This_Service(mtb_Button_Task_Sv);
-    if(thisApp->mtb_App_EncoderFn_ptr != encoderDoNothing) mtb_Launch_This_Service(mtb_Encoder_Task_Sv);
-    if(thisApp->fullScreen == false) mtb_Draw_Status_Bar();
-    MTB_APP_IS_ACTIVE = pdTRUE;
+    for (Mtb_Services *element : appServices) if (element != nullptr) mtb_Launch_This_Service(element);
+    if(mtb_App_ButtonFn_ptr != buttonDoNothing) mtb_Launch_This_Service(mtb_Button_Task_Sv);
+    if(mtb_App_EncoderFn_ptr != encoderDoNothing) mtb_Launch_This_Service(mtb_Encoder_Task_Sv);
+    if(fullScreen == false) mtb_Draw_Status_Bar();
+    app_is_Running = pdTRUE;
     //ESP_LOGI(TAG, "THIS APPLICATION HAS BEEN STARTED: %s \n", Mtb_Applications::currentRunningApp->appName);
 }
 
@@ -359,7 +381,7 @@ void mtb_Ble_App_Cmd_Respond_Success(const char* appRoute, uint8_t commandNumber
     bleApplicationComSend(appRoute, jsonString);
 }
 
-void Mtb_Service_With_Fns::mtb_Register_Ble_Comm_ServiceFns(bleCom_Parser_Fns_Ptr Fn_0, bleCom_Parser_Fns_Ptr Fn_1, bleCom_Parser_Fns_Ptr Fn_2 , bleCom_Parser_Fns_Ptr Fn_3, bleCom_Parser_Fns_Ptr Fn_4, bleCom_Parser_Fns_Ptr Fn_5, bleCom_Parser_Fns_Ptr Fn_6, bleCom_Parser_Fns_Ptr Fn_7, bleCom_Parser_Fns_Ptr Fn_8, bleCom_Parser_Fns_Ptr Fn_9, bleCom_Parser_Fns_Ptr Fn_10, bleCom_Parser_Fns_Ptr Fn_11){
+void Mtb_Applications::mtb_App_Set_Ble_Comm_Sv_Fns(bleCom_Parser_Fns_Ptr Fn_0, bleCom_Parser_Fns_Ptr Fn_1, bleCom_Parser_Fns_Ptr Fn_2 , bleCom_Parser_Fns_Ptr Fn_3, bleCom_Parser_Fns_Ptr Fn_4, bleCom_Parser_Fns_Ptr Fn_5, bleCom_Parser_Fns_Ptr Fn_6, bleCom_Parser_Fns_Ptr Fn_7, bleCom_Parser_Fns_Ptr Fn_8, bleCom_Parser_Fns_Ptr Fn_9, bleCom_Parser_Fns_Ptr Fn_10, bleCom_Parser_Fns_Ptr Fn_11){
     bleAppComServiceFns[0] = Fn_0;
     bleAppComServiceFns[1] = Fn_1;
     bleAppComServiceFns[2] = Fn_2;
@@ -374,7 +396,7 @@ void Mtb_Service_With_Fns::mtb_Register_Ble_Comm_ServiceFns(bleCom_Parser_Fns_Pt
     bleAppComServiceFns[11] = Fn_11;
 }
 
-void mtb_General_App_Launch(Mtb_CurrentApp_t dAppPath){
+void mtb_General_App_Register(Mtb_UserApp_t dAppPath){
     switch(dAppPath.GenApp){
     case 0: mtb_Clk_Tim_AppLaunch(dAppPath.SpeApp); break;
     case 1: mtb_Msg_App_Launch(dAppPath.SpeApp); break;
@@ -406,6 +428,7 @@ void mtb_Clk_Tim_AppLaunch(uint16_t dAppNumber){
         case 2: mtb_Launch_This_App(worldClock_App); break;
         case 3: mtb_Launch_This_App(bigClockCalendar_App); break;
         case 4: mtb_Launch_This_App(stopWatch_App); break;
+        case 5: mtb_Launch_This_App(worldClock_App); break;
         default: ESP_LOGI(TAG, "No Apps to Launch.\n"); break;
         }
 }

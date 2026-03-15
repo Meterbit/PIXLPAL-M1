@@ -23,8 +23,8 @@ EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *apple_Notifications_App = new Mtb_A
 
 void appleNotifications_App_Task(void* dApplication){
   Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
-  mtb_App_BleComm_Parser_Sv->mtb_Register_Ble_Comm_ServiceFns(cancelAppLaunch);
-  mtb_App_Init(thisApp);
+  thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(cancelAppLaunch);
+  thisApp->mtb_App_Init();
   //************************************************************************************ */
   mtb_Read_Nvs_Struct("appleNotif", &appleNotificationInfo, sizeof(AppleNotification_Data_t));
 

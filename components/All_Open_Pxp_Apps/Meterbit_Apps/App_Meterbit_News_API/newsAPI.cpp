@@ -49,13 +49,13 @@ void newsAPI_App_Task(void * dApplication) {
     Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
     
     // Register BLE command functions.
-    mtb_App_BleComm_Parser_Sv->mtb_Register_Ble_Comm_ServiceFns(showLatestNewsAPI, setNewsAPIUpdateInterval, setNewsAPI_APIKey, setNewsAPI_Language);
+    thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(showLatestNewsAPI, setNewsAPIUpdateInterval, setNewsAPI_APIKey, setNewsAPI_Language);
     
     // Set button and encoder handlers.
     thisApp->mtb_App_Set_EC11_Cb_Fns(buttonNewsAPI_Handler, mtb_Brightness_Control);
 
     // Initialize app services.
-    mtb_App_Init(thisApp, mtb_Status_Bar_Clock_Sv);
+    thisApp->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
     
     if (newsAPI_UpdateSem == NULL)
         newsAPI_UpdateSem = xSemaphoreCreateBinary();

@@ -27,8 +27,8 @@ EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *stopWatch_App = new Mtb_Application
 void realStopwatch_App_Task(void* dApplication){
   Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
   thisApp->mtb_App_Set_EC11_Cb_Fns(selectWatchTimeButton, adjustwatchTimeEncoder);
-  mtb_App_BleComm_Parser_Sv->mtb_Register_Ble_Comm_ServiceFns(setWatchTime);
-  mtb_App_Init(thisApp);
+  thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(setWatchTime);
+  thisApp->mtb_App_Init();
   //************************************************************************************ */
   frequentStopwatchTime = (RealStopWatch_Data_t){60};
   mtb_Read_Nvs_Struct("realStopWatch", &frequentStopwatchTime, sizeof(RealStopWatch_Data_t));

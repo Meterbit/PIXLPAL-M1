@@ -21,8 +21,8 @@ EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *polygonFX_App = new Mtb_Application
 void polygonFX_App_Task(void *dApplication){
     Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
     thisApp->mtb_App_Set_EC11_Cb_Fns(buttonDoNothing, mtb_Brightness_Control);
-    mtb_App_BleComm_Parser_Sv->mtb_Register_Ble_Comm_ServiceFns(setPolygonPair, setPolygonInterval, setPolygonAPIKey);
-    mtb_App_Init(thisApp, mtb_Status_Bar_Clock_Sv);
+    thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(setPolygonPair, setPolygonInterval, setPolygonAPIKey);
+    thisApp->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
 
       polygonFX = (PolygonFX_t){
         "EUR/USD",

@@ -37,8 +37,8 @@ EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *worldFlags_App = new Mtb_Applicati
 void worldFlags_App_Task(void* dApplication){
   Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
   thisApp->mtb_App_Set_EC11_Cb_Fns(changeWorldFlagButton, mtb_Brightness_Control);
-  mtb_App_BleComm_Parser_Sv->mtb_Register_Ble_Comm_ServiceFns(selectDisplayFlag, selectPreferredFlags, cycleAllFlags, showCountryName, setFlagChangeIntv);
-  mtb_App_Init(thisApp);
+  thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(selectDisplayFlag, selectPreferredFlags, cycleAllFlags, showCountryName, setFlagChangeIntv);
+  thisApp->mtb_App_Init();
   //************************************************************************************ */
   worldFlagsInfo = (WorldFlags_Data_t){
         "Nigeria",    // Country Name

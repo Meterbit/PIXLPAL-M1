@@ -35,7 +35,7 @@ void startEncoder_USB_SPIFFS_UPDATE(rotary_encoder_rotation_t);
 void  firmwareUpdateTask(void* dApplication){
     Mtb_Applications *thisApp = (Mtb_Applications *) dApplication;
     thisApp->mtb_App_Set_EC11_Cb_Fns(startButton_USB_OTA_UPDATE, startEncoder_USB_SPIFFS_UPDATE);
-    mtb_App_Init(thisApp);
+    thisApp->mtb_App_Init();
     
 //****************************************************************************************************************************
     Mtb_FixedText_t otaTextTop(16, 18, Terminal8x12);

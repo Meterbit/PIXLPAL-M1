@@ -1,12 +1,9 @@
-#ifndef ALL_CLOCKS
-#define ALL_CLOCKS
+#ifndef CAL_CLOCKS
+#define CAL_CLOCKS
 
-// #include <stdio.h>
-// #include <stdlib.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-// #include "encoder.h"
-// #include "button.h"
+
 
 static const char classicClockAppRoute[] = "0/0";
 extern TaskHandle_t classicClock_Task_H;

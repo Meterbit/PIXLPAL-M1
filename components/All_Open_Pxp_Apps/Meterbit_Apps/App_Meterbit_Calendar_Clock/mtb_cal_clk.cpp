@@ -19,9 +19,11 @@ EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *calendarClock_App = new Mtb_Applica
 void  calendarClock_App_Task(void* dApplication){
   Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
   thisApp->mtb_App_Set_EC11_Cb_Fns(randomButtonControl, mtb_Brightness_Control);
-  mtb_App_BleComm_Parser_Sv->mtb_Register_Ble_Comm_ServiceFns(clock_Color_Change, get_NTP_Local_Time);
-  mtb_App_Init(thisApp);
+  thisApp->mtb_App_Set_UI_Components();
+  thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(clock_Color_Change, get_NTP_Local_Time);
+  thisApp->mtb_App_Init();
   //**************************************************************************************************************************
+
   mtb_Read_Nvs_Struct("Clock Cols", &clk_Updt, sizeof(Clock_Colors));
   mtb_Read_Nvs_Struct("ntp TimeZone", ntp_TimeZone, sizeof(ntp_TimeZone));
   
