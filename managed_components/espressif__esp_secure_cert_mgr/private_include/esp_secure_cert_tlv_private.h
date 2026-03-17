@@ -10,8 +10,12 @@
 #include "esp_err.h"
 
 #ifdef CONFIG_ESP_SECURE_CERT_DS_PERIPHERAL
+#if CONFIG_MBEDTLS_VER_4_X_SUPPORT
+#include "psa_crypto_driver_esp_rsa_ds.h"
+#else
 #include "rsa_sign_alt.h"
-#endif
+#endif /* MBEDTLS_VER_4_X_SUPPORT */
+#endif /* CONFIG_ESP_SECURE_CERT_DS_PERIPHERAL */
 #include "soc/soc_caps.h"
 
 #define ESP_SECURE_CERT_TLV_PARTITION_TYPE      0x3F                        /* Custom partition type */
@@ -23,6 +27,12 @@
 #define ESP_SECURE_CERT_KEY_DERIVATION_ITERATION_COUNT  (2048)              /* The iteration count for ecdsa key derivation */
 
 #define ESP_SECURE_CERT_ECDSA_DER_KEY_SIZE  121
+
+/*
+ * The minimum alignment required for the TLV data.
+ * This is required for flash encrypted writes which need 16-byte alignment.
+ */
+#define MIN_ALIGNMENT_REQUIRED 16
 
 /**
  * Flags    8 bits

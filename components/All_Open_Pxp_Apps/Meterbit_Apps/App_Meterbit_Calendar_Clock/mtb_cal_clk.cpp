@@ -19,7 +19,6 @@ EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *calendarClock_App = new Mtb_Applica
 void  calendarClock_App_Task(void* dApplication){
   Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
   thisApp->mtb_App_Set_EC11_Cb_Fns(randomButtonControl, mtb_Brightness_Control);
-  thisApp->mtb_App_Set_UI_Components();
   thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(clock_Color_Change, get_NTP_Local_Time);
   thisApp->mtb_App_Init();
   //**************************************************************************************************************************

@@ -212,8 +212,16 @@ void Mtb_Applications::appDestroy(Mtb_Applications* dApp){
     //ESP_LOGI(TAG, "APP DESTROY COMPLETED SUCCESSFULLY.\n");
 }
 
-void Mtb_Applications::mtb_App_Set_UI_Components(void){
+void Mtb_Applications::mtb_App_Show_Mobile_UI(void){
+    char appRoute[20];
+    //printf("Show the User the Application's interface \n");
+    snprintf(appRoute, sizeof(appRoute), "%u/%u", showApp_UI.GenApp, showApp_UI.SpeApp);
 
+    String mobileUICommand = "{\"pxp_command\": 252, \"manifest\": " + String(appMobile_Manifest) + ", \"api\": " + String(appMobile_Api)  + ", \"ui\": " + String(appMobile_Ui) + "}";
+    printf("Mobile UI Command: %s\n", mobileUICommand.c_str());
+    bleApplicationComSend(appRoute, mobileUICommand);
+    
+    //bleApplicationComSend(appRoute, "{\"pxp_command\": 252}");
 }
 
 void Mtb_Applications::actionOnPreviousApp(Mtb_Do_Prev_App_t dAction){
@@ -238,8 +246,8 @@ void Mtb_Applications::mtb_App_Set_EC11_Cb_Fns(buttonFn_ptr_t but_Fn, encoderFn_
 
 void Mtb_Applications::mtb_App_Set_Mobile_UI(const char* manifest, const char* api, const char* ui){
     appMobile_Manifest = manifest;
-    appMobile_api = api;
-    appMobile_ui = ui;
+    appMobile_Api = api;
+    appMobile_Ui = ui;
 }
 
 void mtb_Delete_This_App(Mtb_Applications* dApp){
@@ -338,11 +346,10 @@ void Mtb_Applications::mtb_App_Init(Mtb_Services* pointer_0, Mtb_Services* point
     Mtb_Services* pointer_8, Mtb_Services* pointer_9){
 
     if(!(showApp_UI == showUserApp)){
-        //mtb_App_Set_UI_Components();
-        printf("Show the User the Application's interface \n");
+        mtb_App_Show_Mobile_UI();
         mtb_Delete_This_App(this);
         return;
-    } 
+    }
 
     Mtb_Applications::currentRunningApp = this;
 
@@ -361,12 +368,19 @@ void Mtb_Applications::mtb_App_Init(Mtb_Services* pointer_0, Mtb_Services* point
     appServices[9] = pointer_9;
 
     delay(250);
+
     mtb_Panel_Clear_Screen();
+
     for (Mtb_Services *element : appServices) if (element != nullptr) mtb_Launch_This_Service(element);
+
     if(mtb_App_ButtonFn_ptr != buttonDoNothing) mtb_Launch_This_Service(mtb_Button_Task_Sv);
+
     if(mtb_App_EncoderFn_ptr != encoderDoNothing) mtb_Launch_This_Service(mtb_Encoder_Task_Sv);
+
     if(fullScreen == false) mtb_Draw_Status_Bar();
+
     app_is_Running = pdTRUE;
+
     //ESP_LOGI(TAG, "THIS APPLICATION HAS BEEN STARTED: %s \n", Mtb_Applications::currentRunningApp->appName);
 }
 
@@ -564,7 +578,7 @@ void mtb_sMedia_App_Launch(uint16_t dAppNumber){
 //********NUMBER 11 */
 void mtb_Miscellanous_App_Launch(uint16_t dAppNumber){
     switch(dAppNumber){
-        // case 0: mtb_Launch_This_App(calendarClock_App); break;
+        case 0: mtb_Launch_This_App(exampleDesignMobileUI_App); break;
         // case 1: mtb_Launch_This_App(calendarClock_App); break;
         // case 2: mtb_Launch_This_App(calendarClock_App); break;
         // case 3: mtb_Launch_This_App(calendarClock_App); break; 

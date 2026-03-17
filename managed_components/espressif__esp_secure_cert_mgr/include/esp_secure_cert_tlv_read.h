@@ -1,15 +1,32 @@
 /*
- * SPDX-FileCopyrightText: 2022 Espressif Systems (Shanghai) CO LTD
+ * SPDX-FileCopyrightText: 2022-2025 Espressif Systems (Shanghai) CO LTD
  *
  * SPDX-License-Identifier: Apache-2.0
  */
 #pragma once
+#include <stdbool.h>
 #include "esp_err.h"
-#include "esp_partition.h"
+
+/* Check IDF version for write support (requires >= 5.3) */
 #if __has_include("esp_idf_version.h")
     #include "esp_idf_version.h"
-#endif /* __has_include("esp_idf_version.h") */
-#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
+    #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 3, 0)
+        #define ESP_SECURE_CERT_WRITE_SUPPORT 1
+    #endif
+#endif
+
+/* Include atomic support only when write support is available */
+#ifdef ESP_SECURE_CERT_WRITE_SUPPORT
+    #ifdef __cplusplus
+        #include <atomic>
+        using atomic_bool = std::atomic<bool>;
+    #else
+        #include <stdatomic.h>
+    #endif // __cplusplus
+#endif // ESP_SECURE_CERT_WRITE_SUPPORT
+
+#include "esp_partition.h"
+#if defined(ESP_IDF_VERSION) && ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
 #include "spi_flash_mmap.h"
 #endif
 
@@ -28,6 +45,9 @@ typedef struct esp_secure_cert_partition_ctx {
     const esp_partition_t *partition;           /* Pointer to the esp_secure_cert partition */
     const void *esp_secure_cert_mapped_addr;    /* Memory mapped address of the partition */
     spi_flash_mmap_handle_t handle;             /* Memory map handle */
+#ifdef ESP_SECURE_CERT_WRITE_SUPPORT
+    atomic_bool write_lock;                     /* Atomic lock for write operations (1 byte) */
+#endif
 } esp_secure_cert_partition_ctx_t;
 
 /*

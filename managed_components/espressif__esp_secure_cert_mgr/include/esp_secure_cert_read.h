@@ -8,8 +8,12 @@
 
 #include "soc/soc_caps.h"
 #ifdef CONFIG_ESP_SECURE_CERT_DS_PERIPHERAL
+#if CONFIG_MBEDTLS_VER_4_X_SUPPORT
+#include "psa_crypto_driver_esp_rsa_ds.h"
+#else
 #include "rsa_sign_alt.h"
-#endif
+#endif /* MBEDTLS_VER_4_X_SUPPORT */
+#endif /* CONFIG_ESP_SECURE_CERT_DS_PERIPHERAL */
 
 #ifdef __cplusplus
 extern "C"

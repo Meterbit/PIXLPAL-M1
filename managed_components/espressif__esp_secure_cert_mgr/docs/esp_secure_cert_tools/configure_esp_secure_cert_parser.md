@@ -48,4 +48,3 @@ esp_secure_cert_parsed_data/
 
 - **Not all files will be present in every partition.** The actual files depend on the contents and configuration of your partition.
 - **Custom data entries** are included in the CSV but do not generate separate files.
-

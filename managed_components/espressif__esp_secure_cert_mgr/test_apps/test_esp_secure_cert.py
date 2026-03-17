@@ -609,3 +609,20 @@ def test_esp_secure_cert_secure_verification_corrupt_partition_qemu(dut):
         dut, 'secure_verification_corrupt', partition_table=False
     )
     dut.expect(r'Tests finished, rc=0', timeout=10)
+
+
+# Write functionality tests
+@pytest.mark.qemu
+@pytest.mark.parametrize('config', ['write'], indirect=True)
+@pytest.mark.parametrize('target', ['esp32', 'esp32c3', 'esp32s3'])
+def test_esp_secure_cert_write_qemu(dut: Any) -> None:
+    """
+    Test write operations on QEMU emulator.
+
+    Tests TLV write, batch write, buffer mode, and error handling.
+
+    Args:
+        dut: Device under test fixture (QEMU emulator instance)
+    """
+    setup_flash_image_for_qemu(dut, partition_table=False)
+    dut.expect(r'Tests finished, rc=0', timeout=60)

@@ -23,7 +23,7 @@ class TlvParserTest(unittest.TestCase):
         self.input_data_dir = os.path.join(self.test_dir, 'input_data')
 
         # Input files
-        self.bin_file = os.path.join(self.input_data_dir, 'esp_secure_cert_partition.bin')
+        self.bin_file = os.path.join(self.input_data_dir, 'esp_secure_cert.bin')
         self.expected_parsed_dir = os.path.join(self.input_data_dir, 'esp_secure_cert_parsed_data_expected')
 
         # Create a temporary working directory
@@ -32,7 +32,7 @@ class TlvParserTest(unittest.TestCase):
         os.chdir(self.temp_dir)
 
         # Copy the binary file to temp directory for parsing
-        self.temp_bin_file = os.path.join(self.temp_dir, 'esp_secure_cert_partition.bin')
+        self.temp_bin_file = os.path.join(self.temp_dir, 'esp_secure_cert.bin')
         shutil.copy2(self.bin_file, self.temp_bin_file)
 
         # Expected output directory and files
@@ -74,7 +74,7 @@ class TlvParserTest(unittest.TestCase):
     def test_parse_esp_secure_cert_bin(self):
         """Test parsing esp_secure_cert.bin and comparing generated files with expected"""
         # Run the script with --parse_bin option
-        args = ['--parse_bin', 'esp_secure_cert_partition.bin']
+        args = ['--parse_bin', 'esp_secure_cert.bin']
         result = self._run_configure_script(args)
 
         # Check if script executed successfully

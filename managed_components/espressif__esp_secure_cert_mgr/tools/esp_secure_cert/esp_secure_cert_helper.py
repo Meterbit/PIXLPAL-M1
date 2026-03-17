@@ -1,6 +1,5 @@
 from typing import Dict
 from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.backends import default_backend
 from cryptography.x509 import (
     load_pem_x509_certificate,
     load_der_x509_certificate
@@ -42,8 +41,7 @@ def load_private_key(key_file_path: str,
         # Attempt to load the key as a PEM-encoded private key
         private_key = serialization.load_pem_private_key(
                 key,
-                password=password,
-                backend=default_backend())
+                password=password)
 
         result["encoding"] = serialization.Encoding.PEM.value
         key_encoding = serialization.Encoding.PEM
@@ -63,8 +61,7 @@ def load_private_key(key_file_path: str,
     try:
         private_key = serialization.load_der_private_key(
             key,
-            password=password,
-            backend=default_backend()
+            password=password
         )
         result["encoding"] = serialization.Encoding.DER.value
         key_encoding = serialization.Encoding.DER
@@ -93,8 +90,7 @@ def convert_der_key_to_pem(key_file_path: str, password: str = None) -> bytes:
         # First, try to load the key as a PEM-encoded private key
         private_key = serialization.load_pem_private_key(
             key_data,
-            password=password,
-            backend=default_backend()
+            password=password
         )
         # If successful, return the original PEM data
         return key_data
@@ -105,8 +101,7 @@ def convert_der_key_to_pem(key_file_path: str, password: str = None) -> bytes:
         # Attempt to load the key as a DER-encoded private key
         private_key = serialization.load_der_private_key(
             key_data,
-            password=password,
-            backend=default_backend()
+            password=password
         )
     except ValueError:
         raise ValueError("Unsupported key encoding format. "
@@ -153,7 +148,7 @@ def load_certificate(cert_file_path: str) -> Dict[str, str]:
         raise FileNotFoundError(f"Cert file not found: {cert_file_path}")
 
     try:
-        cert = load_pem_x509_certificate(cert_data, backend=default_backend())
+        cert = load_pem_x509_certificate(cert_data)
         result["encoding"] = serialization.Encoding.PEM.value
         cert_encoding = serialization.Encoding.PEM
         result["bytes"] = cert.public_bytes(encoding=cert_encoding)
@@ -163,7 +158,7 @@ def load_certificate(cert_file_path: str) -> Dict[str, str]:
         pass
 
     try:
-        cert = load_der_x509_certificate(cert_data, backend=default_backend())
+        cert = load_der_x509_certificate(cert_data)
         result["encoding"] = serialization.Encoding.DER.value
         cert_encoding = serialization.Encoding.DER
         result["bytes"] = cert.public_bytes(encoding=cert_encoding)
@@ -189,4 +184,3 @@ def get_efuse_key_file(efuse_key_spec):
     else:
         print(f"Warning: efuse key file '{efuse_key_spec}' not found, using auto-generated key")
         return None
-

@@ -1,5 +1,21 @@
 # This file contains the list of changes across different versions
 
+## 2.5.1
+- Fixed the issue, where `configure_esp_secure_cert.py` tool unable to generate DS context using already burned efuse key on device
+when port is provided.
+- Added support for `ECDSA_KEY_P256` efuse purpose.
+
+## 2.5.0
+### Changed
+- Minimum Python version requirement updated from 3.7 to 3.8
+- Added support for Python 3.11, 3.12, and 3.13
+- Replaced deprecated cryptography `default_backend()` parameter usage
+- Fixed private API usage (`rsa._modinv`) with standard `pow()` function for modular inverse
+- Updated GitHub Actions workflow to use latest Ubuntu and action versions
+
+### Removed
+- Dropped support for Python 3.7
+
 ## 2.4.0
 * Added feature in the `configure_esp_secure_cert.py` tool to secure-sign the esp-secure-cert partition binary.
 * It signs the binary while generating new partition as well as to existing partition.

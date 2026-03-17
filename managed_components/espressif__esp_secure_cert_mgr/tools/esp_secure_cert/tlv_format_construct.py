@@ -14,10 +14,8 @@ import struct
 import base64
 import shutil
 import subprocess
-from dataclasses import dataclass
-from typing import Dict, List, Tuple, Any, Optional, Union
+from typing import Dict, List, Tuple, Any, Union
 from construct import (Struct, Int32ul, Int8ul, Int16ul, Int32sl, Bytes, this, GreedyBytes)
-from pathlib import Path
 import tempfile
 try:
     from espsecure import (
@@ -33,7 +31,6 @@ except ImportError:
     raise ImportError("espsecure module not available")
 
 
-
 from esp_secure_cert.esp_secure_cert_helper import (
     load_private_key,
     load_certificate,
@@ -47,7 +44,6 @@ from esp_secure_cert import configure_ds, tlv_format, tlv_parser
 from esp_secure_cert.tlv_format import tlv_type_t, tlv_priv_key_type_t
 
 
-
 class TlvSubtype(enum.IntEnum):
     SUBTYPE_0 = 0
     SUBTYPE_1 = 1
@@ -57,8 +53,6 @@ class TlvSubtype(enum.IntEnum):
     SUBTYPE_5 = 5
     SUBTYPE_MAX = 254
     SUBTYPE_INVALID = 255
-
-
 
 
 # Constants
@@ -90,9 +84,9 @@ TlvHeader = Struct(
     "magic" / Int32ul,  # Little-endian 32-bit unsigned int
     "flags" / Int8ul,   # 8-bit flags
     "reserved" / Bytes(3),  # 3 reserved bytes
-    "type" / Int8ul,    # TLV type
-    "subtype" / Int8ul, # TLV subtype
-    "length" / Int16ul, # Little-endian 16-bit length
+    "type" / Int8ul,     # TLV type
+    "subtype" / Int8ul,  # TLV subtype
+    "length" / Int16ul,  # Little-endian 16-bit length
 )
 
 TlvFooter = Struct(
@@ -127,6 +121,7 @@ TlvEntry = Struct(
     "footer" / TlvFooter,
 )
 
+
 def _calculate_padding(data_length: int) -> int:
     """Calculate padding needed for 16-byte alignment"""
     return (MIN_ALIGNMENT_REQUIRED - (data_length % MIN_ALIGNMENT_REQUIRED)) % MIN_ALIGNMENT_REQUIRED
@@ -142,6 +137,7 @@ def _get_flag_byte(key_type: tlv_priv_key_type_t) -> int:
     elif key_type == tlv_priv_key_type_t.ESP_SECURE_CERT_ECDSA_PERIPHERAL_KEY:
         flags |= (1 << 3)  # bit 3
     return flags
+
 
 class TlvPartitionBuilder:
     """Builder class for creating TLV partitions with custom data support"""
@@ -163,8 +159,8 @@ class TlvPartitionBuilder:
         self.add_tlv_entry(tlv_type, subtype, cert_path, 0)
 
     def add_private_key(self, key_path: str, key_pass: Any = None,
-                       key_type: tlv_priv_key_type_t = tlv_priv_key_type_t.ESP_SECURE_CERT_DEFAULT_FORMAT_KEY,
-                       subtype: int = 0) -> None:
+                        key_type: tlv_priv_key_type_t = tlv_priv_key_type_t.ESP_SECURE_CERT_DEFAULT_FORMAT_KEY,
+                        subtype: int = 0) -> None:
         """Add private key to partition"""
         if key_path and os.path.exists(key_path):
             key_data = load_private_key(key_path, key_pass)
@@ -324,6 +320,7 @@ class TlvPartitionBuilder:
         print(f"Total TLV entries: {len(self.entries)}")
         print(f"Total partition size used: {self.current_offset} / {PARTITION_SIZE} bytes")
 
+
 class EspSecureCert:
 
     def __init__(self, version: str = "2", hash_type: str = "sha256"):
@@ -341,9 +338,8 @@ class EspSecureCert:
         if not os.path.exists(esp_secure_cert_data_dir):
             os.makedirs(esp_secure_cert_data_dir)
 
-        self.bin_filename = os.path.join(esp_secure_cert_data_dir, "esp_secure_cert_partition.bin")
-        self.signed_bin_filename = os.path.join(esp_secure_cert_data_dir, "esp_secure_cert_signed_partition.bin")
-
+        self.bin_filename = os.path.join(esp_secure_cert_data_dir, "esp_secure_cert.bin")
+        self.signed_bin_filename = os.path.join(esp_secure_cert_data_dir, "esp_secure_cert_signed.bin")
 
     def __del__(self):
         """Destructor - cleanup when object is destroyed"""
@@ -436,7 +432,7 @@ class EspSecureCert:
         # Check if the entry (by tlv_type and tlv_subtype) is already present in entries
         for existing_entry in self.secure_cert_entries:
             if (existing_entry.get('tlv_type') == entry.get('tlv_type') and
-                existing_entry.get('tlv_subtype') == entry.get('tlv_subtype')):
+                    existing_entry.get('tlv_subtype') == entry.get('tlv_subtype')):
                 print(f"WARNING: Duplicate entry found for type {entry.get('tlv_type')}, subtype {entry.get('tlv_subtype')}")
                 print(f"  - Existing entry: {existing_entry}")
                 print(f"  - New entry: {entry}")
@@ -447,7 +443,6 @@ class EspSecureCert:
         """Optimized version using dictionary comprehension"""
         return {key: value.strip() if isinstance(value, str) else value
                 for key, value in row.items()}
-
 
     def parse_esp_secure_cert_csv(self, csv_file):
         """Parse ESP Secure Cert CSV configuration file"""
@@ -573,7 +568,7 @@ class EspSecureCert:
                             print(f"  - Will generate new HMAC key file: {hmac_key_file}")
 
                         hmac_key = configure_ds.configure_efuse_for_rsa(
-                            target_chip, port, hmac_key_file, efuse_key_file,
+                            target_chip, port, efuse_key_file,
                             str(entry['key_size']), entry['data_value'],
                             None, entry['efuse_id']
                         )
@@ -583,7 +578,7 @@ class EspSecureCert:
                         ds_tlv_entry['c'] = c
                         ds_tlv_entry['iv'] = iv
                         ds_tlv_entry['rsa_key_len'] = rsa_key_len
-                        print(f"  - RSA DS parameters calculated successfully")
+                        print("  - RSA DS parameters calculated successfully")
 
                     elif entry['algorithm'] == 'ECDSA':
                         configure_ds.configure_efuse_for_ecdsa(
@@ -591,10 +586,9 @@ class EspSecureCert:
                             esp_secure_cert_data_dir, str(entry['key_size']),
                             entry['data_value'], None, entry['efuse_id']
                         )
-                        print(f"  - ECDSA DS configuration completed successfully")
+                        print("  - ECDSA DS configuration completed successfully")
 
                     ds_tlv_entries.append(ds_tlv_entry)
-
 
             # Auto-add DS-related TLVs for each DS configuration
             for ds_tlv_entry in ds_tlv_entries:
@@ -675,7 +669,7 @@ class EspSecureCert:
             print(f'\nPartition generated: {self.bin_filename}')
 
             # Display summary
-            print(f"\n=== ESP Secure Cert Generation Summary ===")
+            print("\n=== ESP Secure Cert Generation Summary ===")
             print(f"Target chip: {target_chip}")
             print(f"Operation mode: {'Device Connected' if port else 'Local Only'}")
             print(f"Partition file: {self.bin_filename}")
@@ -703,7 +697,6 @@ class EspSecureCert:
             traceback.print_exc()
             sys.exit(-1)
 
-
     # Flash esp_secure_cert partition after its generation
     # @info
     # The partition shall be flashed at the offset provided
@@ -720,7 +713,7 @@ class EspSecureCert:
             sec_cert_part_offset (str): Flash offset for the partition
             flash_filename (str): Path to the partition binary file
         """
-        print(f'\n=== Flashing ESP Secure Cert Partition ===')
+        print('\n=== Flashing ESP Secure Cert Partition ===')
         print(f'Partition file: {flash_filename}')
         print(f'Flash offset: {sec_cert_part_offset}')
         print('Note: You can skip this step by providing --skip_flash argument')
@@ -729,7 +722,7 @@ class EspSecureCert:
         if not os.path.exists(flash_filename):
             print(f"ERROR: The provided flash_filename {flash_filename} does not exist")
             sys.exit(-1)
-        flash_filename = self.signed_bin_filename
+
         # Check if the port is provided
         if not port:
             print("WARNING: Port is not provided, skipping flash operation")
@@ -805,7 +798,6 @@ class EspSecureCert:
         except Exception as e:
             print(f"ERROR: Failed to read or validate the .bin file '{bin_file_path}': {e}")
             sys.exit(-1)
-
 
         # Parse TLV entries
         tlv_entries = EspSecureCert._parse_tlv_entries_from_bin(bin_file_path)
@@ -896,8 +888,7 @@ class EspSecureCert:
                     if b'PRIVATE KEY-----' in pem_header and b'RSA' not in pem_header:
                         # Re-serialize as PKCS#8 using cryptography
                         from cryptography.hazmat.primitives import serialization
-                        from cryptography.hazmat.backends import default_backend
-                        key = serialization.load_pem_private_key(key_bytes, password=None, backend=default_backend())
+                        key = serialization.load_pem_private_key(key_bytes, password=None)
                         pem = key.private_bytes(
                             encoding=serialization.Encoding.PEM,
                             format=serialization.PrivateFormat.PKCS8,
@@ -1058,11 +1049,11 @@ class EspSecureCert:
         except Exception as e:
             print(f"WARNING: Could not write tlv_entries_raw.txt: {e}")
 
-        print(f"\nSuccessfully parsed binary file!")
-        print(f"Generated files:")
+        print("\nSuccessfully parsed binary file!")
+        print("Generated files:")
         print(f"  - CSV file: {csv_file_path}")
         print(f"      - {len(csv_rows)} valid entries parsed")
-        print(f"      - Entries:")
+        print("      - Entries:")
         for row in csv_rows:
             tlv_type = row.get('tlv_type', 'N/A')
             tlv_subtype = row.get('tlv_subtype', 'N/A')
@@ -1110,7 +1101,6 @@ class EspSecureCert:
                 break
         return tlv_entries
 
-
     # =============== Secure Verification related functions ===============
 
     def generate_entries_hash(self, tlv_entries_data) -> bytes:
@@ -1122,7 +1112,6 @@ class EspSecureCert:
             return _sha384_digest(tlv_entries_data)
         else:
             raise ValueError(f"Unsupported hash type: {self.hash_type}")
-
 
     def _extract_public_key_and_algorithm(self, private_key_path: str) -> Tuple[int, bytes]:
         """
@@ -1196,7 +1185,7 @@ class EspSecureCert:
 
             try:
                 # Use sign_data API with skip_padding=True
-                print(f"Calling sign_data API with skip_padding=True")
+                print("Calling sign_data API with skip_padding=True")
                 print(f"  Input file: {temp_input_path} ({len(bin_data)} bytes)")
                 print(f"  Output file: {temp_output_path}")
                 print(f"  Private key: {private_key_path}")
@@ -1292,7 +1281,7 @@ class EspSecureCert:
             print(f"Error generating signature with espsecure.sign_data: {e}")
             raise
 
-    def add_signature_block_using_existing_key(self, data_file_path: str, signing_key_file: list[str] | str, signing_scheme: str):
+    def add_signature_block_using_existing_key(self, data_file_path: str, signing_key_file: Union[List[str], str], signing_scheme: str):
         """Add signature block to the partition using existing key
 
         Args:
@@ -1344,7 +1333,7 @@ class EspSecureCert:
                             keyfiles=[keyfile],
                             contents=bin_data)
                     signature = signature_block
-                else: # ECDSA192, ECDSA256, ECDSA384
+                else:  # ECDSA192, ECDSA256, ECDSA384
                     signature = self._sign_data_with_espsecure(keyfile_path, bin_data, algorithm)
 
                 self.builder.add_signature_block(algorithm, public_key, signature, self.signature_block_no, original_partition_length)

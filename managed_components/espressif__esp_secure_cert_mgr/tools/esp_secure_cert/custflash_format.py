@@ -3,7 +3,6 @@ import struct
 import zlib
 from esp_secure_cert.esp_secure_cert_helper import load_private_key, load_certificate
 from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.backends import default_backend
 
 # size is calculated as actual size + 16 (offset)
 ciphertext_size = {'esp32s2': 1600, 'esp32s3': 1600, 'esp32c3': 1216}

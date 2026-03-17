@@ -36,4 +36,11 @@ menu "Test Apps Configuration"
         help
             Enable this option to test the secure verification operations with corrupt secure cert partition.
 
+    config TEST_ESP_SECURE_CERT_WRITE
+        bool "Test write operations"
+        default n
+        help
+            Enable this option to test the write operations for esp_secure_cert partition.
+            This includes testing TLV write, batch write, buffer mode write, and error handling.
+
 endmenu

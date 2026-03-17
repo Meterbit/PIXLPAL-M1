@@ -1,5 +1,15 @@
 # This file contains the list of changes across different versions
 
+## v2.9.1
+* Fix the heap_caps_calloc issue
+* Enable flash erase check by default for write operations
+
+## v2.9.0
+* Added support to write to esp_secure_cert partition
+
+## v2.8.1
+* Fix build issues with ESP-IDF v6.0 related to PSA opaque driver changes.
+
 ## v2.8.0
 * Added feature of secure verification for esp-secure-cert partition.
 * It verifies whether the esp-secure-cert partition is signed or not, with signing-key.

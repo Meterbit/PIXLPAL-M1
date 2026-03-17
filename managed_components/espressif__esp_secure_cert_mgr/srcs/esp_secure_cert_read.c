@@ -613,7 +613,7 @@ esp_ds_data_ctx_t *esp_secure_cert_get_ds_ctx(void)
         goto exit;
     }
 
-    ds_data_ctx->esp_ds_data = (esp_ds_data_t *)heap_caps_calloc(1, sizeof(esp_ds_data_t), MALLOC_CAP_INTERNAL);
+    ds_data_ctx->esp_ds_data = (esp_ds_data_t *)heap_caps_calloc(1, sizeof(esp_ds_data_t), MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
     if (ds_data_ctx->esp_ds_data == NULL) {
         ESP_LOGE(TAG, "Could not allocate memory for DS data handle ");
         goto exit;

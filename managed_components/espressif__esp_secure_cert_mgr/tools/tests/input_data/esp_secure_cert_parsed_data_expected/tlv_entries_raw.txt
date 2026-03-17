@@ -1,5 +1,5 @@
 ESP Secure Certificate TLV Parser
-File: esp_secure_cert_partition.bin
+File: esp_secure_cert.bin
 File size: 5232 bytes
 ================================================================================
 

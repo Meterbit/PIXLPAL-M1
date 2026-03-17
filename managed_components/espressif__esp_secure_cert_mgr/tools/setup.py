@@ -21,7 +21,7 @@ except ImportError:
     )
     exit(1)
 
-VERSION = "2.4.0"
+VERSION = "2.5.1"
 
 long_description = """
 ====================
@@ -76,12 +76,14 @@ setup(
         "Operating System :: Microsoft :: Windows",
         "Operating System :: MacOS :: MacOS X",
         "Topic :: Software Development :: Embedded Systems",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
     ],
-    python_requires=">=3.7",
+    python_requires=">=3.8",
     setup_requires=(["wheel"] if "bdist_wheel" in sys.argv else []),
     install_requires=get_install_requires(),
     include_package_data=True,

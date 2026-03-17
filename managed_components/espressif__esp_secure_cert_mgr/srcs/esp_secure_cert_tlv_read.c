@@ -52,10 +52,8 @@
 
 static const char *TAG = "esp_secure_cert_tlv";
 
+/* Global partition context - shared across read and write operations */
 esp_secure_cert_partition_ctx_t esp_secure_cert_partition_ctx = {0};
-
-#define MIN_ALIGNMENT_REQUIRED 16
-
 
 #if SOC_HMAC_SUPPORTED
 static esp_err_t esp_secure_cert_hmac_based_decryption(char *in_buf, uint32_t len, char *output_buf);
@@ -343,7 +341,7 @@ esp_err_t esp_secure_cert_tlv_get_addr(esp_secure_cert_tlv_type_t type, esp_secu
     if (ESP_SECURE_CERT_IS_TLV_ENCRYPTED(tlv_header->flags)) {
 #if SOC_HMAC_SUPPORTED
         ESP_LOGD(TAG, "TLV data is encrypted");
-        char *output_buf = (char *)heap_caps_calloc(1, sizeof(char) * (*len - HMAC_ENCRYPTION_TAG_LEN), MALLOC_CAP_INTERNAL);
+        char *output_buf = (char *)heap_caps_calloc(1, sizeof(char) * (*len - HMAC_ENCRYPTION_TAG_LEN), MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
         if (output_buf == NULL) {
             ESP_LOGE(TAG, "Failed to allocate memory");
             return ESP_ERR_NO_MEM;
@@ -364,7 +362,7 @@ esp_err_t esp_secure_cert_tlv_get_addr(esp_secure_cert_tlv_type_t type, esp_secu
     } else if (ESP_SECURE_CERT_HMAC_ECDSA_KEY_DERIVATION(tlv_header->flags)) {
 #if SOC_HMAC_SUPPORTED
         ESP_LOGD(TAG, "ECDSA private key shall be generated with help of HMAC");
-        char *output_buf = (char *)heap_caps_calloc(1, sizeof(char) * (ESP_SECURE_CERT_ECDSA_DER_KEY_SIZE), MALLOC_CAP_INTERNAL);
+        char *output_buf = (char *)heap_caps_calloc(1, sizeof(char) * (ESP_SECURE_CERT_ECDSA_DER_KEY_SIZE), MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
         if (output_buf == NULL) {
             ESP_LOGE(TAG, "Failed to allocate memory");
             return ESP_ERR_NO_MEM;
@@ -650,7 +648,7 @@ static esp_err_t esp_secure_cert_gen_ecdsa_key(esp_secure_cert_tlv_subtype_t sub
     ESP_FAULT_ASSERT(res);
 
     // Allocate memory for private key
-    char *key_buf = (char *)heap_caps_calloc(1, sizeof(char) * (ESP_SECURE_CERT_DERIVED_ECDSA_KEY_SIZE), MALLOC_CAP_INTERNAL);
+    char *key_buf = (char *)heap_caps_calloc(1, sizeof(char) * (ESP_SECURE_CERT_DERIVED_ECDSA_KEY_SIZE), MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
     if (key_buf == NULL) {
         ESP_LOGE(TAG, "Failed to allocate memory");
         return ESP_ERR_NO_MEM;

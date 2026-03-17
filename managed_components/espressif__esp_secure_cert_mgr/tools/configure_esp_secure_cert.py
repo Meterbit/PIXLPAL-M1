@@ -16,7 +16,7 @@ from esp_secure_cert.efuse_helper import (
 )
 
 # Check python version is proper or not to avoid script failure
-assert sys.version_info >= (3, 6, 0), 'Python version too low.'
+assert sys.version_info >= (3, 8, 0), 'Python version too low. Python 3.8 or higher is required.'
 
 esp_secure_cert_data_dir = 'esp_secure_cert_data'
 # hmac_key_file is generated when HMAC_KEY is calculated,

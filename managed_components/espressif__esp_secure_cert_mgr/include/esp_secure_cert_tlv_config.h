@@ -35,7 +35,7 @@ typedef enum esp_secure_cert_tlv_type {
     ESP_SECURE_CERT_USER_DATA_2 = 52,
     ESP_SECURE_CERT_USER_DATA_3 = 53,
     ESP_SECURE_CERT_USER_DATA_4 = 54,
-    ESP_SECURE_CERT_USER_DATA_5 = 54,
+    ESP_SECURE_CERT_USER_DATA_5 = 55,
     /* The following TLV entries are reserved for project-specific
  * purposes and should not be utilized by the application */
     ESP_SECURE_CERT_MATTER_TLV_1 = 201,

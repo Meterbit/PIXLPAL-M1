@@ -44,10 +44,11 @@
 #endif
 #endif
 #include "bignum_impl.h"
+#include "mbedtls/pk.h"
 #if (MBEDTLS_MAJOR_VERSION < 4)
 #include "mbedtls/aes.h"
-#endif // MBEDTLS_MAJOR_VERSION < 4
 #include "mbedtls/gcm.h"
+#endif // MBEDTLS_MAJOR_VERSION < 4
 #include "nvs_flash.h"
 #include "esp_secure_cert_read.h"
 #include "esp_secure_cert_config.h"
@@ -79,6 +80,9 @@ static void run_all_tests(void)
 #endif
 #if CONFIG_TEST_ESP_SECURE_CERT_SECURE_VERIFICATION
     RUN_TEST_GROUP(secure_verification);
+#endif
+#if CONFIG_TEST_ESP_SECURE_CERT_WRITE
+    RUN_TEST_GROUP(write);
 #endif
 }
 

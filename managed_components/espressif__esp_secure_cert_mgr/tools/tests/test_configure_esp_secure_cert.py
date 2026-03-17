@@ -24,7 +24,7 @@ class ConfigureEspSecureCertTest(unittest.TestCase):
 
         # Input files
         self.csv_file = os.path.join(self.input_data_dir, 'esp_secure_cert_config_examples.csv')
-        self.expected_bin = os.path.join(self.input_data_dir, 'esp_secure_cert_partition.bin')
+        self.expected_bin = os.path.join(self.input_data_dir, 'esp_secure_cert.bin')
 
         # Create a temporary working directory
         self.temp_dir = tempfile.mkdtemp()
@@ -42,7 +42,7 @@ class ConfigureEspSecureCertTest(unittest.TestCase):
 
         # Expected output directory and file
         self.output_dir = os.path.join(self.temp_dir, 'esp_secure_cert_data')
-        self.generated_bin = os.path.join(self.output_dir, 'esp_secure_cert_partition.bin')
+        self.generated_bin = os.path.join(self.output_dir, 'esp_secure_cert.bin')
 
         # Verify required files exist
         self.assertTrue(
@@ -81,7 +81,7 @@ class ConfigureEspSecureCertTest(unittest.TestCase):
         return result
 
     def test_generate_esp_secure_cert_bin_from_csv(self):
-        """Test generating esp_secure_cert_partition.bin from CSV configuration"""
+        """Test generating esp_secure_cert.bin from CSV configuration"""
         # Run the script with CSV input
         args = [
             '--esp_secure_cert_csv', self.csv_file,
@@ -167,7 +167,7 @@ class ConfigureEspSecureCertTest(unittest.TestCase):
         self.assertGreater(bin_size, 0, "Generated binary file is empty")
 
     def test_custom_data_from_file(self):
-        """Test adding custom data from a file to esp_secure_cert_partition.bin"""
+        """Test adding custom data from a file to esp_secure_cert.bin"""
         # Create a test custom data file
         custom_data_file = os.path.join(self.temp_dir, 'custom_data.txt')
         custom_data_content = b"Custom device configuration data"
@@ -204,7 +204,7 @@ class ConfigureEspSecureCertTest(unittest.TestCase):
 
         # Verify binary was generated
         generated_bin = os.path.join(
-            self.temp_dir, 'esp_secure_cert_data', 'esp_secure_cert_partition.bin')
+            self.temp_dir, 'esp_secure_cert_data', 'esp_secure_cert.bin')
         self.assertTrue(
             os.path.exists(generated_bin),
             "Binary file not generated")
@@ -305,7 +305,7 @@ class ConfigureEspSecureCertIntegrationTest(unittest.TestCase):
 
                 # Verify binary was generated
                 generated_bin = os.path.join(
-                    output_dir, 'esp_secure_cert_partition.bin')
+                    output_dir, 'esp_secure_cert.bin')
                 self.assertTrue(
                     os.path.exists(generated_bin),
                     f"Binary not generated for {chip}")

@@ -16,6 +16,10 @@ if(CONFIG_TEST_ESP_SECURE_CERT_BASICS)
     list(APPEND src_dir "basics")
 endif()
 
+if(CONFIG_TEST_ESP_SECURE_CERT_WRITE)
+    list(APPEND src_dir "write")
+endif()
+
 # Check IDF version for WHOLE_ARCHIVE support (available from IDF 5.0)
 if(IDF_VERSION_MAJOR GREATER_EQUAL 5)
     idf_component_register(

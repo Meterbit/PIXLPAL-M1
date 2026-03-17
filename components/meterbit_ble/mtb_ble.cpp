@@ -13,6 +13,7 @@
 #include "mtb_engine.h"
 #include "mtb_ble.h"
 
+
 #define BLE_COMM_QUEUE_SIZE 6
 
 static const char TAG[] = "BLE_COMM";
@@ -366,7 +367,6 @@ void ble_AppCom_Parse_Task(void* dService){
                 showApp_UI.GenApp = getIntegerAtIndex(specify_Application, 0);
                 showApp_UI.SpeApp = getIntegerAtIndex(specify_Application, 1);
                 mtb_General_App_Register(showApp_UI);
-                bleApplicationComSend(specify_Application.c_str(), "{\"pxp_command\": 252}");
           }else{
                 bleApplicationComSend(specify_Application.c_str(), "{\"pxp_command\": 254}");
                 statusBarNotif.mtb_Scroll_This_Text("TAP 'LAUNCH' TO START APP", MAGENTA);
