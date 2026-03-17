@@ -54,24 +54,27 @@ EXT_RAM_BSS_ATTR Mtb_Services *mtb_App_BleComm_Parser_Sv = new Mtb_Services(ble_
 
 class MyServerCallbacks : public NimBLEServerCallbacks{
   void onConnect(NimBLEServer *pServer, NimBLEConnInfo& connInfo){
-    // Request MTU
-    NimBLEDevice::setMTU(512); // Request MTU size of 512
     isDisconnected = false;
     Mtb_Applications::bleCentralContd = true;
     connHandle = connInfo.getConnHandle();
     mtb_Show_Status_Bar_Icon({"/batIcons/phoneCont.png", 18, 1});
     mtb_Read_Nvs_Struct("pxpBleDevName", pxp_BLE_Name, sizeof(pxp_BLE_Name));
     mtb_Current_Ble_Device(pxp_BLE_Name);
-    //ESP_LOGI(TAG, "Connected\n");
+    ESP_LOGI(TAG, "Connected\n");
   };
 
   void onDisconnect(NimBLEServer *pServer, NimBLEConnInfo& connInfo, int reason){
-    //ESP_LOGI(TAG, "Disconnection detected.\n");
+    ESP_LOGI(TAG, "Disconnection detected.\n");
     isDisconnected = true;
     Mtb_Applications::bleCentralContd = false;
     mtb_Show_Status_Bar_Icon({"/batIcons/btOn.png", 18, 1});
     // Start advertising
     NimBLEDevice::startAdvertising(); // Start advertising
+  };
+
+  void onMTUChange(uint16_t MTU, NimBLEConnInfo& connInfo) override {
+    Mtb_Applications::bleCentralNegotiatedMtu = MTU;
+    ESP_LOGI(TAG, "Negotiated MTU: %u\n", MTU);
   }
 };
 
@@ -113,6 +116,10 @@ void mtb_Ble_Comm_Init(void){
     // Create the BLE Device
     mtb_Read_Nvs_Struct("pxpBleDevName", pxp_BLE_Name, sizeof(pxp_BLE_Name));
     NimBLEDevice::init(pxp_BLE_Name);
+
+    // Request MTU
+    NimBLEDevice::setMTU(512); // Request MTU size of 512
+
     // Create the BLE Server
     pServer = NimBLEDevice::createServer();
 
@@ -151,7 +158,7 @@ void mtb_Ble_Comm_Init(void){
     pAdvertising->setName(pxp_BLE_Name); // Set the device name
     NimBLEDevice::startAdvertising(); // Start advertising
 
-    setCom_characteristic->setValue("Setting Xter Ready.");
+    setCom_characteristic->setValue("SetCom Xter Ready.");
     setCom_characteristic->setCallbacks(new CharacteristicsCallbacks());
 
     appCom_characteristic->setValue("AppCom Xter Ready.");
@@ -190,18 +197,60 @@ void mtb_Ble_Comm_Deinit() {
     mtb_Show_Status_Bar_Icon({"/batIcons/wipe7x7.png", 18, 1}); 
 }
 
-int bleSettingsComSend(const char* dRoute, String dMessage){
+int bleSettingsComSend(const char* dRoute, const String& dMessage) {
       if(Mtb_Applications::bleCentralContd == false) return 0;
       setCom_characteristic->setValue(String(dRoute) + "|" + dMessage);
       if (!setCom_characteristic->notify()) ESP_LOGW("BLE", "Notify failed for setCom_characteristic");
       return 1;
 }
 
-int bleApplicationComSend(const char* dRoute, String dMessage){
-      if(Mtb_Applications::bleCentralContd == false) return 0;
-      appCom_characteristic->setValue(String(dRoute) + "|" + dMessage);
-      if (!appCom_characteristic->notify()) ESP_LOGW("BLE", "Notify failed for appCom_characteristic");
-      return 1;
+int bleApplicationComSend(const char* dRoute, const String& dMessage) {
+    if (Mtb_Applications::bleCentralContd == false) return 0;
+    if (appCom_characteristic == nullptr) return 0;
+
+    String route = String(dRoute);
+
+    uint16_t mtu = Mtb_Applications::bleCentralNegotiatedMtu;
+    if (mtu < 23) mtu = 23;
+
+    int maxPayload = mtu - 3;
+
+    static uint32_t msgCounter = 0;
+    uint32_t msgId = ++msgCounter;
+
+    int totalLen = dMessage.length();
+
+    String testHeader = route + "|" + String(msgId) + "|0|0|" + String(totalLen) + "|";
+    int chunkDataSize = maxPayload - testHeader.length();
+
+    if (chunkDataSize < 20) chunkDataSize = 20;
+
+    int totalChunks = (totalLen + chunkDataSize - 1) / chunkDataSize;
+    if (totalChunks == 0) totalChunks = 1;
+
+    for (int chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+        int start = chunkIndex * chunkDataSize;
+        String chunkData = dMessage.substring(start, start + chunkDataSize);
+
+        String packet =
+            route + "|" +
+            String(msgId) + "|" +
+            String(chunkIndex) + "|" +
+            String(totalChunks) + "|" +
+            String(totalLen) + "|" +
+            chunkData;
+
+        appCom_characteristic->setValue(packet.c_str());
+
+        if (!appCom_characteristic->notify()) {
+            ESP_LOGW("BLE", "Notify failed for appCom_characteristic");
+            return 0;
+        }
+
+        vTaskDelay(pdMS_TO_TICKS(10));
+    }
+
+    return 1;
 }
 
 int getIntegerAtIndex(const String& data, int index) {

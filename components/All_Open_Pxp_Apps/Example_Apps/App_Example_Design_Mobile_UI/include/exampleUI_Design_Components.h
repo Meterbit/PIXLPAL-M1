@@ -32,7 +32,8 @@ static const char* ui = R"json(
   "title": "Strick Clock",
   "about": "Calendar Clock shows the current time/date. Customize the clock by selecting your preferred colors.",
   "widgets": [
-
+    { "type": "button", "label": "TEST BUTTON", "command": "PRINCE_CHARM" },
+    { "type": "button", "label": "TEST BUTTON", "command": "PRINCE_CHARM" },
     { "type": "button", "label": "TEST BUTTON", "command": "PRINCE_CHARM" }
   ],
   "toasts": [
@@ -47,3 +48,5 @@ static const char* ui = R"json(
 )json";
 
 #endif
+
+

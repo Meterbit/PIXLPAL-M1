@@ -56,6 +56,7 @@ bool Mtb_Applications::usbPenDriveMounted = false;
 bool Mtb_Applications::pxpWifiConnectStatus = false;
 bool Mtb_Applications::bleAdvertisingStatus = false;
 bool Mtb_Applications::bleCentralContd = false;
+uint16_t Mtb_Applications::bleCentralNegotiatedMtu = 512;  // Default to 512, can be updated based on actual negotiation results
 uint8_t Mtb_Applications::firmwareOTA_Status = 6;
 uint8_t Mtb_Applications::spiffsOTA_Status = 6;
 

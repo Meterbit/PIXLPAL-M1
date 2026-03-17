@@ -169,6 +169,7 @@ public:
     static bool pxpWifiConnectStatus;                               // This is used to check if the PXP WiFi is connected or not. It is set to true when the PXP WiFi is connected, and false when it is not connected.
     static bool bleAdvertisingStatus;                               // This is used to check if the BLE advertising is enabled or not. It is set to true when the BLE advertising is enabled, and false when it is not enabled.
     static bool bleCentralContd;                                    // This is used to check if the BLE central is connected or not. It is set to true when the BLE central is connected, and false when it is not connected.
+    static uint16_t bleCentralNegotiatedMtu;                                  // This is used to check the negotiated MTU size with the connected BLE central device. It is set to 512 when the MTU size is successfully negotiated, and it can be set to other values to indicate the negotiated MTU size or if the negotiation failed.
     // static bool mqttPhoneConnectStatus;
     static uint8_t firmwareOTA_Status;                              // This is used to check the status of the firmware OTA update. It is set to 6 when the OTA update is not started, and it can be set to other values to indicate the status of the OTA update.
     static uint8_t spiffsOTA_Status;                                // This is used to check the status of the SPIFFS OTA update. It is set to 6 when the OTA update is not started, and it can be set to other values to indicate the status of the OTA update.

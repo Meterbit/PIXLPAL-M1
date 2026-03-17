@@ -35,8 +35,8 @@ extern void mtb_Ble_Comm_Deinit(void);
 
 extern int getIntegerAtIndex(const String &data, int index);
 
-extern int bleSettingsComSend(const char* dSetRoute, String dMessage);
-extern int bleApplicationComSend(const char* dAppRoute, String dMessage);
+extern int bleSettingsComSend(const char* dSetRoute, const String& dMessage);
+extern int bleApplicationComSend(const char* dAppRoute, const String& dMessage);
 
 extern void ble_SetCom_Parse_Task(void *);
 extern void ble_AppCom_Parse_Task(void *);
