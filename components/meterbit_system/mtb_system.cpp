@@ -112,6 +112,5 @@ void mtb_System_Init(void){
     if(appLauncherQueue == NULL) appLauncherQueue = xQueueCreateStatic(4, sizeof(Mtb_Applications*), appLauncherQueue_buffer, &xQueueStorage_AppLauncher);
 
     // Read the last executed App from NVS
-    mtb_Read_Nvs_Struct("showUserApp", &showUserApp, sizeof(Mtb_UserApp_t));
-    showApp_UI = showUserApp;
+    mtb_Read_Nvs_Struct("activateUserApp", &activateUserApp, sizeof(Mtb_UserApp_t));
 }

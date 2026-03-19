@@ -16,13 +16,13 @@ void exampleDesignMobileUI_Task(void* dApplication){
 // End of App parameter initialization
 
 // Declare Fixed and Scroll Text Variables
-  Mtb_FixedText_t exampleFixedText(24,15, Terminal8x12, GREEN);
+  Mtb_FixedText_t exampleFixedText(24,0, Terminal6x8, LEMON_CRAYOLA);
 
 // Write Fixed Text to display
-  exampleFixedText.mtb_Write_String("Hello World."); // Write text in default color
+  exampleFixedText.mtb_Write_String("Dev Practice App"); // Write text in default color
 
   while (MTB_APP_IS_ACTIVE == pdTRUE) {
-
+    delay(1000);
 }
 
 // Clean up the application before exiting

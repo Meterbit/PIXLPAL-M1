@@ -5,14 +5,11 @@
 
 static const char* manifest = R"json(
 {
-  "id": "calendar_clock",
-  "name": "Mobile UI Example",
-  "type": "app",
-  "route": "11/0",
-  "entry": "assets/plugins/calendar_clock/ui.json",
-  "api": "assets/plugins/calendar_clock/api.json"
+  "appID": "11/0",
+  "name": "UI App Practice",
+  "author": "Stephen G.",
+  "version": "v0.0.2"
 }
-
 )json";
 
 static const char* api = R"json(
@@ -29,7 +26,7 @@ static const char* api = R"json(
 
 static const char* ui = R"json(
 {
-  "title": "Strick Clock",
+  "title": "Dev Practice App",
   "about": "Calendar Clock shows the current time/date. Customize the clock by selecting your preferred colors.",
   "widgets": [
     { "type": "button", "label": "TEST BUTTON", "command": "PRINCE_CHARM" },

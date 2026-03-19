@@ -81,7 +81,7 @@ class MyServerCallbacks : public NimBLEServerCallbacks{
 class CharacteristicsCallbacks : public NimBLECharacteristicCallbacks{
   void onWrite(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo& connInfo){
 
-    ESP_LOGI(TAG, "Value Written: %s \n", pCharacteristic->getValue().c_str());
+    ESP_LOGI(TAG, "BLEData Received : %s \n", pCharacteristic->getValue().c_str());
 
 if(pCharacteristic == setCom_characteristic){
       setValue = pCharacteristic->getValue().c_str();
@@ -344,7 +344,7 @@ void ble_AppCom_Parse_Task(void* dService){
         //ESP_LOGI(TAG, "The dAppGen is: %d\n", dAppGen);
         //ESP_LOGI(TAG, "The dAppSpe is: %d\n", dAppSpe);
 
-        if (dAppGen == showUserApp.GenApp && dAppSpe == showUserApp.SpeApp){
+        if (dAppGen == activateUserApp.GenApp && dAppSpe == activateUserApp.SpeApp){
 
             dError = deserializeJson(dCommand, dJsonPayload);
             if(dError.code() == dError.Ok) dCmd_num = dCommand["app_command"];
@@ -391,9 +391,11 @@ void ble_AppCom_Parse_Task(void* dService){
             //     break;
             // case 19:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[19] != nullptr) Mtb_Applications::currentRunningApp.bleAppComServiceFns[19](dCommand);
             //     break;
-            case 254:
-                statusBarNotif.mtb_Scroll_This_Text("APP IS ALREADY ACTIVE", CYAN);
-                bleApplicationComSend(specify_Application.c_str(), "{\"pxp_command\": 252}");
+            case 252:
+                Mtb_Applications::showAppUI_OR_LaunchApp = SHOW_APP_UI;
+                showAppUI.GenApp = dAppGen;
+                showAppUI.SpeApp = dAppSpe;
+                mtb_General_App_Register(showAppUI);
                 break;
             case 255:
                 statusBarNotif.mtb_Scroll_This_Text("APP IS ALREADY ACTIVE", CYAN);
@@ -407,15 +409,17 @@ void ble_AppCom_Parse_Task(void* dService){
             dCmd_num = dCommand["app_command"];
 
             if (dError.code() == dError.Ok && dCmd_num == 255){
-                showApp_UI.GenApp = showUserApp.GenApp = getIntegerAtIndex(specify_Application, 0);
-                showApp_UI.SpeApp = showUserApp.SpeApp = getIntegerAtIndex(specify_Application, 1);
-                mtb_Write_Nvs_Struct("showUserApp", &showUserApp, sizeof(Mtb_UserApp_t));
-                mtb_General_App_Register(showUserApp);
+                activateUserApp.GenApp = dAppGen;
+                activateUserApp.SpeApp = dAppSpe;
+
+                mtb_Write_Nvs_Struct("activateUserApp", &activateUserApp, sizeof(Mtb_UserApp_t));
+                mtb_General_App_Register(activateUserApp);
                 bleApplicationComSend(specify_Application.c_str(), "{\"pxp_command\": 253}");
             }else if(dError.code() == dError.Ok && dCmd_num == 252){
-                showApp_UI.GenApp = getIntegerAtIndex(specify_Application, 0);
-                showApp_UI.SpeApp = getIntegerAtIndex(specify_Application, 1);
-                mtb_General_App_Register(showApp_UI);
+                showAppUI.GenApp = dAppGen;
+                showAppUI.SpeApp = dAppSpe;
+                Mtb_Applications::showAppUI_OR_LaunchApp = SHOW_APP_UI; 
+                mtb_General_App_Register(showAppUI);
           }else{
                 bleApplicationComSend(specify_Application.c_str(), "{\"pxp_command\": 254}");
                 statusBarNotif.mtb_Scroll_This_Text("TAP 'LAUNCH' TO START APP", MAGENTA);

@@ -26,7 +26,7 @@ extern "C" void app_main(){
     mtb_Wifi_Init();
 
     // Launch the Last Executed App or Launch a particular App after boot-up
-    mtb_General_App_Register(showUserApp);
+    mtb_General_App_Register(activateUserApp);
     // mtb_Launch_This_App(exampleWriteText_App);
 
     // Declare Variable for monitoring Free/Available internal SRAM

@@ -38,13 +38,14 @@ enum Mtb_Do_Prev_App_t{
     IGNORE_PREVIOUS_APP,
 };
 
+enum Mtb_ShowAppUI_OR_LaunchApp_t{
+    LAUNCH_SELECT_APP = 1,
+    SHOW_APP_UI 
+};
+
 struct Mtb_UserApp_t{
     uint16_t GenApp;
     uint16_t SpeApp;
-
-    bool operator==(const Mtb_UserApp_t& other) const {
-    return (GenApp == other.GenApp) && (SpeApp == other.SpeApp);
-    }
 };
 
 struct NvsAccessParams_t{
@@ -60,8 +61,8 @@ extern void nvsAccessTask(void *);
 
 //**************************************************************************************************************************
 
-extern Mtb_UserApp_t showUserApp;
-extern Mtb_UserApp_t showApp_UI;
+extern Mtb_UserApp_t activateUserApp;
+extern Mtb_UserApp_t showAppUI;
 extern esp_err_t mtb_Read_Nvs_Struct(const char* key, void* struct_ptr, size_t struct_size);
 extern esp_err_t mtb_Write_Nvs_Struct(const char *key, void *struct_ptr, size_t struct_size);
 extern void (*encoderFn_ptr)(rotary_encoder_rotation_t);
@@ -169,10 +170,11 @@ public:
     static bool pxpWifiConnectStatus;                               // This is used to check if the PXP WiFi is connected or not. It is set to true when the PXP WiFi is connected, and false when it is not connected.
     static bool bleAdvertisingStatus;                               // This is used to check if the BLE advertising is enabled or not. It is set to true when the BLE advertising is enabled, and false when it is not enabled.
     static bool bleCentralContd;                                    // This is used to check if the BLE central is connected or not. It is set to true when the BLE central is connected, and false when it is not connected.
-    static uint16_t bleCentralNegotiatedMtu;                                  // This is used to check the negotiated MTU size with the connected BLE central device. It is set to 512 when the MTU size is successfully negotiated, and it can be set to other values to indicate the negotiated MTU size or if the negotiation failed.
+    static uint16_t bleCentralNegotiatedMtu;                        // This is used to check the negotiated MTU size with the connected BLE central device. It is set to 512 when the MTU size is successfully negotiated, and it can be set to other values to indicate the negotiated MTU size or if the negotiation failed.
     // static bool mqttPhoneConnectStatus;
     static uint8_t firmwareOTA_Status;                              // This is used to check the status of the firmware OTA update. It is set to 6 when the OTA update is not started, and it can be set to other values to indicate the status of the OTA update.
     static uint8_t spiffsOTA_Status;                                // This is used to check the status of the SPIFFS OTA update. It is set to 6 when the OTA update is not started, and it can be set to other values to indicate the status of the OTA update.
+    static Mtb_ShowAppUI_OR_LaunchApp_t showAppUI_OR_LaunchApp;     // This is used to check whether to show the app UI or launch the app when the mobile UI command is received. It can be set to SHOW_APP_UI or LAUNCH_SELECT_APP.
     //void *app_Dyn_Mems[5] = {nullptr};
 
     bleCom_Parser_Fns_Ptr bleAppComServiceFns[12] = {nullptr};

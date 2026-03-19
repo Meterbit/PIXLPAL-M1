@@ -18,14 +18,14 @@
 
 static const char TAG[] = "METERBIT_ENGINE";
 
-Mtb_UserApp_t showUserApp{
+Mtb_UserApp_t activateUserApp{
     .GenApp = 0,
     .SpeApp = 1
     };
 
-Mtb_UserApp_t showApp_UI{
-    .GenApp = 255,
-    .SpeApp = 255
+Mtb_UserApp_t showAppUI{
+    .GenApp = 0,
+    .SpeApp = 1
     };
 
 EXT_RAM_BSS_ATTR QueueHandle_t clock_Update_Q = NULL;
@@ -59,6 +59,7 @@ bool Mtb_Applications::bleCentralContd = false;
 uint16_t Mtb_Applications::bleCentralNegotiatedMtu = 512;  // Default to 512, can be updated based on actual negotiation results
 uint8_t Mtb_Applications::firmwareOTA_Status = 6;
 uint8_t Mtb_Applications::spiffsOTA_Status = 6;
+Mtb_ShowAppUI_OR_LaunchApp_t Mtb_Applications::showAppUI_OR_LaunchApp = LAUNCH_SELECT_APP;
 
 Mtb_Applications::Mtb_Applications(void (*dApplication)(void *), TaskHandle_t* dAppHandle_ptr, const char* dAppName, uint32_t dStackSize, uint8_t core){
     application = dApplication;
@@ -103,7 +104,7 @@ void appLauncherTask(void * dService){
     Mtb_Services *thisService = (Mtb_Services *)dService;
     Mtb_Applications *appLaunchHolder = nullptr;
     while (xQueueReceive(appLauncherQueue, &appLaunchHolder, pdMS_TO_TICKS(500))){
-    if (Mtb_Applications::currentRunningApp != nullptr && showApp_UI == showUserApp){
+    if (Mtb_Applications::currentRunningApp != nullptr && Mtb_Applications::showAppUI_OR_LaunchApp == LAUNCH_SELECT_APP){
         Mtb_Applications::previousRunningApp = Mtb_Applications::currentRunningApp;
         Mtb_Applications::actionOnPreviousApp(appLaunchHolder->action_On_Prev_App);
     }
@@ -215,14 +216,12 @@ void Mtb_Applications::appDestroy(Mtb_Applications* dApp){
 
 void Mtb_Applications::mtb_App_Show_Mobile_UI(void){
     char appRoute[20];
-    //printf("Show the User the Application's interface \n");
-    snprintf(appRoute, sizeof(appRoute), "%u/%u", showApp_UI.GenApp, showApp_UI.SpeApp);
-
+    snprintf(appRoute, sizeof(appRoute), "%u/%u", activateUserApp.GenApp, activateUserApp.SpeApp);
     String mobileUICommand = "{\"pxp_command\": 252, \"manifest\": " + String(appMobile_Manifest) + ", \"api\": " + String(appMobile_Api)  + ", \"ui\": " + String(appMobile_Ui) + "}";
-    printf("Mobile UI Command: %s\n", mobileUICommand.c_str());
-    bleApplicationComSend(appRoute, mobileUICommand);
     
-    //bleApplicationComSend(appRoute, "{\"pxp_command\": 252}");
+    ESP_LOGI(TAG, "Mobile UI Command: %s\n", mobileUICommand.c_str());
+    
+    bleApplicationComSend(appRoute, mobileUICommand);
 }
 
 void Mtb_Applications::actionOnPreviousApp(Mtb_Do_Prev_App_t dAction){
@@ -346,13 +345,14 @@ void Mtb_Applications::mtb_App_Init(Mtb_Services* pointer_0, Mtb_Services* point
     Mtb_Services* pointer_5, Mtb_Services* pointer_6, Mtb_Services* pointer_7, 
     Mtb_Services* pointer_8, Mtb_Services* pointer_9){
 
-    if(!(showApp_UI == showUserApp)){
+    if(showAppUI_OR_LaunchApp == SHOW_APP_UI){
         mtb_App_Show_Mobile_UI();
+        showAppUI_OR_LaunchApp = LAUNCH_SELECT_APP;
         mtb_Delete_This_App(this);
         return;
     }
 
-    Mtb_Applications::currentRunningApp = this;
+    currentRunningApp = this;
 
     buttonFn_ptr = mtb_App_ButtonFn_ptr;
     encoderFn_ptr = mtb_App_EncoderFn_ptr;
