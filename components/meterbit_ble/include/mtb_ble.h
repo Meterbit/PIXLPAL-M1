@@ -27,7 +27,7 @@ extern mtb_BleCom_Data_Trans_t appCom_data;
 extern TaskHandle_t ble_SetCom_Parser_Task_Handle;
 extern TaskHandle_t ble_AppCom_Parser_Task_Handle;
 
-extern void mtb_Ble_App_Cmd_Respond_Success(const char*, uint8_t, uint8_t);
+extern void mtb_Ble_App_Cmd_Respond_Success(const char*, uint8_t, uint8_t response = pdPASS);
 //extern void bleRestoreTimerCallBkFn(TimerHandle_t);
 
 extern void mtb_Ble_Comm_Init(void);
@@ -36,7 +36,7 @@ extern void mtb_Ble_Comm_Deinit(void);
 extern int getIntegerAtIndex(const String &data, int index);
 
 extern int bleSettingsComSend(const char* dSetRoute, const String& dMessage);
-extern int bleApplicationComSend(const char* dAppRoute, const String& dMessage);
+extern int bleApplicationComSend(const char* dAppID, const String& dMessage);
 
 extern void ble_SetCom_Parse_Task(void *);
 extern void ble_AppCom_Parse_Task(void *);

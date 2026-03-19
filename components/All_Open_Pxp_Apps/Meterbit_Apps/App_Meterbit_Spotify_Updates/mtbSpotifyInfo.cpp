@@ -15,7 +15,6 @@
 //#include "mtb_graphics.h"
 #include "SpotifyAuth.h"
 #include "SpotifyPlayback.h"
-#include "mtbSpotifyInfo.h"
 #include "my_secret_keys.h"
 
 static const char *TAG = "PXP_SPOTIFY";
@@ -131,17 +130,13 @@ void performScreenUpdate_Task( void * d_Service ){
 
 //***************************************************************************************************
 void link_Spotify(JsonDocument& dCommand){
-  uint8_t cmd = dCommand["app_command"];
-  mtb_Ble_App_Cmd_Respond_Success(spotifyAppRoute, cmd, pdPASS);
 }
 
 // This function is called when the Spotify refresh token is received
 void get_Spotify_Refresh_Token(JsonDocument& dCommand){
-uint8_t cmd = dCommand["app_command"];
 const char *refreshToken = dCommand["refreshToken"];
 strcpy(userSpotify.refreshToken, refreshToken);
 mtb_Write_Nvs_Struct("spotifyData", &userSpotify, sizeof(Spotify_Data_t));
 statusBarNotif.mtb_Scroll_This_Text("SPOTIFY LINK UPDATED. YOU MAY CLOSE THE BROWSER", GREEN);
 //ESP_LOGI(TAG, "Refresh Token: %s\n", userSpotify.refreshToken);
-mtb_Ble_App_Cmd_Respond_Success(spotifyAppRoute, cmd, pdPASS);
 }

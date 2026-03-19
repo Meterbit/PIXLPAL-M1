@@ -5,12 +5,20 @@
 #include <time.h>
 #include <FS.h>
 #include <LittleFS.h>
-#include "finnhub_Stats.h"
 #include "my_secret_keys.h"
 
 static const char TAG[] = "FINNHUB_STATS";
 
 #define MAX_STOCKS 100
+
+struct Stocks_Stat_t {
+  String stockID;
+  String currency;
+  char stockFilePath[50];
+  char apiToken[100] = {0};
+  uint8_t stock_No;
+  int16_t stockChangeInterval;
+};
 
 // Default Stock
 EXT_RAM_BSS_ATTR Stocks_Stat_t currentStocks;
@@ -332,16 +340,13 @@ void stockChange_TimerCallback(TimerHandle_t stockPrompt){
 }
 
 void showParticularStock(JsonDocument& dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     const char *stockSymbol = dCommand["stkSymbol"];
     currentStocks.stockID = String(stockSymbol);
     mtb_Write_Nvs_Struct("stocksStat", &currentStocks, sizeof(Stocks_Stat_t));
     xSemaphoreGive(changeDispStock_Sem);
-    mtb_Ble_App_Cmd_Respond_Success(finnhubStatsAppRoute, cmdNumber, pdPASS);
 }
 
 void add_RemoveStockSymbol(JsonDocument& dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     String stockSymbol = dCommand["stkList"];
     // if(actionCmd) addStockSymbol(stockSymbolsFilePath, String(stockSymbol));
     // else removeStockSymbol(stockSymbolsFilePath, String(stockSymbol));
@@ -370,11 +375,9 @@ void add_RemoveStockSymbol(JsonDocument& dCommand){
 
     
     // xSemaphoreGive(changeDispStock_Sem);
-    mtb_Ble_App_Cmd_Respond_Success(finnhubStatsAppRoute, cmdNumber, pdPASS);
 }
 
 void setStockChangeInterval(JsonDocument& dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     uint8_t setCycle = dCommand["cycleStocks"];
     int16_t dInterval = dCommand["dInterval"];
 
@@ -391,34 +394,10 @@ void setStockChangeInterval(JsonDocument& dCommand){
         xTimerStart(stockChangeTimer_H, 0);
     }
     mtb_Write_Nvs_Struct("stocksStat", &currentStocks, sizeof(Stocks_Stat_t));
-    mtb_Ble_App_Cmd_Respond_Success(finnhubStatsAppRoute, cmdNumber, pdPASS);
 }
 
-// String convertArrayToJson(String arr[], size_t length) {
-//     String json = "[";
-//     for (size_t i = 0; i < length; i++) {
-//         json += "\"";
-//         json += arr[i];
-//         json += "\"";
-//         if (i < length - 1) {
-//             json += ",";
-//         }
-//     }
-//     json += "]";
-//     return json;
-// }
-
-// void loadSavedStocks(JsonDocument& dCommand){
-//     uint8_t cmdNumber = dCommand["app_command"];
-//     String savedSymbols = "{\"pxp_command\":";
-//     savedSymbols += String(cmdNumber) + ",\"savedSymbols\":" + convertArrayToJson(stockSymbols, stockCount) + "}";
-//     bleApplicationComSend(savedSymbols);
-// }
-
 void saveAPI_key(JsonDocument& dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     String userAPI_Key = dCommand["api_key"];
     strcpy(currentStocks.apiToken, userAPI_Key.c_str());
     mtb_Write_Nvs_Struct("stocksStat", &currentStocks, sizeof(Stocks_Stat_t));
-    mtb_Ble_App_Cmd_Respond_Success(finnhubStatsAppRoute, cmdNumber, pdPASS);
 }

@@ -332,45 +332,29 @@ void fetchOutlookTasks(const String& accessToken) {
 
   //***************************************************************************************************
   void link_OutlookCal(JsonDocument& dCommand){
-    uint8_t cmd = dCommand["app_command"];
-    mtb_Ble_App_Cmd_Respond_Success(outlookCalendarAppRoute, cmd, pdPASS);
   }
 
   void get_OutlookCal_Refresh_Token(JsonDocument& dCommand){
-    uint8_t cmd = dCommand["app_command"];
     const char *refreshToken = dCommand["refreshToken"];
     strcpy(userOutlookCal.refreshToken, refreshToken);
     mtb_Write_Nvs_Struct("outlookCalData", &userOutlookCal, sizeof(OutlookCal_Data_t));
     do_beep(CLICK_BEEP);
     statusBarNotif.mtb_Scroll_This_Text("OUTLOOK CALENDAR LINK UPDATED. YOU MAY CLOSE THE BROWSER", GREEN_LIZARD);
-    mtb_Ble_App_Cmd_Respond_Success(outlookCalendarAppRoute, cmd, pdPASS);
   }
 
 
 
   void show_OutlookCal_Events(JsonDocument& dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     uint8_t setCycle = dCommand["showEvents"];
-
-
     mtb_Write_Nvs_Struct("outlookCalData", &userOutlookCal, sizeof(OutlookCal_Data_t));
-    mtb_Ble_App_Cmd_Respond_Success(outlookCalendarAppRoute, cmdNumber, pdPASS);
   }
   
   void show_OutlookCal_Tasks(JsonDocument& dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     uint8_t setCycle = dCommand["showTasks"];
-
-
     mtb_Write_Nvs_Struct("outlookCalData", &userOutlookCal, sizeof(OutlookCal_Data_t));
-    mtb_Ble_App_Cmd_Respond_Success(outlookCalendarAppRoute, cmdNumber, pdPASS);
   }
 
   void show_OutlookCal_Holidays(JsonDocument& dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     uint8_t setCycle = dCommand["showHoliday"];
-
-
     mtb_Write_Nvs_Struct("outlookCalData", &userOutlookCal, sizeof(OutlookCal_Data_t));
-    mtb_Ble_App_Cmd_Respond_Success(outlookCalendarAppRoute, cmdNumber, pdPASS);
   }

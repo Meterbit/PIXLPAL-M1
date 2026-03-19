@@ -8,11 +8,17 @@
 #include <ArduinoJson.h>
 #include "mtb_nvs.h"
 #include "mtb_engine.h"
-#include "worldFlags.h"
 #include "workerWorldFlagsFns.h"
 #include "psram_allocator.h"
 
 static const char TAG[] = "WORLD_FLAGS";
+
+struct WorldFlags_Data_t {
+char countryName[100] = "Nigeria";    // 
+uint8_t flagChangeIntv = 100;       // 0-255
+bool cycleAllFlags = true;         // true or false
+bool showCountryName = false;       // true or false
+};
 
 EXT_RAM_BSS_ATTR WorldFlags_Data_t worldFlagsInfo;
 
@@ -118,51 +124,38 @@ void wipeFlagBackground(void){
 //************************************************************************************ */
 
 void selectDisplayFlag(JsonDocument& dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     const char* countryFlag = dCommand["countryName"];
-
     ESP_LOGI(TAG, "Select Country: %s \n", countryFlag);
-
     Mtb_OnlineImage_t imageHolder({"placeHolder", 16, 0, 1});
-    
     strcpy(worldFlagsInfo.countryName, countryFlag);
     strcpy(imageHolder.imageLink, getFlag4x3ByCountry(countryFlag).c_str());
     mtb_Draw_Online_Svg(&imageHolder, 1, wipeFlagBackground); 
-
     mtb_Write_Nvs_Struct("worldFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
-    mtb_Ble_App_Cmd_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
 }
 
 void selectPreferredFlags(JsonDocument& dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     //mtb_Write_Nvs_Struct("worldFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
-    mtb_Ble_App_Cmd_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
 }
 
-void cycleAllFlags(JsonDocument&){
-    uint8_t cmdNumber = dCommand["app_command"];
+void cycleAllFlags(JsonDocument& dCommand){
+
     worldFlagsInfo.cycleAllFlags = dCommand["cycleFlags"].as<bool>();
     worldFlagsInfo.showCountryName = dCommand["showData"].as<bool>();
     worldFlagsInfo.flagChangeIntv = dCommand["dInterval"].as<uint8_t>();
     mtb_Write_Nvs_Struct("worldFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
-    mtb_Ble_App_Cmd_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
-    printf("cycleAllFlags: %d; showData: %d\n", worldFlagsInfo.cycleAllFlags, worldFlagsInfo.showCountryName);
+    //printf("cycleAllFlags: %d; showData: %d\n", worldFlagsInfo.cycleAllFlags, worldFlagsInfo.showCountryName);
 }
 
 void showCountryName(JsonDocument&){
-    uint8_t cmdNumber = dCommand["app_command"];
     worldFlagsInfo.showCountryName = dCommand["showData"].as<bool>();
     mtb_Write_Nvs_Struct("worldFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
-    mtb_Ble_App_Cmd_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
-    printf("showCountryName: %d\n", worldFlagsInfo.showCountryName);
+    //printf("showCountryName: %d\n", worldFlagsInfo.showCountryName);
 }
 
-void setFlagChangeIntv(JsonDocument&){
-    uint8_t cmdNumber = dCommand["app_command"];
+void setFlagChangeIntv(JsonDocument& dCommand){
     worldFlagsInfo.flagChangeIntv = dCommand["dInterval"].as<uint8_t>();
     mtb_Write_Nvs_Struct("worldFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
-    mtb_Ble_App_Cmd_Respond_Success(worldFlagsAppRoute, cmdNumber, pdPASS);
-    printf("flagChangeIntv: %d\n", worldFlagsInfo.flagChangeIntv);
+    //printf("flagChangeIntv: %d\n", worldFlagsInfo.flagChangeIntv);
 }
 
 

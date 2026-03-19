@@ -8,11 +8,14 @@
 #include <WiFiClientSecure.h>
 #include <HTTPClient.h>
 #include "mtb_nvs.h"
-#include "liveFootball.h"
 #include "mtb_engine.h"
 #include "mtb_graphics.h"
 #include "mtb_buzzer.h"
 #include "my_secret_keys.h"
+
+#define FIXTURES_ENDPOINT 0
+#define STANDINGS_ENDPOINT 1
+#define LIVE_MATCHES_ENDPOINT 2
 
 static const char TAG[] = "LIVE_FOOTBALL";
 
@@ -20,6 +23,12 @@ static const char TAG[] = "LIVE_FOOTBALL";
 static const char* BASE_URL = "https://v3.football.api-sports.io";
 
 int16_t liveFootballDispChangeIntv = 0;  // This variable controls the time it takes for what is being displayed on-screen to change
+
+struct LiveFootball_Data_t {
+  uint8_t endpointType; // 0: Fixture; 1: Standings
+  uint16_t leagueID; // Default league ID for API-Football
+  char userAPI_Token; // User's API token for authentication
+};
 
 EXT_RAM_BSS_ATTR LiveFootball_Data_t liveFootballData;
 
@@ -648,34 +657,24 @@ void drawStandingsBackground(void){
 
 //******** BLUETOOTH COMMAND 0 **********************/
 void selectFBL_Leagues(JsonDocument& dCommand){
-  uint8_t cmd = dCommand["app_command"];
-  mtb_Ble_App_Cmd_Respond_Success(liveFootbalAppRoute, cmd, pdPASS);
 }
 
 //******** BLUETOOTH COMMAND 1 **********************/
 void setDisplayFBL_League(JsonDocument &dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     String leagueName = dCommand["leagueName"];
     uint16_t leagueId = dCommand["leagueID"];
 
     liveFootballData.leagueID = leagueId;
     xSemaphoreGive(changeDispMatch_Sem);
     mtb_Write_Nvs_Struct("apiFutBall", &liveFootballData, sizeof(LiveFootball_Data_t));
-    mtb_Ble_App_Cmd_Respond_Success(liveFootbalAppRoute, cmdNumber, pdPASS);
 }
 //******** BLUETOOTH COMMAND 2 **********************/
 void saveFBL_Leagues(JsonDocument &dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
-    mtb_Ble_App_Cmd_Respond_Success(liveFootbalAppRoute, cmdNumber, pdPASS);
 }
 
 //******** BLUETOOTH COMMAND 3 **********************/
 void showFBL_Fix_Stnd(JsonDocument &dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     uint8_t showFix_Stnd = dCommand["value"];
-
-    ESP_LOGI(TAG, "The command clicked is: %d\n", cmdNumber);
-
     if(showFix_Stnd == 0){
         liveFootballData.endpointType = FIXTURES_ENDPOINT;
         liveFootballPtr = processFituresMatches;
@@ -687,17 +686,11 @@ void showFBL_Fix_Stnd(JsonDocument &dCommand){
     }
     xSemaphoreGive(changeDispMatch_Sem); 
     mtb_Write_Nvs_Struct("apiFutBall", &liveFootballData, sizeof(LiveFootball_Data_t));
-    mtb_Ble_App_Cmd_Respond_Success(liveFootbalAppRoute, cmdNumber, pdPASS);
 }
 //******** BLUETOOTH COMMAND 4 **********************/
 void setFBL_Token(JsonDocument &dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     String liveFootballToken = dCommand["api_key"];
     //strcpy(liveFootballData.userAPI_Token, liveFootballToken.c_str());
-
-    ESP_LOGI(TAG, "The command clicked is: %d\n", cmdNumber);
-
     xSemaphoreGive(changeDispMatch_Sem); 
     mtb_Write_Nvs_Struct("apiFutBall", &liveFootballData, sizeof(LiveFootball_Data_t));
-    mtb_Ble_App_Cmd_Respond_Success(liveFootbalAppRoute, cmdNumber, pdPASS);
 }

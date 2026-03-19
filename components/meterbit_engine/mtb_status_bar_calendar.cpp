@@ -6,7 +6,6 @@
 #include "mtb_ntp.h"
 #include "mtb_graphics.h"
 #include "mtb_engine.h"
-#include "mtb_cal_clk.h"
 
 EXT_RAM_BSS_ATTR TaskHandle_t statusBarCalendar_H = NULL;
 

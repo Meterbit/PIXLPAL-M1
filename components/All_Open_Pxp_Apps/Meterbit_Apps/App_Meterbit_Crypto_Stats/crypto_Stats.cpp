@@ -5,12 +5,20 @@
 #include <time.h>
 #include <FS.h>
 #include <LittleFS.h>
-#include "crypto_Stats.h"
-
 
 static const char TAG[] = "CRYPTO_STATS";
 
 #define MAX_COINS 100
+
+struct Crypto_Stat_t {
+  String coinID;
+  String coinSymbol;
+  String currency;
+  char coinFilePath[50];
+  char apiToken[150] = {0};
+  uint8_t coin_No;
+  int16_t cryptoChangeInterval;
+};
 
 // Default CryptoCurrency
 EXT_RAM_BSS_ATTR Crypto_Stat_t currentCryptoCurrency;
@@ -320,18 +328,15 @@ void crytoChange_TimerCallback(TimerHandle_t coinPrompt){
 }
 
 void showParticularCrypto(JsonDocument& dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     String coinSymbol = dCommand["coinSymbol"];
     currentCryptoCurrency.coinSymbol = coinSymbol;
     String coinIDs = dCommand["coinID"];
     currentCryptoCurrency.coinID = coinIDs;
     mtb_Write_Nvs_Struct("cryptoCur", &currentCryptoCurrency, sizeof(Crypto_Stat_t));
     xSemaphoreGive(changeDispCrypto_Sem);
-    mtb_Ble_App_Cmd_Respond_Success(cryptoStatsAppRoute, cmdNumber, pdPASS);
 }
 
 void add_RemoveCryptoSymbol(JsonDocument& dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     String coinSymbols = dCommand["coinSymbols"];
     String coinIDs = dCommand["coinIDs"];
 
@@ -379,11 +384,9 @@ void add_RemoveCryptoSymbol(JsonDocument& dCommand){
         }
     
     //xSemaphoreGive(changeDispCrypto_Sem);
-    mtb_Ble_App_Cmd_Respond_Success(cryptoStatsAppRoute, cmdNumber, pdPASS);
 }
 
 void setCryptoChangeInterval(JsonDocument& dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     uint8_t setCycle = dCommand["cycleCoins"];
     int16_t dInterval = dCommand["dInterval"];
 
@@ -400,12 +403,9 @@ void setCryptoChangeInterval(JsonDocument& dCommand){
         xTimerStart(cryptoChangeTimer_H, 0);
     }
     mtb_Write_Nvs_Struct("cryptoCur", &currentCryptoCurrency, sizeof(Crypto_Stat_t));
-    mtb_Ble_App_Cmd_Respond_Success(cryptoStatsAppRoute, cmdNumber, pdPASS);
 }
 
 void setCrytoAPI_key(JsonDocument& dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     strcpy(currentCryptoCurrency.apiToken, (const char*) dCommand["api_key"]);
     mtb_Write_Nvs_Struct("cryptoCur", &currentCryptoCurrency, sizeof(Crypto_Stat_t));
-    mtb_Ble_App_Cmd_Respond_Success(cryptoStatsAppRoute, cmdNumber, pdPASS);
 }

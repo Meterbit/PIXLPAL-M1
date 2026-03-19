@@ -332,14 +332,14 @@ void ble_AppCom_Parse_Task(void* dService){
         //ESP_LOGI(TAG, "Application Payload is:  %s\n", (char*) qMessage.payload);
         String dInstruction = String((char *)qMessage.payload);
         int charIndex = dInstruction.indexOf('|');             // find index of target character
-        String specify_Application = dInstruction.substring(0, charIndex);  // copy up to the target character
+        String specific_Application = dInstruction.substring(0, charIndex);  // copy up to the target character
         String dJsonPayload = dInstruction.substring(++charIndex);
 
-        // ESP_LOGI(TAG, "The specific App is: %s\n", specify_Application.c_str());
+        ESP_LOGI(TAG, "The specific App is: %s\n", specific_Application.c_str());
         // ESP_LOGI(TAG, "The dPayload for App is: %s\n", dPayload.c_str());
  
-        dAppGen = getIntegerAtIndex(specify_Application, 0);
-        dAppSpe = getIntegerAtIndex(specify_Application, 1);
+        dAppGen = getIntegerAtIndex(specific_Application, 0);
+        dAppSpe = getIntegerAtIndex(specific_Application, 1);
 
         //ESP_LOGI(TAG, "The dAppGen is: %d\n", dAppGen);
         //ESP_LOGI(TAG, "The dAppSpe is: %d\n", dAppSpe);
@@ -352,44 +352,64 @@ void ble_AppCom_Parse_Task(void* dService){
 
             switch (dCmd_num){
             case 0: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[0] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[0](dCommand);
+                mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
                 break;
             case 1: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[1] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[1](dCommand);
+                mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
                 break;
             case 2: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[2] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[2](dCommand);
+                mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
                 break;
             case 3: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[3] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[3](dCommand);
+                mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
                 break;
             case 4: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[4] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[4](dCommand);
+                mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
               break;
             case 5: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[5] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[5](dCommand);
+                mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
                 break;
             case 6: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[6] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[6](dCommand);
+                mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
                 break;
             case 7: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[7] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[7](dCommand);
+                mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
                 break;
             case 8: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[8] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[8](dCommand);
+                mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
                 break;
             case 9: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[9] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[9](dCommand);
+                mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
                 break;
             case 10: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[10] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[10](dCommand);
+                mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
                 break;
             case 11: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[11] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[11](dCommand);
+                mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
                 break;
             // case 12: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[12] != nullptr) Mtb_Applications::currentRunningApp.bleAppComServiceFns[12](dCommand);;     // These are for extras or future upgrades.
+            //     mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
             //     break;
             // case 13:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[13] != nullptr) Mtb_Applications::currentRunningApp.bleAppComServiceFns[13](dCommand);
+            //     mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
             //     break;
             // case 14:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[4] != nullptr) Mtb_Applications::currentRunningApp.bleAppComServiceFns[14](dCommand);
+            //     mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
             //     break;
             // case 15:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[15] != nullptr) Mtb_Applications::currentRunningApp.bleAppComServiceFns[15](dCommand);
+            //     mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
             //     break;
             // case 16:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[16] != nullptr) Mtb_Applications::currentRunningApp.bleAppComServiceFns[16](dCommand);
+            //     mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
             //     break;
             // case 17:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[17] != nullptr) Mtb_Applications::currentRunningApp.bleAppComServiceFns[17](dCommand);
+            //     mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
             //     break;
             // case 18:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[18] != nullptr) Mtb_Applications::currentRunningApp.bleAppComServiceFns[18](dCommand);
+            //     mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
             //     break;
             // case 19:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[19] != nullptr) Mtb_Applications::currentRunningApp.bleAppComServiceFns[19](dCommand);
+            //     mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
             //     break;
             case 252:
                 Mtb_Applications::showAppUI_OR_LaunchApp = SHOW_APP_UI;
@@ -399,7 +419,7 @@ void ble_AppCom_Parse_Task(void* dService){
                 break;
             case 255:
                 statusBarNotif.mtb_Scroll_This_Text("APP IS ALREADY ACTIVE", CYAN);
-                bleApplicationComSend(specify_Application.c_str(), "{\"pxp_command\": 255}");
+                bleApplicationComSend(specific_Application.c_str(), "{\"pxp_command\": 255}");
                 break;
             default: statusBarNotif.mtb_Scroll_This_Text("ERROR: ASSESS COMMAND PARAMETERS", YELLOW);
                 break;
@@ -414,14 +434,14 @@ void ble_AppCom_Parse_Task(void* dService){
 
                 mtb_Write_Nvs_Struct("activateUserApp", &activateUserApp, sizeof(Mtb_UserApp_t));
                 mtb_General_App_Register(activateUserApp);
-                bleApplicationComSend(specify_Application.c_str(), "{\"pxp_command\": 253}");
+                bleApplicationComSend(specific_Application.c_str(), "{\"pxp_command\": 253}");
             }else if(dError.code() == dError.Ok && dCmd_num == 252){
                 showAppUI.GenApp = dAppGen;
                 showAppUI.SpeApp = dAppSpe;
                 Mtb_Applications::showAppUI_OR_LaunchApp = SHOW_APP_UI; 
                 mtb_General_App_Register(showAppUI);
           }else{
-                bleApplicationComSend(specify_Application.c_str(), "{\"pxp_command\": 254}");
+                bleApplicationComSend(specific_Application.c_str(), "{\"pxp_command\": 254}");
                 statusBarNotif.mtb_Scroll_This_Text("TAP 'LAUNCH' TO START APP", MAGENTA);
             } 
         }

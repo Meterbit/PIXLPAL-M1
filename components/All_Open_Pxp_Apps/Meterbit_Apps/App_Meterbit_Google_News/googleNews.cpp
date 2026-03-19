@@ -173,33 +173,25 @@ void buttonNewsTickerHandler(button_event_t button_Data) {
 
 // Command to manually update news headlines.
 void showLatestNews(JsonDocument& dCommand) {
-    uint8_t cmdNumber = dCommand["app_command"];
     xSemaphoreGive(googleNewsupdateSem);
-    //mtb_Ble_App_Cmd_Respond_Success(cmdNumber, pdPASS);
 }
 
 // Command to set the news update interval (in milliseconds).
 void setNewsUpdateInterval(JsonDocument& dCommand) {
-    uint8_t cmdNumber = dCommand["app_command"];
     uint32_t interval = dCommand["interval"];
     googleNewsUpdateInterval = interval;
     if (xTimerIsTimerActive(googleNewsUpdateTimer_H) == pdTRUE)
         xTimerStop(googleNewsUpdateTimer_H, 0);
     xTimerChangePeriod(googleNewsUpdateTimer_H, pdMS_TO_TICKS(googleNewsUpdateInterval), 0);
     xTimerStart(googleNewsUpdateTimer_H, 0);
-    //mtb_Ble_App_Cmd_Respond_Success(cmdNumber, pdPASS);
 }
 
 // Command to update the API key for news fetching.
 void setNewsAPIKey(JsonDocument& dCommand) {
-    uint8_t cmdNumber = dCommand["app_command"];
     googleNewsAPIKey = String(dCommand["api_key"].as<const char*>());
-    //mtb_Ble_App_Cmd_Respond_Success(cmdNumber, pdPASS);
 }
 
 // Command to update the language code for the news headlines.
 void setNewsLanguage(JsonDocument& dCommand) {
-    uint8_t cmdNumber = dCommand["app_command"];
     googleNewsLanguage = String(dCommand["language"].as<const char*>());
-    //mtb_Ble_App_Cmd_Respond_Success(cmdNumber, pdPASS);
 }

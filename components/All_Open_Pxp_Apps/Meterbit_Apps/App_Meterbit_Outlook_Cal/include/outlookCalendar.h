@@ -8,7 +8,7 @@
 // #include "encoder.h"
 // #include "button.h"
 
-static const char outlookCalendarAppRoute[] = "2/1";
+static const char outlookCalendarAppID[] = "2/1";
 
 struct OutlookCal_Data_t {
 char refreshToken[250] = {0};

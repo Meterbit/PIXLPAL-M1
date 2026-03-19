@@ -5,12 +5,12 @@
 #include "freertos/task.h"
 #include "mtb_ntp.h"
 #include "mtb_engine.h"
-#include "mtb_bigClock.h"
 
 void bigClock_Color_Change(JsonDocument&);
 void bigClockGet_NTP_Local_Time(JsonDocument&);
 
 EXT_RAM_BSS_ATTR TaskHandle_t bigClockCalendar_Task_H = NULL;
+void bigClock_App_Task(void *dApplication);
 
 EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *bigClockCalendar_App = new Mtb_Applications_FullScreen(bigClock_App_Task, &bigClockCalendar_Task_H, "big Clock", 10240, pdTRUE);
 //***************************************************************************************************
@@ -231,14 +231,11 @@ if(pre_Day != now->tm_mday  || thisApp->elementRefresh){
 
 //**13*********************************************************************************************************************
 void showbigClockCalendar(JsonDocument& dCommand){ //use the radio button selection widget
-  uint8_t cmd = dCommand["app_command"];
   //mtb_Launch_This_Service(mtb_Sntp_Time_Sv);
-  mtb_Ble_App_Cmd_Respond_Success(bigClockCalendarAppRoute, cmd, pdPASS);
 }
 
 //**11*********************************************************************************************************************
 void bigClock_Color_Change(JsonDocument& dCommand){
-  uint8_t cmd = dCommand["app_command"];
   const char *color = NULL;
   const char *name = dCommand["name"];
   Clock_Colors clk_Cols;
@@ -275,13 +272,10 @@ void bigClock_Color_Change(JsonDocument& dCommand){
 
     mtb_Write_Nvs_Struct("Clock Cols", &clk_Cols, sizeof(Clock_Colors));
     xQueueSend(clock_Update_Q, &clk_Cols, 0);
-    mtb_Ble_App_Cmd_Respond_Success(bigClockCalendarAppRoute, cmd, pdPASS);
 }
 //**12*********************************************************************************************************************
 
 //**13*********************************************************************************************************************
 void bigClockGet_NTP_Local_Time(JsonDocument& dCommand){
-  uint8_t cmd = dCommand["app_command"];
   mtb_Launch_This_Service(mtb_Sntp_Time_Sv);
-  mtb_Ble_App_Cmd_Respond_Success(bigClockCalendarAppRoute, cmd, pdPASS);
 }

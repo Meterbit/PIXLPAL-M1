@@ -217,7 +217,7 @@ void Mtb_Applications::appDestroy(Mtb_Applications* dApp){
 void Mtb_Applications::mtb_App_Show_Mobile_UI(void){
     char appRoute[20];
     snprintf(appRoute, sizeof(appRoute), "%u/%u", activateUserApp.GenApp, activateUserApp.SpeApp);
-    String mobileUICommand = "{\"pxp_command\": 252, \"manifest\": " + String(appMobile_Manifest) + ", \"api\": " + String(appMobile_Api)  + ", \"ui\": " + String(appMobile_Ui) + "}";
+    String mobileUICommand = "{\"pxp_command\": 252, \"manifest\": " + String(appMobile_Manifest) + ", \"ui_api\": " + String(appMobile_UiApi) + "}";
     
     ESP_LOGI(TAG, "Mobile UI Command: %s\n", mobileUICommand.c_str());
     
@@ -244,10 +244,9 @@ void Mtb_Applications::mtb_App_Set_EC11_Cb_Fns(buttonFn_ptr_t but_Fn, encoderFn_
     mtb_App_ButtonFn_ptr = but_Fn;
 }
 
-void Mtb_Applications::mtb_App_Set_Mobile_UI(const char* manifest, const char* api, const char* ui){
+void Mtb_Applications::mtb_App_Set_Mobile_UI(const char* manifest, const char* ui_api){
     appMobile_Manifest = manifest;
-    appMobile_Api = api;
-    appMobile_Ui = ui;
+    appMobile_UiApi = ui_api;
 }
 
 void mtb_Delete_This_App(Mtb_Applications* dApp){

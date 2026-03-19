@@ -9,12 +9,19 @@
 #include "mtb_nvs.h"
 #include "mtb_engine.h"
 #include "workerWorldFlagsFns.h"
-#include "worldClock.h"
 #include "mtb_buzzer.h"
 #include "mtb_PosixTZtoLocalTime.h"
 
 #define SINGLE_CLOCK_MODE   0
 #define FIVE_CLOCK_MODE     1
+
+struct WorldClock_Data_t {
+char worldCapitals[5][50];
+char worldTimeZones[5][50];
+char firstCountryName[50];
+uint16_t worldColors[5];
+uint8_t worldClockMode;
+};
 
 EXT_RAM_BSS_ATTR TaskHandle_t worldClock_Task_H = NULL;
 EXT_RAM_BSS_ATTR WorldClock_Data_t worldClockCities;
@@ -184,7 +191,6 @@ void drawWorldClockSingleCity(void){
 }
 
 void setWorldClockCities(JsonDocument& dCommand){
-  uint8_t cmdNumber = dCommand["app_command"];
   uint8_t dCityIndex = dCommand["dCityIndex"].as<uint8_t>();
   String dCityName = dCommand["dCityName"].as<String>();
   String dTimeZone = dCommand["dTimeZone"].as<String>();
@@ -217,12 +223,11 @@ void setWorldClockCities(JsonDocument& dCommand){
   clearTimezoneCache();
 
   Mtb_Applications::currentRunningApp->elementRefresh = true;
-  mtb_Ble_App_Cmd_Respond_Success(worldClockAppRoute, cmdNumber, pdPASS);
 }
 
 void setWorldClockColors(JsonDocument& dCommand){
     const char *color = NULL;
-    uint8_t cmdNumber = dCommand["app_command"];
+
     uint8_t dCityIndex = dCommand["dCityIndex"].as<uint8_t>();
 
     color = dCommand["value"];
@@ -232,11 +237,9 @@ void setWorldClockColors(JsonDocument& dCommand){
     
     mtb_Write_Nvs_Struct("worldClockNv", &worldClockCities, sizeof(WorldClock_Data_t));
     Mtb_Applications::currentRunningApp->elementRefresh = true;
-    mtb_Ble_App_Cmd_Respond_Success(worldClockAppRoute, cmdNumber, pdPASS);
 }
 
 void setWorldClockMode(JsonDocument&){
-    uint8_t cmdNumber = dCommand["app_command"];
     worldClockCities.worldClockMode = dCommand["ClockMode"].as<uint8_t>();
 
     if(worldClockCities.worldClockMode == FIVE_CLOCK_MODE) drawWorldClock5CitiesBkgd();
@@ -244,13 +247,9 @@ void setWorldClockMode(JsonDocument&){
 
     mtb_Write_Nvs_Struct("worldClockNv", &worldClockCities, sizeof(WorldClock_Data_t));
     Mtb_Applications::currentRunningApp->elementRefresh = true;
-    mtb_Ble_App_Cmd_Respond_Success(worldClockAppRoute, cmdNumber, pdPASS);
 }
 
 void requestWorldClkNTP_Time(JsonDocument&){
-    uint8_t cmdNumber = dCommand["app_command"];
     //String location = dCommand["duration"];
-
     Mtb_Applications::currentRunningApp->elementRefresh = true;
-    mtb_Ble_App_Cmd_Respond_Success(worldClockAppRoute, cmdNumber, pdPASS);
 }

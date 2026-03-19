@@ -7,11 +7,14 @@
 #include <LittleFS.h>
 #include <ArduinoJson.h>
 #include "mtb_nvs.h"
-#include "openMeteo.h"
 #include "mtb_engine.h"
 
 
 // CONSIDER IMPLEMENTING AN APP USING THE https://api.met.no/ API SERVICE PROVIDER
+
+struct OpenMeteoData_t {
+  char location[150] = {0};
+};
 
 EXT_RAM_BSS_ATTR OpenMeteoData_t currentOpenMeteoData;
 
@@ -78,8 +81,6 @@ void changeOpenMeteoLocation(button_event_t button_Data){
 }
 
 void setOpenMeteoLocation(JsonDocument& dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     String location = dCommand["location"];
     mtb_Write_Nvs_Struct("openMeteo", &currentOpenMeteoData, sizeof(OpenMeteoData_t));
-    mtb_Ble_App_Cmd_Respond_Success(openMeteoAppRoute, cmdNumber, pdPASS);
 }

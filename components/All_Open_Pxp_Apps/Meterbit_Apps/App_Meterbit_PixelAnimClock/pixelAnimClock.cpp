@@ -10,8 +10,6 @@
 #include "freertos/task.h"
 #include "mtb_ntp.h"
 #include "mtb_engine.h"
-#include "mtb_cal_clk.h"
-#include "pixelAnimClock.h"
 #include "mtb_text_scroll.h"
 #include "gifdec.h"
 
@@ -21,14 +19,23 @@ using namespace std;
 
 #define HEADER_TEXT_LIMIT    13
 
+struct PixAnimClkSettings_t{
+    char headerText[200];
+    uint16_t headerTextColor;
+    uint16_t themeColor[2];
+    uint16_t animInterval;
+};
+
 EXT_RAM_BSS_ATTR PixAnimClkSettings_t savedPixAnimClkSet;
 
 EXT_RAM_BSS_ATTR TaskHandle_t pixAnimClock_Task_H = NULL;
 EXT_RAM_BSS_ATTR TaskHandle_t pixAnimClockGif_Task_H = NULL;
+void pixAnimClock_App_Task(void *);
 
 void printPixAnimClkThm(uint16_t*);
 void pixelAnimChangeButton(button_event_t);
-void pixAnimClockGif_Task(void *d_Arguments);
+void pixAnimClockGif_Task(void *);
+void pixAnimClk_App_Task(void *);
 
 void setClockTitleAndColor(JsonDocument&);
 void setPixAnimTheme(JsonDocument&);
@@ -317,7 +324,6 @@ void setClockTitleAndColor(JsonDocument& dCommand){
   strcpy(savedPixAnimClkSet.headerText, title);
   savedPixAnimClkSet.headerTextColor = titleColor;
   mtb_Write_Nvs_Struct("pixAnimClk", &savedPixAnimClkSet, sizeof(PixAnimClkSettings_t));
-  bleApplicationComSend(pixelAnimClockAppRoute, success);
 }
 //**1*********************************************************************************************************************
 void setPixAnimTheme(JsonDocument& dCommand){
@@ -352,11 +358,9 @@ void setPixAnimTheme(JsonDocument& dCommand){
 
     xQueueSend(clock_Update_Q, &clk_Updt, 0);
     mtb_Write_Nvs_Struct("pixAnimClk", &savedPixAnimClkSet, sizeof(PixAnimClkSettings_t));
-    bleApplicationComSend(pixelAnimClockAppRoute, success);
 }
 //**2*********************************************************************************************************************
 void setPixAnimClkColors(JsonDocument& dCommand){
-  uint8_t cmdNumber = dCommand["app_command"];
   const char *color = NULL;
   const char *name = dCommand["name"];
   Clock_Colors clk_Cols;
@@ -393,7 +397,6 @@ void setPixAnimClkColors(JsonDocument& dCommand){
 
     mtb_Write_Nvs_Struct("Clock Cols", &clk_Cols, sizeof(Clock_Colors));
     xQueueSend(clock_Update_Q, &clk_Cols, 0);
-    mtb_Ble_App_Cmd_Respond_Success(pixelAnimClockAppRoute, cmdNumber, pdPASS);
 }
 //**3********************************************************************************************************************************************************
 // void selectDisplayAnimation(JsonDocument& dCommand){
@@ -414,9 +417,7 @@ void setPixAnimClkColors(JsonDocument& dCommand){
 // }
 //**5*********************************************************************************************************************
 void requestNTP_Time(JsonDocument& dCommand){
-  uint8_t cmdNumber = dCommand["app_command"];
   mtb_Launch_This_Service(mtb_Sntp_Time_Sv);
-  mtb_Ble_App_Cmd_Respond_Success(pixelAnimClockAppRoute, cmdNumber, pdPASS);
 }
 
 void pixelAnimChangeButton(button_event_t button_Data){

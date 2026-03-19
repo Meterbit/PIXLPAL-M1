@@ -7,7 +7,6 @@
 #include "arduinoFFT.h"
 #include <math.h>
 #include "mtb_nvs.h"
-#include "audSpectrumAnalyzer.h"
 #include "mtb_audio.h"
 #include "mtb_engine.h"
 
@@ -23,8 +22,8 @@ void selectPattern(JsonDocument&);
 void setRandomPatterns(JsonDocument&);
 void setRandomInterval(JsonDocument&);
 
-EXT_RAM_BSS_ATTR TaskHandle_t audSpecAnalyzer_MQTT_Parser_Task_H = NULL;
 EXT_RAM_BSS_ATTR TaskHandle_t audSpecAnalyzer_Task_H = NULL;
+void audSpecAnalyzer_App_Task(void *dApplication);
 
 EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *audSpecAnalyzer_App = new Mtb_Applications_FullScreen(audSpecAnalyzer_App_Task, &audSpecAnalyzer_Task_H, "Audio Spectr", 10240);
 uint32_t counterValue1 = 0;
@@ -82,46 +81,36 @@ void changePattern_Button(button_event_t button_Data){
 }
 
 void selectPattern(JsonDocument& dCommand){
-  uint8_t cmd = dCommand["app_command"];
   audioSpecVisual_Set.selectedPattern = dCommand["selectedPattern"];
   mtb_Write_Nvs_Struct("audioSpecSet", &audioSpecVisual_Set, sizeof(AudioSpectVisual_Set_t));       
-  mtb_Ble_App_Cmd_Respond_Success(audSpecAnalyzerAppRoute, cmd, pdPASS);
 }
 
 void selectNumOfBands(JsonDocument& dCommand){
   uint8_t bandChoice[] = {1, 2, 3, 4, 8};
-  uint8_t cmd = dCommand["app_command"];
   uint8_t selectBand = dCommand["numOfBands"];
   audioSpecVisual_Set.noOfBands = bandChoice[selectBand] * 8;
   mtb_Write_Nvs_Struct("audioSpecSet", &audioSpecVisual_Set, sizeof(AudioSpectVisual_Set_t));
   ESP_LOGI(TAG, "No of bands selected: %d \n", audioSpecVisual_Set.noOfBands);
-  mtb_Ble_App_Cmd_Respond_Success(audSpecAnalyzerAppRoute, cmd, pdPASS);
 }
 
 void setRandomPatterns(JsonDocument& dCommand){
-  uint8_t cmd = dCommand["app_command"];
   audioSpecVisual_Set.showRandom = dCommand["showRandom"];
   if(audioSpecVisual_Set.showRandom) xTimerStart(showRandomPatternTimer_H, 0);
   else xTimerStop(showRandomPatternTimer_H, 0);
   mtb_Write_Nvs_Struct("audioSpecSet", &audioSpecVisual_Set, sizeof(AudioSpectVisual_Set_t));        
-  mtb_Ble_App_Cmd_Respond_Success(audSpecAnalyzerAppRoute, cmd, pdPASS);
 }
 
 void setRandomInterval(JsonDocument& dCommand){
-  uint8_t cmd = dCommand["app_command"];
   audioSpecVisual_Set.randomInterval = dCommand["randomInterval"];
   xTimerDelete(showRandomPatternTimer_H, pdMS_TO_TICKS(10));
   showRandomPatternTimer_H = xTimerCreate("rand pat tim", pdMS_TO_TICKS(audioSpecVisual_Set.randomInterval * 1000), pdTRUE, NULL, randomPattern_TimerCallback);
   xTimerStart(showRandomPatternTimer_H, 0);
   mtb_Write_Nvs_Struct("audioSpecSet", &audioSpecVisual_Set, sizeof(AudioSpectVisual_Set_t));
-  mtb_Ble_App_Cmd_Respond_Success(audSpecAnalyzerAppRoute, cmd, pdPASS);
 }
 
 
 // void setSensitivity(JsonDocument& dCommand){
-//   uint8_t cmd = dCommand["app_command"];
 //   audioSpecVisual_Set.sensitivity = dCommand["sensitivity"];
 //   //Compute audioSpecVisual_Set.sensitivity
 //   mtb_Write_Nvs_Struct("audioSpecSet", &audioSpecVisual_Set, sizeof(AudioSpectVisual_Set_t));
-//   mtb_Ble_App_Cmd_Respond_Success(audSpecAnalyzerAppRoute, cmd, pdPASS);
 // }

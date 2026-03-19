@@ -8,7 +8,10 @@
 #include <ArduinoJson.h>
 #include "mtb_nvs.h"
 #include "mtb_engine.h"
-#include "appleNotifications.h"
+
+struct AppleNotification_Data_t {
+uint8_t notification = 0; 
+};
 
 AppleNotification_Data_t appleNotificationInfo; // REVISIT -> Move into app stack
 
@@ -42,9 +45,6 @@ while (MTB_APP_IS_ACTIVE == pdTRUE) {
 
 
 void cancelAppLaunch(JsonDocument& dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     String location = dCommand["duration"];
-
     mtb_Write_Nvs_Struct("appleNotif", &appleNotificationInfo, sizeof(AppleNotification_Data_t));
-    mtb_Ble_App_Cmd_Respond_Success(studioLightAppRoute, cmdNumber, pdPASS);
 }

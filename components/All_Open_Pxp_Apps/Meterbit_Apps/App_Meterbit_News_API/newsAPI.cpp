@@ -4,13 +4,12 @@
 #include <LittleFS.h>
 #include <ArduinoJson.h>
 #include "mtb_text_scroll.h"
-#include "newsAPI.h"
 
 // Global variables and handles
 EXT_RAM_BSS_ATTR SemaphoreHandle_t newsAPI_UpdateSem = NULL;
 EXT_RAM_BSS_ATTR TimerHandle_t newsAPI_UpdateTimer_H = NULL;
 EXT_RAM_BSS_ATTR TaskHandle_t newsAPI_Task_H = NULL;
-void googleNews_App_Task(void *);
+void newsAPI_App_Task(void *);
 
 uint32_t newsAPI_UpdateInterval = 60000; // Update every 60 seconds by default
 String newsAPI_APIKey = "get api key from https://newsapi.org/"; // Replace with your actual newsAPI key token
@@ -173,33 +172,25 @@ void buttonNewsAPI_Handler(button_event_t button_Data) {
 
 // Command to manually update news headlines.
 void showLatestNewsAPI(JsonDocument& dCommand) {
-    uint8_t cmdNumber = dCommand["app_command"];
     xSemaphoreGive(newsAPI_UpdateSem);
-    //mtb_Ble_App_Cmd_Respond_Success(cmdNumber, pdPASS);
 }
 
 // Command to set the news update interval (in milliseconds).
 void setNewsAPIUpdateInterval(JsonDocument& dCommand) {
-    uint8_t cmdNumber = dCommand["app_command"];
     uint32_t interval = dCommand["interval"];
     newsAPI_UpdateInterval = interval;
     if (xTimerIsTimerActive(newsAPI_UpdateTimer_H) == pdTRUE)
         xTimerStop(newsAPI_UpdateTimer_H, 0);
     xTimerChangePeriod(newsAPI_UpdateTimer_H, pdMS_TO_TICKS(newsAPI_UpdateInterval), 0);
     xTimerStart(newsAPI_UpdateTimer_H, 0);
-    //mtb_Ble_App_Cmd_Respond_Success(cmdNumber, pdPASS);
 }
 
 // Command to update the API key for news fetching.
 void setNewsAPI_APIKey(JsonDocument& dCommand) {
-    uint8_t cmdNumber = dCommand["app_command"];
     newsAPI_APIKey = String(dCommand["api_key"].as<const char*>());
-    //mtb_Ble_App_Cmd_Respond_Success(cmdNumber, pdPASS);
 }
 
 // Command to update the language code for the news headlines.
 void setNewsAPI_Language(JsonDocument& dCommand) {
-    uint8_t cmdNumber = dCommand["app_command"];
     newsAPI_Language = String(dCommand["language"].as<const char*>());
-    //mtb_Ble_App_Cmd_Respond_Success(cmdNumber, pdPASS);
 }

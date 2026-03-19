@@ -2,9 +2,14 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 #include <WiFiClientSecure.h>
-#include "polygonFX.h"
 
 static const char TAG[] = "PXP_POLYGON_FX";
+
+struct PolygonFX_t {
+    char pair[20] = {0};
+    char apiToken[100] = {0};
+    int16_t updateInterval;
+};
 
 EXT_RAM_BSS_ATTR PolygonFX_t polygonFX;
 
@@ -88,30 +93,24 @@ void polygonFX_App_Task(void *dApplication){
 
 
 void setPolygonPair(JsonDocument &dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     const char *pair = dCommand["pair"];
     if(pair){
         strncpy(polygonFX.pair, pair, sizeof(polygonFX.pair)-1);
         mtb_Write_Nvs_Struct("polygonFX", &polygonFX, sizeof(PolygonFX_t));
     }
-    mtb_Ble_App_Cmd_Respond_Success(polygonAppRoute, cmdNumber, pdPASS);
 }
 
 void setPolygonInterval(JsonDocument &dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     int16_t interval = dCommand["dInterval"];
     if(interval > 0){
         polygonFX.updateInterval = interval;
         mtb_Write_Nvs_Struct("polygonFX", &polygonFX, sizeof(PolygonFX_t));
     }
-    mtb_Ble_App_Cmd_Respond_Success(polygonAppRoute, cmdNumber, pdPASS);
 }
 
 void setPolygonAPIKey(JsonDocument &dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     String key = dCommand["api_key"];
     strncpy(polygonFX.apiToken, key.c_str(), sizeof(polygonFX.apiToken)-1);
     mtb_Write_Nvs_Struct("polygonFX", &polygonFX, sizeof(PolygonFX_t));
-    mtb_Ble_App_Cmd_Respond_Success(polygonAppRoute, cmdNumber, pdPASS);
 }
 

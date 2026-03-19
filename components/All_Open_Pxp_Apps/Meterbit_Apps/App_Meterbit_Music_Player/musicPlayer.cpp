@@ -8,7 +8,10 @@
 #include <ArduinoJson.h>
 #include "mtb_nvs.h"
 #include "mtb_engine.h"
-#include "musicPlayer.h"
+
+struct MusicPlayer_Data_t {
+uint16_t trackNumber;
+};
 
 EXT_RAM_BSS_ATTR MusicPlayer_Data_t musicPlayerData;
 
@@ -77,9 +80,5 @@ void nextTrackButton(button_event_t button_Data){
 }
 
 void selectNext_PreviousTrack(JsonDocument& dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
-//    String location = dCommand["duration"];
-
     mtb_Write_Nvs_Struct("musicPlayer", &musicPlayerData, sizeof(MusicPlayer_Data_t));
-    mtb_Ble_App_Cmd_Respond_Success(musicPlayerAppRoute, cmdNumber, pdPASS);
 }

@@ -13,7 +13,6 @@
 #include "mtb_engine.h"
 #include "mtb_nvs.h"
 #include "mtb_text_scroll.h"
-#include "rss_News_Reader.h"
 #include "tinyxml2.h"
 
 static const char TAG[] = "PXP_RSS_NEWS";
@@ -22,10 +21,13 @@ using namespace tinyxml2;
 
 #define RSS_REFRESH_INTERVAL_MINUTES 3
 
+EXT_RAM_BSS_ATTR TaskHandle_t rssNewsApp_Task_H = NULL;
+void rssNewsApp_Task(void *dApplication);
+
 Mtb_ScrollText_t rssScroller(2, 52, 124, Terminal6x8, WHITE, 20, 0xFFFF);  // REVISIT -> Make Global declaration dynamic. Move definitions to PSRAM
 Mtb_ScrollText_t rssErrorMsg(2, 42, 124, Terminal6x8, ORANGE_RED, 20, 3);  // REVISIT -> Make Global declaration dynamic. Move definitions to PSRAM
 
-EXT_RAM_BSS_ATTR TaskHandle_t rssNewsApp_Task_H = NULL;
+
 EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *rssNewsApp = new Mtb_Applications_StatusBar(rssNewsApp_Task, &rssNewsApp_Task_H, "RSS News", 8192, pdTRUE);
 
 const char* bbc_url = "https://feeds.bbci.co.uk/news/rss.xml";
@@ -43,8 +45,8 @@ RssSettings_t rssSettings = {true, false, false};
 void fetchAndDisplayHeadlines(Mtb_Applications *thisApp);
 void updateSourceSelection(JsonDocument&);
 
-void rssNewsApp_Task(void* dApp) {
-  Mtb_Applications *thisApp = (Mtb_Applications *) dApp;
+void rssNewsApp_Task(void* dApplication) {
+  Mtb_Applications *thisApp = (Mtb_Applications *) dApplication;
   thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(updateSourceSelection);
 
   thisApp->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
@@ -63,13 +65,11 @@ void rssNewsApp_Task(void* dApp) {
 }
 
 void updateSourceSelection(JsonDocument &doc) {
-  uint8_t cmd = doc["app_command"];
   rssSettings.enable_bbc = doc["bbc"];
   rssSettings.enable_cnn = doc["cnn"];
   rssSettings.enable_reuters = doc["reuters"];
 
   mtb_Write_Nvs_Struct("rssSettings", &rssSettings, sizeof(RssSettings_t));
-  mtb_Ble_App_Cmd_Respond_Success("rssApp", cmd, pdPASS);
 }
 
 void parseHeadlinesWithTinyXML2(const String& xml, std::vector<String>& headlines, int maxCount) {

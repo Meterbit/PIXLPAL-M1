@@ -7,10 +7,13 @@
 #include <LittleFS.h>
 #include <ArduinoJson.h>
 #include "mtb_nvs.h"
-#include "googleWeather.h"
 #include "mtb_engine.h"
 
 // CONSIDER IMPLEMENTING AN APP USING THE https://api.met.no/ API SERVICE PROVIDER
+
+struct GoogleWeatherData_t {
+  char location[150] = {0};
+};
 
 EXT_RAM_BSS_ATTR GoogleWeatherData_t currentGoogleWeatherData;
 
@@ -79,8 +82,6 @@ void changeGoogleWeatherLocation(button_event_t button_Data){
 }
 
 void setGoogleWeatherLocation(JsonDocument& dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     String location = dCommand["location"];
     mtb_Write_Nvs_Struct("googleWeather", &currentGoogleWeatherData, sizeof(GoogleWeatherData_t));
-    mtb_Ble_App_Cmd_Respond_Success(googleWeatherAppRoute, cmdNumber, pdPASS);
 }

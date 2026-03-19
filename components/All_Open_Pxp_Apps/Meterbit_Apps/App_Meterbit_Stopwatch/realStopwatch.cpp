@@ -7,7 +7,10 @@
 #include <ArduinoJson.h>
 #include "mtb_nvs.h"
 #include "mtb_engine.h"
-#include "realStopwatch.h"
+
+struct RealStopWatch_Data_t {
+uint64_t duration = 60;
+};
 
 EXT_RAM_BSS_ATTR RealStopWatch_Data_t frequentStopwatchTime;
 
@@ -92,9 +95,6 @@ if (direction == ROT_CLOCKWISE){
 }
 
 void setWatchTime(JsonDocument& dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     String location = dCommand["duration"];
-
     mtb_Write_Nvs_Struct("realStopWatch", &frequentStopwatchTime, sizeof(RealStopWatch_Data_t));
-    mtb_Ble_App_Cmd_Respond_Success(stopWatchAppRoute, cmdNumber, pdPASS);
 }

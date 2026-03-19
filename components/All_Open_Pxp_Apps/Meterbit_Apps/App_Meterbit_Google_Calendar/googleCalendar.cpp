@@ -17,12 +17,19 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 #include "googleAuth.h"
-#include "googleCalendar.h"
 #include "mtb_graphics.h"
 #include "my_secret_keys.h"
 
 
 static const char *TAG = "PXP_GOOGLE_CAL";
+
+struct GoogleCal_Data_t {
+char refreshToken[250] = {0};
+bool showEvents = true;
+bool showTasks = true;
+bool showHolidays = true;
+uint16_t themeColor = 0x4249; // Default to OUTER_SPACE color
+};
 
 EXT_RAM_BSS_ATTR GoogleCal_Data_t userGoogleCal;
 
@@ -329,47 +336,33 @@ void fetchTasks(const String& accessToken) {
 
   //***************************************************************************************************
   void link_GoogleCal(JsonDocument& dCommand){
-    uint8_t cmd = dCommand["app_command"];
-    mtb_Ble_App_Cmd_Respond_Success(googleCalendarAppRoute, cmd, pdPASS);
   }
 
   void get_GoogleCal_Refresh_Token(JsonDocument& dCommand){
-    uint8_t cmd = dCommand["app_command"];
     const char *refreshToken = dCommand["refreshToken"];
     strcpy(userGoogleCal.refreshToken, refreshToken);
     mtb_Write_Nvs_Struct("googleCalData", &userGoogleCal, sizeof(GoogleCal_Data_t));
     do_beep(CLICK_BEEP);
     statusBarNotif.mtb_Scroll_This_Text("GOOGLE CALENDAR LINK UPDATED. YOU MAY CLOSE THE BROWSER", GREEN_LIZARD);
-    mtb_Ble_App_Cmd_Respond_Success(googleCalendarAppRoute, cmd, pdPASS);
   }
 
   void show_GoogleCal_Events(JsonDocument& dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     uint8_t setCycle = dCommand["showEvents"];
 
-
     mtb_Write_Nvs_Struct("googleCalData", &userGoogleCal, sizeof(GoogleCal_Data_t));
-    mtb_Ble_App_Cmd_Respond_Success(googleCalendarAppRoute, cmdNumber, pdPASS);
   }
   void show_GoogleCal_Tasks(JsonDocument& dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     uint8_t setCycle = dCommand["showTasks"];
 
-
     mtb_Write_Nvs_Struct("googleCalData", &userGoogleCal, sizeof(GoogleCal_Data_t));
-    mtb_Ble_App_Cmd_Respond_Success(googleCalendarAppRoute, cmdNumber, pdPASS);
   }
   void show_GoogleCal_Holidays(JsonDocument& dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     uint8_t setCycle = dCommand["showHoliday"];
 
-
     mtb_Write_Nvs_Struct("googleCalData", &userGoogleCal, sizeof(GoogleCal_Data_t));
-    mtb_Ble_App_Cmd_Respond_Success(googleCalendarAppRoute, cmdNumber, pdPASS);
   }
 
   void set_GoogleCal_ThemeColor(JsonDocument& dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     const char *color = dCommand["themeColor"];
     color += 4;
     userGoogleCal.themeColor = mtb_Panel_Color565(((uint8_t)((strtol(color,NULL,16) >> 16))), ((uint8_t)((strtol(color,NULL,16) >> 8))),((uint8_t)((strtol(color,NULL,16) >> 0))));
@@ -377,5 +370,4 @@ void fetchTasks(const String& accessToken) {
     event_Task_Name->backgroundColor = userGoogleCal.themeColor;
 
     mtb_Write_Nvs_Struct("googleCalData", &userGoogleCal, sizeof(GoogleCal_Data_t));
-    mtb_Ble_App_Cmd_Respond_Success(googleCalendarAppRoute, cmdNumber, pdPASS);
   }

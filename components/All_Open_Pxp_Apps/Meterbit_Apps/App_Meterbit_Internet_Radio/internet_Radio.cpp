@@ -18,12 +18,18 @@
 #include "mtb_engine.h"
 #include "esp_heap_caps.h"
 #include <HTTPClient.h>
-#include "internet_Radio.h"
 #include "mtb_ble.h"
 
 static const char TAG[] = "INTERNET_RADIO";
 
 EXT_RAM_BSS_ATTR TaskHandle_t internet_Radio_Task_H = NULL;
+void internetRadio_App_Task(void *dApplication);
+
+struct RadioStation_t {
+  char stationName[100];
+  char streamLink[1000];
+  int serialNumber;
+};
 
 // Default RadioStation
 EXT_RAM_BSS_ATTR RadioStation_t currentRadioStation;
@@ -169,13 +175,10 @@ void intRadioButtonControl(button_event_t button_Data){
 
 //***************************************************************************************************
 void selectRadioStations(JsonDocument& dCommand){
-  uint8_t cmd = dCommand["app_command"];
-  mtb_Ble_App_Cmd_Respond_Success(internetRadioAppRoute, cmd, pdPASS);
 }
 
 //************************************************************************************************
 void playRadioStationLink(JsonDocument& dCommand){
-  uint8_t cmd = dCommand["app_command"];
   const char* streamLink = dCommand["stationLink"];
   const char* stationName = dCommand["stationName"];
 
@@ -185,15 +188,12 @@ void playRadioStationLink(JsonDocument& dCommand){
   ESP_LOGI(TAG, "Playing Station: %s\n", currentRadioStation.stationName);
   ESP_LOGI(TAG, "Stream Link: %s\n", currentRadioStation.streamLink);
 
-  mtb_Ble_App_Cmd_Respond_Success(internetRadioAppRoute, cmd, pdPASS);
   mtb_Write_Nvs_Struct("currentRadSta", &currentRadioStation, sizeof(RadioStation_t));
   mtb_Dac_Or_Mic_Status(OFF_DAC_N_MIC);
 }
 
 // Function to write a RadioStation's info to a CSV file
 void updateSavedStations(JsonDocument& dCommand){                                 // RECEIVES THE STATION DETAILS AS A JSON.
-  uint8_t cmd = dCommand["app_command"];
-  mtb_Ble_App_Cmd_Respond_Success(internetRadioAppRoute, cmd, pdPASS);
   // uint8_t stationNumber = dCommand["serialNumber"];
   // String stationName = dCommand["stationName"];
   // String streamLink = dCommand["streamLink"];
@@ -229,13 +229,9 @@ void updateSavedStations(JsonDocument& dCommand){                               
 
 //************************************************************************************************
 void volumeControl(JsonDocument& dCommand){
-  uint8_t cmd = dCommand["app_command"];
   uint8_t volumeLevel = dCommand["volume"];
-
   audio->setVolume(volumeLevel);
   mtb_Write_Nvs_Struct("dev_Volume", &volumeLevel, sizeof(uint8_t));
-
-  mtb_Ble_App_Cmd_Respond_Success(internetRadioAppRoute, cmd, pdPASS);
 }
 
 // //************************************************************************************************

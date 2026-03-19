@@ -1,7 +1,6 @@
 // ===== File: SpotifyAuth.cpp =====
 #include <HTTPClient.h>
 #include "SpotifyAuth.h"
-#include "mtbSpotifyInfo.h"
 #include "mtb_nvs.h"
 
 static const char TAG[] = "SPOTIFY_AUTH";

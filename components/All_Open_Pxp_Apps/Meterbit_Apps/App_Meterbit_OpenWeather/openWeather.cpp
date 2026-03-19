@@ -7,11 +7,13 @@
 #include <LittleFS.h>
 #include <ArduinoJson.h>
 #include "mtb_nvs.h"
-#include "openWeather.h"
 #include "mtb_engine.h"
 
-
 // CONSIDER IMPLEMENTING AN APP USING THE https://api.met.no/ API SERVICE PROVIDER
+
+struct OpenWeatherData_t {
+  char location[150] = {0};
+};
 
 EXT_RAM_BSS_ATTR OpenWeatherData_t currentOpenWeatherData;
 
@@ -42,9 +44,9 @@ while (MTB_APP_IS_ACTIVE == pdTRUE) {
 
     while ((Mtb_Applications::internetConnectStatus != true) && (MTB_APP_IS_ACTIVE == pdTRUE)) delay(1000);
 
-
-    while (MTB_APP_IS_ACTIVE == pdTRUE) {}
-
+    while (MTB_APP_IS_ACTIVE == pdTRUE) {
+        delay(1000);
+    }
 }
 
   mtb_Delete_This_App(thisApp);
@@ -80,8 +82,6 @@ void changeOpenWeatherLocation(button_event_t button_Data){
 }
 
 void setOpenWeatherLocation(JsonDocument& dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     String location = dCommand["location"];
     mtb_Write_Nvs_Struct("openWeather", &currentOpenWeatherData, sizeof(OpenWeatherData_t));
-    mtb_Ble_App_Cmd_Respond_Success(openWeatherAppRoute, cmdNumber, pdPASS);
 }

@@ -6,13 +6,13 @@
 #include "mtb_nvs.h"
 #include "mtb_ntp.h"
 #include "mtb_engine.h"
-#include "mtb_cal_clk.h"
 #include "mtb_text_scroll.h"
 
 void clock_Color_Change(JsonDocument&);
 void get_NTP_Local_Time(JsonDocument&);
 
 EXT_RAM_BSS_ATTR TaskHandle_t classicClock_Task_H = NULL;
+void calendarClock_App_Task(void *dApplication);
 
 EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *calendarClock_App = new Mtb_Applications_StatusBar(calendarClock_App_Task, &classicClock_Task_H, "Classic Clock", 4096);
 //***************************************************************************************************
@@ -236,18 +236,15 @@ if(pre_Day != now->tm_mday  || thisApp->elementRefresh){
 
 //**11*********************************************************************************************************************
 void clock_Color_Change(JsonDocument& dCommand){
-  uint8_t cmd = dCommand["app_command"];
   const char *color = NULL;
   const char *name = dCommand["name"];
   Clock_Colors clk_Cols;
 
   mtb_Read_Nvs_Struct("Clock Cols", &clk_Cols, sizeof(Clock_Colors));
 
-  if (strcmp(name, "Hour/Minute") == 0)
-  {
+  if (strcmp(name, "Hour/Minute") == 0){
     color = dCommand["value"];
     color += 4;
-
     clk_Cols.hourMinColour = mtb_Panel_Color565(((uint8_t)((strtol(color,NULL,16) >> 16))), ((uint8_t)((strtol(color,NULL,16) >> 8))),((uint8_t)((strtol(color,NULL,16) >> 0))));
     }
     else if (strcmp(name, "Seconds") == 0){
@@ -273,13 +270,12 @@ void clock_Color_Change(JsonDocument& dCommand){
 
     mtb_Write_Nvs_Struct("Clock Cols", &clk_Cols, sizeof(Clock_Colors));
     xQueueSend(clock_Update_Q, &clk_Cols, 0);
-    mtb_Ble_App_Cmd_Respond_Success(classicClockAppRoute, cmd, pdPASS);
 }
 //**12*********************************************************************************************************************
 
+
+
 //**13*********************************************************************************************************************
 void get_NTP_Local_Time(JsonDocument& dCommand){
-  uint8_t cmd = dCommand["app_command"];
   mtb_Launch_This_Service(mtb_Sntp_Time_Sv);
-  mtb_Ble_App_Cmd_Respond_Success(classicClockAppRoute, cmd, pdPASS);
 }

@@ -9,8 +9,17 @@
 #include "mtb_graphics.h"
 #include "mtb_nvs.h"
 #include "mtb_engine.h"
-#include "studioLight.h"
 #include "mtb_buzzer.h"
+
+#define FULLSCREEN_MODE     0
+#define HALFSCREEN_MODE     1
+#define CYCLE_MODE          2
+
+struct StudioLight_Data_t {
+uint16_t studioLightColor[5] = {WHITE, PURPLE, GREEN, YELLOW, BLUE}; //, MAGENTA, PALE_AZURE, EBONY, SWEET_BROWN, SKOBELOFF}; // 
+uint8_t studioLightColorMode = FULLSCREEN_MODE;
+uint16_t studioLightDuration = 100;
+};
 
 EXT_RAM_BSS_ATTR StudioLight_Data_t studioLightsInfo;
 EXT_RAM_BSS_ATTR SemaphoreHandle_t studioLightMode_Sem_H = NULL;
@@ -103,7 +112,6 @@ void selectStudioLightColorButton(button_event_t button_Data){
 }
 
 void setStudioLightColors(JsonDocument& dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     uint8_t colorIndex = dCommand["colorIndex"];
     const char* selectColor = dCommand["colorVal"];
     selectColor += 4;
@@ -111,39 +119,29 @@ void setStudioLightColors(JsonDocument& dCommand){
     xSemaphoreGive(studioLightMode_Sem_H);
     //printf("Instruction 0 has been received.\n");
     mtb_Write_Nvs_Struct("studioLight", &studioLightsInfo, sizeof(StudioLight_Data_t));
-    mtb_Ble_App_Cmd_Respond_Success(studioLightAppRoute, cmdNumber, pdPASS);
 }
 
 void setScreenBrightness(JsonDocument& dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     uint16_t tempBrightness = dCommand["value"];
     panelBrightness = (tempBrightness * 2.55) + 1; // One (1) is added to make the 100% correspond to 255
     mtb_Panel_Set_Brightness(panelBrightness); // 0-255
     mtb_Set_Status_RGB_LED(currentStatusLEDcolor);
     //printf("Instruction 1 has been received.\n");
     mtb_Write_Nvs_Struct("pan_brghnss", &panelBrightness, sizeof(uint8_t));
-    mtb_Ble_App_Cmd_Respond_Success(studioLightAppRoute, cmdNumber, pdPASS);
 }
 
 void setStudioLightMode(JsonDocument& dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     uint8_t mode = dCommand["lightMode"];
-
     //printf("Instruction 2 has been received.\n");
-
     if(mode <= CYCLE_MODE) studioLightsInfo.studioLightColorMode = mode;
     xSemaphoreGive(studioLightMode_Sem_H);
     mtb_Write_Nvs_Struct("studioLight", &studioLightsInfo, sizeof(StudioLight_Data_t));
-    mtb_Ble_App_Cmd_Respond_Success(studioLightAppRoute, cmdNumber, pdPASS);
 }
 
 void setStudioLightDuration(JsonDocument& dCommand){
-    uint8_t cmdNumber = dCommand["app_command"];
     uint16_t duration = dCommand["dInterval"];
-
     //printf("Instruction 3 has been received.\n");
     studioLightsInfo.studioLightDuration = duration * 10;
     xSemaphoreGive(studioLightMode_Sem_H);
     mtb_Write_Nvs_Struct("studioLight", &studioLightsInfo, sizeof(StudioLight_Data_t));
-    mtb_Ble_App_Cmd_Respond_Success(studioLightAppRoute, cmdNumber, pdPASS);
 }
