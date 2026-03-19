@@ -1,11 +1,11 @@
 #include <Arduino.h>
 #include "mtb_engine.h"
 #include "mtb_buzzer.h"
-#include "exampleEncoderBeepApp.h"
 
 static const char TAG[] = "EX_ENCODER_BEEP_APP";
 
 EXT_RAM_BSS_ATTR TaskHandle_t exampleEncoderBeepApp_Task_H = NULL;
+void exampleEncoderBeepApp_Task(void *dApplication);
 
 // button and encoder callback functions for the Rotary Encoder Control
 void exampleAppButtonFn(button_event_t button_Data);

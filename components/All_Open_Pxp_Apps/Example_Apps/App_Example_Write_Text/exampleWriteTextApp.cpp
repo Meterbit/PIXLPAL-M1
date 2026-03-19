@@ -1,9 +1,9 @@
 #include <Arduino.h>
 #include "mtb_text_scroll.h"
 #include "mtb_engine.h"
-#include "exampleWriteTextApp.h"
 
 EXT_RAM_BSS_ATTR TaskHandle_t exampleWriteTextApp_Task_H = NULL;
+void exampleWriteTextApp_Task(void *dApplication);
 
 EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *exampleWriteText_App = new Mtb_Applications_FullScreen(exampleWriteTextApp_Task, &exampleWriteTextApp_Task_H, "exampleWriteTextApp", 4096);
 

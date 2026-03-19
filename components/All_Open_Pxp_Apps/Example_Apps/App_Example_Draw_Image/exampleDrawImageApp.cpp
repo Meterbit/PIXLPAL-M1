@@ -1,11 +1,11 @@
 #include <Arduino.h>
 #include "mtb_engine.h"
 #include "mtb_graphics.h"
-#include "exampleDrawImageApp.h"
 
 static const char TAG[] = "DRAW IMAGE EXAMPLE APP";
 
 EXT_RAM_BSS_ATTR TaskHandle_t exampleDrawImageApp_Task_H = NULL;
+void exampleDrawImageApp_Task(void *dApplication);
 
 EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *exampleDrawImages_App = new Mtb_Applications_FullScreen(exampleDrawImageApp_Task, &exampleDrawImageApp_Task_H, "exampleDrawImageApp", 4096);
 

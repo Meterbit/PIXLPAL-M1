@@ -1,10 +1,10 @@
 #include <Arduino.h>
 #include "mtb_text_scroll.h"
 #include "mtb_engine.h"
-#include "exampleDesignMobileUI_App.h"
 #include "exampleUI_Design_Components.h"
 
 EXT_RAM_BSS_ATTR TaskHandle_t exampleDesignMobileUI_Task_H = NULL;
+void exampleDesignMobileUI_Task(void *dApplication);
 
 EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *exampleDesignMobileUI_App = new Mtb_Applications_FullScreen(exampleDesignMobileUI_Task, &exampleDesignMobileUI_Task_H, "exampleDesignMobileUI_App", 4096);
 
