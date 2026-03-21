@@ -309,8 +309,7 @@ void setClockTitleAndColor(JsonDocument& dCommand){
   const char *title = dCommand["clockTitle"];
 
   color = dCommand["color"];
-  color += 4;
-  titleColor = mtb_Panel_Color565(((uint8_t)((strtol(color, NULL, 16) >> 16))), ((uint8_t)((strtol(color, NULL, 16) >> 8))), ((uint8_t)((strtol(color, NULL, 16) >> 0))));
+  titleColor = mtb_Panel_Color32bit_To_Color565(color);
 
   if(strlen(title) < HEADER_TEXT_LIMIT){
     headerTextScroll->mtb_Scroll_Active(STOP_SCROLL);
@@ -335,14 +334,13 @@ void setPixAnimTheme(JsonDocument& dCommand){
 
     if (strcmp(name, "Outer Shell") == 0){
     color = dCommand["value"];
-    color += 4;
 
-    savedPixAnimClkSet.themeColor[0] = mtb_Panel_Color565(((uint8_t)((strtol(color,NULL,16) >> 16))), ((uint8_t)((strtol(color,NULL,16) >> 8))),((uint8_t)((strtol(color,NULL,16) >> 0))));
+    savedPixAnimClkSet.themeColor[0] = mtb_Panel_Color32bit_To_Color565(color);
     }
     else if (strcmp(name, "Inner Shell") == 0){
     color = dCommand["value"];
-    color += 4;
-    savedPixAnimClkSet.themeColor[1] = mtb_Panel_Color565(((uint8_t)((strtol(color,NULL,16) >> 16))), ((uint8_t)((strtol(color,NULL,16) >> 8))),((uint8_t)((strtol(color,NULL,16) >> 0))));
+
+    savedPixAnimClkSet.themeColor[1] = mtb_Panel_Color32bit_To_Color565(color);
     } else color = NULL;
 
     printPixAnimClkThm(savedPixAnimClkSet.themeColor);
@@ -370,29 +368,29 @@ void setPixAnimClkColors(JsonDocument& dCommand){
   if (strcmp(name, "Hour/Minute") == 0)
   {
     color = dCommand["value"];
-    color += 4;
+    
 
-    clk_Cols.hourMinColour = mtb_Panel_Color565(((uint8_t)((strtol(color,NULL,16) >> 16))), ((uint8_t)((strtol(color,NULL,16) >> 8))),((uint8_t)((strtol(color,NULL,16) >> 0))));
+    clk_Cols.hourMinColour = mtb_Panel_Color32bit_To_Color565(color);
     }
     else if (strcmp(name, "Seconds") == 0){
     color = dCommand["value"];
-    color += 4;
-    clk_Cols.secColor = mtb_Panel_Color565(((uint8_t)((strtol(color,NULL,16) >> 16))), ((uint8_t)((strtol(color,NULL,16) >> 8))),((uint8_t)((strtol(color,NULL,16) >> 0))));
+
+    clk_Cols.secColor = mtb_Panel_Color32bit_To_Color565(color);
     }
     else if (strcmp(name, "Meridiem") == 0){
     color = dCommand["value"];
-    color += 4;
-    clk_Cols.meridiemColor = mtb_Panel_Color565(((uint8_t)((strtol(color,NULL,16) >> 16))), ((uint8_t)((strtol(color,NULL,16) >> 8))),((uint8_t)((strtol(color,NULL,16) >> 0))));
+
+    clk_Cols.meridiemColor = mtb_Panel_Color32bit_To_Color565(color);
     }
     else if (strcmp(name, "Weekday") == 0){
     color = dCommand["value"];
-    color += 4;
-    clk_Cols.weekDayColour = mtb_Panel_Color565(((uint8_t)((strtol(color,NULL,16) >> 16))), ((uint8_t)((strtol(color,NULL,16) >> 8))),((uint8_t)((strtol(color,NULL,16) >> 0))));
+
+    clk_Cols.weekDayColour = mtb_Panel_Color32bit_To_Color565(color);
     }
     else if (strcmp(name, "Date") == 0){
     color = dCommand["value"];
-    color += 4;
-    clk_Cols.dateColour = mtb_Panel_Color565(((uint8_t)((strtol(color,NULL,16) >> 16))), ((uint8_t)((strtol(color,NULL,16) >> 8))),((uint8_t)((strtol(color,NULL,16) >> 0))));
+
+    clk_Cols.dateColour = mtb_Panel_Color32bit_To_Color565(color);
     } else color = NULL;
 
     mtb_Write_Nvs_Struct("Clock Cols", &clk_Cols, sizeof(Clock_Colors));
@@ -508,16 +506,6 @@ while (MTB_SERV_IS_ACTIVE == pdTRUE && (entry = readdir(dir)) != NULL) {
       gd_render_frame(gif, buffer);
 
       mtb_Panel_Draw_Frame(5, 25, width, height, buffer);
-      // for (uint8_t p = 0, x = 5; p < width; p++, x++) {
-      //   for (uint8_t q = 0, y = 25; q < height; q++, y++) {
-      //     // uint16_t c = mtb_Panel_Color565(
-      //     //     buffer[q*width*3 + p*3],
-      //     //     buffer[q*width*3 + p*3 + 1],
-      //     //     buffer[q*width*3 + p*3 + 2]);
-      //     // mtb_Panel_Draw_Pixel565(x, y, c);
-      //   }
-      // }
-
 
       TickType_t delay_ms = gif->gce.delay * 10;
       vTaskDelay(pdMS_TO_TICKS(delay_ms));

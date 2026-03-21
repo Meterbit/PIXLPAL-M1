@@ -1581,6 +1581,14 @@ uint16_t mtb_Panel_Color565(uint8_t r, uint8_t g, uint8_t b, uint16_t *color){
 	return packedColor;
 }
 
+uint16_t mtb_Panel_Color32bit_To_Color565(const char* dartColor, uint16_t *color565){
+	dartColor += 4; // skip "0xFF"
+	uint8_t r = ((uint8_t)((strtol(dartColor,NULL,16) >> 16)));
+	uint8_t g = ((uint8_t)((strtol(dartColor,NULL,16) >> 8)));
+	uint8_t b = ((uint8_t)((strtol(dartColor,NULL,16) >> 0)));
+	return mtb_Panel_Color565(r, g, b, color565);
+}
+
 void mtb_Panel_Draw_PixelRGB(uint16_t x, uint16_t y, uint8_t r, uint8_t g, uint8_t b){
 	  // Single pixel is just a 1x1 draw_pixels call with RGB888 format
   uint8_t rgb[3] = {r, g, b};

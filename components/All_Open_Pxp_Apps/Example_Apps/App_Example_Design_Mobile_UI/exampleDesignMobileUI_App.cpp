@@ -11,7 +11,7 @@ EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *exampleDesignMobileUI_App = new Mt
 void exampleDesignMobileUI_Task(void* dApplication){
 // ****** Initialize the App Parameters
   Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
-  thisApp->mtb_App_Set_Mobile_UI(manifest, ui_api);
+  thisApp->mtb_App_Set_Mobile_UI(manifest, ui_api, data);
   thisApp->mtb_App_Init();
 // End of App parameter initialization
 

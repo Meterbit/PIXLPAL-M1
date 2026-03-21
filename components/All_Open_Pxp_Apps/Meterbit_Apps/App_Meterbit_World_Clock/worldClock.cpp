@@ -231,9 +231,7 @@ void setWorldClockColors(JsonDocument& dCommand){
     uint8_t dCityIndex = dCommand["dCityIndex"].as<uint8_t>();
 
     color = dCommand["value"];
-    color += 4;
-
-    worldClockCities.worldColors[dCityIndex] = mtb_Panel_Color565(((uint8_t)((strtol(color,NULL,16) >> 16))), ((uint8_t)((strtol(color,NULL,16) >> 8))),((uint8_t)((strtol(color,NULL,16) >> 0))));
+    worldClockCities.worldColors[dCityIndex] = mtb_Panel_Color32bit_To_Color565(color);
     
     mtb_Write_Nvs_Struct("worldClockNv", &worldClockCities, sizeof(WorldClock_Data_t));
     Mtb_Applications::currentRunningApp->elementRefresh = true;

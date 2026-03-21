@@ -147,6 +147,7 @@ public:
 
     const char* appMobile_Manifest;
     const char* appMobile_UiApi;
+    const char* appMobile_Data;
 
     Mtb_Services* appServices[10] = {nullptr};  // An array of 10 Service Pointers. This will hold pointers to the Mtb_Services tasks both generic and perculiar. e.g. Mic Service 
     void (*mtb_App_EncoderFn_ptr)(rotary_encoder_rotation_t) = encoderDoNothing;     // Pointer to the function that will be called when the rotary encoder is rotated.
@@ -188,7 +189,7 @@ public:
     void mtb_App_Set_EC11_Cb_Fns(buttonFn_ptr_t but_Fn = buttonDoNothing, encoderFn_ptr_t enc_Fn = mtb_Brightness_Control); // This function is used to set the encoder and button functions for the application.
 
     void mtb_App_Show_Mobile_UI(void);
-    void mtb_App_Set_Mobile_UI(const char*, const char*);
+    void mtb_App_Set_Mobile_UI(const char*, const char*, const char* data = nullptr);  // This function is used to set the mobile UI manifest and API for the application. The manifest is a JSON string that describes the UI elements and their properties, and the ui_api is a JSON string that describes the API endpoints and their properties.
 
     void mtb_App_Set_Ble_Comm_Sv_Fns(bleCom_Parser_Fns_Ptr Fn_0, bleCom_Parser_Fns_Ptr Fn_1 = nullptr, bleCom_Parser_Fns_Ptr Fn_2 = nullptr, bleCom_Parser_Fns_Ptr Fn_3 = nullptr, bleCom_Parser_Fns_Ptr Fn_4 = nullptr, bleCom_Parser_Fns_Ptr Fn_5 = nullptr, bleCom_Parser_Fns_Ptr Fn_6 = nullptr, bleCom_Parser_Fns_Ptr Fn_7 = nullptr, bleCom_Parser_Fns_Ptr Fn_8 = nullptr, bleCom_Parser_Fns_Ptr Fn_9 = nullptr, bleCom_Parser_Fns_Ptr Fn_10 = nullptr, bleCom_Parser_Fns_Ptr Fn_11 = nullptr);
 

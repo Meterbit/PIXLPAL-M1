@@ -114,8 +114,7 @@ void selectStudioLightColorButton(button_event_t button_Data){
 void setStudioLightColors(JsonDocument& dCommand){
     uint8_t colorIndex = dCommand["colorIndex"];
     const char* selectColor = dCommand["colorVal"];
-    selectColor += 4;
-    studioLightsInfo.studioLightColor[colorIndex] = mtb_Panel_Color565(((uint8_t)((strtol(selectColor,NULL,16) >> 16))), ((uint8_t)((strtol(selectColor,NULL,16) >> 8))),((uint8_t)((strtol(selectColor,NULL,16) >> 0))));
+    studioLightsInfo.studioLightColor[colorIndex] = mtb_Panel_Color32bit_To_Color565(selectColor);
     xSemaphoreGive(studioLightMode_Sem_H);
     //printf("Instruction 0 has been received.\n");
     mtb_Write_Nvs_Struct("studioLight", &studioLightsInfo, sizeof(StudioLight_Data_t));

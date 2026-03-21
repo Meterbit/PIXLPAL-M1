@@ -215,13 +215,16 @@ void Mtb_Applications::appDestroy(Mtb_Applications* dApp){
 }
 
 void Mtb_Applications::mtb_App_Show_Mobile_UI(void){
-    char appRoute[20];
-    snprintf(appRoute, sizeof(appRoute), "%u/%u", activateUserApp.GenApp, activateUserApp.SpeApp);
-    String mobileUICommand = "{\"pxp_command\": 252, \"manifest\": " + String(appMobile_Manifest) + ", \"ui_api\": " + String(appMobile_UiApi) + "}";
-    
+    char appID[20];
+    String mobileUICommand;
+    snprintf(appID, sizeof(appID), "%u/%u", activateUserApp.GenApp, activateUserApp.SpeApp);
+
+    if(appMobile_Data == nullptr) mobileUICommand = "{\"pxp_command\": 252, \"manifest\": " + String(appMobile_Manifest) + ", \"ui_api\": " + String(appMobile_UiApi) + "}";
+    else mobileUICommand = "{\"pxp_command\": 252, \"manifest\": " + String(appMobile_Manifest) + ", \"ui_api\": " + String(appMobile_UiApi) + ", \"data\": " + String(appMobile_Data) + "}";
+
     ESP_LOGI(TAG, "Mobile UI Command: %s\n", mobileUICommand.c_str());
     
-    bleApplicationComSend(appRoute, mobileUICommand);
+    bleApplicationComSend(appID, mobileUICommand);
 }
 
 void Mtb_Applications::actionOnPreviousApp(Mtb_Do_Prev_App_t dAction){
@@ -244,9 +247,10 @@ void Mtb_Applications::mtb_App_Set_EC11_Cb_Fns(buttonFn_ptr_t but_Fn, encoderFn_
     mtb_App_ButtonFn_ptr = but_Fn;
 }
 
-void Mtb_Applications::mtb_App_Set_Mobile_UI(const char* manifest, const char* ui_api){
+void Mtb_Applications::mtb_App_Set_Mobile_UI(const char* manifest, const char* ui_api, const char* data){
     appMobile_Manifest = manifest;
     appMobile_UiApi = ui_api;
+    appMobile_Data = data;
 }
 
 void mtb_Delete_This_App(Mtb_Applications* dApp){
@@ -386,13 +390,13 @@ void Mtb_Applications::mtb_App_Init(Mtb_Services* pointer_0, Mtb_Services* point
 
 //*************************************************************************************************************************************************************
 
-void mtb_Ble_App_Cmd_Respond_Success(const char* appRoute, uint8_t commandNumber, uint8_t response ){
+void mtb_Ble_App_Cmd_Respond_Success(const char* appID, uint8_t commandNumber, uint8_t response ){
     String jsonString;
     JsonDocument doc;
     doc["pxp_command"] = commandNumber;
     doc["response"] = response;
     serializeJson(doc, jsonString);
-    bleApplicationComSend(appRoute, jsonString);
+    bleApplicationComSend(appID, jsonString);
 }
 
 void Mtb_Applications::mtb_App_Set_Ble_Comm_Sv_Fns(bleCom_Parser_Fns_Ptr Fn_0, bleCom_Parser_Fns_Ptr Fn_1, bleCom_Parser_Fns_Ptr Fn_2 , bleCom_Parser_Fns_Ptr Fn_3, bleCom_Parser_Fns_Ptr Fn_4, bleCom_Parser_Fns_Ptr Fn_5, bleCom_Parser_Fns_Ptr Fn_6, bleCom_Parser_Fns_Ptr Fn_7, bleCom_Parser_Fns_Ptr Fn_8, bleCom_Parser_Fns_Ptr Fn_9, bleCom_Parser_Fns_Ptr Fn_10, bleCom_Parser_Fns_Ptr Fn_11){

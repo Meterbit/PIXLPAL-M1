@@ -245,29 +245,23 @@ void bigClock_Color_Change(JsonDocument& dCommand){
   if (strcmp(name, "Hour/Minute") == 0)
   {
     color = dCommand["value"];
-    color += 4;
-
-    clk_Cols.hourMinColour = mtb_Panel_Color565(((uint8_t)((strtol(color,NULL,16) >> 16))), ((uint8_t)((strtol(color,NULL,16) >> 8))),((uint8_t)((strtol(color,NULL,16) >> 0))));
+    clk_Cols.hourMinColour = mtb_Panel_Color32bit_To_Color565(color);
     }
     else if (strcmp(name, "Seconds") == 0){
     color = dCommand["value"];
-    color += 4;
-    clk_Cols.secColor = mtb_Panel_Color565(((uint8_t)((strtol(color,NULL,16) >> 16))), ((uint8_t)((strtol(color,NULL,16) >> 8))),((uint8_t)((strtol(color,NULL,16) >> 0))));
+    clk_Cols.secColor = mtb_Panel_Color32bit_To_Color565(color);
     }
     else if (strcmp(name, "Meridiem") == 0){
     color = dCommand["value"];
-    color += 4;
-    clk_Cols.meridiemColor = mtb_Panel_Color565(((uint8_t)((strtol(color,NULL,16) >> 16))), ((uint8_t)((strtol(color,NULL,16) >> 8))),((uint8_t)((strtol(color,NULL,16) >> 0))));
+    clk_Cols.meridiemColor = mtb_Panel_Color32bit_To_Color565(color);
     }
     else if (strcmp(name, "Weekday") == 0){
     color = dCommand["value"];
-    color += 4;
-    clk_Cols.weekDayColour = mtb_Panel_Color565(((uint8_t)((strtol(color,NULL,16) >> 16))), ((uint8_t)((strtol(color,NULL,16) >> 8))),((uint8_t)((strtol(color,NULL,16) >> 0))));
+    clk_Cols.weekDayColour = mtb_Panel_Color32bit_To_Color565(color);
     }
     else if (strcmp(name, "Date") == 0){
     color = dCommand["value"];
-    color += 4;
-    clk_Cols.dateColour = mtb_Panel_Color565(((uint8_t)((strtol(color,NULL,16) >> 16))), ((uint8_t)((strtol(color,NULL,16) >> 8))),((uint8_t)((strtol(color,NULL,16) >> 0))));
+    clk_Cols.dateColour = mtb_Panel_Color32bit_To_Color565(color);
     } else color = NULL;
 
     mtb_Write_Nvs_Struct("Clock Cols", &clk_Cols, sizeof(Clock_Colors));

@@ -364,8 +364,8 @@ void fetchTasks(const String& accessToken) {
 
   void set_GoogleCal_ThemeColor(JsonDocument& dCommand){
     const char *color = dCommand["themeColor"];
-    color += 4;
-    userGoogleCal.themeColor = mtb_Panel_Color565(((uint8_t)((strtol(color,NULL,16) >> 16))), ((uint8_t)((strtol(color,NULL,16) >> 8))),((uint8_t)((strtol(color,NULL,16) >> 0))));
+    
+    userGoogleCal.themeColor = mtb_Panel_Color32bit_To_Color565(color);
     google_Cal_Theme();
     event_Task_Name->backgroundColor = userGoogleCal.themeColor;
 

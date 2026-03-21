@@ -65,6 +65,8 @@ String ssid = dCommand["nwkName"];
 String  password = dCommand["nwkPass"];
 strcpy(last_Successful_Wifi.ssid, ssid.c_str());
 strcpy(last_Successful_Wifi.pass, password.c_str());
+WiFi.disconnect(true, true);
+delay(200);  // allow state machine to reset
 WiFi.begin(ssid, password);
 while ((millis() - startTime) < timeout) delay(500);
 if(WiFi.status() != WL_CONNECTED) bleSettingsComSend(mtb_Wifi_Settings_Route, sta_Nt_Contd);
