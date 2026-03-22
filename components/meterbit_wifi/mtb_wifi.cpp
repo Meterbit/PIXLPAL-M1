@@ -56,7 +56,7 @@ void handle_ip_address_obtained(void* arg, esp_event_base_t event_base, int32_t 
 }
 
 void handle_wifi_disconnected(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data) {
-    if (WiFi.status() == WL_CONNECT_FAILED) ESP_LOGI(TAG, "WiFi Connect Failed"); //bleSettingsComSend("{\"pxp_command\": 1, \"connected\": 0}");
+    if (WiFi.status() == WL_CONNECT_FAILED) ESP_LOGI(TAG, "WiFi Connect Failed");
     ESP_LOGI(TAG, "PixlPal WiFi Disconnected from AP\n");
     mtb_Kill_This_Service(mtb_Mqtt_Client_Sv);
     Mtb_Applications::internetConnectStatus = false;

@@ -42,8 +42,8 @@ void bleSettings(JsonDocument& dCommand){
 
 //**01*********************************************************************************************************************
 void mtb_Current_Ble_Device(const char* pxpBleName){
-char ble_Contd[150] = "{\"pxp_command\": 1, \"connected\": 1, \"pxpBleName\": \"";
-String ble_Nt_Contd = "{\"pxp_command\": 1, \"connected\": 0}";
+char ble_Contd[150] = "{\"set_command\": 1, \"connected\": 1, \"pxpBleName\": \"";
+String ble_Nt_Contd = "{\"set_command\": 1, \"connected\": 0}";
 
 if (pxpBleName == NULL) bleSettingsComSend(mtb_Ble_Settings_Route, ble_Nt_Contd);
 else if(strlen(pxpBleName) > 0){
@@ -55,8 +55,8 @@ else if(strlen(pxpBleName) > 0){
 
 //**02*********************************************************************************************************************
 void mtb_Set_Pxp_Ble_Name(JsonDocument& dCommand){ 
-String success = "{\"pxp_command\": 2, \"response\": 1}";
-String emptyName = "{\"pxp_command\": 2, \"response\": 0}";
+String success = "{\"set_command\": 2, \"response\": 1}";
+String emptyName = "{\"set_command\": 2, \"response\": 0}";
 String newBleName = dCommand["newBleName"];
 if (newBleName.length() == 0) {
     bleSettingsComSend(mtb_Ble_Settings_Route, emptyName);

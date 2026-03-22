@@ -49,8 +49,8 @@ EXT_RAM_BSS_ATTR String setValue;
 #define SETCOM_CHARACTERISTIC_UUID "472a6244-3bb8-4a7e-a107-4b47dea92bc3"
 #define APPCOM_CHARACTERISTIC_UUID "c8f1eead-48b0-449d-accb-5fdb87c4b566"
 
-EXT_RAM_BSS_ATTR Mtb_Services *mtb_Sett_BleComm_Parser_Sv = new Mtb_Services(ble_SetCom_Parse_Task, &ble_SetCom_Parser_Task_Handle, "bleSetCom_parser_task", 4096, 4); // THIS FUNCTIONS CANNOT BE AN PSRAM MEMORY BECAUSE THEY MIGHT ATTEMPT TO WRITE THE ONBOARD FLASH
-EXT_RAM_BSS_ATTR Mtb_Services *mtb_App_BleComm_Parser_Sv = new Mtb_Services(ble_AppCom_Parse_Task, &ble_AppCom_Parser_Task_Handle, "bleAppCom_Parser_task", 4096, 4); // THIS FUNCTIONS CANNOT BE AN PSRAM MEMORY BECAUSE THEY MIGHT ATTEMPT TO WRITE THE ONBOARD FLASH
+EXT_RAM_BSS_ATTR Mtb_Services *mtb_Sett_BleComm_Parser_Sv = new Mtb_Services(ble_SetCom_Parse_Task, &ble_SetCom_Parser_Task_Handle, "bleSetCom_parser_task", 4096, 4); 
+EXT_RAM_BSS_ATTR Mtb_Services *mtb_App_BleComm_Parser_Sv = new Mtb_Services(ble_AppCom_Parse_Task, &ble_AppCom_Parser_Task_Handle, "bleAppCom_Parser_task", 4096, 4);
 
 class MyServerCallbacks : public NimBLEServerCallbacks{
   void onConnect(NimBLEServer *pServer, NimBLEConnInfo& connInfo){
@@ -419,7 +419,7 @@ void ble_AppCom_Parse_Task(void* dService){
                 break;
             case 255:
                 statusBarNotif.mtb_Scroll_This_Text("APP IS ALREADY ACTIVE", CYAN);
-                bleApplicationComSend(specific_Application.c_str(), "{\"pxp_command\": 255}");
+                bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 255}");
                 break;
             default: statusBarNotif.mtb_Scroll_This_Text("ERROR: ASSESS COMMAND PARAMETERS", YELLOW);
                 break;
@@ -434,14 +434,14 @@ void ble_AppCom_Parse_Task(void* dService){
 
                 mtb_Write_Nvs_Struct("activateUserApp", &activateUserApp, sizeof(Mtb_UserApp_t));
                 mtb_General_App_Register(activateUserApp);
-                bleApplicationComSend(specific_Application.c_str(), "{\"pxp_command\": 253}");
+                bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 253}");
             }else if(dError.code() == dError.Ok && dCmd_num == 252){
                 showAppUI.GenApp = dAppGen;
                 showAppUI.SpeApp = dAppSpe;
                 Mtb_Applications::showAppUI_OR_LaunchApp = SHOW_APP_UI; 
                 mtb_General_App_Register(showAppUI);
           }else{
-                bleApplicationComSend(specific_Application.c_str(), "{\"pxp_command\": 254}");
+                bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 254}");
                 statusBarNotif.mtb_Scroll_This_Text("TAP 'LAUNCH' TO START APP", MAGENTA);
             } 
         }

@@ -331,27 +331,6 @@ void setcurrencyChangeInterval(JsonDocument& dCommand){
     mtb_Write_Nvs_Struct("CurrencysStat", &currentCurrencies, sizeof(Currency_Stat_t));
 }
 
-// String convertArrayToJson(String arr[], size_t length) {
-//     String json = "[";
-//     for (size_t i = 0; i < length; i++) {
-//         json += "\"";
-//         json += arr[i];
-//         json += "\"";
-//         if (i < length - 1) {
-//             json += ",";
-//         }
-//     }
-//     json += "]";
-//     return json;
-// }
-
-// void loadSavedCurrencys(JsonDocument& dCommand){
-// 
-//     String savedSymbols = "{\"pxp_command\":";
-//     savedSymbols += String(cmdNumber) + ",\"savedSymbols\":" + convertArrayToJson(currencySymbols, currencyCount) + "}";
-//     bleApplicationComSend(savedSymbols);
-// }
-
 void saveCurrencyAPI_key(JsonDocument& dCommand){
     String userAPI_Key = dCommand["api_key"];
     strcpy(currentCurrencies.apiToken, userAPI_Key.c_str());

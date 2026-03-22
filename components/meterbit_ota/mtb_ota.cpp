@@ -40,7 +40,7 @@ String semver_t_ToString(const semver_t &version);
         statusBarNotif.mtb_Scroll_This_Text("CHECKING FOR SOFTWARE UPDATE", CYAN);
         }
         else if (id == GHOTA_EVENT_UPDATE_AVAILABLE){
-            String updateAvailable = "{\"pxp_command\": 2, \"response\": 1, \"latVersion\": \"";
+            String updateAvailable = "{\"set_command\": 2, \"response\": 1, \"latVersion\": \"";
             /* get the version of the latest release on Github */
             semver_t *latestVer = ghota_get_latest_version(client);
             updateAvailable += semver_t_ToString(*latestVer) + "\"}";
@@ -50,7 +50,7 @@ String semver_t_ToString(const semver_t &version);
             bleSettingsComSend(mtb_Software_Update_Route, updateAvailable); // Send the update available message to the BLE client
         }
         else if (id == GHOTA_EVENT_NOUPDATE_AVAILABLE){
-            //String updateNotAvailable = "{\"pxp_command\": 2, \"response\": 1, \"available\": 0}";
+            //String updateNotAvailable = "{\"set_command\": 2, \"response\": 1, \"available\": 0}";
             //statusBarNotif.mtb_Scroll_This_Text("PIXLPAL IS UP-TO-DATE", LEMON);
             if(Mtb_Applications::currentRunningApp == Mtb_Applications::otaAppHolder) mtb_Launch_This_App(Mtb_Applications::previousRunningApp, IGNORE_PREVIOUS_APP);
             xSemaphoreGiveFromISR(ota_Update_Sem, &xHigherPriorityTaskWoken);

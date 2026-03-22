@@ -42,8 +42,8 @@ void wifiSettings(JsonDocument& dCommand){
 //**01*********************************************************************************************************************
 void current_Network(const char* networkName, const char* assigned_IP){
 //const char dTopic[] = "Pixlpal/Config/2";
-char sta_Contd[150] = "{\"pxp_command\": 1, \"connected\": 1, \"nwkName\": \"";
-String sta_Nt_Contd = "{\"pxp_command\": 1, \"connected\": 0}";
+char sta_Contd[150] = "{\"set_command\": 1, \"connected\": 1, \"nwkName\": \"";
+String sta_Nt_Contd = "{\"set_command\": 1, \"connected\": 0}";
 
 if (networkName == NULL) bleSettingsComSend("2", sta_Nt_Contd);
 else if(strlen(networkName) > 0){
@@ -59,8 +59,8 @@ else if(strlen(networkName) > 0){
 void connect_To_Network(JsonDocument& dCommand){
 unsigned long startTime = millis();
 unsigned long timeout = 10000; // 10 seconds timeout
-char sta_Contd[150] = "{\"pxp_command\": 1, \"connected\": 1}";
-String sta_Nt_Contd = "{\"pxp_command\": 1, \"connected\": 0}";
+char sta_Contd[150] = "{\"set_command\": 1, \"connected\": 1}";
+String sta_Nt_Contd = "{\"set_command\": 1, \"connected\": 0}";
 String ssid = dCommand["nwkName"];
 String  password = dCommand["nwkPass"];
 strcpy(last_Successful_Wifi.ssid, ssid.c_str());

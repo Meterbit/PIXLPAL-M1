@@ -303,7 +303,6 @@ if(pre_Day != now->tm_mday  || thisApp->elementRefresh){
 
 //**0*********************************************************************************************************************
 void setClockTitleAndColor(JsonDocument& dCommand){
-  String success = "{\"pxp_command\":0, \"response\": 1}";
   const char *color = NULL;
   uint16_t titleColor = 0;
   const char *title = dCommand["clockTitle"];
@@ -326,7 +325,6 @@ void setClockTitleAndColor(JsonDocument& dCommand){
 }
 //**1*********************************************************************************************************************
 void setPixAnimTheme(JsonDocument& dCommand){
-    String success = "{\"pxp_command\": 1, \"response\": 1}";
     const char* color = NULL;
     const char* name = dCommand["name"];
 
@@ -396,24 +394,7 @@ void setPixAnimClkColors(JsonDocument& dCommand){
     mtb_Write_Nvs_Struct("Clock Cols", &clk_Cols, sizeof(Clock_Colors));
     xQueueSend(clock_Update_Q, &clk_Cols, 0);
 }
-//**3********************************************************************************************************************************************************
-// void selectDisplayAnimation(JsonDocument& dCommand){
-//   char success[] = "{\"pxp_command\": 3, \"response\": 1}";
-//   uint8_t direction = dCommand["direction"];
-//   if(direction) ESP_LOGI(TAG, "Right Hand Direction Selected");
-//   else ESP_LOGI(TAG, "Left Hand Direction Selected");
-//   mqttServer.publish(apps_mqtt_data.topic_Response, success);
-// }
-// //**4********************************************************************************************************************************************************
-// void setPixAnimInterval(JsonDocument& dCommand){
-//   char success[] = "{\"pxp_command\": 4, \"response\": 1}";
-//   uint animIntervalHolder = dCommand["value"];
-//   mtb_Read_Nvs_Struct("pixAnimClk", &savedPixAnimClkSet, sizeof(PixAnimClkSettings_t));
-//   savedPixAnimClkSet.animInterval = animIntervalHolder;
-//   mtb_Write_Nvs_Struct("pixAnimClk",&savedPixAnimClkSet, sizeof(PixAnimClkSettings_t));
-//   mqttServer.publish(apps_mqtt_data.topic_Response, success);
-// }
-//**5*********************************************************************************************************************
+
 void requestNTP_Time(JsonDocument& dCommand){
   mtb_Launch_This_Service(mtb_Sntp_Time_Sv);
 }

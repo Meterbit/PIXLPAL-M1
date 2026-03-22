@@ -51,7 +51,7 @@ void softwareUpdate(JsonDocument& dCommand) {
 
 //**01*********************************************************************************************************************
 void mtb_Current_Software_Version(const char* curVer, const char* verDate, const char* wifiMac, const char* bleMac) {
-String verHeader = "{\"pxp_command\": 1, \"curVersion\": \"";
+String verHeader = "{\"set_command\": 1, \"curVersion\": \"";
 String currentVersion = verHeader + String(curVer) + "\", \"curDate\": \"" + String(verDate) + "\", \"wifiMac\": \"" + String(wifiMac) + "\", \"bleMac\": \"" + String(bleMac) + "\"}";
 //ESP_LOGI(TAG, "Current Software Version: %s\n", currentVersion.c_str());
 bleSettingsComSend(mtb_Software_Update_Route, currentVersion);
@@ -60,7 +60,7 @@ bleSettingsComSend(mtb_Software_Update_Route, currentVersion);
 // //**02*********************************************************************************************************************
 void attemptSoftwareUpdate(JsonDocument& dCommand){ 
 
-String failure = "{\"pxp_command\": 2, \"response\": 0}";
+String failure = "{\"set_command\": 2, \"response\": 0}";
 
 if(Mtb_Applications::internetConnectStatus == pdTRUE){
   mtb_Launch_This_App(otaUpdateApplication_App, IGNORE_PREVIOUS_APP);

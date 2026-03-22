@@ -219,8 +219,8 @@ void Mtb_Applications::mtb_App_Show_Mobile_UI(void){
     String mobileUICommand;
     snprintf(appID, sizeof(appID), "%u/%u", activateUserApp.GenApp, activateUserApp.SpeApp);
 
-    if(appMobile_Data == nullptr) mobileUICommand = "{\"pxp_command\": 252, \"manifest\": " + String(appMobile_Manifest) + ", \"ui_api\": " + String(appMobile_UiApi) + "}";
-    else mobileUICommand = "{\"pxp_command\": 252, \"manifest\": " + String(appMobile_Manifest) + ", \"ui_api\": " + String(appMobile_UiApi) + ", \"data\": " + String(appMobile_Data) + "}";
+    if(appMobile_Data == nullptr) mobileUICommand = "{\"app_command\": 252, \"manifest\": " + String(appMobile_Manifest) + ", \"ui_api\": " + String(appMobile_UiApi) + "}";
+    else mobileUICommand = "{\"app_command\": 252, \"manifest\": " + String(appMobile_Manifest) + ", \"ui_api\": " + String(appMobile_UiApi) + ", \"data\": " + String(appMobile_Data) + "}";
 
     ESP_LOGI(TAG, "Mobile UI Command: %s\n", mobileUICommand.c_str());
     
@@ -393,7 +393,7 @@ void Mtb_Applications::mtb_App_Init(Mtb_Services* pointer_0, Mtb_Services* point
 void mtb_Ble_App_Cmd_Respond_Success(const char* appID, uint8_t commandNumber, uint8_t response ){
     String jsonString;
     JsonDocument doc;
-    doc["pxp_command"] = commandNumber;
+    doc["app_command"] = commandNumber;
     doc["response"] = response;
     serializeJson(doc, jsonString);
     bleApplicationComSend(appID, jsonString);

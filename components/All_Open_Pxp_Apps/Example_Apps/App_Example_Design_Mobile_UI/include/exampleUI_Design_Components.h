@@ -16,74 +16,32 @@ static const char* manifest = R"json(
 static const char* ui_api = R"json(
 {
   "widgets": [
-    {
-      "type": "dropDownTextField",
-      "title": "Select Pattern",
-      "dataset": "audio_patterns",
-      "dropDownItemCount": 6,
-      "defaultValue": 0,
-      "command": {
-        "app_command": 0,
-        "args": ["selectedPattern"]
-      }
-    },
-    {
-      "type": "dropDownTextField",
-      "title": "No of Bands",
-      "dataset": "band_counts",
-      "dropDownItemCount": 6,
-      "defaultValue": 0,
-      "command": {
-        "app_command": 1,
-        "args": ["numOfBands"]
-      }
-    },
-    {
-      "type": "dropDownList",
-      "title": "Selected Stocks",
-      "dataset": "stock_symbols",
-      "buttonLabel": "Add/Remove Stocks",
-      "itemTapCommand": {
-        "app_command": 0,
-        "args": ["stkSymbol"]
-      },
-      "command": {
-        "app_command": 1,
-        "args": ["stkList"]
+  {
+    "type": "colorList",
+    "title": "Clock/Date Colors",
+    "items": [
+      { "id": "hour_minute", "label": "Hour/Minute", "default": "0xFFFF6600" },
+      { "id": "seconds", "label": "Seconds", "default": "0xFF006600" },
+      { "id": "meridiem", "label": "Meridiem", "default": "0xFFFF66FF" },
+      { "id": "weekday", "label": "Weekday", "default": "0xFFFF0000" },
+      { "id": "date", "label": "Date", "default": "0xFF000000" }
+    ],
+    "onChange": {
+      "command": { "app_command": 0, "args": ["name", "value"] },
+      "args": {
+        "id": "{item.id}",
+        "value": "{color.hexAARRGGBB}"
       }
     }
+  }
   ],
   "toasts": [
-    { "when": { "pxp_command": 0 }, "text": "Saved" },
-    { "when": { "pxp_command": 1 }, "text": "Saved" }
+    { "when": { "app_command": 0 }, "text": "Saved" }
   ]
 }
 )json";
 
-static const char* data = R"json(
-    {
-      "datasets": 
-      {
-        "audio_patterns": [
-          { "name": "1. BoxedBars BluePeak 1", "value": 0 },
-          { "name": "2. BoxedBars BluePeak 1", "value": 1 },
-          { "name": "3. BoxedBars RedPeak", "value": 2 }
-        ],
-        "band_counts": [
-          { "name": "8 Bands", "value": 0 },
-          { "name": "16 Bands", "value": 1 },
-          { "name": "24 Bands", "value": 2 },
-          { "name": "32 Bands", "value": 3 },
-          { "name": "64 Bands", "value": 4 }
-        ],
-        "stock_symbols": [
-          { "name": "AAPL", "value": "AAPL" },
-          { "name": "MSFT", "value": "MSFT" },
-          { "name": "NVDA", "value": "NVDA" }
-        ]
-      }
-    }
-)json";
+
 
 #endif
 
@@ -289,12 +247,37 @@ static const char* ui_api = R"json(
     
   ],
   "toasts": [
-    { "when": { "pxp_command": 0 }, "text": "Saved" },
-    { "when": { "pxp_command": 1 }, "text": "NTP Time Requested" }
+    { "when": { "app_command": 0 }, "text": "Saved" },
+    { "when": { "app_command": 1 }, "text": "NTP Time Requested" }
   ]
 }
 )json";
 
+
+static const char* data = R"json(
+    {
+      "datasets": 
+      {
+        "audio_patterns": [
+          { "name": "1. BoxedBars BluePeak 1", "value": 0 },
+          { "name": "2. BoxedBars BluePeak 1", "value": 1 },
+          { "name": "3. BoxedBars RedPeak", "value": 2 }
+        ],
+        "band_counts": [
+          { "name": "8 Bands", "value": 0 },
+          { "name": "16 Bands", "value": 1 },
+          { "name": "24 Bands", "value": 2 },
+          { "name": "32 Bands", "value": 3 },
+          { "name": "64 Bands", "value": 4 }
+        ],
+        "stock_symbols": [
+          { "name": "AAPL", "value": "AAPL" },
+          { "name": "MSFT", "value": "MSFT" },
+          { "name": "NVDA", "value": "NVDA" }
+        ]
+      }
+    }
+)json";
 
 #endif
 

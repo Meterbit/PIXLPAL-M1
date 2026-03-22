@@ -72,7 +72,7 @@ void systemSettings(JsonDocument& dCommand){
 //**01*********************************************************************************************************************
 void system_Device_Brightness(JsonDocument& dCommand){    // In the App, prevent multiple values from being sent by waiting for response after the first value has been sent.
 int tempBrightness;
-char setPanBrightness[100] = "{\"pxp_command\": 1, \"value\": ";
+char setPanBrightness[100] = "{\"set_command\": 1, \"value\": ";
 char brightnsValue[10];
 
 tempBrightness = dCommand["value"];
@@ -90,22 +90,22 @@ bleSettingsComSend(mtb_System_Settings_Route, String(setPanBrightness));
 
 //**02*********************************************************************************************************************
 void system_Silent_Mode(JsonDocument& dCommand){
-  String success = "{\"pxp_command\": 2, \"response\": 1}";
+  String success = "{\"set_command\": 2, \"response\": 1}";
   bleSettingsComSend(mtb_System_Settings_Route, success);
 }
 //**03*********************************************************************************************************************
 void system_PowerSaver_Mode(JsonDocument& dCommand){
-  String success = "{\"pxp_command\": 3, \"response\": 1}";
+  String success = "{\"set_command\": 3, \"response\": 1}";
   bleSettingsComSend(mtb_System_Settings_Route, success);
 }
 //**04*********************************************************************************************************************
 void system_Wifi_Radio(JsonDocument& dCommand){
-  String success = "{\"pxp_command\": 4, \"response\": 1}";
+  String success = "{\"set_command\": 4, \"response\": 1}";
   bleSettingsComSend(mtb_System_Settings_Route, success);
 }
 //**05*********************************************************************************************************************
 void system_Time_Zone(JsonDocument& dCommand){
-  String success = "{\"pxp_command\": 5, \"response\": 1}";
+  String success = "{\"set_command\": 5, \"response\": 1}";
   String timeZone = dCommand["dTimeZone"].as<String>();
   String cityName = dCommand["dCityName"].as<String>();
 
@@ -130,7 +130,7 @@ void system_Time_Zone(JsonDocument& dCommand){
 }
 //**06*********************************************************************************************************************
 void system_Clock_Format_Change(JsonDocument& dCommand){
-    String success = "{\"pxp_command\": 6, \"response\": 1}";
+    String success = "{\"set_command\": 6, \"response\": 1}";
     //uint8_t clockType = dCommand["value"];
     // if(clockType == 0){// Start the Classic Clock
     //   nvs_set_u8(my_nvs_handle, "clock_Face", 1);
@@ -144,7 +144,7 @@ void system_Clock_Format_Change(JsonDocument& dCommand){
 //**07*********************************************************************************************************************
 void system_Restart_Device(){
   statusBarNotif.mtb_Scroll_This_Text("RESTARTING PIXLPAL", YELLOW);
-  String acknowledge = "{\"pxp_command\": 7, \"response:\": 1}";
+  String acknowledge = "{\"set_command\": 7, \"response:\": 1}";
   bleSettingsComSend(mtb_System_Settings_Route, acknowledge);
   delay(10000);
   device_SD_RS(TEMP_RS);
@@ -152,7 +152,7 @@ void system_Restart_Device(){
 //**08*********************************************************************************************************************
 void system_Shutdown_Device(){
   statusBarNotif.mtb_Scroll_This_Text("SHUTTING DOWN PIXLPAL", RED);
-  String acknowledge = "{\"pxp_command\": 8, \"response:\": 1}";
+  String acknowledge = "{\"set_command\": 8, \"response:\": 1}";
   delay(12000);
   bleSettingsComSend(mtb_System_Settings_Route, acknowledge);
 	device_SD_RS(PERM_SH);
