@@ -53,7 +53,7 @@ The firmware demonstrates how to build network-enabled visual applications such 
 ## Quick Start
 
 **Build Requirements:**
-- **ESP-IDF v5.5.1** installed on macOS or Windows (via VS Code).  
+- **ESP-IDF v5.5.X** installed on macOS or Windows (via VS Code).  
   - [Complete step-by-step installation guide for Windows, MacOS X, Linux Ubuntu](https://randomnerdtutorials.com/programming-esp32-esp-idf-vs-code/)
   - [ESP-IDF VS-Code Installation Guide](https://github.com/espressif/vscode-esp-idf-extension)  
   - [Windows Installation Video](https://www.youtube.com/watch?v=D0fRc4XHBNk)  
