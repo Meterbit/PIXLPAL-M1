@@ -328,7 +328,7 @@ void mtb_Draw_Status_Bar(void){
 void Mtb_Static_Text_t::mtb_Config_Disp_Panel_Pins(){
 	pinMode(ALM_BUZZER, OUTPUT); // Make the alarm silent at the very start.
 	digitalWrite(ALM_BUZZER, LOW);
-	if (rgb_led_queue == NULL) rgb_led_queue = xQueueCreate(5, sizeof(rgb_led_message_t));	// REVISIT -> Potential memory savings by putting queue in PSRAM.
+	if (rgb_led_queue == NULL) rgb_led_queue = xQueueCreate(5, sizeof(rgb_led_message_t));
 	configure_ledc();
 	xTaskCreatePinnedToCore(rgb_led_task, "rgb_led_task", 2048, NULL, 5, NULL, 0);
 	mtb_Set_Status_RGB_LED(BLACK);

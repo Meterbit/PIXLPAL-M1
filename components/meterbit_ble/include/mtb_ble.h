@@ -32,6 +32,7 @@ extern void mtb_Ble_App_Cmd_Respond_Success(const char*, uint8_t, uint8_t respon
 
 extern void mtb_Ble_Comm_Init(void);
 extern void mtb_Ble_Comm_Deinit(void);
+extern void mtb_Ble_Change_Pxp_Ble_Name(const char* pxp_BLE_Name);
 
 extern int getIntegerAtIndex(const String &data, int index);
 
@@ -51,4 +52,8 @@ extern void softwareUpdate(JsonDocument&);
 void mtb_Current_Ble_Device(const char*);
 void mtb_Set_Pxp_Ble_Name(JsonDocument&);
 void mtb_Current_Software_Version(const char*, const char*, const char*, const char*);
+
+void system_Restart_Device();
+void system_Shutdown_Device();
+
 #endif

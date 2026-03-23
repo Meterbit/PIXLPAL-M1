@@ -18,6 +18,7 @@
 #include "mtb_nvs.h"
 #include "mtb_wifi.h"
 #include "mtb_ble.h"
+#include "mtb_system.h"
 
 static const char TAG[] = "BLE_SETTINGS";
 
@@ -64,5 +65,13 @@ if (newBleName.length() == 0) {
 }
 strcpy(pxp_BLE_Name, newBleName.c_str());
 mtb_Write_Nvs_Struct("pxpBleDevName", pxp_BLE_Name, sizeof(pxp_BLE_Name));
+
+// mtb_Ble_Change_Pxp_Ble_Name(pxp_BLE_Name);
+
 bleSettingsComSend(mtb_Ble_Settings_Route, success);
+
+statusBarNotif.mtb_Scroll_This_Text("BLUETOOTH NAME CHANGED TO: \"" + newBleName + "\".    PIXLPAL WILL RESTART", SKY_BLUE_CRAYOLA);
+
+delay(13000);
+device_SD_RS(TEMP_RS);
 }

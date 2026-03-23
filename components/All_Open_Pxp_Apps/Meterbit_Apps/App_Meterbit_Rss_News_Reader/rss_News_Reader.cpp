@@ -24,8 +24,8 @@ using namespace tinyxml2;
 EXT_RAM_BSS_ATTR TaskHandle_t rssNewsApp_Task_H = NULL;
 void rssNewsApp_Task(void *dApplication);
 
-Mtb_ScrollText_t rssScroller(2, 52, 124, Terminal6x8, WHITE, 20, 0xFFFF);  // REVISIT -> Make Global declaration dynamic. Move definitions to PSRAM
-Mtb_ScrollText_t rssErrorMsg(2, 42, 124, Terminal6x8, ORANGE_RED, 20, 3);  // REVISIT -> Make Global declaration dynamic. Move definitions to PSRAM
+EXT_RAM_BSS_ATTR Mtb_ScrollText_t *rssScroller = new Mtb_ScrollText_t(2, 52, 124, Terminal6x8, WHITE, 20, 0xFFFF);  // REVISIT -> Make Global declaration dynamic. Move definitions to PSRAM
+EXT_RAM_BSS_ATTR Mtb_ScrollText_t *rssErrorMsg = new Mtb_ScrollText_t(2, 42, 124, Terminal6x8, ORANGE_RED, 20, 3);  // REVISIT -> Make Global declaration dynamic. Move definitions to PSRAM
 
 
 EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *rssNewsApp = new Mtb_Applications_StatusBar(rssNewsApp_Task, &rssNewsApp_Task_H, "RSS News", 8192, pdTRUE);
@@ -61,6 +61,9 @@ void rssNewsApp_Task(void* dApplication) {
       delay(1000);
     }
   }
+  delete rssScroller;
+  delete rssErrorMsg;
+
   mtb_Delete_This_App(thisApp);
 }
 
@@ -116,14 +119,14 @@ void fetchAndDisplayHeadlines(Mtb_Applications *thisApp) {
     if (!bbcOk) errorMsg += "BBC ";
     if (!cnnOk) errorMsg += "CNN ";
     //if (!reutersOk) errorMsg += "Reuters ";
-    rssErrorMsg.mtb_Scroll_This_Text(errorMsg.c_str());
+    rssErrorMsg->mtb_Scroll_This_Text(errorMsg.c_str());
   } else {
-    rssErrorMsg.mtb_Scroll_Active(STOP_SCROLL);
+    rssErrorMsg->mtb_Scroll_Active(STOP_SCROLL);
   }
 
   for (auto& headline : headlines) {
     if (MTB_APP_IS_ACTIVE != pdTRUE) break;
-    rssScroller.mtb_Scroll_This_Text(headline.c_str());
+    rssScroller->mtb_Scroll_This_Text(headline.c_str());
     ESP_LOGI(TAG, "RSS news content is: %s\n", headline.c_str());
     delay(8000);
   }

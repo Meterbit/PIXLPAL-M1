@@ -13,7 +13,7 @@ struct AppleNotification_Data_t {
 uint8_t notification = 0; 
 };
 
-AppleNotification_Data_t appleNotificationInfo; // REVISIT -> Move into app stack
+AppleNotification_Data_t appleNotificationInfo; // REVISIT -> Move into  PSRAM by making the variable memory dynamic.
 
 EXT_RAM_BSS_ATTR TaskHandle_t appleNotification_Task_H = NULL;
 void appleNotifications_App_Task(void *);

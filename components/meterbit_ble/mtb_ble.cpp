@@ -110,8 +110,8 @@ void mtb_Ble_Comm_Init(void){
   appValue = "0";
   setValue = "1";
 
-  if(setCom_queue == NULL) setCom_queue = xQueueCreate(BLE_COMM_QUEUE_SIZE, sizeof(mtb_BleCom_Data_Trans_t));     // REVISIT -> Potential memory savings by putting queue in PSRAM.
-  if(appCom_queue == NULL) appCom_queue = xQueueCreate(BLE_COMM_QUEUE_SIZE, sizeof(mtb_BleCom_Data_Trans_t));     // REVISIT -> Potential memory savings by putting queue in PSRAM.
+  if(setCom_queue == NULL) setCom_queue = xQueueCreate(BLE_COMM_QUEUE_SIZE, sizeof(mtb_BleCom_Data_Trans_t));
+  if(appCom_queue == NULL) appCom_queue = xQueueCreate(BLE_COMM_QUEUE_SIZE, sizeof(mtb_BleCom_Data_Trans_t));
 
     // Create the BLE Device
     mtb_Read_Nvs_Struct("pxpBleDevName", pxp_BLE_Name, sizeof(pxp_BLE_Name));
@@ -195,6 +195,27 @@ void mtb_Ble_Comm_Deinit() {
 
     Mtb_Applications::bleAdvertisingStatus = false;
     mtb_Show_Status_Bar_Icon({"/batIcons/wipe7x7.png", 18, 1}); 
+}
+
+void mtb_Ble_Change_Pxp_Ble_Name(const char* pxp_BLE_Name){
+      // 1. Stop advertising
+      NimBLEDevice::getAdvertising()->stop();
+
+        delay(100);
+
+      // 2. Set new device name
+      NimBLEDevice::setDeviceName(pxp_BLE_Name);
+
+      // 3. Update advertising data
+      NimBLEAdvertising* pAdvertising = NimBLEDevice::getAdvertising();
+
+      NimBLEAdvertisementData advData;
+      advData.setName(pxp_BLE_Name);   // VERY IMPORTANT
+
+      pAdvertising->setAdvertisementData(advData);
+
+      // 4. Restart advertising
+      pAdvertising->start();
 }
 
 int bleSettingsComSend(const char* dRoute, const String& dMessage) {

@@ -24,7 +24,7 @@ Mtb_ScrollText_t::Mtb_ScrollText_t(uint16_t c, uint16_t p, uint8_t makeBeep){
     yPos = 1;
     width = 128;
     color = c;
-    speed = 30;
+    speed = 25;
     pass = p;
     font = (uint8_t*)Terminal6x8;
     beep = makeBeep;

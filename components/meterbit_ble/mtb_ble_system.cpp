@@ -30,8 +30,6 @@ void system_Silent_Mode(JsonDocument&);
 void system_PowerSaver_Mode(JsonDocument&);
 void system_Wifi_Radio(JsonDocument&);
 void system_Time_Zone(JsonDocument&);
-void system_Restart_Device();
-void system_Shutdown_Device();
 
 void systemSettings(JsonDocument& dCommand){
     DeserializationError passed;
