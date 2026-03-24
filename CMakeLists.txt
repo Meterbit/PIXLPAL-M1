@@ -10,9 +10,15 @@ set(EXTRA_COMPONENT_DIRS    ${CMAKE_SOURCE_DIR}/components/All_Open_Pxp_Apps/Met
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 add_compile_definitions(CONFIG_SPIRAM_SUPPORT=1)
+add_compile_definitions(CONFIG_SPIRAM_SUPPORT=1)
+add_compile_definitions(CONFIG_SPIRAM_SUPPORT=1)
 add_compile_definitions(NANOSVG_IMPLEMENTATION=1)
 add_compile_definitions(NANOSVGRAST_IMPLEMENTATION=1)
 add_compile_options(-DDISABLE_SMTP=0)
 add_compile_definitions(CORE_DEBUG_LEVEL=1)
+add_definitions(
+-DARDUINO_USB_MODE
+-DARDUINO_USB_CDC_ON_BOOT
+)
 # add_compile_definitions(CONFIG_BLUEDROID_ENABLED=1)
 project(PIXLPAL-M1)
