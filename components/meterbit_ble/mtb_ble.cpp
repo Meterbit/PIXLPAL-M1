@@ -14,7 +14,7 @@
 #include "mtb_ble.h"
 
 
-#define BLE_COMM_QUEUE_SIZE 6
+#define BLE_COMM_QUEUE_SIZE 3         // INCREASE THIS IF YOU ANTICIPATE A HIGHER VOLUME OF BLE MESSAGES TO BE TO BE SENT FROM APP TO PIXLPAL ESPECIALLY FOR APPCOM.
 
 static const char TAG[] = "BLE_COMM";
 
@@ -355,6 +355,11 @@ void ble_AppCom_Parse_Task(void* dService){
         int charIndex = dInstruction.indexOf('|');             // find index of target character
         String specific_Application = dInstruction.substring(0, charIndex);  // copy up to the target character
         String dJsonPayload = dInstruction.substring(++charIndex);
+
+        Mtb_UserApp_t showAppUI{
+            .GenApp = 0,
+            .SpeApp = 1
+            };
 
         ESP_LOGI(TAG, "The specific App is: %s\n", specific_Application.c_str());
         // ESP_LOGI(TAG, "The dPayload for App is: %s\n", dPayload.c_str());

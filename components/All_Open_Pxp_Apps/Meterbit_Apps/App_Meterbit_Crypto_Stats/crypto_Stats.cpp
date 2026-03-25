@@ -45,7 +45,7 @@ void add_RemoveCryptoSymbol(JsonDocument&);
 void setCryptoChangeInterval(JsonDocument&);
 void setCrytoAPI_key(JsonDocument&);
 
-EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *crypto_Stats_App = new Mtb_Applications_StatusBar(cryptoStats_App_Task, &cryptoStats_Task_H, "Crypto Data", 10240);
+EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *coinCap_Stats_App = new Mtb_Applications_StatusBar(cryptoStats_App_Task, &cryptoStats_Task_H, "Crypto Data", 10240);
 
 void cryptoStats_App_Task(void* dApplication){
   Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;

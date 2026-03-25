@@ -15,9 +15,11 @@ EXT_RAM_BSS_ATTR StaticQueue_t xQueueStorage_Scrolls[5] = {NULL};;
 EXT_RAM_BSS_ATTR TaskHandle_t scrollText_Handles[5] = {NULL};
 EXT_RAM_BSS_ATTR QueueHandle_t scroll_Q[5] = {NULL};
 EXT_RAM_BSS_ATTR Mtb_Services* mtb_Scroll_Tasks_Sv[5];
-Mtb_ScrollText_t* Mtb_ScrollText_t::scrollTask_HolderPointers[5] = {nullptr};
+
+EXT_RAM_BSS_ATTR Mtb_ScrollText_t* Mtb_ScrollText_t::scrollTask_HolderPointers[5] = {nullptr};
 //**************************************************************************************
-Mtb_ScrollText_t statusBarNotif (PINK_FLAMINGO);
+EXT_RAM_BSS_ATTR Mtb_ScrollText_t statusBarNotif (PINK_FLAMINGO);
+
 //**************************************************************************************
 Mtb_ScrollText_t::Mtb_ScrollText_t(uint16_t c, uint16_t p, uint8_t makeBeep){
     xPos = 0;

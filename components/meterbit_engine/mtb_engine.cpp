@@ -18,15 +18,7 @@
 
 static const char TAG[] = "METERBIT_ENGINE";
 
-Mtb_UserApp_t activateUserApp{
-    .GenApp = 0,
-    .SpeApp = 1
-    };
-
-Mtb_UserApp_t showAppUI{
-    .GenApp = 0,
-    .SpeApp = 1
-    };
+EXT_RAM_BSS_ATTR Mtb_UserApp_t activateUserApp;
 
 EXT_RAM_BSS_ATTR QueueHandle_t clock_Update_Q = NULL;
 EXT_RAM_BSS_ATTR TaskHandle_t ble_AppCom_Parser_Task_Handle = NULL;
@@ -61,13 +53,15 @@ uint8_t Mtb_Applications::firmwareOTA_Status = 6;
 uint8_t Mtb_Applications::spiffsOTA_Status = 6;
 Mtb_ShowAppUI_OR_LaunchApp_t Mtb_Applications::showAppUI_OR_LaunchApp = LAUNCH_SELECT_APP;
 
-Mtb_Applications::Mtb_Applications(void (*dApplication)(void *), TaskHandle_t* dAppHandle_ptr, const char* dAppName, uint32_t dStackSize, uint8_t core){
+Mtb_Applications::Mtb_Applications(void (*dApplication)(void *), TaskHandle_t* dAppHandle_ptr, const char* dAppName, uint32_t dStackSize, bool canCycle){
     application = dApplication;
     appHandle_ptr = dAppHandle_ptr;
     strcpy(appName, dAppName);
     stackSize = dStackSize;
     appPriority = 1;
-    appCore = core;
+    if(dAppHandle_ptr == (&firmwareUpdate_H)) appCore = 1;
+    else appCore = 0;
+    appCanCycle = canCycle;
     elementRefresh = true;
 }
 
@@ -280,7 +274,7 @@ void mtb_Brightness_Control(rotary_encoder_rotation_t direction){
         if(panelBrightness <= 250){ 
         panelBrightness += 5;
         mtb_Panel_Set_Brightness(panelBrightness); // 0-255
-        mtb_Set_Status_RGB_LED(currentStatusLEDcolor);
+        //mtb_Set_Status_RGB_LED(currentStatusLEDcolor);
         mtb_Write_Nvs_Struct("pan_brghnss", &panelBrightness, sizeof(uint8_t));
         }
         if(panelBrightness >= 255) do_beep(CLICK_BEEP);
@@ -288,7 +282,7 @@ void mtb_Brightness_Control(rotary_encoder_rotation_t direction){
         if(panelBrightness >= 7){
         panelBrightness -= 5;
         mtb_Panel_Set_Brightness(panelBrightness); //0-255
-        mtb_Set_Status_RGB_LED(currentStatusLEDcolor);
+        //mtb_Set_Status_RGB_LED(currentStatusLEDcolor);
         mtb_Write_Nvs_Struct("pan_brghnss", &panelBrightness, sizeof(uint8_t));
         }
         if(panelBrightness <= 6) do_beep(CLICK_BEEP);
@@ -424,7 +418,7 @@ void mtb_General_App_Register(Mtb_UserApp_t dAppPath){
     case 5: mtb_Sports_App_Launch(dAppPath.SpeApp); break;
     case 6: mtb_Animations_App_Launch(dAppPath.SpeApp); break;
     case 7: mtb_Notifications_App_Launch(dAppPath.SpeApp); break;
-    case 8: mtb_Ai_App_Launch(dAppPath.SpeApp); break;
+    case 8: mtb_AIs_App_Launch(dAppPath.SpeApp); break;
     case 9: mtb_Audio_Stream_App_Launch(dAppPath.SpeApp); break;
     case 10: mtb_sMedia_App_Launch(dAppPath.SpeApp); break;
     case 11: mtb_Miscellanous_App_Launch(dAppPath.SpeApp); break;
@@ -490,7 +484,7 @@ void mtb_Weather_App_Launch(uint16_t dAppNumber){
 void mtb_Finance_App_Launch(uint16_t dAppNumber){
     switch(dAppNumber){
         case 0: mtb_Launch_This_App(finnhub_Stats_App); break;
-        case 1: mtb_Launch_This_App(crypto_Stats_App); break; 
+        case 1: mtb_Launch_This_App(coinCap_Stats_App); break; 
         case 2: mtb_Launch_This_App(currencyExchange_App); break;
         case 3: mtb_Launch_This_App(polygonFX_App); break;
 
@@ -537,7 +531,7 @@ void mtb_Notifications_App_Launch(uint16_t dAppNumber){
 }
 
 //********NUMBER 8 */
-void mtb_Ai_App_Launch(uint16_t dAppNumber){
+void mtb_AIs_App_Launch(uint16_t dAppNumber){
     switch(dAppNumber){
         case 0: mtb_Launch_This_App(chatGPT_App); break;
         // case 1: mtb_Launch_This_App(calendarClock_App); break; 

@@ -11,7 +11,5 @@
 
 
 extern TaskHandle_t firmwareUpdate_H;
-extern TaskHandle_t ipAddressChanged_H;
 extern void firmwareUpdateTask(void *arguments);
-extern void ipAddressChanged_Task(void *arguments);
 #endif

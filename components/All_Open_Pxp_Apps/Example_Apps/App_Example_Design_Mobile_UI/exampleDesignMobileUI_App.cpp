@@ -22,9 +22,19 @@ void exampleDesignMobileUI_Task(void* dApplication){
 // Write Fixed Text to display
   exampleFixedText.mtb_Write_String("Dev Practice App"); // Write text in default color
 
+  // Declare Variable for monitoring Free/Available internal SRAM
+  size_t free_sram = 0;
+
   while (MTB_APP_IS_ACTIVE == pdTRUE) {
-    delay(1000);
-}
+    // // Get the total free size of internal SRAM
+    // free_sram = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
+
+    // // Print the free SRAM size to the console.
+    // printf("############ Free Internal SRAM: %zu bytes\n", free_sram);
+
+    // // delay 5 seconds
+    delay(5000);
+  }
 
 // Clean up the application before exiting
   mtb_Delete_This_App(thisApp);

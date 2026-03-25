@@ -47,8 +47,8 @@ void requestNTP_Time(JsonDocument&);
 Mtb_CentreText_t* headerText;
 Mtb_ScrollText_t* headerTextScroll;
 
-EXT_RAM_BSS_ATTR Mtb_Services *pixAnimClkGif_Sv = new Mtb_Services(pixAnimClockGif_Task, &pixAnimClockGif_Task_H, "Anim Clk Task", 4096); // THIS APP CANNOT BE IN PSRAM BECAUSE IT WRITES/READS THE FLASH DURING OPERATION.
-EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *pixelAnimClock_App = new Mtb_Applications_FullScreen(pixAnimClock_App_Task, &pixAnimClock_Task_H, "Pixel Anim Clk", 8192); // Review down this stack size later.
+EXT_RAM_BSS_ATTR Mtb_Services *pixAnimClkGif_Sv = new Mtb_Services(pixAnimClockGif_Task, &pixAnimClockGif_Task_H, "Anim Clk Task", 4096);
+EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *pixelAnimClock_App = new Mtb_Applications_FullScreen(pixAnimClock_App_Task, &pixAnimClock_Task_H, "Pixel Anim Clk", 4096);
 
 void  pixAnimClock_App_Task(void* dApplication){
   Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;

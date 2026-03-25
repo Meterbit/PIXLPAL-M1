@@ -6,6 +6,7 @@
 #include "mtb_littleFs.h"
 #include "mtb_ble.h"
 #include "esp_heap_caps.h"
+#include <HardwareSerial.h>
 
 using namespace std;
 
@@ -13,7 +14,7 @@ static const char TAG[] = "PXP-MAIN_PROG";
 
 extern "C" void app_main(){
     // Initialize Pixlpal System
-    Serial.begin(115200); 
+    // Serial.begin(115200); 
     mtb_LittleFS_Init();
     mtb_RotaryEncoder_Init();
     mtb_System_Init();
@@ -28,12 +29,9 @@ extern "C" void app_main(){
 
     // Launch the Last Executed App or Launch a particular App after boot-up
     mtb_General_App_Register(activateUserApp);
-    // mtb_Launch_This_App(exampleWriteText_App);
 
     // Declare Variable for monitoring Free/Available internal SRAM
     size_t free_sram = 0;
-
-    Serial.println("Starting Free SRAM Monitor...");
 
     // While Loop prints available Internal SRAM every 2 seconds
     while (1){

@@ -87,15 +87,15 @@ void mtb_System_Init(void){
     //if(bleRestoreTimer_H == NULL) bleRestoreTimer_H = xTimerCreate("bleRstoreTim", pdMS_TO_TICKS(1000), pdFALSE, NULL, bleRestoreTimerCallBkFn);
     if(Mtb_FixedText_t::scratchPad == nullptr){
             // Allocate memory for row pointers
-    Mtb_FixedText_t::scratchPad = (uint8_t **)heap_caps_malloc(MATRIX_WIDTH * sizeof(uint8_t *), MALLOC_CAP_SPIRAM);
+    Mtb_FixedText_t::scratchPad = (uint8_t **)heap_caps_malloc(PANEL_RES_X * sizeof(uint8_t *), MALLOC_CAP_SPIRAM);
     if (Mtb_FixedText_t::scratchPad == NULL) {
         ESP_LOGI(TAG, "Failed to allocate memory for row pointers\n");
         return;
     }
 
     // Allocate memory for each row
-    for (int i = 0; i < MATRIX_WIDTH; i++){
-        Mtb_FixedText_t::scratchPad[i] = (uint8_t *)heap_caps_malloc(MATRIX_HEIGHT * sizeof(uint8_t), MALLOC_CAP_SPIRAM);
+    for (int i = 0; i < PANEL_RES_X; i++){
+        Mtb_FixedText_t::scratchPad[i] = (uint8_t *)heap_caps_malloc(PANEL_RES_Y * sizeof(uint8_t), MALLOC_CAP_SPIRAM);
         if (Mtb_FixedText_t::scratchPad[i] == NULL) {
         ESP_LOGI(TAG, "Failed to allocate memory for row %d\n", i);
         return;

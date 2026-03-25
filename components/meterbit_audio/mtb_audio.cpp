@@ -47,12 +47,13 @@ static const char TAG[] = "METERBIT_DAC_N_MIC";
 // Ringbuffer capacity: a few hundred ms of audio to absorb jitter
 #define PCM_RB_CAPACITY   (BYTES_PER_MS * 400)                        // ~400ms
 
-static RingbufHandle_t s_pcm_rb = NULL;
-static TaskHandle_t s_uac_writer_task = NULL;
+EXT_RAM_BSS_ATTR RingbufHandle_t s_pcm_rb = NULL;
+EXT_RAM_BSS_ATTR TaskHandle_t s_uac_writer_task = NULL;
 static volatile bool s_uac_running = false;
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-static QueueHandle_t s_event_queue = NULL;
-static uac_host_device_handle_t s_spk_dev_handle = NULL;
+EXT_RAM_BSS_ATTR QueueHandle_t s_event_queue = NULL;
+EXT_RAM_BSS_ATTR uac_host_device_handle_t s_spk_dev_handle = NULL;
+
 static uint32_t s_spk_curr_freq = DEFAULT_UAC_FREQ;
 static uint8_t s_spk_curr_bits = DEFAULT_UAC_BITS;
 static uint8_t s_spk_curr_ch = DEFAULT_UAC_CH;
@@ -125,7 +126,7 @@ uint8_t mic_OR_dac = OFF_DAC_N_MIC;
 
 RawAudioData AudioSamplesTransport;
 //AUDIO_TEXT_DATA_T selectAudioText = AUDIO_INFO;
-AudioTextTransfer_T audioTextTransferBuffer;
+EXT_RAM_BSS_ATTR AudioTextTransfer_T audioTextTransferBuffer;
 
 //uint8_t VisualizeAudio = false;
 uint8_t kMatrixWidth = 128; //   PANEL_WIDTH

@@ -22,9 +22,6 @@
 #define FIXED_TEXT_STYLE    1
 #define SCROLL_TEXT_STYLE   0   
 
-#define MATRIX_WIDTH 128    // LED Matrix Display Width in pixels
-#define MATRIX_HEIGHT 64    // LED Matrix Display Height in pixels
-
 #define PANEL_RES_X 128    // Number of pixels wide of each INDIVIDUAL panel module. 
 #define PANEL_RES_Y 64     // Number of pixels tall of each INDIVIDUAL panel module.
 #define PANEL_CHAIN 1      // Total number of panels chained one to another
@@ -111,6 +108,7 @@
     extern void mtb_Panel_Draw_PixelRGB(uint16_t x, uint16_t y, uint8_t r, uint8_t g, uint8_t b);
     extern void mtb_Panel_Draw_Pixel565(uint16_t x, uint16_t y, uint16_t color);
     extern void mtb_Panel_Draw_Frame(uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t *data);
+    extern void mtb_Panel_Fill(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint8_t r, uint8_t g, uint8_t b);
     extern void mtb_Panel_Set_Brightness(uint8_t brightness);
     extern void mtb_Panel_Fill_Screen(uint16_t color);
     extern void mtb_Panel_Clear_Screen(void);

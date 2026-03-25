@@ -16,7 +16,7 @@
 
 static const char* TAG = "WIFI EVENTS";
 
-struct Wifi_Credentials last_Successful_Wifi;
+EXT_RAM_BSS_ATTR Wifi_Credentials last_Successful_Wifi;
 
 EXT_RAM_BSS_ATTR String ipStr;
 
@@ -70,6 +70,7 @@ void handle_wifi_disconnected(void* arg, esp_event_base_t event_base, int32_t ev
 
 //****************************************************************************************************
 void mtb_Wifi_Init() {
+    last_Successful_Wifi = {"MTB_TEST", "password", "192.168.0.1"};
     WiFi.mode(WIFI_MODE_STA);
     WiFi.setAutoReconnect(true); // Enable auto-reconnect
     // Registering handlers for specific WiFi events

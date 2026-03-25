@@ -23,7 +23,7 @@ static const char *TAG = "MTB USB OTA";
 
 EXT_RAM_BSS_ATTR TaskHandle_t otaFailed_MQTT_Parser_Task_H = NULL;
 EXT_RAM_BSS_ATTR TaskHandle_t firmwareUpdate_H = NULL;
-EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *usbOTA_Update_App = new Mtb_Applications_FullScreen(firmwareUpdateTask, &firmwareUpdate_H, "OTA FW UPDATE", 6144, 1);
+EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *usbOTA_Update_App = new Mtb_Applications_FullScreen(firmwareUpdateTask, &firmwareUpdate_H, "OTA FW UPDATE", 6144);
 
 static void msc_ota_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data);
 uint8_t attemptUSB_FirmwareUpdate(void);

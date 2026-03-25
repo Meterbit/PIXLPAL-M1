@@ -14,6 +14,7 @@
 #include "mtb_nvs.h"
 #include "mtb_graphics.h"
 #include "esp_heap_caps.h"
+#include "commonApps.h"
 
 #define APPS_PARSER_QUEUE_SIZE 5
 #define NVS_MEM_READ            0
@@ -62,7 +63,7 @@ extern void nvsAccessTask(void *);
 //**************************************************************************************************************************
 
 extern Mtb_UserApp_t activateUserApp;
-extern Mtb_UserApp_t showAppUI;
+
 extern esp_err_t mtb_Read_Nvs_Struct(const char* key, void* struct_ptr, size_t struct_size);
 extern esp_err_t mtb_Write_Nvs_Struct(const char *key, void *struct_ptr, size_t struct_size);
 extern void (*encoderFn_ptr)(rotary_encoder_rotation_t);
@@ -144,6 +145,7 @@ public:
     uint8_t appPriority;                // Priority of the application
     TaskHandle_t* appHandle_ptr;        // Pointer to the application task handle.
     uint8_t appCore;                    // Core on which the application task is running on.
+    bool appCanCycle;                   // This is used to check if the application can be cycled or not. If true, the application can be suspended and resumed, otherwise the app plays until it is destroyed.
 
     const char* appMobile_Manifest;
     const char* appMobile_UiApi;
@@ -211,7 +213,7 @@ public:
 
     // Applications Constructors
     Mtb_Applications();                                             // Default constructor
-    Mtb_Applications(void (*dApplication)(void *), TaskHandle_t* dAppHandle_ptr, const char* dAppName, uint32_t dStackSize, uint8_t core);
+    Mtb_Applications(void (*dApplication)(void *), TaskHandle_t* dAppHandle_ptr, const char* dAppName, uint32_t dStackSize, bool canCycle);
     //virtual 
 };
 
@@ -219,8 +221,8 @@ public:
 class Mtb_Applications_FullScreen : public Mtb_Applications{            
     public:
         Mtb_Applications_FullScreen();
-        Mtb_Applications_FullScreen(void (*dApplication)(void *), TaskHandle_t *dAppHandle_ptr, const char *dAppName, uint32_t dStackSize = 4096, uint8_t core = 0) : 
-        Mtb_Applications(dApplication, dAppHandle_ptr, dAppName, dStackSize, core) { 
+        Mtb_Applications_FullScreen(void (*dApplication)(void *), TaskHandle_t *dAppHandle_ptr, const char *dAppName, uint32_t dStackSize = 4096, bool canCycle = true) : 
+        Mtb_Applications(dApplication, dAppHandle_ptr, dAppName, dStackSize, canCycle) { 
             fullScreen = true;
         }
 };
@@ -229,8 +231,8 @@ class Mtb_Applications_FullScreen : public Mtb_Applications{
 class Mtb_Applications_StatusBar : public Mtb_Applications{
     public:
         Mtb_Applications_StatusBar();
-        Mtb_Applications_StatusBar(void (*dApplication)(void *), TaskHandle_t *dAppHandle_ptr, const char *dAppName, uint32_t dStackSize = 4096, uint8_t core = 0) : 
-        Mtb_Applications(dApplication, dAppHandle_ptr, dAppName, dStackSize, core) { 
+        Mtb_Applications_StatusBar(void (*dApplication)(void *), TaskHandle_t *dAppHandle_ptr, const char *dAppName, uint32_t dStackSize = 4096, bool canCycle = true) : 
+        Mtb_Applications(dApplication, dAppHandle_ptr, dAppName, dStackSize, canCycle) { 
             fullScreen = false;
         }
 };
@@ -264,7 +266,7 @@ extern void mtb_Animations_App_Launch(uint16_t);
 extern void mtb_Finance_App_Launch(uint16_t);
 extern void mtb_sMedia_App_Launch(uint16_t);
 extern void mtb_Notifications_App_Launch(uint16_t);
-extern void mtb_Ai_App_Launch(uint16_t);
+extern void mtb_AIs_App_Launch(uint16_t);
 extern void mtb_Audio_Stream_App_Launch(uint16_t);
 extern void mtb_Miscellanous_App_Launch(uint16_t);
 
@@ -332,7 +334,7 @@ extern Mtb_Applications_StatusBar *googleWeather_App;           // App Communica
 
 // Finance
 extern Mtb_Applications_StatusBar *finnhub_Stats_App;           // App Communication Route: 4/0
-extern Mtb_Applications_StatusBar *crypto_Stats_App;            // App Communication Route: 4/1
+extern Mtb_Applications_StatusBar *coinCap_Stats_App;            // App Communication Route: 4/1
 extern Mtb_Applications_StatusBar *currencyExchange_App;        // App Communication Route: 4/2
 extern Mtb_Applications_StatusBar *polygonFX_App;               // App Communication Route: 4/3
 

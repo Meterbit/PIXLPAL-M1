@@ -63,7 +63,7 @@ void delete_file(const char *path) {
 }
 
 EXT_RAM_BSS_ATTR Mtb_Services *mtb_Audio_Listening_Sv = new Mtb_Services(micAudioListen_Task, &micAudioListen_Task_H, "Aud listen Serv", 4096);
-EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *chatGPT_App = new Mtb_Applications_StatusBar(chatGPT_App_Task, &chatGPT_Task_H, "chatGPT App", 10240); // Review down this stack size later.
+EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *chatGPT_App = new Mtb_Applications_StatusBar(chatGPT_App_Task, &chatGPT_Task_H, "chatGPT App", 10240, false); // Review down this stack size later.
 
 //***************************************************************************************************
 void  chatGPT_App_Task(void* dApplication){
