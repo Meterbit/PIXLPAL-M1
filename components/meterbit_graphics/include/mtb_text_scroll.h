@@ -11,6 +11,8 @@
 #include "mtb_colors.h"
 #include "Arduino.h"
 
+
+
 #define CHECK_SCROLL        0
 #define STOP_SCROLL         1
 
@@ -53,7 +55,7 @@ class Mtb_ScrollText_t {
         uint8_t scrollTaskHandling = 0;      // This is used to set the scroll task that is running the scrolling for this particular object.
         static Mtb_ScrollText_t *scrollTask_HolderPointers[];
 
-        void mtb_Scroll_String();
+        void mtb_Scroll_String(TaskHandle_t&);
         void mtb_Scroll_This_Text(const char*);
         void mtb_Scroll_This_Text(const char*, uint16_t c);
         void mtb_Scroll_This_Text(const char*, uint16_t c, uint16_t p);

@@ -157,10 +157,10 @@ bool Mtb_Applications::appRunner(){
 }
 
 void Mtb_Applications::appResume(Mtb_Applications* dApp){
-    appDestroy(currentRunningApp);
-    mtb_Panel_Clear_Screen();
-    previousRunningApp = currentRunningApp;
+    // appDestroy(currentRunningApp);
+    // mtb_Panel_Clear_Screen();
 
+    previousRunningApp = currentRunningApp;
     if(dApp->fullScreen == false) mtb_Draw_Status_Bar();
 
     if(litFS_Ready){
@@ -274,7 +274,8 @@ void mtb_Brightness_Control(rotary_encoder_rotation_t direction){
         if(panelBrightness <= 250){ 
         panelBrightness += 5;
         mtb_Panel_Set_Brightness(panelBrightness); // 0-255
-        //mtb_Set_Status_RGB_LED(currentStatusLEDcolor);
+        printf("Metebit Panel Brightness HIGER Function was Called.\n");
+        mtb_Set_Status_RGB_LED(currentStatusLEDcolor);
         mtb_Write_Nvs_Struct("pan_brghnss", &panelBrightness, sizeof(uint8_t));
         }
         if(panelBrightness >= 255) do_beep(CLICK_BEEP);
@@ -282,7 +283,8 @@ void mtb_Brightness_Control(rotary_encoder_rotation_t direction){
         if(panelBrightness >= 7){
         panelBrightness -= 5;
         mtb_Panel_Set_Brightness(panelBrightness); //0-255
-        //mtb_Set_Status_RGB_LED(currentStatusLEDcolor);
+        printf("Metebit Panel Brightness LOWER Function was Called.\n");
+        mtb_Set_Status_RGB_LED(currentStatusLEDcolor);
         mtb_Write_Nvs_Struct("pan_brghnss", &panelBrightness, sizeof(uint8_t));
         }
         if(panelBrightness <= 6) do_beep(CLICK_BEEP);

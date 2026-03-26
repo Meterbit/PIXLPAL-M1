@@ -10,7 +10,6 @@
 #include "mtb_buzzer.h"
 #include "mtb_engine.h"
 
-
 EXT_RAM_BSS_ATTR StaticQueue_t xQueueStorage_Scrolls[5] = {NULL};;
 EXT_RAM_BSS_ATTR TaskHandle_t scrollText_Handles[5] = {NULL};
 EXT_RAM_BSS_ATTR QueueHandle_t scroll_Q[5] = {NULL};
@@ -71,7 +70,7 @@ int countCharOccurrences(const char *str, char ch) {
     return count;
 }
 //**************************************************************************************
-void Mtb_ScrollText_t::mtb_Scroll_String(){
+void Mtb_ScrollText_t::mtb_Scroll_String(TaskHandle_t& dAppTaskHandle){
     uint32_t scroll_Length = span + width;
     uint8_t yPos2 = font[6] + yPos;
     uint8_t xPos2 = width + xPos;
@@ -86,6 +85,7 @@ void Mtb_ScrollText_t::mtb_Scroll_String(){
         if(uxNumberOfMessages > 1 && pass > 1) break;
             for (uint32_t xPix = 0; xPix < scroll_Length; xPix++){
                 if(scroll_Quit == pdTRUE) return; //if scroll_Quit is made True, scrolling stops and the function returns.
+                while(eTaskGetState(dAppTaskHandle) == eSuspended) delay(100); // while the app is suspended, pause the scrolling until the app is resumed.
                 for (uint16_t i = xPos, p = xPix; i < xPos2; i++, p++){
                     for (uint16_t j = yPos, q = 0; j < yPos2; j++, q++){
                         if (dText_Raw[p][q]) mtb_Panel_Draw_Pixel565(i, j, color); // update color.
@@ -111,7 +111,7 @@ void mtb_Scroll_Text_0_Task(void* dService){
     Mtb_ScrollText_t::scrollTask_HolderPointers[0] = &holder;
 
     while ((xQueuePeek(scroll_Q[0], &holder, pdMS_TO_TICKS(100)) == pdTRUE)){
-        if(Mtb_Applications::currentRunningApp->fullScreen == false) holder.mtb_Scroll_String();
+        if(Mtb_Applications::currentRunningApp->fullScreen == false) holder.mtb_Scroll_String(*(Mtb_Applications::currentRunningApp->appHandle_ptr));
             xQueueReceive(scroll_Q[0], &holder, pdMS_TO_TICKS(100));
             for(int i = 0; i < holder.stretch; i++) free(holder.dText_Raw[i]);
             free(holder.dText_Raw);
@@ -129,7 +129,7 @@ void scrollText_1_Task(void* dService){
     Mtb_ScrollText_t::scrollTask_HolderPointers[1] = &holder;
     
     while(xQueuePeek(scroll_Q[1], &holder, pdMS_TO_TICKS(100)) == pdTRUE){
-    holder.mtb_Scroll_String();
+    holder.mtb_Scroll_String(*(Mtb_Applications::currentRunningApp->appHandle_ptr));
     xQueueReceive(scroll_Q[1], &holder, pdMS_TO_TICKS(100));
     for(int i = 0; i < holder.stretch; i++) free(holder.dText_Raw[i]);
     free(holder.dText_Raw);
@@ -143,7 +143,7 @@ void scrollText_2_Task(void* dService){
     Mtb_ScrollText_t::scrollTask_HolderPointers[2] = &holder;
 
     while(xQueuePeek(scroll_Q[2], &holder, pdMS_TO_TICKS(100)) == pdTRUE){
-        holder.mtb_Scroll_String();
+        holder.mtb_Scroll_String(*(Mtb_Applications::currentRunningApp->appHandle_ptr));
         xQueueReceive(scroll_Q[2], &holder, pdMS_TO_TICKS(100));
     for(int i = 0; i < holder.stretch; i++) free(holder.dText_Raw[i]);
     free(holder.dText_Raw);
@@ -157,7 +157,7 @@ void scrollText_3_Task(void* dService){
     Mtb_ScrollText_t::scrollTask_HolderPointers[3] = &holder;
 
     while(xQueuePeek(scroll_Q[3], &holder, pdMS_TO_TICKS(100)) == pdTRUE){
-        holder.mtb_Scroll_String();
+        holder.mtb_Scroll_String(*(Mtb_Applications::currentRunningApp->appHandle_ptr));
         xQueueReceive(scroll_Q[3], &holder, pdMS_TO_TICKS(100));
     for(int i = 0; i < holder.stretch; i++) free(holder.dText_Raw[i]);
     free(holder.dText_Raw);
@@ -172,7 +172,7 @@ void scrollText_4_Task(void* dService){
     Mtb_ScrollText_t::scrollTask_HolderPointers[4] = &holder;
 
     while(xQueuePeek(scroll_Q[4], &holder, pdMS_TO_TICKS(100)) == pdTRUE){
-        holder.mtb_Scroll_String();
+        holder.mtb_Scroll_String(*(Mtb_Applications::currentRunningApp->appHandle_ptr));
         xQueueReceive(scroll_Q[4], &holder, pdMS_TO_TICKS(100));
     for(int i = 0; i < holder.stretch; i++) free(holder.dText_Raw[i]);
     free(holder.dText_Raw);
@@ -184,14 +184,14 @@ void scrollText_4_Task(void* dService){
 void  mtb_Text_Scrolls_Init(void){
     for (uint8_t i = 0; i < 5; i++){
     uint8_t *scrollQueues_buffer = (uint8_t *)heap_caps_malloc(40 * sizeof(Mtb_ScrollText_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
-    scroll_Q[i] = xQueueCreateStatic(40, sizeof(Mtb_ScrollText_t), scrollQueues_buffer, &xQueueStorage_Scrolls[i]); // These Queues live forever on device startup.
+    scroll_Q[i] = xQueueCreateStatic(10, sizeof(Mtb_ScrollText_t), scrollQueues_buffer, &xQueueStorage_Scrolls[i]); // These Queues live forever on device startup.
     mtb_Scroll_Tasks_Sv[i] = (Mtb_Services*) new Mtb_Services();
     }
     for (uint8_t v = 0; v < 5; v++){
         mtb_Scroll_Tasks_Sv[v]->serviceT_Handle_ptr = &scrollText_Handles[v];
         mtb_Scroll_Tasks_Sv[v]->serviceCore = 0;
         mtb_Scroll_Tasks_Sv[v]->servicePriority = 3;
-        mtb_Scroll_Tasks_Sv[v]->stackSize = 4096;
+        mtb_Scroll_Tasks_Sv[v]->stackSize = 3072;
         snprintf(mtb_Scroll_Tasks_Sv[v]->serviceName, 50, "%d", v);
         strcat(mtb_Scroll_Tasks_Sv[v]->serviceName, " Scrl Txt Tsk");
     }
