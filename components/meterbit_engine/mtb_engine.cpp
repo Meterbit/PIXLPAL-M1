@@ -66,9 +66,12 @@ Mtb_Applications::Mtb_Applications(void (*dApplication)(void *), TaskHandle_t* d
 }
 
 void mtb_Launch_This_App(Mtb_Applications *dApp, Mtb_Do_Prev_App_t do_Prv_App){
+        if (*(dApp->appHandle_ptr) != NULL && eTaskGetState(*(dApp->appHandle_ptr)) == eSuspended) Mtb_Applications::appResume(dApp);
+        else {
         dApp->action_On_Prev_App = do_Prv_App;
         xQueueSend(appLauncherQueue, &dApp, portMAX_DELAY);
         mtb_Launch_This_Service(mtb_App_Launcher_Sv);
+        }
 }
 
 void mtb_Launch_This_Service(Mtb_Services* dService){
@@ -274,7 +277,6 @@ void mtb_Brightness_Control(rotary_encoder_rotation_t direction){
         if(panelBrightness <= 250){ 
         panelBrightness += 5;
         mtb_Panel_Set_Brightness(panelBrightness); // 0-255
-        printf("Metebit Panel Brightness HIGER Function was Called.\n");
         mtb_Set_Status_RGB_LED(currentStatusLEDcolor);
         mtb_Write_Nvs_Struct("pan_brghnss", &panelBrightness, sizeof(uint8_t));
         }
@@ -283,7 +285,6 @@ void mtb_Brightness_Control(rotary_encoder_rotation_t direction){
         if(panelBrightness >= 7){
         panelBrightness -= 5;
         mtb_Panel_Set_Brightness(panelBrightness); //0-255
-        printf("Metebit Panel Brightness LOWER Function was Called.\n");
         mtb_Set_Status_RGB_LED(currentStatusLEDcolor);
         mtb_Write_Nvs_Struct("pan_brghnss", &panelBrightness, sizeof(uint8_t));
         }

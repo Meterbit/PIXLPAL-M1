@@ -105,17 +105,17 @@
     // GRAPHICS PROCESSING FUNCTIONS
     extern uint16_t mtb_Panel_Color565(uint8_t r, uint8_t g, uint8_t b, uint16_t *color = nullptr);
     extern uint16_t mtb_Panel_Color32bit_To_Color565(const char* dartColor, uint16_t *color565 = nullptr);
-    extern void mtb_Panel_Draw_PixelRGB(uint16_t x, uint16_t y, uint8_t r, uint8_t g, uint8_t b);
-    extern void mtb_Panel_Draw_Pixel565(uint16_t x, uint16_t y, uint16_t color);
-    extern void mtb_Panel_Draw_Frame(uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t *data);
-    extern void mtb_Panel_Fill(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint8_t r, uint8_t g, uint8_t b);
+    extern void mtb_Panel_Draw_PixelRGB(int16_t x, int16_t y, uint8_t r, uint8_t g, uint8_t b);
+    extern void mtb_Panel_Draw_Pixel565(int16_t x, int16_t y, uint16_t color);
+    extern void mtb_Panel_Draw_Frame(int16_t x, int16_t y, int16_t width, int16_t height, const uint8_t *data);
+    extern void mtb_Panel_Fill(int16_t x, int16_t y, int16_t w, int16_t h, uint8_t r, uint8_t g, uint8_t b);
     extern void mtb_Panel_Set_Brightness(uint8_t brightness);
     extern void mtb_Panel_Fill_Screen(uint16_t color);
     extern void mtb_Panel_Clear_Screen(void);
-    extern void mtb_Panel_Draw_HLine(uint16_t y, uint16_t x1, uint16_t x2, uint16_t color);
-    extern void mtb_Panel_Draw_VLine(uint16_t x, uint16_t y1, uint16_t y2, uint16_t color);
-    extern void mtb_Panel_Draw_Rect(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2,  uint16_t color);
-    extern void mtb_Panel_Fill_Rect(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2,  uint16_t color);
+    extern void mtb_Panel_Draw_HLine(int16_t y, int16_t x1, int16_t x2, uint16_t color);
+    extern void mtb_Panel_Draw_VLine(int16_t x, int16_t y1, int16_t y2, uint16_t color);
+    extern void mtb_Panel_Draw_Rect(int16_t x1, int16_t y1, int16_t x2, int16_t y2,  uint16_t color);
+    extern void mtb_Panel_Fill_Rect(int16_t x1, int16_t y1, int16_t x2, int16_t y2,  uint16_t color);
     extern void mtb_Panel_Draw_Line(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color);
     
     extern void mtb_Panel_Draw_Circle(int16_t x0, int16_t y0, int16_t r, uint16_t color);
@@ -130,9 +130,9 @@
     // TEXT PROCESSING CLASSES
     class Mtb_Static_Text_t{
     public:
-    uint8_t yAxis, xAxis, charSpacing;
+    int8_t yAxis, xAxis, charSpacing;
     uint8_t *fontMain;
-    uint16_t x1Seg, y1Seg, originX1Seg, originY1Seg;
+    int16_t x1Seg, y1Seg, originX1Seg, originY1Seg;
     uint8_t textStyle;
     uint16_t textHorizSpace = 0;
 
@@ -143,18 +143,18 @@
     static void mtb_Init_Led_Matrix_Panel();
     static void mtb_Clear_Screen(void);
     void setfont(const uint8_t *font);
-    void writeXter(uint16_t a, uint16_t x, uint16_t y);
+    void writeXter(uint16_t a, int16_t x, int16_t y);
 
     // USER TEXT FUNCTIONS
     virtual uint16_t mtb_Write_String(const char *myString);    // Write a char array string to the display
     virtual uint16_t mtb_Write_String(String myString);         // Write a String object to the display
 
-    virtual void mtb_Set_Pixel_Data(uint16_t, uint16_t){}
+    virtual void mtb_Set_Pixel_Data(int16_t, int16_t){}
     virtual void mtb_Update_Panel_Segment(void){}
     virtual void mtb_Clear_Panel_Segment(void){}
 
     Mtb_Static_Text_t();
-    Mtb_Static_Text_t(uint16_t x1, uint16_t y1, const uint8_t *font = Terminal6x8);
+    Mtb_Static_Text_t(int16_t x1, int16_t y1, const uint8_t *font = Terminal6x8);
 
     virtual ~Mtb_Static_Text_t() {}  // Add this line
 };
@@ -164,7 +164,7 @@
 class Mtb_FixedText_t : public Mtb_Static_Text_t {
     public:
     static uint8_t** scratchPad;
-    virtual void mtb_Set_Pixel_Data(uint16_t, uint16_t) override;
+    virtual void mtb_Set_Pixel_Data(int16_t, int16_t) override;
     virtual void mtb_Update_Panel_Segment(void) override;
     virtual void mtb_Clear_Panel_Segment(void) override;
 
@@ -213,7 +213,7 @@ class Mtb_CentreText_t : public Mtb_FixedText_t {
     void mtb_Update_Panel_Segment(void) override {}
     void mtb_Clear_Panel_Segment(void) override;
     Mtb_CentreText_t();
-    Mtb_CentreText_t(uint16_t x1, uint16_t y1, const uint8_t *font = Terminal6x8, uint16_t dColor = OLIVE_GREEN, uint16_t dBackGrndColor = BLACK) : Mtb_FixedText_t(x1, y1, font,dColor,dBackGrndColor){}
+    Mtb_CentreText_t(int16_t x1, int16_t y1, const uint8_t *font = Terminal6x8, uint16_t dColor = OLIVE_GREEN, uint16_t dBackGrndColor = BLACK) : Mtb_FixedText_t(x1, y1, font,dColor,dBackGrndColor){}
 
     // Overload the new operator
     void *operator new(size_t size){return heap_caps_malloc(size, MALLOC_CAP_SPIRAM);}
@@ -226,9 +226,9 @@ class Mtb_CentreText_t : public Mtb_FixedText_t {
 class ScrollTextHelper_t : public Mtb_Static_Text_t {
     public:
     uint8_t ** scrollBuffer;
-    virtual void mtb_Set_Pixel_Data(uint16_t, uint16_t) override;
+    virtual void mtb_Set_Pixel_Data(int16_t, int16_t) override;
     ScrollTextHelper_t();
-    ScrollTextHelper_t(uint16_t x1, uint16_t y1, const uint8_t *font = Terminal6x8) : Mtb_Static_Text_t(x1, y1, font) { textStyle = SCROLL_TEXT_STYLE;}
+    ScrollTextHelper_t(int16_t x1, int16_t y1, const uint8_t *font = Terminal6x8) : Mtb_Static_Text_t(x1, y1, font) { textStyle = SCROLL_TEXT_STYLE;}
 };
 
     extern Hub75Driver* mtb_Display_Driver;

@@ -111,6 +111,10 @@ void mtb_System_Init(void){
     mtb_Text_Scrolls_Init();
     if(appLauncherQueue == NULL) appLauncherQueue = xQueueCreateStatic(4, sizeof(Mtb_Applications*), appLauncherQueue_buffer, &xQueueStorage_AppLauncher);
 
+    // Attempt OTA Update from USB Flash Drive
+    mtb_Launch_This_App(usbOTA_Update_App);
+    while(Mtb_Applications::firmwareOTA_Status != pdFALSE) delay(1000);
+
     // Read the last executed App from NVS
     mtb_Read_Nvs_Struct("activateUserApp", &activateUserApp, sizeof(Mtb_UserApp_t));
 }

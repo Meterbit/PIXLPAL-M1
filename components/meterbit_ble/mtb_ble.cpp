@@ -81,7 +81,7 @@ class MyServerCallbacks : public NimBLEServerCallbacks{
 class CharacteristicsCallbacks : public NimBLECharacteristicCallbacks{
   void onWrite(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo& connInfo){
 
-    ESP_LOGI(TAG, "BLEData Received : %s \n", pCharacteristic->getValue().c_str());
+  ESP_LOGI(TAG, "BLEData Received : %s \n", pCharacteristic->getValue().c_str());
 
 if(pCharacteristic == setCom_characteristic){
       setValue = pCharacteristic->getValue().c_str();
@@ -221,6 +221,7 @@ void mtb_Ble_Change_Pxp_Ble_Name(const char* pxp_BLE_Name){
 int bleSettingsComSend(const char* dRoute, const String& dMessage) {
       if(Mtb_Applications::bleCentralContd == false) return 0;
       setCom_characteristic->setValue(String(dRoute) + "|" + dMessage);
+      ESP_LOGI(TAG, "BLE Settings Data Sent : %s \n", (String(dRoute) + "|" + dMessage).c_str());
       if (!setCom_characteristic->notify()) ESP_LOGW("BLE", "Notify failed for setCom_characteristic");
       return 1;
 }
@@ -308,7 +309,7 @@ void ble_SetCom_Parse_Task(void* dService){
   uint16_t dSetCategory = 0;
 
   while (xQueueReceive(setCom_queue, &qMessage, pdMS_TO_TICKS(500))){
-    ESP_LOGI(TAG, "Settings Payload is: %s\n", (char*) qMessage.payload);
+    //ESP_LOGI(TAG, "Settings Payload is: %s\n", (char*) qMessage.payload);
     
     String dInstruction = String((char *)qMessage.payload);
     int charIndex = dInstruction.indexOf('|');             // find index of target character

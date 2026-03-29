@@ -8,5 +8,5 @@ idf_component_register( SRCS "main.cpp"
                         App_Example_Encoder_N_Beep
                         )
 
-#                        littlefs_create_partition_image(spiffs sysLitFs FLASH_IN_PROJECT)
-#                        littlefs_create_partition_image(userDat userLitFs FLASH_IN_PROJECT)
+#                         littlefs_create_partition_image(spiffs sysLitFs FLASH_IN_PROJECT)
+#                         littlefs_create_partition_image(userDat userLitFs FLASH_IN_PROJECT)

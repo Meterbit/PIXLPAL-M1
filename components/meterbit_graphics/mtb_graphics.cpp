@@ -56,11 +56,11 @@ uint16_t currentStatusLEDcolor = BLACK;
 Hub75Driver* mtb_Display_Driver;
 uint16_t panelBrightness = 70;
 uint8_t **Mtb_FixedText_t::scratchPad = nullptr;
-EXT_RAM_BSS_ATTR uint16_t mtb_Panel_Frame_Buffer[PANEL_RES_X][PANEL_RES_Y];
+EXT_RAM_BSS_ATTR int16_t mtb_Panel_Frame_Buffer[PANEL_RES_X][PANEL_RES_Y];
 
 // Prefer internal DRAM for these local-drawer tasks to avoid PSRAM-as-stack instability.
-EXT_RAM_BSS_ATTR Mtb_Services *mtb_Png_Local_ImageDrawer_Sv = new Mtb_Services(mtb_Draw_Local_Png_Task, &pngLocalImageDrawer_Handle, "PNG LOCAL DRAWER", 4096, 2); // Keep the task stack size at 12288 for reliability.
-EXT_RAM_BSS_ATTR Mtb_Services *mtb_SvgLocal_ImageDrawer_Sv = new Mtb_Services(mtb_Draw_Local_Svg_Task, &svgLocalImageDrawer_Handle, "SVG LOCAL DRAWER", 4096, 2); // Keep the task stack size at 10240 for reliability.
+EXT_RAM_BSS_ATTR Mtb_Services *mtb_Png_Local_ImageDrawer_Sv = new Mtb_Services(mtb_Draw_Local_Png_Task, &pngLocalImageDrawer_Handle, "PNG LOCAL DRAWER", 6144, 2); // Keep the task stack size at 12288 for reliability.
+EXT_RAM_BSS_ATTR Mtb_Services *mtb_SvgLocal_ImageDrawer_Sv = new Mtb_Services(mtb_Draw_Local_Svg_Task, &svgLocalImageDrawer_Handle, "SVG LOCAL DRAWER", 6144, 2); // Keep the task stack size at 10240 for reliability.
 
 #define RGB_LED_PIN_R 3
 #define RGB_LED_PIN_G 42
@@ -377,7 +377,7 @@ void Mtb_Static_Text_t::mtb_Init_Led_Matrix_Panel(){
 }
 
 //************************************************
-Mtb_Static_Text_t::Mtb_Static_Text_t(uint16_t x1, uint16_t y1, const uint8_t *font)
+Mtb_Static_Text_t::Mtb_Static_Text_t(int16_t x1, int16_t y1, const uint8_t *font)
 {
 	setfont(font);
 	x1Seg = originX1Seg = x1;
@@ -394,9 +394,9 @@ void Mtb_Static_Text_t::setfont(const uint8_t *font)
 //*************************************************************************************
 void Mtb_FixedText_t::mtb_Clear_Panel_Segment(void)
 {
-	for (uint16_t i = x1Seg, p = x1Seg + textHorizSpace; i < p; i++)
+	for (int16_t i = x1Seg < 0 ? 0 : x1Seg, p = x1Seg + textHorizSpace; i < p; i++)
 	{
-		for (uint16_t j = y1Seg, q = y1Seg + yAxis; j < q; j++)
+		for (int16_t j = y1Seg, q = y1Seg + yAxis; j < q; j++)
 		{
 			scratchPad[i][j] = 0;
 		}
@@ -405,9 +405,9 @@ void Mtb_FixedText_t::mtb_Clear_Panel_Segment(void)
 //*************************************************************************************
 void Mtb_FixedText_t::mtb_Update_Panel_Segment(void)
 {
-	for (uint16_t i = x1Seg, p = x1Seg + textHorizSpace; i < p; i++)
+	for (int16_t i = x1Seg < 0 ? 0 : x1Seg, p = x1Seg + textHorizSpace; i < p; i++)
 	{
-		for (uint16_t j = y1Seg, q = y1Seg + yAxis; j < q; j++)
+		for (int16_t j = y1Seg < 0 ? 0 : y1Seg, q = y1Seg + yAxis; j < q; j++)
 		{
 			if (!(scratchPad[i][j])) mtb_Panel_Draw_Pixel565(i, j, backgroundColor); // update color
 		}
@@ -420,7 +420,7 @@ void Mtb_Static_Text_t::mtb_Clear_Screen(void)
 }
 //**************************************************************************************
 // PASSED
-void Mtb_FixedText_t::mtb_Set_Pixel_Data(uint16_t xPs, uint16_t yPs)
+void Mtb_FixedText_t::mtb_Set_Pixel_Data(int16_t xPs, int16_t yPs)
 {
 	mtb_Panel_Draw_Pixel565(xPs, yPs, color); // update color
 	scratchPad[xPs][yPs] = 1;
@@ -428,13 +428,13 @@ void Mtb_FixedText_t::mtb_Set_Pixel_Data(uint16_t xPs, uint16_t yPs)
 
 //**************************************************************************************
 // PASSED
-void ScrollTextHelper_t::mtb_Set_Pixel_Data(uint16_t xPs, uint16_t yPs)
+void ScrollTextHelper_t::mtb_Set_Pixel_Data(int16_t xPs, int16_t yPs)
 {
 	scrollBuffer[xPs][yPs] = 1;
 }
 //**************************************************************************************
 // write character function
-void Mtb_Static_Text_t::writeXter(uint16_t character, uint16_t xPixel, uint16_t yPixel)
+void Mtb_Static_Text_t::writeXter(uint16_t character, int16_t xPixel, int16_t yPixel)
 {
 	uint16_t xOrigin = xPixel;
 	uint8_t masker = 0;
@@ -464,7 +464,7 @@ uint16_t Mtb_Static_Text_t::mtb_Write_String(const char *myString){
 	uint16_t xBorder = 0;
 	uint16_t position = textStyle ? y1Seg : 0;
 
-	if(x1Seg > PANEL_RES_X || y1Seg > PANEL_RES_Y){
+	if(x1Seg < 0){
 		Mtb_ScrollText_t moreCryptoData (0, y1Seg, PANEL_RES_X, fontMain, color, 20, 1);
 		moreCryptoData.backgroundColor = backgroundColor;
 		moreCryptoData.mtb_Scroll_This_Text(myString);
@@ -804,9 +804,9 @@ uint16_t Mtb_FixedText_t::mtb_Write_Colored_Text(String myString, uint16_t dColo
 }
 //*************************************************************************************
 void Mtb_CentreText_t::mtb_Clear_Panel_Segment(void){
-	for (uint16_t i = x1Seg, p = x1Seg + textHorizSpace; i < p; i++)
+	for (int16_t i = x1Seg < 0 ? 0 : x1Seg, p = x1Seg + textHorizSpace; i < p; i++)
 	{
-		for (uint16_t j = y1Seg, q = y1Seg + yAxis; j < q; j++)
+		for (int16_t j = y1Seg, q = y1Seg + yAxis; j < q; j++)
 		{
 			mtb_Panel_Draw_Pixel565(i, j, backgroundColor); // update color
 		}
@@ -1590,21 +1590,21 @@ uint16_t mtb_Panel_Color32bit_To_Color565(const char* dartColor, uint16_t *color
 	return mtb_Panel_Color565(r, g, b, color565);
 }
 
-void mtb_Panel_Draw_PixelRGB(uint16_t x, uint16_t y, uint8_t r, uint8_t g, uint8_t b){
+void mtb_Panel_Draw_PixelRGB(int16_t x, int16_t y, uint8_t r, uint8_t g, uint8_t b){
 	uint16_t rgb565 = ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
 	mtb_Panel_Frame_Buffer[x][y] = rgb565; // Update backbuffer
   	mtb_Display_Driver->draw_pixels(x, y, 1, 1, (uint8_t *)(&rgb565), Hub75PixelFormat::RGB565, Hub75ColorOrder::RGB, false);
 }
 
-void mtb_Panel_Draw_Pixel565(uint16_t x, uint16_t y, uint16_t color){
+void mtb_Panel_Draw_Pixel565(int16_t x, int16_t y, uint16_t color){
 	mtb_Panel_Frame_Buffer[x][y] = color; // Update backbuffer
   	mtb_Display_Driver->draw_pixels(x, y, 1, 1, (uint8_t *)(&color), Hub75PixelFormat::RGB565, Hub75ColorOrder::RGB, false);
 }
 
-void mtb_Panel_Draw_Frame(uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t *data){
+void mtb_Panel_Draw_Frame(int16_t x, int16_t y, int16_t width, int16_t height, const uint8_t *data){
 	// Update backbuffer
-	for (uint16_t j = 0; j < height; j++) {
-		for (uint16_t i = 0; i < width; i++) {
+	for (int16_t j = 0; j < height; j++) {
+		for (int16_t i = 0; i < width; i++) {
 			uint16_t color = ((data[(j * width + i) * 3 + 0] & 0xF8) << 8) | 
 							 ((data[(j * width + i) * 3 + 1] & 0xFC) << 3) | 
 							 (data[(j * width + i) * 3 + 2] >> 3);
@@ -1615,10 +1615,10 @@ void mtb_Panel_Draw_Frame(uint16_t x, uint16_t y, uint16_t width, uint16_t heigh
 	mtb_Display_Driver->draw_pixels(x, y, width, height, data, Hub75PixelFormat::RGB888, Hub75ColorOrder::RGB, false);
 }
 
-void mtb_Panel_Fill(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint8_t r, uint8_t g, uint8_t b){
+void mtb_Panel_Fill(int16_t x, int16_t y, int16_t w, int16_t h, uint8_t r, uint8_t g, uint8_t b){
 	uint16_t color565 = ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
-	for (uint16_t j = 0; j < h; j++) {
-		for (uint16_t i = 0; i < w; i++) {
+	for (int16_t j = 0; j < h; j++) {
+		for (int16_t i = 0; i < w; i++) {
 			mtb_Panel_Frame_Buffer[x + i][y + j] = color565;
 		}
 	}
@@ -1653,11 +1653,11 @@ void mtb_Panel_Clear_Screen(void){
 	mtb_Display_Driver->clear();
 }
 
-void mtb_Panel_Draw_HLine(uint16_t y, uint16_t x1, uint16_t x2, uint16_t color){
+void mtb_Panel_Draw_HLine(int16_t y, int16_t x1, int16_t x2, uint16_t color){
 	mtb_Panel_Draw_Line(x1, y, x2, y, color);
 }
 
-void mtb_Panel_Draw_VLine(uint16_t x, uint16_t y1, uint16_t y2, uint16_t color){
+void mtb_Panel_Draw_VLine(int16_t x, int16_t y1, int16_t y2, uint16_t color){
 	mtb_Panel_Draw_Line(x, y1, x, y2, color);
 }
 
@@ -1672,7 +1672,7 @@ void mtb_Panel_Draw_Line(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_
 	while (true) {
 		// bounds check before drawing
 		if (x1 >= 0 && x1 < PANEL_RES_X && y1 >= 0 && y1 < PANEL_RES_Y) {
-			mtb_Panel_Draw_Pixel565((uint16_t)x1, (uint16_t)y1, color);
+			mtb_Panel_Draw_Pixel565((int16_t)x1, (int16_t)y1, color);
 		}
 
 		if (x1 == x2 && y1 == y2) break;
@@ -1688,10 +1688,10 @@ void mtb_Panel_Draw_Line(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_
 	}
 }
 
-void mtb_Panel_Draw_Rect(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2,  uint16_t color){
+void mtb_Panel_Draw_Rect(int16_t x1, int16_t y1, int16_t x2, int16_t y2,  uint16_t color){
 	// Normalize coordinates so x1/y1 is top-left and x2/y2 is bottom-right
-	if (x2 < x1) { uint16_t t = x1; x1 = x2; x2 = t; }
-	if (y2 < y1) { uint16_t t = y1; y1 = y2; y2 = t; }
+	if (x2 < x1) { int16_t t = x1; x1 = x2; x2 = t; }
+	if (y2 < y1) { int16_t t = y1; y1 = y2; y2 = t; }
 
 	// Clip to display bounds (0..127, 0..63)
 	if (x1 > 127) x1 = 127;
@@ -1706,10 +1706,10 @@ void mtb_Panel_Draw_Rect(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2,  ui
 	mtb_Panel_Draw_Line((int16_t)x2, (int16_t)y1, (int16_t)x2, (int16_t)y2, color); // right
 }
 
-void mtb_Panel_Fill_Rect(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2,  uint16_t color){
+void mtb_Panel_Fill_Rect(int16_t x1, int16_t y1, int16_t x2, int16_t y2,  uint16_t color){
 	// Normalize coordinates so x1/y1 is top-left and x2/y2 is bottom-right
-	if (x2 < x1) { uint16_t t = x1; x1 = x2; x2 = t; }
-	if (y2 < y1) { uint16_t t = y1; y1 = y2; y2 = t; }
+	if (x2 < x1) { int16_t t = x1; x1 = x2; x2 = t; }
+	if (y2 < y1) { int16_t t = y1; y1 = y2; y2 = t; }
 
 	// Clip to display bounds (0..127, 0..63)
 	if (x1 > 127) x1 = 127;
@@ -1744,15 +1744,15 @@ void mtb_Panel_Draw_Circle(int16_t x0, int16_t y0, int16_t r, uint16_t color){
 
 	while (x >= y) {
 		// plot the eight octants with bounds checks
-		if (x0 + x >= 0 && x0 + x < PANEL_RES_X && y0 + y >= 0 && y0 + y < PANEL_RES_Y) mtb_Panel_Draw_Pixel565((uint16_t)(x0 + x), (uint16_t)(y0 + y), color);
-		if (x0 - x >= 0 && x0 - x < PANEL_RES_X && y0 + y >= 0 && y0 + y < PANEL_RES_Y) mtb_Panel_Draw_Pixel565((uint16_t)(x0 - x), (uint16_t)(y0 + y), color);
-		if (x0 + x >= 0 && x0 + x < PANEL_RES_X && y0 - y >= 0 && y0 - y < PANEL_RES_Y) mtb_Panel_Draw_Pixel565((uint16_t)(x0 + x), (uint16_t)(y0 - y), color);
-		if (x0 - x >= 0 && x0 - x < PANEL_RES_X && y0 - y >= 0 && y0 - y < PANEL_RES_Y) mtb_Panel_Draw_Pixel565((uint16_t)(x0 - x), (uint16_t)(y0 - y), color);
+		if (x0 + x >= 0 && x0 + x < PANEL_RES_X && y0 + y >= 0 && y0 + y < PANEL_RES_Y) mtb_Panel_Draw_Pixel565((int16_t)(x0 + x), (int16_t)(y0 + y), color);
+		if (x0 - x >= 0 && x0 - x < PANEL_RES_X && y0 + y >= 0 && y0 + y < PANEL_RES_Y) mtb_Panel_Draw_Pixel565((int16_t)(x0 - x), (int16_t)(y0 + y), color);
+		if (x0 + x >= 0 && x0 + x < PANEL_RES_X && y0 - y >= 0 && y0 - y < PANEL_RES_Y) mtb_Panel_Draw_Pixel565((int16_t)(x0 + x), (int16_t)(y0 - y), color);
+		if (x0 - x >= 0 && x0 - x < PANEL_RES_X && y0 - y >= 0 && y0 - y < PANEL_RES_Y) mtb_Panel_Draw_Pixel565((int16_t)(x0 - x), (int16_t)(y0 - y), color);
 
-		if (x0 + y >= 0 && x0 + y < PANEL_RES_X && y0 + x >= 0 && y0 + x < PANEL_RES_Y) mtb_Panel_Draw_Pixel565((uint16_t)(x0 + y), (uint16_t)(y0 + x), color);
-		if (x0 - y >= 0 && x0 - y < PANEL_RES_X && y0 + x >= 0 && y0 + x < PANEL_RES_Y) mtb_Panel_Draw_Pixel565((uint16_t)(x0 - y), (uint16_t)(y0 + x), color);
-		if (x0 + y >= 0 && x0 + y < PANEL_RES_X && y0 - x >= 0 && y0 - x < PANEL_RES_Y) mtb_Panel_Draw_Pixel565((uint16_t)(x0 + y), (uint16_t)(y0 - x), color);
-		if (x0 - y >= 0 && x0 - y < PANEL_RES_X && y0 - x >= 0 && y0 - x < PANEL_RES_Y) mtb_Panel_Draw_Pixel565((uint16_t)(x0 - y), (uint16_t)(y0 - x), color);
+		if (x0 + y >= 0 && x0 + y < PANEL_RES_X && y0 + x >= 0 && y0 + x < PANEL_RES_Y) mtb_Panel_Draw_Pixel565((int16_t)(x0 + y), (int16_t)(y0 + x), color);
+		if (x0 - y >= 0 && x0 - y < PANEL_RES_X && y0 + x >= 0 && y0 + x < PANEL_RES_Y) mtb_Panel_Draw_Pixel565((int16_t)(x0 - y), (int16_t)(y0 + x), color);
+		if (x0 + y >= 0 && x0 + y < PANEL_RES_X && y0 - x >= 0 && y0 - x < PANEL_RES_Y) mtb_Panel_Draw_Pixel565((int16_t)(x0 + y), (int16_t)(y0 - x), color);
+		if (x0 - y >= 0 && x0 - y < PANEL_RES_X && y0 - x >= 0 && y0 - x < PANEL_RES_Y) mtb_Panel_Draw_Pixel565((int16_t)(x0 - y), (int16_t)(y0 - x), color);
 
 		y++;
 		if (err < 0) {

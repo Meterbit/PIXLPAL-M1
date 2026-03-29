@@ -41,11 +41,10 @@ void wifiSettings(JsonDocument& dCommand){
 
 //**01*********************************************************************************************************************
 void current_Network(const char* networkName, const char* assigned_IP){
-//const char dTopic[] = "Pixlpal/Config/2";
 char sta_Contd[150] = "{\"set_command\": 1, \"connected\": 1, \"nwkName\": \"";
 String sta_Nt_Contd = "{\"set_command\": 1, \"connected\": 0}";
 
-if (networkName == NULL) bleSettingsComSend("2", sta_Nt_Contd);
+if (networkName == NULL) bleSettingsComSend(mtb_Wifi_Settings_Route, sta_Nt_Contd);
 else if(strlen(networkName) > 0){
   strcat(sta_Contd, networkName);
   strcat(sta_Contd, "\",\"ipAddress\":\"");
