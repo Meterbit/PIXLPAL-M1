@@ -14,13 +14,11 @@ static const char TAG[] = "PXP-MAIN_PROG";
 
 extern "C" void app_main(){
     // Initialize Pixlpal System
-    // Serial.begin(115200); 
+    Serial.begin(115200); 
     mtb_LittleFS_Init();
     mtb_RotaryEncoder_Init();
     mtb_System_Init();
     mtb_Ble_Comm_Init();
-
-    // Initialize Wifi
     mtb_Wifi_Init();
 
     // Launch the Last Executed App or Launch a particular App after boot-up
@@ -29,6 +27,8 @@ extern "C" void app_main(){
 
     // Declare Variable for monitoring Free/Available internal SRAM
     size_t free_sram = 0;
+
+    Mtb_UserApp_t textVar[4];
 
     // While Loop prints available Internal SRAM every 2 seconds
     while (1){

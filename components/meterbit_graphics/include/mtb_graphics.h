@@ -77,19 +77,20 @@
     // USER IMAGE DRAW FUNCTIONS
     extern BaseType_t mtb_Draw_Local_Png(const Mtb_LocalImage_t&);                                                                                          // Draw a local PNG image from SPIFFS
     extern bool mtb_Draw_Online_Png(const Mtb_OnlineImage_t* images, size_t drawPNGsCount = 1, ImgWipeFn_ptr wipePreviousImgs = mtb_Do_Nothing_Void_Fn);    // Draw an online PNG image from URL
-    extern void mtb_Download_Multi_Png(const Mtb_OnlineImage_t* images, size_t drawPNGsCount);                                                              // Download multiple PNG images from URLs
-    extern bool mtb_Draw_Multi_Png(size_t drawPNGsCount, ImgWipeFn_ptr wipePreviousImgs = mtb_Do_Nothing_Void_Fn);                                          // Draw multiple pre-downloaded PNG images
+    extern void mtb_Download_Multi_Png(const Mtb_OnlineImage_t* images, size_t drawPNGsCount = 2);                                                              // Download multiple PNG images from URLs
+    extern bool mtb_Draw_Multi_Png(size_t drawPNGsCount = 2, ImgWipeFn_ptr wipePreviousImgs = mtb_Do_Nothing_Void_Fn);                                          // Draw multiple pre-downloaded PNG images
 
     extern BaseType_t mtb_Draw_Local_Svg(const Mtb_LocalImage_t&);                                                                                          // Draw a local SVG image from SPIFFS
     extern bool mtb_Draw_Online_Svg(const Mtb_OnlineImage_t* images, size_t drawSVGsCount = 1, ImgWipeFn_ptr wipePreviousImgs = mtb_Do_Nothing_Void_Fn);    // Draw an online SVG image from URL
-    extern void mtb_Download_Multi_Svg(const Mtb_OnlineImage_t* images, size_t drawSVGsCount);                                                              // Download multiple SVG images from URLs
-    extern bool mtb_Draw_Multi_Svg(size_t drawSVGsCount, ImgWipeFn_ptr wipePreviousImgs = mtb_Do_Nothing_Void_Fn);                                          // Draw multiple pre-downloaded SVG images
-
+    extern void mtb_Download_Multi_Svg(const Mtb_OnlineImage_t* images, size_t drawSVGsCount = 2);                                                              // Download multiple SVG images from URLs
+    extern bool mtb_Draw_Multi_Svg(size_t drawSVGsCount = 2, ImgWipeFn_ptr wipePreviousImgs = mtb_Do_Nothing_Void_Fn);                                      // Draw multiple pre-downloaded SVG images
+    
     extern uint8_t mtb_Draw_Local_Gif(const Mtb_LocalAnim_t &dAnim);                                                                                        // Draw a local GIF animation from SPIFFS     
-    extern void mtb_Set_Status_RGB_LED(uint16_t color, uint8_t brightness = (uint8_t) panelBrightness/2);                                                   // Set the RGB LED color and brightness
+                                                
     //************************************************************************************************************************************************* */
 
-
+    extern void mtb_Set_Status_RGB_LED(uint16_t color, uint8_t brightness = (uint8_t) panelBrightness/2);       // Set the RGB LED color and brightness
+    
     // SUPPORT FUNCTIONS
     extern void mtb_Show_Status_Bar_Icon(const Mtb_LocalImage_t&);
     extern void mtb_Wipe_Status_Bar_Icon(const Mtb_LocalImage_t &);

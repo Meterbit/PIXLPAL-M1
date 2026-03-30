@@ -579,7 +579,6 @@ bool fetchFixturesMatchTeamLogos(SpiRamJsonDocument& doc, size_t matchIndex) {
         pnglogoBatch[1].scale = 5;
 
         mtb_Download_Multi_Png(pnglogoBatch, 2);
-
         mtb_Draw_Multi_Png(2, wipePrevFixturesLogos);
         //if(matchIndex > 0) mtb_Draw_Multiple_Png(2, wipePrevFixturesLogos);
         //else mtb_Draw_Multiple_Png(2);

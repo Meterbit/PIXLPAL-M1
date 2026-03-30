@@ -414,28 +414,28 @@ void ble_AppCom_Parse_Task(void* dService){
             case 11: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[11] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[11](dCommand);
                 mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
                 break;
-            // case 12: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[12] != nullptr) Mtb_Applications::currentRunningApp.bleAppComServiceFns[12](dCommand);;     // These are for extras or future upgrades.
+            // case 12: if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[12] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[12](dCommand);     // These are for extras or future upgrades.
             //     mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
             //     break;
-            // case 13:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[13] != nullptr) Mtb_Applications::currentRunningApp.bleAppComServiceFns[13](dCommand);
+            // case 13:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[13] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[13](dCommand);
             //     mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
             //     break;
-            // case 14:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[4] != nullptr) Mtb_Applications::currentRunningApp.bleAppComServiceFns[14](dCommand);
+            // case 14:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[14] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[14](dCommand);
             //     mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
             //     break;
-            // case 15:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[15] != nullptr) Mtb_Applications::currentRunningApp.bleAppComServiceFns[15](dCommand);
+            // case 15:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[15] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[15](dCommand);
             //     mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
             //     break;
-            // case 16:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[16] != nullptr) Mtb_Applications::currentRunningApp.bleAppComServiceFns[16](dCommand);
+            // case 16:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[16] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[16](dCommand);
             //     mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
             //     break;
-            // case 17:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[17] != nullptr) Mtb_Applications::currentRunningApp.bleAppComServiceFns[17](dCommand);
+            // case 17:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[17] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[17](dCommand);
             //     mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
             //     break;
-            // case 18:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[18] != nullptr) Mtb_Applications::currentRunningApp.bleAppComServiceFns[18](dCommand);
+            // case 18:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[18] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[18](dCommand);
             //     mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
             //     break;
-            // case 19:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[19] != nullptr) Mtb_Applications::currentRunningApp.bleAppComServiceFns[19](dCommand);
+            // case 19:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[19] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[19](dCommand);
             //     mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
             //     break;
             case 252:
