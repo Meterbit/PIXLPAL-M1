@@ -438,6 +438,13 @@ void ble_AppCom_Parse_Task(void* dService){
             // case 19:  if(Mtb_Applications::currentRunningApp->bleAppComServiceFns[19] != nullptr) Mtb_Applications::currentRunningApp->bleAppComServiceFns[19](dCommand);
             //     mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
             //     break;
+
+            case 250:
+                bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 250}");
+                break;
+            case 251:
+                bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 251}");
+                break;
             case 252:
                 Mtb_Applications::showAppUI_OR_LaunchApp = SHOW_APP_UI;
                 showAppUI.GenApp = dAppGen;
@@ -452,25 +459,28 @@ void ble_AppCom_Parse_Task(void* dService){
                 break;
             }
         }else{
-            dError = deserializeJson(dCommand, dJsonPayload);
-            dCmd_num = dCommand["app_command"];
+          dError = deserializeJson(dCommand, dJsonPayload);
+          dCmd_num = dCommand["app_command"];
 
-            if (dError.code() == dError.Ok && dCmd_num == 255){
-                activateUserApp.GenApp = dAppGen;
-                activateUserApp.SpeApp = dAppSpe;
-
-                mtb_Write_Nvs_Struct("activateUserApp", &activateUserApp, sizeof(Mtb_UserApp_t));
-                mtb_General_App_Register(activateUserApp);
-                bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 253}");
-            }else if(dError.code() == dError.Ok && dCmd_num == 252){
-                showAppUI.GenApp = dAppGen;
-                showAppUI.SpeApp = dAppSpe;
-                Mtb_Applications::showAppUI_OR_LaunchApp = SHOW_APP_UI; 
-                mtb_General_App_Register(showAppUI);
+          if(dError.code() == dError.Ok && dCmd_num == 250){
+              bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 250}");
+          }else if(dError.code() == dError.Ok && dCmd_num == 251){
+              bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 251}");
+          }else if(dError.code() == dError.Ok && dCmd_num == 252){
+              showAppUI.GenApp = dAppGen;
+              showAppUI.SpeApp = dAppSpe;
+              Mtb_Applications::showAppUI_OR_LaunchApp = SHOW_APP_UI; 
+              mtb_General_App_Register(showAppUI);
+          }else if (dError.code() == dError.Ok && dCmd_num == 255){
+              activateUserApp.GenApp = dAppGen;
+              activateUserApp.SpeApp = dAppSpe;
+              mtb_Write_Nvs_Struct("activateUserApp", &activateUserApp, sizeof(Mtb_UserApp_t));
+              mtb_General_App_Register(activateUserApp);
+              bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 253}");
           }else{
-                bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 254}");
-                statusBarNotif.mtb_Scroll_This_Text("TAP 'LAUNCH' TO START APP", MAGENTA);
-            } 
+              bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 254}");
+              statusBarNotif.mtb_Scroll_This_Text("TAP 'LAUNCH' TO START APP", MAGENTA);
+          } 
         }
     vTaskDelay(1);
     free(qMessage.payload);

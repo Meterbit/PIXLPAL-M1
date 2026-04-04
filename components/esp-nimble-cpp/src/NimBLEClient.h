@@ -18,13 +18,13 @@
 #ifndef NIMBLE_CPP_CLIENT_H_
 #define NIMBLE_CPP_CLIENT_H_
 
-#include "nimconfig.h"
-#if defined(CONFIG_BT_ENABLED) && defined(CONFIG_BT_NIMBLE_ROLE_CENTRAL)
+#include "syscfg/syscfg.h"
+#if CONFIG_BT_NIMBLE_ENABLED && MYNEWT_VAL(BLE_ROLE_CENTRAL)
 
-# if defined(CONFIG_NIMBLE_CPP_IDF)
-#  include "host/ble_gap.h"
-# else
+# ifdef USING_NIMBLE_ARDUINO_HEADERS
 #  include "nimble/nimble/host/include/host/ble_gap.h"
+# else
+#  include "host/ble_gap.h"
 # endif
 
 # include "NimBLEAddress.h"
@@ -48,14 +48,17 @@ struct NimBLETaskData;
  */
 class NimBLEClient {
   public:
+# if MYNEWT_VAL(BLE_ROLE_OBSERVER)
     bool connect(const NimBLEAdvertisedDevice* device,
                  bool                          deleteAttributes = true,
                  bool                          asyncConnect     = false,
                  bool                          exchangeMTU      = true);
+# endif
     bool connect(const NimBLEAddress& address, bool deleteAttributes = true, bool asyncConnect = false, bool exchangeMTU = true);
     bool           connect(bool deleteAttributes = true, bool asyncConnect = false, bool exchangeMTU = true);
     bool           disconnect(uint8_t reason = BLE_ERR_REM_USER_CONN_TERM);
     bool           cancelConnect() const;
+    void           setConnectRetries(uint8_t numRetries);
     void           setSelfDelete(bool deleteOnDisconnect, bool deleteOnConnectFail);
     NimBLEAddress  getPeerAddress() const;
     bool           setPeerAddress(const NimBLEAddress& address);
@@ -93,11 +96,11 @@ class NimBLEClient {
                             const NimBLEAttValue& value,
                             bool                  response = false);
 
-# if CONFIG_BT_NIMBLE_EXT_ADV
+# if MYNEWT_VAL(BLE_EXT_ADV)
     void setConnectPhy(uint8_t phyMask);
+# endif
     bool updatePhy(uint8_t txPhysMask, uint8_t rxPhysMask, uint16_t phyOptions = 0);
     bool getPhy(uint8_t* txPhy, uint8_t* rxPhy);
-# endif
 
     struct Config {
         uint8_t deleteCallbacks : 1;     // Delete the callback object when the client is deleted.
@@ -105,24 +108,49 @@ class NimBLEClient {
         uint8_t deleteOnConnectFail : 1; // Delete the client when a connection attempt fails.
         uint8_t asyncConnect : 1;        // Connect asynchronously.
         uint8_t exchangeMTU : 1;         // Exchange MTU after connection.
+        uint8_t connectFailRetries : 3;  // Number of retries for 0x3e (connection establishment) failures.
+
+        /**
+         * @brief Construct a new Config object with default values.
+         * @details Default values are:
+         * - deleteCallbacks: false
+         * - deleteOnDisconnect: false
+         * - deleteOnConnectFail: false
+         * - asyncConnect: false
+         * - exchangeMTU: true
+         * - connectFailRetries: 2
+         */
+        Config()
+            : deleteCallbacks(0),
+              deleteOnDisconnect(0),
+              deleteOnConnectFail(0),
+              asyncConnect(0),
+              exchangeMTU(1),
+              connectFailRetries(2) {}
     };
 
     Config getConfig() const;
     void   setConfig(Config config);
 
   private:
+    enum ConnStatus : uint8_t { CONNECTED, DISCONNECTED, CONNECTING, DISCONNECTING };
+
     NimBLEClient(const NimBLEAddress& peerAddress);
     ~NimBLEClient();
     NimBLEClient(const NimBLEClient&)            = delete;
     NimBLEClient& operator=(const NimBLEClient&) = delete;
 
-    bool       retrieveServices(const NimBLEUUID* uuidFilter = nullptr);
-    static int handleGapEvent(struct ble_gap_event* event, void* arg);
-    static int exchangeMTUCb(uint16_t conn_handle, const ble_gatt_error* error, uint16_t mtu, void* arg);
-    static int serviceDiscoveredCB(uint16_t                     connHandle,
-                                   const struct ble_gatt_error* error,
-                                   const struct ble_gatt_svc*   service,
-                                   void*                        arg);
+    bool        retrieveServices(const NimBLEUUID* uuidFilter = nullptr);
+    int         startConnectionAttempt(const ble_addr_t* peerAddr);
+    static int  handleGapEvent(struct ble_gap_event* event, void* arg);
+    static void connectEstablishedTimerCb(struct ble_npl_event* event);
+    void        startConnectEstablishedTimer(uint16_t connInterval);
+    bool        completeConnectEstablished();
+    static int  exchangeMTUCb(uint16_t conn_handle, const ble_gatt_error* error, uint16_t mtu, void* arg);
+    static int  serviceDiscoveredCB(uint16_t                     connHandle,
+                                    const struct ble_gatt_error* error,
+                                    const struct ble_gatt_svc*   service,
+                                    void*                        arg);
 
     NimBLEAddress                     m_peerAddress;
     mutable int                       m_lastErr;
@@ -134,8 +162,12 @@ class NimBLEClient {
     uint8_t                           m_terminateFailCount;
     mutable uint8_t                   m_asyncSecureAttempt;
     Config                            m_config;
+    ConnStatus                        m_connStatus;
+    ble_npl_callout                   m_connectEstablishedTimer{};
+    bool                              m_connectCallbackPending;
+    uint8_t                           m_connectFailRetryCount;
 
-# if CONFIG_BT_NIMBLE_EXT_ADV
+# if MYNEWT_VAL(BLE_EXT_ADV)
     uint8_t m_phyMask;
 # endif
     ble_gap_conn_params m_connParams;
@@ -186,6 +218,13 @@ class NimBLEClientCallbacks {
     virtual void onPassKeyEntry(NimBLEConnInfo& connInfo);
 
     /**
+     * @brief Called when using passkey entry pairing and the passkey should be displayed.
+     * @param [in] connInfo A reference to a NimBLEConnInfo instance containing the peer info.
+     * @return The passkey to display to the user. The peer device must enter this passkey to complete the pairing.
+     */
+    virtual uint32_t onPassKeyDisplay(NimBLEConnInfo& connInfo);
+
+    /**
      * @brief Called when the pairing procedure is complete.
      * @param [in] connInfo A reference to a NimBLEConnInfo instance containing the peer info.\n
      * This can be used to check the status of the connection encryption/pairing.
@@ -213,7 +252,6 @@ class NimBLEClientCallbacks {
      */
     virtual void onMTUChange(NimBLEClient* pClient, uint16_t MTU);
 
-# if CONFIG_BT_NIMBLE_EXT_ADV
     /**
      * @brief Called when the PHY update procedure is complete.
      * @param [in] pClient A pointer to the client whose PHY was updated.
@@ -226,8 +264,7 @@ class NimBLEClientCallbacks {
      * * BLE_GAP_LE_PHY_CODED
      */
     virtual void onPhyUpdate(NimBLEClient* pClient, uint8_t txPhy, uint8_t rxPhy);
-# endif
 };
 
-#endif /* CONFIG_BT_ENABLED && CONFIG_BT_NIMBLE_ROLE_CENTRAL */
-#endif /* NIMBLE_CPP_CLIENT_H_ */
+#endif // CONFIG_BT_NIMBLE_ENABLED && MYNEWT_VAL(BLE_ROLE_CENTRAL)
+#endif // NIMBLE_CPP_CLIENT_H_

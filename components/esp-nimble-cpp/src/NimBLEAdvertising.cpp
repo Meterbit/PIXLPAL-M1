@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 
-#include "nimconfig.h"
-#if (defined(CONFIG_BT_ENABLED) && defined(CONFIG_BT_NIMBLE_ROLE_BROADCASTER) && !CONFIG_BT_NIMBLE_EXT_ADV) || \
-    defined(_DOXYGEN_)
+#include "NimBLEAdvertising.h"
+#if (CONFIG_BT_NIMBLE_ENABLED && MYNEWT_VAL(BLE_ROLE_BROADCASTER) && !MYNEWT_VAL(BLE_EXT_ADV)) || defined(_DOXYGEN_)
 
-# if defined(CONFIG_NIMBLE_CPP_IDF)
-#  include "services/gap/ble_svc_gap.h"
-# else
+#ifdef USING_NIMBLE_ARDUINO_HEADERS
 #  include "nimble/nimble/host/services/gap/include/services/gap/ble_svc_gap.h"
+# else
+#  include "services/gap/ble_svc_gap.h"
 # endif
-# include "NimBLEAdvertising.h"
+
 # include "NimBLEDevice.h"
 # include "NimBLEServer.h"
 # include "NimBLEUtils.h"
@@ -44,7 +43,7 @@ NimBLEAdvertising::NimBLEAdvertising()
       m_duration{BLE_HS_FOREVER},
       m_scanResp{false},
       m_advDataSet{false} {
-# if !defined(CONFIG_BT_NIMBLE_ROLE_PERIPHERAL)
+# if !MYNEWT_VAL(BLE_ROLE_PERIPHERAL)
     m_advParams.conn_mode = BLE_GAP_CONN_MODE_NON;
 # else
     m_advParams.conn_mode = BLE_GAP_CONN_MODE_UND;
@@ -197,10 +196,11 @@ bool NimBLEAdvertising::start(uint32_t duration, const NimBLEAddress* dirAddr) {
         return true;
     }
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_PERIPHERAL)
+# if MYNEWT_VAL(BLE_ROLE_PERIPHERAL)
     NimBLEServer* pServer = NimBLEDevice::getServer();
-    if (pServer != nullptr) {
-        pServer->start(); // make sure the GATT server is ready before advertising
+    if (pServer != nullptr && !pServer->start()) { // make sure the GATT server is ready before advertising
+        NIMBLE_LOGE(LOG_TAG, "Failed to start GATT server");
+        return false;
     }
 # endif
 
@@ -222,7 +222,7 @@ bool NimBLEAdvertising::start(uint32_t duration, const NimBLEAddress* dirAddr) {
         duration = BLE_HS_FOREVER;
     }
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_PERIPHERAL)
+# if MYNEWT_VAL(BLE_ROLE_PERIPHERAL)
     int rc = ble_gap_adv_start(NimBLEDevice::m_ownAddrType,
                                (dirAddr != nullptr) ? dirAddr->getBase() : NULL,
                                duration,
@@ -622,4 +622,4 @@ bool NimBLEAdvertising::setServiceData(const NimBLEUUID& uuid, const std::string
     return setServiceData(uuid, reinterpret_cast<const uint8_t*>(data.data()), data.length());
 } // setServiceData
 
-#endif /* CONFIG_BT_ENABLED && CONFIG_BT_NIMBLE_ROLE_BROADCASTER  && !CONFIG_BT_NIMBLE_EXT_ADV */
+#endif // (CONFIG_BT_NIMBLE_ENABLED && MYNEWT_VAL(BLE_ROLE_BROADCASTER) && !MYNEWT_VAL(BLE_EXT_ADV)) || defined(_DOXYGEN_)

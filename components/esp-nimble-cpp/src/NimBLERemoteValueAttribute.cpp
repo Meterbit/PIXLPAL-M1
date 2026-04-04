@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-#include "nimconfig.h"
-#if defined(CONFIG_BT_ENABLED) && defined(CONFIG_BT_NIMBLE_ROLE_CENTRAL)
+#include "NimBLERemoteValueAttribute.h"
+#if CONFIG_BT_NIMBLE_ENABLED && MYNEWT_VAL(BLE_ROLE_CENTRAL)
 
-# include "NimBLERemoteValueAttribute.h"
 # include "NimBLEClient.h"
 # include "NimBLEUtils.h"
 # include "NimBLELog.h"
@@ -122,7 +121,7 @@ int NimBLERemoteValueAttribute::onWriteCB(uint16_t conn_handle, const ble_gatt_e
  * @param [in] timestamp A pointer to a time_t struct to store the time the value was read.
  * @return The value of the remote characteristic.
  */
-NimBLEAttValue NimBLERemoteValueAttribute::readValue(time_t* timestamp) const {
+NimBLEAttValue NimBLERemoteValueAttribute::readValue(time_t* timestamp) {
     NIMBLE_LOGD(LOG_TAG, ">> readValue()");
 
     NimBLEAttValue      value{};
@@ -218,4 +217,4 @@ int NimBLERemoteValueAttribute::onReadCB(uint16_t conn_handle, const ble_gatt_er
     return rc;
 } // onReadCB
 
-#endif // CONFIG_BT_ENABLED && CONFIG_BT_NIMBLE_ROLE_CENTRAL
+#endif // CONFIG_BT_NIMBLE_ENABLED && MYNEWT_VAL(BLE_ROLE_CENTRAL)

@@ -24,3 +24,4 @@ dependencies:
   espressif/tinyusb: ^0.18.0~4
   esphome/esp-hub75: ^0.2.2
   # espressif/thorvg: ^1.0.1
+  # h2zero/esp-nimble-cpp: ^2.5.0

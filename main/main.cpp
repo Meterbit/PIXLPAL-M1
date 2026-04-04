@@ -21,6 +21,8 @@ extern "C" void app_main(){
     mtb_Ble_Comm_Init();
     mtb_Wifi_Init();
 
+    //nvs_flash_erase();
+
     // Launch the Last Executed App or Launch a particular App after boot-up
      mtb_General_App_Register(activateUserApp);
     // mtb_Launch_This_App(pixelAnimClock_App);
@@ -43,3 +45,4 @@ extern "C" void app_main(){
     delay(5000);
      }
 }
+

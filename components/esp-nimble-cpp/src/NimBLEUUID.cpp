@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-#include "nimconfig.h"
-#if defined(CONFIG_BT_ENABLED)
+#include "NimBLEUUID.h"
+#if CONFIG_BT_NIMBLE_ENABLED
 
 # include "NimBLEUtils.h"
-# include "NimBLEUUID.h"
 # include "NimBLELog.h"
 
 /****  FIX COMPILATION ****/
@@ -38,6 +37,20 @@ static const uint8_t ble_base_uuid[] = {
  * @param [in] uuid The native UUID.
  */
 NimBLEUUID::NimBLEUUID(const ble_uuid_any_t& uuid) : m_uuid{uuid} {}
+
+/**
+ * @brief Create a UUID from the native UUID pointer.
+ * @param [in] uuid The native UUID pointer.
+ */
+NimBLEUUID::NimBLEUUID(const ble_uuid_t* uuid) {
+    if (uuid == nullptr) {
+        NIMBLE_LOGE(LOG_TAG, "Invalid UUID pointer");
+        m_uuid.u.type = 0;
+        return;
+    }
+
+    ble_uuid_copy(&m_uuid, uuid);
+}
 
 /**
  * @brief Create a UUID from a string.
@@ -337,4 +350,4 @@ NimBLEUUID::operator std::string() const {
     return ble_uuid_to_str(&m_uuid.u, buf);
 } // operator std::string
 
-#endif /* CONFIG_BT_ENABLED */
+#endif /* CONFIG_BT_NIMBLE_ENABLED */

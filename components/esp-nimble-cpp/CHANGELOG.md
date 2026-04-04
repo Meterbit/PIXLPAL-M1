@@ -1,6 +1,117 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.5.0] 2026-04-01
+
+## Fixed
+- `NimBLEClient` connection state tracking.
+- Calling disconnect will no longer return false if the HCI response is "Unknown ID".
+- Remote descriptors not found when characteristic vector handles out of order.
+- `setValue` with char inputs now calculates the data length correctly.
+
+## Added
+- `NimBLEServer::sendServiceChangedIndication` Sends the service changed indication to peers so they refresh their database.
+- `NimBLEScan` user configuarable scan response timer added to prevent unreported devices on long duration scans.
+- `NimBLEClient` Connection retry on connection establishment failure, retry count configurable by app, default 2.
+- ANCS Example
+- `l2Cap` Disconnect API
+
+
+## [2.4.0] 2026-03-20
+
+## Fixed
+- GATT attribute handles are now assigned from the registration callback so duplicate UUID attributes are identified correctly.
+- Dynamic service changes now properly remove characteristics/descriptors and reset the GATT database when advertising starts.
+- Missing notification/indication payload data when the value spans multiple mbufs, such as values larger than 255 bytes with small ACL buffers.
+- `NimBLEDevice::createServer` will longer crash when called before the stack is initialized.
+- Re-pairing after deleting all bonds now works by unpairing each stored bond instead of only deleting NVS data.
+- Whitelist bounds checks.
+- `NimBLEDevice::getBondedAddress` index bounds validation.
+- Compiler warnings when bonds are disabled.
+- kconfig warnings, redefined macros.
+
+## Added
+- `NimBLEStream`, `NimBLEStreamClient`, and `NimBLEStreamServer` classes and examples.
+- `NimBLECppVersion.h` with compile-time version macros.
+- `NimBLEDevice::getVersion` runtime version string helper.
+- Matching passkey callbacks for both roles: `NimBLEServerCallbacks::onPassKeyEntry` and `NimBLEClientCallbacks::onPassKeyDisplay`.
+- Bond migration helpers to convert bond storage between v1 and current formats while preserving existing bonds.
+- `NimBLEUUID` constructor overload for `ble_uuid_t*`.
+- Optional `index` parameter for `NimBLECharacteristic::getDescriptorByUUID` to access multiple descriptors with the same UUID.
+- `NimBLEConnInfo::toString` method to get a string representation of the connection info.
+
+## Changed
+- `NimBLEService::start` is deprecated; services are now added when the server starts.
+- `NimBLEHIDDevice::startServices()` is deprecated; services are now added when the server starts.
+
+## [2.3.4] 2025-12-27
+
+## Fixed
+- Disconnect event not finding the client by address in some cases, use the connection handle instead.
+- Notification/Indications will now be sent to server created clients.
+- Attribute values will now consider type size when using a container.
+- Descriptor searching will now correctly stop at the end handle of the characteristic.
+
+## Changed
+- Build conditionals now use `MYNEWT_VAL_` macros instead of `CONFIG_` macros where applicable.
+- Sending of indications/notifications has been refactored for greater efficiency and tracks client subscription state locally instead uof relying on the stack.
+
+## Added
+- Support for esp32c61.
+- `NimBLECharacteristicCallbacks::onStatus` overload that takes a `NimBLEConnInfo&` parameter to indicate which client the status is for.
+- `NimBLEDevice::setCustomGapHandler` now takes a `void*` parameter to allow for passing user data to the custom handler.
+
+## [2.3.3] 2025-09-05
+
+## Fixed
+- NimBLEAdvertisedDevice::isConnectable returning incorrect result.
+- Extended advertisements not reporting full data.
+
+## Added
+- Support up to 1650 bytes of advertisement with extended advertising
+
+## [2.3.2] 2025-09-02
+
+## Fixed
+- Build failures with esp-idf versions 4.x.
+- Workaround for upstream issue causing onConnectFail to not be called.
+- Build failures with idf v5.5+ and specific roles are not enabled.
+
+## Changed
+- Allow peripheral and central roles to be used without broadcaster/observer roles.
+- Where applicable, `MYNEWT_VAL_` macros are used to control feature availability instead of `CONFIG_`
+
+## [2.3.1] 2025-06-11
+
+## Fixed
+- Build errors when disabling BLE roles.
+- `NimBLEClient::readValue` call not returning when the instance was created with a`NimBLEServer` and reading a secured characteristic.
+- `NimBLEScan` destructor potentially causing a crash.
+
+## Added
+- `NimBLEBeacon::BeaconData` `std::vector<uint8_t>` operator to allow it to be used as a parameter to `NimBLEAdvertisementData::setManufacturerData`.
+
+## [2.3.0] 2025-05-19
+
+## Fixed
+- Incorrect `NimBLECharacteristic::onSubscribe` value when indications are set.
+- `NimBLECharacteristic::onRead` callback not called in some cases.
+- Clear attribute value when zero length value is written.
+- Notify/Indicate incorrectly returning success with custom value.
+- Corrected NimBLEClient array initialization.
+- Prevent potential exception when scan is restarted.
+- Attribute getValue failing with some data types
+- Incorrectly passing a pointer to a function taking const reference.
+
+## Added
+- Support for esp32c5
+- L2CAP infrastructure.
+- Scan duplicate cache reset time.
+
+## Changed
+- Cleaned up examples.
+- Allow PHY updates without enabling extended advertising.
+
 ## [2.2.1] 2025-02-28
 
 ## Fixed
@@ -274,7 +385,7 @@ the functions and tracking in the host stack.
 - `NimBLEAdvertising::setManufacturerData` Overload that takes a `const uint8_t*` and , size_t` parameter.
 - `NimBLEAdvertising::setServiceData` Overload that takes `const NimBLEUUID& uuid`, ` const uint8_t* data`, ` size_t length` as parameters.
 - `NimBLEAdvertising::setServiceData` Overload that takes `const NimBLEUUID& uuid`, `const std::vector<uint8_t>&` as parameters.
-- `NimBLEAdvertising::setDiscoverableMode` to allow Mtb_Applications to control the discoverability of the advertiser.
+- `NimBLEAdvertising::setDiscoverableMode` to allow applications to control the discoverability of the advertiser.
 - `NimBLEAdvertising::setAdvertisingCompleteCallback` sets the callback to call when advertising ends.
 - `NimBLEAdvertising::setPreferredParams` that takes the min and max preferred connection parameters as an alternative for `setMinPreferred` and `setMaxPreferred`.
 - `NimBLEAdvertising::setAdvertisingInterval` Sets the advertisement interval for min and max to the same value instead of calling `setMinInterval` and `setMaxInterval` separately if there is not value difference.

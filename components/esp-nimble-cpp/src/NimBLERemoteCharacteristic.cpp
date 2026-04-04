@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-#include "nimconfig.h"
-#if defined(CONFIG_BT_ENABLED) && defined(CONFIG_BT_NIMBLE_ROLE_CENTRAL)
+#include "NimBLERemoteCharacteristic.h"
+#if CONFIG_BT_NIMBLE_ENABLED && MYNEWT_VAL(BLE_ROLE_CENTRAL)
 
-# include "NimBLERemoteCharacteristic.h"
 # include "NimBLERemoteDescriptor.h"
 # include "NimBLERemoteService.h"
 # include "NimBLEClient.h"
@@ -95,8 +94,24 @@ int NimBLERemoteCharacteristic::descriptorDiscCB(
 bool NimBLERemoteCharacteristic::retrieveDescriptors(NimBLEDescriptorFilter* pFilter) const {
     NIMBLE_LOGD(LOG_TAG, ">> retrieveDescriptors() for characteristic: %s", getUUID().toString().c_str());
 
+    const auto pSvc      = getRemoteService();
+    uint16_t   endHandle = pSvc->getEndHandle();
+
+    // Find the handle of the next characteristic to limit the descriptor search range.
+    const auto& chars = pSvc->getCharacteristics(false);
+    for (auto it = chars.begin(); it != chars.end(); ++it) {
+        if ((*it)->getHandle() == this->getHandle()) {
+            auto next_it = std::next(it);
+            if (next_it != chars.end()) {
+                endHandle = (*next_it)->getHandle() - 1;
+                NIMBLE_LOGD(LOG_TAG, "Search range limited to handle 0x%04X", endHandle);
+            }
+            break;
+        }
+    }
+
     // If this is the last handle then there are no descriptors
-    if (getHandle() == getRemoteService()->getEndHandle()) {
+    if (getHandle() == endHandle) {
         NIMBLE_LOGD(LOG_TAG, "<< retrieveDescriptors(): found 0 descriptors.");
         return true;
     }
@@ -109,7 +124,7 @@ bool NimBLERemoteCharacteristic::retrieveDescriptors(NimBLEDescriptorFilter* pFi
 
     int rc = ble_gattc_disc_all_dscs(getClient()->getConnHandle(),
                                      getHandle(),
-                                     getRemoteService()->getEndHandle(),
+                                     endHandle,
                                      NimBLERemoteCharacteristic::descriptorDiscCB,
                                      pFilter);
     if (rc != 0) {
@@ -118,7 +133,7 @@ bool NimBLERemoteCharacteristic::retrieveDescriptors(NimBLEDescriptorFilter* pFi
     }
 
     auto prevDscCount = m_vDescriptors.size();
-    NimBLEUtils::taskWait(pFilter->taskData, BLE_NPL_TIME_FOREVER);
+    NimBLEUtils::taskWait(taskData, BLE_NPL_TIME_FOREVER);
     rc = ((NimBLETaskData*)pFilter->taskData)->m_flags;
     if (rc != BLE_HS_EDONE) {
         NIMBLE_LOGE(LOG_TAG, "<< retrieveDescriptors(): failed: rc=%d %s", rc, NimBLEUtils::returnCodeToString(rc));
@@ -388,4 +403,4 @@ NimBLEClient* NimBLERemoteCharacteristic::getClient() const {
     return getRemoteService()->getClient();
 } // getClient
 
-#endif /* CONFIG_BT_ENABLED && CONFIG_BT_NIMBLE_ROLE_CENTRAL */
+#endif // CONFIG_BT_NIMBLE_ENABLED && MYNEWT_VAL(BLE_ROLE_CENTRAL)

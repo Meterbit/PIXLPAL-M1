@@ -9,9 +9,11 @@
 
 NimBLE CPP library for use with ESP32 that attempts to maintain compatibility with the [nkolban cpp_utils BLE API](https://github.com/nkolban/esp32-snippets/tree/master/cpp_utils).
 
+The library is threadsafe, characteristics can be set from any thread.
+
 **An Arduino version of this library, including NimBLE, can be [found here.](https://github.com/h2zero/NimBLE-Arduino)**
 
-This library **significantly** reduces resource usage and improves performance for ESP32 BLE Mtb_Applications as compared    
+This library **significantly** reduces resource usage and improves performance for ESP32 BLE applications as compared    
 with the bluedroid based library. The goal is to maintain, as much as reasonable, compatibility with the original   
 library but using the NimBLE stack. In addition, this library will be more actively developed and maintained   
 to provide improved capabilities and stability over the original.

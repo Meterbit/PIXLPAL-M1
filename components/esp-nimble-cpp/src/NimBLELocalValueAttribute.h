@@ -18,13 +18,13 @@
 #ifndef NIMBLE_LOCAL_VALUE_ATTRIBUTE_H_
 #define NIMBLE_LOCAL_VALUE_ATTRIBUTE_H_
 
-#include "nimconfig.h"
-#if defined(CONFIG_BT_ENABLED) && defined(CONFIG_BT_NIMBLE_ROLE_PERIPHERAL)
+#include "syscfg/syscfg.h"
+#if CONFIG_BT_NIMBLE_ENABLED && MYNEWT_VAL(BLE_ROLE_PERIPHERAL)
 
-# if defined(CONFIG_NIMBLE_CPP_IDF)
-#  include "host/ble_hs.h"
-# else
+#ifdef USING_NIMBLE_ARDUINO_HEADERS
 #  include "nimble/nimble/host/include/host/ble_hs.h"
+# else
+#  include "host/ble_hs.h"
 # endif
 
 /****  FIX COMPILATION ****/
@@ -48,29 +48,17 @@ typedef enum {
 } NIMBLE_PROPERTY;
 
 # include "NimBLELocalAttribute.h"
+# include "NimBLEValueAttribute.h"
 # include "NimBLEAttValue.h"
 # include <vector>
 class NimBLEConnInfo;
 
-class NimBLELocalValueAttribute : public NimBLELocalAttribute {
+class NimBLELocalValueAttribute : public NimBLELocalAttribute, public NimBLEValueAttribute {
   public:
     /**
      * @brief Get the properties of the attribute.
      */
     uint16_t getProperties() const { return m_properties; }
-
-    /**
-     * @brief Get the length of the attribute value.
-     * @return The length of the attribute value.
-     */
-    size_t getLength() const { return m_value.size(); }
-
-    /**
-     * @brief Get a copy of the value of the attribute value.
-     * @param [in] timestamp (Optional) A pointer to a time_t struct to get the time the value set.
-     * @return A copy of the attribute value.
-     */
-    NimBLEAttValue getValue(time_t* timestamp = nullptr) const { return m_value; }
 
     /**
      * @brief Set the value of the attribute value.
@@ -100,19 +88,6 @@ class NimBLELocalValueAttribute : public NimBLELocalAttribute {
         m_value.setValue<T>(val);
     }
 
-    /**
-     * @brief Template to convert the data to <type\>.
-     * @tparam T The type to convert the data to.
-     * @param [in] timestamp (Optional) A pointer to a time_t struct to get the time the value set.
-     * @param [in] skipSizeCheck (Optional) If true it will skip checking if the data size is less than <tt>sizeof(<type\>)</tt>.
-     * @return The data converted to <type\> or NULL if skipSizeCheck is false and the data is less than <tt>sizeof(<type\>)</tt>.
-     * @details <b>Use:</b> <tt>getValue<type>(&timestamp, skipSizeCheck);</tt>
-     */
-    template <typename T>
-    T getValue(time_t* timestamp = nullptr, bool skipSizeCheck = false) const {
-        return m_value.getValue<T>(timestamp, skipSizeCheck);
-    }
-
   protected:
     friend class NimBLEServer;
 
@@ -126,9 +101,8 @@ class NimBLELocalValueAttribute : public NimBLELocalAttribute {
     NimBLELocalValueAttribute(const NimBLEUUID& uuid,
                               uint16_t          handle,
                               uint16_t          maxLen,
-                              uint16_t          initLen = CONFIG_NIMBLE_CPP_ATT_VALUE_INIT_LENGTH)
-        : NimBLELocalAttribute(uuid, handle), m_value(initLen, maxLen) {}
-
+                              uint16_t          initLen = MYNEWT_VAL(NIMBLE_CPP_ATT_VALUE_INIT_LENGTH))
+        : NimBLELocalAttribute(uuid, handle), NimBLEValueAttribute(maxLen, initLen) {}
     /**
      * @brief Destroy the NimBLELocalValueAttribute object.
      */
@@ -163,9 +137,8 @@ class NimBLELocalValueAttribute : public NimBLELocalAttribute {
      */
     void setProperties(uint16_t properties) { m_properties = properties; }
 
-    NimBLEAttValue m_value{};
-    uint16_t       m_properties{0};
+    uint16_t m_properties{0};
 };
 
-#endif // CONFIG_BT_ENABLED && CONFIG_BT_NIMBLE_ROLE_PERIPHERAL
+#endif // CONFIG_BT_NIMBLE_ENABLED && MYNEWT_VAL(BLE_ROLE_PERIPHERAL)
 #endif // NIMBLE_LOCAL_VALUE_ATTRIBUTE_H_

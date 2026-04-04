@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-#include "nimconfig.h"
-#if (defined(CONFIG_BT_ENABLED) && defined(CONFIG_BT_NIMBLE_ROLE_BROADCASTER) && !CONFIG_BT_NIMBLE_EXT_ADV) || \
-    defined(_DOXYGEN_)
+#include "NimBLEAdvertisementData.h"
+#if (CONFIG_BT_NIMBLE_ENABLED && MYNEWT_VAL(BLE_ROLE_BROADCASTER) && !MYNEWT_VAL(BLE_EXT_ADV)) || defined(_DOXYGEN_)
 
-# include "NimBLEAdvertisementData.h"
 # include "NimBLEDevice.h"
 # include "NimBLEUtils.h"
 # include "NimBLEUUID.h"
 # include "NimBLELog.h"
 
-# if defined(CONFIG_NIMBLE_CPP_IDF)
-#  include "host/ble_hs_adv.h"
-# else
+#ifdef USING_NIMBLE_ARDUINO_HEADERS
 #  include "nimble/nimble/host/include/host/ble_hs_adv.h"
+# else
+#  include "host/ble_hs_adv.h"
 # endif
 
 static const char* LOG_TAG = "NimBLEAdvertisementData";
@@ -585,4 +583,4 @@ std::string NimBLEAdvertisementData::toString() const {
     return str;
 } // toString
 
-#endif // CONFIG_BT_ENABLED && CONFIG_BT_NIMBLE_ROLE_BROADCASTER && !CONFIG_BT_NIMBLE_EXT_ADV
+#endif // (CONFIG_BT_NIMBLE_ENABLED && MYNEWT_VAL(BLE_ROLE_BROADCASTER) && !MYNEWT_VAL(BLE_EXT_ADV)) || defined(_DOXYGEN_)

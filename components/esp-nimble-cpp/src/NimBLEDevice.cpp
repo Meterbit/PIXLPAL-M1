@@ -15,11 +15,8 @@
  * limitations under the License.
  */
 
-#include "nimconfig.h"
-#if defined(CONFIG_BT_ENABLED)
-
-# include "NimBLEDevice.h"
-# include "NimBLEUtils.h"
+#include "NimBLEDevice.h"
+#if CONFIG_BT_NIMBLE_ENABLED
 
 # ifdef ESP_PLATFORM
 #  include "esp_err.h"
@@ -27,7 +24,7 @@
 #   include "esp_bt.h"
 #  endif
 #  include "nvs_flash.h"
-#  if defined(CONFIG_NIMBLE_CPP_IDF)
+#  ifndef USING_NIMBLE_ARDUINO_HEADERS
 #   if (ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 0, 0) || CONFIG_BT_NIMBLE_LEGACY_VHCI_ENABLE)
 #    include "esp_nimble_hci.h"
 #   endif
@@ -38,14 +35,14 @@
 #   include "host/util/util.h"
 #   include "services/gap/ble_svc_gap.h"
 #   include "services/gatt/ble_svc_gatt.h"
-#  else
+#  else // USING_NIMBLE_ARDUINO_HEADERS
 #   include "nimble/esp_port/esp-hci/include/esp_nimble_hci.h"
 #  endif
 # else
 #  include "nimble/nimble/controller/include/controller/ble_phy.h"
 # endif
 
-# ifndef CONFIG_NIMBLE_CPP_IDF
+# ifdef USING_NIMBLE_ARDUINO_HEADERS
 #  include "nimble/porting/nimble/include/nimble/nimble_port.h"
 #  include "nimble/porting/npl/freertos/include/nimble/nimble_port_freertos.h"
 #  include "nimble/nimble/host/include/host/ble_hs.h"
@@ -59,14 +56,6 @@
 #  include "esp32-hal-bt.h"
 # endif
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_CENTRAL)
-#  include "NimBLEClient.h"
-# endif
-
-# if defined(CONFIG_BT_NIMBLE_ROLE_PERIPHERAL)
-#  include "NimBLEServer.h"
-# endif
-
 # include "NimBLELog.h"
 
 static const char* LOG_TAG = "NimBLEDevice";
@@ -76,27 +65,30 @@ extern "C" void ble_store_config_init(void);
 /**
  * Singletons for the NimBLEDevice.
  */
-NimBLEDeviceCallbacks NimBLEDevice::defaultDeviceCallbacks{};
+NimBLEDeviceCallbacks  NimBLEDevice::defaultDeviceCallbacks{};
 NimBLEDeviceCallbacks* NimBLEDevice::m_pDeviceCallbacks = &defaultDeviceCallbacks;
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_OBSERVER)
+# if MYNEWT_VAL(BLE_ROLE_OBSERVER)
 NimBLEScan* NimBLEDevice::m_pScan = nullptr;
 # endif
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_PERIPHERAL)
+# if MYNEWT_VAL(BLE_ROLE_PERIPHERAL)
 NimBLEServer* NimBLEDevice::m_pServer = nullptr;
+#  if MYNEWT_VAL(BLE_L2CAP_COC_MAX_NUM)
+NimBLEL2CAPServer* NimBLEDevice::m_pL2CAPServer = nullptr;
+#  endif
 # endif
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_BROADCASTER)
-#  if CONFIG_BT_NIMBLE_EXT_ADV
+# if MYNEWT_VAL(BLE_ROLE_BROADCASTER)
+#  if MYNEWT_VAL(BLE_EXT_ADV)
 NimBLEExtAdvertising* NimBLEDevice::m_bleAdvertising = nullptr;
 #  else
 NimBLEAdvertising* NimBLEDevice::m_bleAdvertising = nullptr;
 #  endif
 # endif
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_CENTRAL)
-std::array<NimBLEClient*, NIMBLE_MAX_CONNECTIONS> NimBLEDevice::m_pClients{nullptr};
+# if MYNEWT_VAL(BLE_ROLE_CENTRAL)
+std::array<NimBLEClient*, MYNEWT_VAL(BLE_MAX_CONNECTIONS)> NimBLEDevice::m_pClients{};
 # endif
 
 bool                       NimBLEDevice::m_initialized{false};
@@ -106,10 +98,15 @@ ble_gap_event_listener     NimBLEDevice::m_listener{};
 std::vector<NimBLEAddress> NimBLEDevice::m_whiteList{};
 uint8_t                    NimBLEDevice::m_ownAddrType{BLE_OWN_ADDR_PUBLIC};
 
-# ifdef ESP_PLATFORM
-#  ifdef CONFIG_BTDM_BLE_SCAN_DUPL
-uint16_t NimBLEDevice::m_scanDuplicateSize{CONFIG_BTDM_SCAN_DUPL_CACHE_SIZE};
-uint8_t  NimBLEDevice::m_scanFilterMode{CONFIG_BTDM_SCAN_DUPL_TYPE};
+# if NIMBLE_CPP_SCAN_DUPL_ENABLED
+uint16_t NimBLEDevice::m_scanDuplicateSize{100};
+uint8_t  NimBLEDevice::m_scanFilterMode{0};
+uint16_t NimBLEDevice::m_scanDuplicateResetTime{0};
+#  if SOC_ESP_NIMBLE_CONTROLLER
+extern "C" int ble_vhci_disc_duplicate_set_max_cache_size(int max_cache_size);
+extern "C" int ble_vhci_disc_duplicate_set_period_refresh_time(int refresh_period_time);
+extern "C" int ble_vhci_disc_duplicate_mode_disable(int mode);
+extern "C" int ble_vhci_disc_duplicate_mode_enable(int mode);
 #  endif
 # endif
 
@@ -117,7 +114,7 @@ uint8_t  NimBLEDevice::m_scanFilterMode{CONFIG_BTDM_SCAN_DUPL_TYPE};
 /*                              SERVER FUNCTIONS                              */
 /* -------------------------------------------------------------------------- */
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_PERIPHERAL)
+# if MYNEWT_VAL(BLE_ROLE_PERIPHERAL)
 /**
  * @brief Create an instance of a server.
  * @return A pointer to the instance of the server.
@@ -125,9 +122,6 @@ uint8_t  NimBLEDevice::m_scanFilterMode{CONFIG_BTDM_SCAN_DUPL_TYPE};
 NimBLEServer* NimBLEDevice::createServer() {
     if (NimBLEDevice::m_pServer == nullptr) {
         NimBLEDevice::m_pServer = new NimBLEServer();
-        ble_gatts_reset();
-        ble_svc_gap_init();
-        ble_svc_gatt_init();
     }
 
     return m_pServer;
@@ -140,14 +134,35 @@ NimBLEServer* NimBLEDevice::createServer() {
 NimBLEServer* NimBLEDevice::getServer() {
     return m_pServer;
 } // getServer
-# endif // #if defined(CONFIG_BT_NIMBLE_ROLE_PERIPHERAL)
+
+#  if MYNEWT_VAL(BLE_L2CAP_COC_MAX_NUM)
+/**
+ * @brief Create an instance of a L2CAP server.
+ * @return A pointer to the instance of the L2CAP server.
+ */
+NimBLEL2CAPServer* NimBLEDevice::createL2CAPServer() {
+    if (NimBLEDevice::m_pL2CAPServer == nullptr) {
+        NimBLEDevice::m_pL2CAPServer = new NimBLEL2CAPServer();
+    }
+    return m_pL2CAPServer;
+} // createL2CAPServer
+
+/**
+ * @brief Get the instance of the L2CAP server.
+ * @return A pointer to the L2CAP server instance or nullptr if none have been created.
+ */
+NimBLEL2CAPServer* NimBLEDevice::getL2CAPServer() {
+    return m_pL2CAPServer;
+} // getL2CAPServer
+#  endif // #if MYNEWT_VAL(BLE_L2CAP_COC_MAX_NUM)
+# endif  // #if MYNEWT_VAL(BLE_ROLE_PERIPHERAL)
 
 /* -------------------------------------------------------------------------- */
 /*                            ADVERTISING FUNCTIONS                           */
 /* -------------------------------------------------------------------------- */
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_BROADCASTER)
-#  if CONFIG_BT_NIMBLE_EXT_ADV
+# if MYNEWT_VAL(BLE_ROLE_BROADCASTER)
+#  if MYNEWT_VAL(BLE_EXT_ADV)
 /**
  * @brief Get the instance of the extended advertising object.
  * @return A pointer to the extended advertising object.
@@ -181,7 +196,7 @@ bool NimBLEDevice::stopAdvertising(uint8_t instId) {
 } // stopAdvertising
 #  endif
 
-#  if !CONFIG_BT_NIMBLE_EXT_ADV || defined(_DOXYGEN_)
+#  if !MYNEWT_VAL(BLE_EXT_ADV) || defined(_DOXYGEN_)
 /**
  * @brief Get the instance of the advertising object.
  * @return A pointer to the advertising object.
@@ -210,7 +225,7 @@ bool NimBLEDevice::startAdvertising(uint32_t duration) {
 bool NimBLEDevice::stopAdvertising() {
     return getAdvertising()->stop();
 } // stopAdvertising
-# endif // #if defined(CONFIG_BT_NIMBLE_ROLE_BROADCASTER)
+# endif // #if MYNEWT_VAL(BLE_ROLE_BROADCASTER)
 
 /* -------------------------------------------------------------------------- */
 /*                               SCAN FUNCTIONS                               */
@@ -221,7 +236,7 @@ bool NimBLEDevice::stopAdvertising() {
  * @return The scanning object reference.  This is a singleton object.  The caller should not
  * try and release/delete it.
  */
-# if defined(CONFIG_BT_NIMBLE_ROLE_OBSERVER)
+# if MYNEWT_VAL(BLE_ROLE_OBSERVER)
 NimBLEScan* NimBLEDevice::getScan() {
     if (m_pScan == nullptr) {
         m_pScan = new NimBLEScan();
@@ -231,7 +246,7 @@ NimBLEScan* NimBLEDevice::getScan() {
 } // getScan
 
 #  ifdef ESP_PLATFORM
-#   ifdef CONFIG_BTDM_BLE_SCAN_DUPL
+#   if CONFIG_BTDM_BLE_SCAN_DUPL || CONFIG_BT_LE_SCAN_DUPL
 /**
  * @brief Set the duplicate filter cache size for filtering scanned devices.
  * @param [in] size The number of advertisements filtered before the cache is reset.\n
@@ -278,15 +293,34 @@ void NimBLEDevice::setScanFilterMode(uint8_t mode) {
 
     m_scanFilterMode = mode;
 }
-#   endif // CONFIG_BTDM_BLE_SCAN_DUPL
+
+/**
+ * @brief Set the time in seconds to reset the duplicate cache.
+ * @param [in] time The time in seconds to reset the cache.
+ * @details When the cache is reset all scanned devices will be reported again
+ * even if already seen in the current scan. If set to 0 the cache will never be reset.
+ */
+void NimBLEDevice::setScanDuplicateCacheResetTime(uint16_t time) {
+    if (m_initialized) {
+        NIMBLE_LOGE(LOG_TAG, "Cannot change scan cache reset time while initialized");
+        return;
+    } else if (time > 1000) {
+        NIMBLE_LOGE(LOG_TAG, "Invalid scan cache reset time");
+        return;
+    }
+
+    NIMBLE_LOGD(LOG_TAG, "Set duplicate cache reset time to: %u", time);
+    m_scanDuplicateResetTime = time;
+}
+#   endif // CONFIG_BTDM_BLE_SCAN_DUPL || CONFIG_BT_LE_SCAN_DUPL
 #  endif  // ESP_PLATFORM
-# endif   // #if defined(CONFIG_BT_NIMBLE_ROLE_OBSERVER)
+# endif   // MYNEWT_VAL(BLE_ROLE_OBSERVER)
 
 /* -------------------------------------------------------------------------- */
 /*                              CLIENT FUNCTIONS                              */
 /* -------------------------------------------------------------------------- */
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_CENTRAL)
+# if MYNEWT_VAL(BLE_ROLE_CENTRAL)
 /**
  * @brief Creates a new client object, each client can connect to 1 peripheral device.
  * @return A pointer to the new client object, or nullptr on error.
@@ -309,7 +343,7 @@ NimBLEClient* NimBLEDevice::createClient(const NimBLEAddress& peerAddress) {
         }
     }
 
-    NIMBLE_LOGE(LOG_TAG, "Unable to create client; already at max: %d", NIMBLE_MAX_CONNECTIONS);
+    NIMBLE_LOGE(LOG_TAG, "Unable to create client; already at max: %d", MYNEWT_VAL(BLE_MAX_CONNECTIONS));
     return nullptr;
 } // createClient
 
@@ -325,12 +359,12 @@ bool NimBLEDevice::deleteClient(NimBLEClient* pClient) {
 
     for (auto& clt : m_pClients) {
         if (clt == pClient) {
-            if (clt->isConnected()) {
+            if (clt->m_connStatus == NimBLEClient::CONNECTED || clt->m_connStatus == NimBLEClient::DISCONNECTING) {
                 clt->m_config.deleteOnDisconnect = true;
                 if (!clt->disconnect()) {
                     break;
                 }
-            } else if (pClient->m_pTaskData != nullptr) {
+            } else if (pClient->m_connStatus == NimBLEClient::CONNECTING) {
                 clt->m_config.deleteOnConnectFail = true;
                 if (!clt->cancelConnect()) {
                     break;
@@ -398,7 +432,7 @@ NimBLEClient* NimBLEDevice::getClientByPeerAddress(const NimBLEAddress& addr) {
  */
 NimBLEClient* NimBLEDevice::getDisconnectedClient() {
     for (const auto clt : m_pClients) {
-        if (clt != nullptr && !clt->isConnected()) {
+        if (clt != nullptr && clt->m_connStatus == NimBLEClient::DISCONNECTED) {
             return clt;
         }
     }
@@ -421,7 +455,7 @@ std::vector<NimBLEClient*> NimBLEDevice::getConnectedClients() {
     return clients;
 } // getConnectedClients
 
-# endif // #if defined(CONFIG_BT_NIMBLE_ROLE_CENTRAL)
+# endif // MYNEWT_VAL(BLE_ROLE_CENTRAL)
 
 /* -------------------------------------------------------------------------- */
 /*                               TRANSMIT POWER                               */
@@ -476,14 +510,14 @@ bool NimBLEDevice::setPower(int8_t dbm, NimBLETxPowerType type) {
         dbm++; // round up to the next multiple of 3 to be able to target 20dbm
     }
 
-    bool success = false;
-    esp_power_level_t espPwr = static_cast<esp_power_level_t>(dbm / 3 + ESP_PWR_LVL_N0);
+    bool              success = false;
+    esp_power_level_t espPwr  = static_cast<esp_power_level_t>(dbm / 3 + ESP_PWR_LVL_N0);
     if (type == NimBLETxPowerType::All) {
         success  = setPowerLevel(espPwr, ESP_BLE_PWR_TYPE_ADV);
         success &= setPowerLevel(espPwr, ESP_BLE_PWR_TYPE_SCAN);
         success &= setPowerLevel(espPwr, ESP_BLE_PWR_TYPE_DEFAULT);
     } else if (type == NimBLETxPowerType::Advertise) {
-        success = setPowerLevel(espPwr,  ESP_BLE_PWR_TYPE_ADV);
+        success = setPowerLevel(espPwr, ESP_BLE_PWR_TYPE_ADV);
     } else if (type == NimBLETxPowerType::Scan) {
         success = setPowerLevel(espPwr, ESP_BLE_PWR_TYPE_SCAN);
     } else if (type == NimBLETxPowerType::Connection) {
@@ -495,15 +529,13 @@ bool NimBLEDevice::setPower(int8_t dbm, NimBLETxPowerType type) {
 # else
     (void)type; // unused
     NIMBLE_LOGD(LOG_TAG, ">> setPower: %d", dbm);
-    ble_hci_vs_set_tx_pwr_cp cmd{dbm};
-    ble_hci_vs_set_tx_pwr_rp rsp{0};
-    int rc = ble_hs_hci_send_vs_cmd(BLE_HCI_OCF_VS_SET_TX_PWR, &cmd, sizeof(cmd), &rsp, sizeof(rsp));
+    int rc = ble_phy_tx_power_set(dbm);
     if (rc) {
         NIMBLE_LOGE(LOG_TAG, "failed to set TX power, rc: %04x\n", rc);
         return false;
     }
 
-    NIMBLE_LOGD(LOG_TAG, "TX power set to %d dBm\n", rsp.tx_power);
+    NIMBLE_LOGD(LOG_TAG, "TX power set to %d dBm\n", dbm);
     return true;
 # endif
 } // setPower
@@ -539,7 +571,7 @@ int NimBLEDevice::getPower(NimBLETxPowerType type) {
 #  endif
 # else
     (void)type; // unused
-    return ble_phy_txpwr_get();
+    return ble_phy_tx_power_get();
 # endif
 } // getPower
 
@@ -574,11 +606,12 @@ uint16_t NimBLEDevice::getMTU() {
 /*                               BOND MANAGEMENT                              */
 /* -------------------------------------------------------------------------- */
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_CENTRAL) || defined(CONFIG_BT_NIMBLE_ROLE_PERIPHERAL)
+# if MYNEWT_VAL(BLE_ROLE_CENTRAL) || MYNEWT_VAL(BLE_ROLE_PERIPHERAL)
 /**
  * @brief Gets the number of bonded peers stored
  */
 int NimBLEDevice::getNumBonds() {
+#  if MYNEWT_VAL(BLE_STORE_MAX_BONDS)
     ble_addr_t peer_id_addrs[MYNEWT_VAL(BLE_STORE_MAX_BONDS)];
     int        num_peers, rc;
     rc = ble_store_util_bonded_peers(&peer_id_addrs[0], &num_peers, MYNEWT_VAL(BLE_STORE_MAX_BONDS));
@@ -587,6 +620,9 @@ int NimBLEDevice::getNumBonds() {
     }
 
     return num_peers;
+#  else
+    return 0;
+#  endif
 }
 
 /**
@@ -594,10 +630,13 @@ int NimBLEDevice::getNumBonds() {
  * @returns True on success.
  */
 bool NimBLEDevice::deleteAllBonds() {
-    int rc = ble_store_clear();
-    if (rc != 0) {
-        NIMBLE_LOGE(LOG_TAG, "Failed to delete all bonds; rc=%d", rc);
-        return false;
+    int numBonds = NimBLEDevice::getNumBonds();
+    for (int i = numBonds - 1; i >= 0; i--) {
+        auto addr = NimBLEDevice::getBondedAddress(i);
+        if (!NimBLEDevice::deleteBond(addr)) {
+            NIMBLE_LOGE(LOG_TAG, "Failed to delete bond for address: %s", addr.toString().c_str());
+            return false;
+        }
     }
     return true;
 }
@@ -617,6 +656,7 @@ bool NimBLEDevice::deleteBond(const NimBLEAddress& address) {
  * @returns True if bonded.
  */
 bool NimBLEDevice::isBonded(const NimBLEAddress& address) {
+#  if MYNEWT_VAL(BLE_STORE_MAX_BONDS)
     ble_addr_t peer_id_addrs[MYNEWT_VAL(BLE_STORE_MAX_BONDS)];
     int        num_peers, rc;
 
@@ -631,7 +671,8 @@ bool NimBLEDevice::isBonded(const NimBLEAddress& address) {
             return true;
         }
     }
-
+#  endif
+    (void)address; // unused
     return false;
 }
 
@@ -641,14 +682,19 @@ bool NimBLEDevice::isBonded(const NimBLEAddress& address) {
  * @returns NimBLEAddress of the found bonded peer or null address if not found.
  */
 NimBLEAddress NimBLEDevice::getBondedAddress(int index) {
+#  if MYNEWT_VAL(BLE_STORE_MAX_BONDS)
     ble_addr_t peer_id_addrs[MYNEWT_VAL(BLE_STORE_MAX_BONDS)];
     int        num_peers, rc;
     rc = ble_store_util_bonded_peers(&peer_id_addrs[0], &num_peers, MYNEWT_VAL(BLE_STORE_MAX_BONDS));
-    if (rc != 0 || index > num_peers || index < 0) {
+    if (rc != 0 || index >= num_peers || index < 0) {
         return NimBLEAddress{};
     }
 
     return NimBLEAddress(peer_id_addrs[index]);
+#  else
+    (void)index; // unused
+    return NimBLEAddress{};
+#  endif
 }
 # endif
 
@@ -727,7 +773,7 @@ size_t NimBLEDevice::getWhiteListCount() {
  * @returns The NimBLEAddress at the whitelist index or null address if not found.
  */
 NimBLEAddress NimBLEDevice::getWhiteListAddress(size_t index) {
-    if (index > m_whiteList.size()) {
+    if (index >= m_whiteList.size()) {
         NIMBLE_LOGE(LOG_TAG, "Invalid index; %u", index);
         return NimBLEAddress{};
     }
@@ -739,7 +785,6 @@ NimBLEAddress NimBLEDevice::getWhiteListAddress(size_t index) {
 /*                               STACK FUNCTIONS                              */
 /* -------------------------------------------------------------------------- */
 
-# if CONFIG_BT_NIMBLE_EXT_ADV || defined(_DOXYGEN_)
 /**
  * @brief Set the preferred default phy to use for connections.
  * @param [in] txPhyMask TX PHY. Can be mask of following:
@@ -762,7 +807,6 @@ bool NimBLEDevice::setDefaultPhy(uint8_t txPhyMask, uint8_t rxPhyMask) {
 
     return rc == 0;
 }
-# endif
 
 /**
  * @brief Host reset, we pass the message so we don't make calls until re-synced.
@@ -813,13 +857,13 @@ void NimBLEDevice::onSync(void) {
     m_synced = true;
 
     if (m_initialized) {
-# if defined(CONFIG_BT_NIMBLE_ROLE_OBSERVER)
+# if MYNEWT_VAL(BLE_ROLE_OBSERVER)
         if (m_pScan != nullptr) {
             m_pScan->onHostSync();
         }
 # endif
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_BROADCASTER)
+# if MYNEWT_VAL(BLE_ROLE_BROADCASTER)
         if (m_bleAdvertising != nullptr) {
             m_bleAdvertising->onHostSync();
         }
@@ -831,7 +875,7 @@ void NimBLEDevice::onSync(void) {
  * @brief The main host task.
  */
 void NimBLEDevice::host_task(void* param) {
-    NIMBLE_LOGI(LOG_TAG, "BLE Host Task Started");
+    NIMBLE_LOGI(LOG_TAG, "NimBLE Started!");
     nimble_port_run(); // This function will return only when nimble_port_stop() is executed
     nimble_port_freertos_deinit();
 } // host_task
@@ -842,9 +886,10 @@ void NimBLEDevice::host_task(void* param) {
  */
 bool NimBLEDevice::init(const std::string& deviceName) {
     if (!m_initialized) {
+        NIMBLE_LOGD(LOG_TAG, "Starting %s", getVersion());
 # ifdef ESP_PLATFORM
 
-#  if defined(CONFIG_ENABLE_ARDUINO_DEPENDS) && SOC_BT_SUPPORTED 
+#  if defined(CONFIG_ENABLE_ARDUINO_DEPENDS) && SOC_BT_SUPPORTED
         // make sure the linker includes esp32-hal-bt.c so Arduino init doesn't release BLE memory.
         btStarted();
 #  endif
@@ -866,24 +911,55 @@ bool NimBLEDevice::init(const std::string& deviceName) {
         esp_bt_controller_mem_release(ESP_BT_MODE_CLASSIC_BT);
 #  endif
 
-#  if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 0, 0) | !defined(CONFIG_NIMBLE_CPP_IDF)
+#  if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 0, 0) || defined(USING_NIMBLE_ARDUINO_HEADERS)
         esp_bt_controller_config_t bt_cfg = BT_CONTROLLER_INIT_CONFIG_DEFAULT();
-#   if defined(CONFIG_IDF_TARGET_ESP32C3) || defined(CONFIG_IDF_TARGET_ESP32S3)
-        bt_cfg.bluetooth_mode = ESP_BT_MODE_BLE;
-#   else
+#   if defined(CONFIG_IDF_TARGET_ESP32)
         bt_cfg.mode         = ESP_BT_MODE_BLE;
-        bt_cfg.ble_max_conn = CONFIG_BT_NIMBLE_MAX_CONNECTIONS;
+        bt_cfg.ble_max_conn = MYNEWT_VAL(BLE_MAX_CONNECTIONS);
+#   elif defined(CONFIG_IDF_TARGET_ESP32C3) || defined(CONFIG_IDF_TARGET_ESP32S3)
+        bt_cfg.ble_max_act =
+            MYNEWT_VAL(BLE_MAX_CONNECTIONS) + MYNEWT_VAL(BLE_ROLE_BROADCASTER) + MYNEWT_VAL(BLE_ROLE_OBSERVER);
+#   else
+        bt_cfg.nimble_max_connections = MYNEWT_VAL(BLE_MAX_CONNECTIONS);
 #   endif
 
-#   ifdef CONFIG_BTDM_BLE_SCAN_DUPL
+#   if NIMBLE_CPP_SCAN_DUPL_ENABLED
+#    if !SOC_ESP_NIMBLE_CONTROLLER
         bt_cfg.normal_adv_size     = m_scanDuplicateSize;
         bt_cfg.scan_duplicate_type = m_scanFilterMode;
-#   endif
+        bt_cfg.scan_duplicate_mode = 0; // Ensure normal filter mode, could be set to mesh in default config
+#     if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
+        bt_cfg.dup_list_refresh_period = m_scanDuplicateResetTime;
+#     endif
+#    else  // SOC_ESP_NIMBLE_CONTROLLER
+        bt_cfg.ble_ll_rsp_dup_list_count = m_scanDuplicateSize;
+        bt_cfg.ble_ll_adv_dup_list_count = m_scanDuplicateSize;
+#    endif // SOC_ESP_NIMBLE_CONTROLLER
         err = esp_bt_controller_init(&bt_cfg);
         if (err != ESP_OK) {
             NIMBLE_LOGE(LOG_TAG, "esp_bt_controller_init() failed; err=%d", err);
             return false;
         }
+
+#    if SOC_ESP_NIMBLE_CONTROLLER
+        int mode = (1UL << 4); // FILTER_DUPLICATE_EXCEPTION_FOR_MESH
+        switch (m_scanFilterMode) {
+            case 1:
+                mode |= (1UL << 3); // FILTER_DUPLICATE_ADVDATA
+                break;
+            case 2:
+                mode |= ((1UL << 2) | (1UL << 3)); // FILTER_DUPLICATE_ADDRESS | FILTER_DUPLICATE_ADVDATA
+                break;
+            default:
+                mode |= ((1UL << 0) | (1UL << 2)); // FILTER_DUPLICATE_PDUTYPE | FILTER_DUPLICATE_ADDRESS
+        }
+
+        ble_vhci_disc_duplicate_mode_disable(0xFFFFFFFF);
+        ble_vhci_disc_duplicate_mode_enable(mode);
+        ble_vhci_disc_duplicate_set_max_cache_size(m_scanDuplicateSize);
+        ble_vhci_disc_duplicate_set_period_refresh_time(m_scanDuplicateResetTime);
+#    endif // SOC_ESP_NIMBLE_CONTROLLER
+#   endif  // NIMBLE_CPP_SCAN_DUPL_ENABLED
 
         err = esp_bt_controller_enable(ESP_BT_MODE_BLE);
         if (err != ESP_OK) {
@@ -891,11 +967,13 @@ bool NimBLEDevice::init(const std::string& deviceName) {
             return false;
         }
 
+#   if CONFIG_BT_NIMBLE_LEGACY_VHCI_ENABLE
         err = esp_nimble_hci_init();
         if (err != ESP_OK) {
             NIMBLE_LOGE(LOG_TAG, "esp_nimble_hci_init() failed; err=%d", err);
             return false;
         }
+#   endif
 #  endif
 # endif
         nimble_port_init();
@@ -911,7 +989,7 @@ bool NimBLEDevice::init(const std::string& deviceName) {
         ble_hs_cfg.sm_io_cap         = BLE_HS_IO_NO_INPUT_OUTPUT;
         ble_hs_cfg.sm_bonding        = 0;
         ble_hs_cfg.sm_mitm           = 0;
-        ble_hs_cfg.sm_sc             = 1;
+        ble_hs_cfg.sm_sc             = 0;
         ble_hs_cfg.sm_our_key_dist   = BLE_SM_PAIR_KEY_DIST_ENC;
         ble_hs_cfg.sm_their_key_dist = BLE_SM_PAIR_KEY_DIST_ENC;
 # if MYNEWT_VAL(BLE_LL_CFG_FEAT_LL_PRIVACY)
@@ -930,6 +1008,7 @@ bool NimBLEDevice::init(const std::string& deviceName) {
     }
 
     m_initialized = true; // Set the initialization flag to ensure we are only initialized once.
+    NIMBLE_LOGD(LOG_TAG, "Initialized");
     return true;
 } // init
 
@@ -946,7 +1025,7 @@ bool NimBLEDevice::deinit(bool clearAll) {
         rc = nimble_port_stop();
         if (rc == 0) {
             nimble_port_deinit();
-# ifdef CONFIG_NIMBLE_CPP_IDF
+# ifndef USING_NIMBLE_ARDUINO_HEADERS
 #  if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 0, 0)
             rc = esp_nimble_hci_and_controller_deinit();
             if (rc != ESP_OK) {
@@ -960,28 +1039,34 @@ bool NimBLEDevice::deinit(bool clearAll) {
     }
 
     if (clearAll) {
-# if defined(CONFIG_BT_NIMBLE_ROLE_PERIPHERAL)
+# if MYNEWT_VAL(BLE_ROLE_PERIPHERAL)
         if (NimBLEDevice::m_pServer != nullptr) {
             delete NimBLEDevice::m_pServer;
             NimBLEDevice::m_pServer = nullptr;
         }
+#  if MYNEWT_VAL(BLE_L2CAP_COC_MAX_NUM)
+        if (NimBLEDevice::m_pL2CAPServer != nullptr) {
+            delete NimBLEDevice::m_pL2CAPServer;
+            NimBLEDevice::m_pL2CAPServer = nullptr;
+        }
+#  endif
 # endif
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_BROADCASTER)
+# if MYNEWT_VAL(BLE_ROLE_BROADCASTER)
         if (NimBLEDevice::m_bleAdvertising != nullptr) {
             delete NimBLEDevice::m_bleAdvertising;
             NimBLEDevice::m_bleAdvertising = nullptr;
         }
 # endif
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_OBSERVER)
+# if MYNEWT_VAL(BLE_ROLE_OBSERVER)
         if (NimBLEDevice::m_pScan != nullptr) {
             delete NimBLEDevice::m_pScan;
             NimBLEDevice::m_pScan = nullptr;
         }
 # endif
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_CENTRAL)
+# if MYNEWT_VAL(BLE_ROLE_CENTRAL)
         for (auto clt : m_pClients) {
             deleteClient(clt);
         }
@@ -1038,18 +1123,16 @@ bool NimBLEDevice::setOwnAddrType(uint8_t type) {
 
     m_ownAddrType = type;
 
+# if MYNEWT_VAL(BLE_HOST_BASED_PRIVACY)
     if (type == BLE_OWN_ADDR_RPA_PUBLIC_DEFAULT || type == BLE_OWN_ADDR_RPA_RANDOM_DEFAULT) {
-# ifdef CONFIG_IDF_TARGET_ESP32
         // esp32 controller does not support RPA so we must use the random static for calls to the stack
         // the host will take care of the random private address generation/setting.
         m_ownAddrType = BLE_OWN_ADDR_RANDOM;
         rc            = ble_hs_pvcy_rpa_config(NIMBLE_HOST_ENABLE_RPA);
-# endif
     } else {
-# ifdef CONFIG_IDF_TARGET_ESP32
         rc = ble_hs_pvcy_rpa_config(NIMBLE_HOST_DISABLE_PRIVACY);
-# endif
     }
+# endif
 
     return rc == 0;
 } // setOwnAddrType
@@ -1184,7 +1267,7 @@ bool NimBLEDevice::startSecurity(uint16_t connHandle, int* rcPtr) {
     return rc == 0 || rc == BLE_HS_EALREADY;
 } // startSecurity
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_CENTRAL) || defined(CONFIG_BT_NIMBLE_ROLE_PERIPHERAL)
+# if MYNEWT_VAL(BLE_ROLE_CENTRAL) || MYNEWT_VAL(BLE_ROLE_PERIPHERAL)
 /**
  * @brief Inject the provided passkey into the Security Manager.
  * @param [in] peerInfo Connection information for the peer.
@@ -1192,10 +1275,17 @@ bool NimBLEDevice::startSecurity(uint16_t connHandle, int* rcPtr) {
  * @return true if the passkey was injected successfully.
  */
 bool NimBLEDevice::injectPassKey(const NimBLEConnInfo& peerInfo, uint32_t passkey) {
+#  if MYNEWT_VAL(BLE_SM_LEGACY)
     ble_sm_io pkey{.action = BLE_SM_IOACT_INPUT, .passkey = passkey};
     int       rc = ble_sm_inject_io(peerInfo.getConnHandle(), &pkey);
     NIMBLE_LOGD(LOG_TAG, "BLE_SM_IOACT_INPUT; ble_sm_inject_io result: %d", rc);
     return rc == 0;
+#  else
+    (void)peerInfo;
+    (void)passkey;
+    NIMBLE_LOGE(LOG_TAG, "Passkey entry not supported with current security settings");
+    return false;
+#  endif
 }
 
 /**
@@ -1204,12 +1294,19 @@ bool NimBLEDevice::injectPassKey(const NimBLEConnInfo& peerInfo, uint32_t passke
  * @param [in] accept Whether the user confirmed or declined the comparison.
  */
 bool NimBLEDevice::injectConfirmPasskey(const NimBLEConnInfo& peerInfo, bool accept) {
+#  if MYNEWT_VAL(BLE_SM_SC)
     ble_sm_io pkey{.action = BLE_SM_IOACT_NUMCMP, .numcmp_accept = accept};
     int       rc = ble_sm_inject_io(peerInfo.getConnHandle(), &pkey);
     NIMBLE_LOGD(LOG_TAG, "BLE_SM_IOACT_NUMCMP; ble_sm_inject_io result: %d", rc);
     return rc == 0;
+#  else
+    (void)peerInfo;
+    (void)accept;
+    NIMBLE_LOGE(LOG_TAG, "Numeric comparison not supported with current security settings");
+    return false;
+#  endif
 }
-# endif // CONFIG_BT_NIMBLE_ROLE_CENTRAL || CONFIG_BT_NIMBLE_ROLE_PERIPHERAL
+# endif // MYNEWT_VAL(BLE_ROLE_CENTRAL) || MYNEWT_VAL(BLE_ROLE_PERIPHERAL)
 
 /* -------------------------------------------------------------------------- */
 /*                                  UTILITIES                                 */
@@ -1220,22 +1317,24 @@ bool NimBLEDevice::injectConfirmPasskey(const NimBLEConnInfo& peerInfo, bool acc
  * @param [in] deviceName The name to set.
  */
 bool NimBLEDevice::setDeviceName(const std::string& deviceName) {
+# if !defined(MYNEWT_VAL_BLE_GATTS) || MYNEWT_VAL(BLE_GATTS) > 0
     int rc = ble_svc_gap_device_name_set(deviceName.c_str());
     if (rc != 0) {
         NIMBLE_LOGE(LOG_TAG, "Device name not set - too long");
         return false;
     }
-
+# endif
     return true;
 } // setDeviceName
 
 /**
  * @brief Set a custom callback for gap events.
  * @param [in] handler The function to call when gap events occur.
+ * @param [in] arg Argument to pass to the handler.
  * @returns
  */
-bool NimBLEDevice::setCustomGapHandler(gap_event_handler handler) {
-    int rc = ble_gap_event_listener_register(&m_listener, handler, NULL);
+bool NimBLEDevice::setCustomGapHandler(gap_event_handler handler, void* arg) {
+    int rc = ble_gap_event_listener_register(&m_listener, handler, arg);
     if (rc == BLE_HS_EALREADY) {
         NIMBLE_LOGI(LOG_TAG, "Already listening to GAP events.");
         return true;
@@ -1254,7 +1353,15 @@ std::string NimBLEDevice::toString() {
     return getAddress().toString();
 } // toString
 
-# if CONFIG_NIMBLE_CPP_DEBUG_ASSERT_ENABLED || __DOXYGEN__
+/**
+ * @brief Return the library version as a string.
+ * @return A const char* containing library version information.
+ */
+const char* NimBLEDevice::getVersion() {
+    return NIMBLE_CPP_VERSION_STR;
+} // getVersion
+
+# if MYNEWT_VAL(NIMBLE_CPP_DEBUG_ASSERT_ENABLED) || __DOXYGEN__
 /**
  * @brief Debug assert - weak function.
  * @param [in] file The file where the assert occurred.
@@ -1265,7 +1372,7 @@ void nimble_cpp_assert(const char* file, unsigned line) {
     ble_npl_time_delay(10);
     abort();
 }
-# endif // CONFIG_NIMBLE_CPP_DEBUG_ASSERT_ENABLED
+# endif // MYNEWT_VAL(NIMBLE_CPP_DEBUG_ASSERT_ENABLED)
 
 void NimBLEDevice::setDeviceCallbacks(NimBLEDeviceCallbacks* cb) {
     m_pDeviceCallbacks = cb ? cb : &defaultDeviceCallbacks;
@@ -1276,4 +1383,4 @@ int NimBLEDeviceCallbacks::onStoreStatus(struct ble_store_status_event* event, v
     return ble_store_util_status_rr(event, arg);
 }
 
-#endif // CONFIG_BT_ENABLED
+#endif // CONFIG_BT_NIMBLE_ENABLED

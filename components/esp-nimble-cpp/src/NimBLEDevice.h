@@ -18,18 +18,21 @@
 #ifndef NIMBLE_CPP_DEVICE_H_
 #define NIMBLE_CPP_DEVICE_H_
 
-#include "nimconfig.h"
-#if defined(CONFIG_BT_ENABLED)
+#include "NimBLECppVersion.h"
+#include "syscfg/syscfg.h"
+#if CONFIG_BT_NIMBLE_ENABLED
 # ifdef ESP_PLATFORM
 #  ifndef CONFIG_IDF_TARGET_ESP32P4
 #   include <esp_bt.h>
 #  endif
+#  define NIMBLE_CPP_SCAN_DUPL_ENABLED \
+      (CONFIG_BTDM_BLE_SCAN_DUPL || CONFIG_BT_LE_SCAN_DUPL || CONFIG_BT_CTRL_BLE_SCAN_DUPL)
 # endif
 
-# if defined(CONFIG_NIMBLE_CPP_IDF)
-#  include <host/ble_gap.h>
+# ifdef USING_NIMBLE_ARDUINO_HEADERS
+#  include "nimble/nimble/host/include/host/ble_gap.h"
 # else
-#  include <nimble/nimble/host/include/host/ble_gap.h>
+#  include "host/ble_gap.h"
 # endif
 
 /****  FIX COMPILATION ****/
@@ -40,28 +43,31 @@
 # include <string>
 # include <vector>
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_CENTRAL)
+# if MYNEWT_VAL(BLE_ROLE_CENTRAL)
 #  include <array>
 class NimBLEClient;
 # endif
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_OBSERVER)
+# if MYNEWT_VAL(BLE_ROLE_OBSERVER)
 class NimBLEScan;
 # endif
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_BROADCASTER)
-#  if CONFIG_BT_NIMBLE_EXT_ADV
+# if MYNEWT_VAL(BLE_ROLE_BROADCASTER)
+#  if MYNEWT_VAL(BLE_EXT_ADV)
 class NimBLEExtAdvertising;
 #  else
 class NimBLEAdvertising;
 #  endif
 # endif
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_PERIPHERAL)
+# if MYNEWT_VAL(BLE_ROLE_PERIPHERAL)
 class NimBLEServer;
+#  if MYNEWT_VAL(BLE_L2CAP_COC_MAX_NUM)
+class NimBLEL2CAPServer;
+#  endif
 # endif
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_PERIPHERAL) || defined(CONFIG_BT_NIMBLE_ROLE_CENTRAL)
+# if MYNEWT_VAL(BLE_ROLE_PERIPHERAL) || MYNEWT_VAL(BLE_ROLE_CENTRAL)
 class NimBLEConnInfo;
 # endif
 
@@ -95,19 +101,15 @@ class NimBLEDeviceCallbacks;
 # define BLEEddystoneTLM              NimBLEEddystoneTLM
 # define BLEEddystoneURL              NimBLEEddystoneURL
 # define BLEConnInfo                  NimBLEConnInfo
+# define BLEL2CAPServer               NimBLEL2CAPServer
+# define BLEL2CAPService              NimBLEL2CAPService
+# define BLEL2CAPServiceCallbacks     NimBLEL2CAPServiceCallbacks
+# define BLEL2CAPClient               NimBLEL2CAPClient
+# define BLEL2CAPClientCallbacks      NimBLEL2CAPClientCallbacks
+# define BLEL2CAPChannel              NimBLEL2CAPChannel
+# define BLEL2CAPChannelCallbacks     NimBLEL2CAPChannelCallbacks
 
-# ifdef CONFIG_BT_NIMBLE_MAX_CONNECTIONS
-#  define NIMBLE_MAX_CONNECTIONS CONFIG_BT_NIMBLE_MAX_CONNECTIONS
-# else
-#  define NIMBLE_MAX_CONNECTIONS CONFIG_NIMBLE_MAX_CONNECTIONS
-# endif
-
-enum class NimBLETxPowerType {
-    All  = 0,
-    Advertise  = 1,
-    Scan = 2,
-    Connection = 3
-};
+enum class NimBLETxPowerType { All = 0, Advertise = 1, Scan = 2, Connection = 3 };
 
 typedef int (*gap_event_handler)(ble_gap_event* event, void* arg);
 
@@ -122,6 +124,7 @@ class NimBLEDevice {
     static bool          isInitialized();
     static NimBLEAddress getAddress();
     static std::string   toString();
+    static const char*   getVersion();
     static bool          whiteListAdd(const NimBLEAddress& address);
     static bool          whiteListRemove(const NimBLEAddress& address);
     static bool          onWhiteList(const NimBLEAddress& address);
@@ -133,7 +136,8 @@ class NimBLEDevice {
     static void          setDeviceCallbacks(NimBLEDeviceCallbacks* cb);
     static void          setScanDuplicateCacheSize(uint16_t cacheSize);
     static void          setScanFilterMode(uint8_t type);
-    static bool          setCustomGapHandler(gap_event_handler handler);
+    static void          setScanDuplicateCacheResetTime(uint16_t time);
+    static bool          setCustomGapHandler(gap_event_handler handler, void* arg = nullptr);
     static void          setSecurityAuth(bool bonding, bool mitm, bool sc);
     static void          setSecurityAuth(uint8_t auth);
     static void          setSecurityIOCap(uint8_t iocap);
@@ -149,6 +153,7 @@ class NimBLEDevice {
     static void          host_task(void* param);
     static int           getPower(NimBLETxPowerType type = NimBLETxPowerType::All);
     static bool          setPower(int8_t dbm, NimBLETxPowerType type = NimBLETxPowerType::All);
+    static bool          setDefaultPhy(uint8_t txPhyMask, uint8_t rxPhyMask);
 
 # ifdef ESP_PLATFORM
 #  ifndef CONFIG_IDF_TARGET_ESP32P4
@@ -157,39 +162,39 @@ class NimBLEDevice {
 #  endif
 # endif
 
-# if CONFIG_BT_NIMBLE_EXT_ADV
-    static bool setDefaultPhy(uint8_t txPhyMask, uint8_t rxPhyMask);
-# endif
-
-# if defined(CONFIG_BT_NIMBLE_ROLE_OBSERVER)
+# if MYNEWT_VAL(BLE_ROLE_OBSERVER)
     static NimBLEScan* getScan();
 # endif
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_PERIPHERAL)
+# if MYNEWT_VAL(BLE_ROLE_PERIPHERAL)
     static NimBLEServer* createServer();
     static NimBLEServer* getServer();
+#  if MYNEWT_VAL(BLE_L2CAP_COC_MAX_NUM)
+    static NimBLEL2CAPServer* createL2CAPServer();
+    static NimBLEL2CAPServer* getL2CAPServer();
+#  endif
 # endif
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_PERIPHERAL) || defined(CONFIG_BT_NIMBLE_ROLE_CENTRAL)
+# if MYNEWT_VAL(BLE_ROLE_PERIPHERAL) || MYNEWT_VAL(BLE_ROLE_CENTRAL)
     static bool injectConfirmPasskey(const NimBLEConnInfo& peerInfo, bool accept);
     static bool injectPassKey(const NimBLEConnInfo& peerInfo, uint32_t pin);
 # endif
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_BROADCASTER)
-#  if CONFIG_BT_NIMBLE_EXT_ADV
+# if MYNEWT_VAL(BLE_ROLE_BROADCASTER)
+#  if MYNEWT_VAL(BLE_EXT_ADV)
     static NimBLEExtAdvertising* getAdvertising();
     static bool                  startAdvertising(uint8_t instId, int duration = 0, int maxEvents = 0);
     static bool                  stopAdvertising(uint8_t instId);
     static bool                  stopAdvertising();
 #  endif
-#  if !CONFIG_BT_NIMBLE_EXT_ADV || defined(_DOXYGEN_)
+#  if !MYNEWT_VAL(BLE_EXT_ADV) || defined(_DOXYGEN_)
     static NimBLEAdvertising* getAdvertising();
     static bool               startAdvertising(uint32_t duration = 0);
     static bool               stopAdvertising();
 #  endif
 # endif
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_CENTRAL)
+# if MYNEWT_VAL(BLE_ROLE_CENTRAL)
     static NimBLEClient*              createClient();
     static NimBLEClient*              createClient(const NimBLEAddress& peerAddress);
     static bool                       deleteClient(NimBLEClient* pClient);
@@ -200,7 +205,7 @@ class NimBLEDevice {
     static std::vector<NimBLEClient*> getConnectedClients();
 # endif
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_CENTRAL) || defined(CONFIG_BT_NIMBLE_ROLE_PERIPHERAL)
+# if MYNEWT_VAL(BLE_ROLE_CENTRAL) || MYNEWT_VAL(BLE_ROLE_PERIPHERAL)
     static bool          deleteBond(const NimBLEAddress& address);
     static int           getNumBonds();
     static bool          isBonded(const NimBLEAddress& address);
@@ -218,85 +223,95 @@ class NimBLEDevice {
     static NimBLEDeviceCallbacks*     m_pDeviceCallbacks;
     static NimBLEDeviceCallbacks      defaultDeviceCallbacks;
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_OBSERVER)
+# if MYNEWT_VAL(BLE_ROLE_OBSERVER)
     static NimBLEScan* m_pScan;
 # endif
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_PERIPHERAL)
+# if MYNEWT_VAL(BLE_ROLE_PERIPHERAL)
     static NimBLEServer* m_pServer;
+#  if MYNEWT_VAL(BLE_L2CAP_COC_MAX_NUM)
+    static NimBLEL2CAPServer* m_pL2CAPServer;
+#  endif
 # endif
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_BROADCASTER)
-#  if CONFIG_BT_NIMBLE_EXT_ADV
+# if MYNEWT_VAL(BLE_ROLE_BROADCASTER)
+#  if MYNEWT_VAL(BLE_EXT_ADV)
     static NimBLEExtAdvertising* m_bleAdvertising;
 #  else
     static NimBLEAdvertising* m_bleAdvertising;
 #  endif
 # endif
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_CENTRAL)
-    static std::array<NimBLEClient*, NIMBLE_MAX_CONNECTIONS> m_pClients;
+# if MYNEWT_VAL(BLE_ROLE_CENTRAL)
+    static std::array<NimBLEClient*, MYNEWT_VAL(BLE_MAX_CONNECTIONS)> m_pClients;
 # endif
 
 # ifdef ESP_PLATFORM
-#  ifdef CONFIG_BTDM_BLE_SCAN_DUPL
+#  if NIMBLE_CPP_SCAN_DUPL_ENABLED
     static uint16_t m_scanDuplicateSize;
     static uint8_t  m_scanFilterMode;
+    static uint16_t m_scanDuplicateResetTime;
 #  endif
 # endif
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_CENTRAL)
+# if MYNEWT_VAL(BLE_ROLE_CENTRAL)
     friend class NimBLEClient;
 # endif
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_OBSERVER)
+# if MYNEWT_VAL(BLE_ROLE_OBSERVER)
     friend class NimBLEScan;
 # endif
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_PERIPHERAL)
+# if MYNEWT_VAL(BLE_ROLE_PERIPHERAL)
     friend class NimBLEServer;
     friend class NimBLECharacteristic;
 # endif
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_BROADCASTER)
+# if MYNEWT_VAL(BLE_ROLE_BROADCASTER)
     friend class NimBLEAdvertising;
-#  if CONFIG_BT_NIMBLE_EXT_ADV
+#  if MYNEWT_VAL(BLE_EXT_ADV)
     friend class NimBLEExtAdvertising;
     friend class NimBLEExtAdvertisement;
 #  endif
 # endif
 };
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_CENTRAL)
+# if MYNEWT_VAL(BLE_ROLE_CENTRAL)
 #  include "NimBLEClient.h"
 #  include "NimBLERemoteService.h"
 #  include "NimBLERemoteCharacteristic.h"
 #  include "NimBLERemoteDescriptor.h"
 # endif
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_OBSERVER)
+# if MYNEWT_VAL(BLE_ROLE_OBSERVER)
 #  include "NimBLEScan.h"
 # endif
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_PERIPHERAL)
+# if MYNEWT_VAL(BLE_ROLE_PERIPHERAL)
 #  include "NimBLEServer.h"
 #  include "NimBLEService.h"
 #  include "NimBLECharacteristic.h"
 #  include "NimBLEDescriptor.h"
+#  if MYNEWT_VAL(BLE_L2CAP_COC_MAX_NUM)
+#   include "NimBLEL2CAPServer.h"
+#   include "NimBLEL2CAPChannel.h"
+#  endif
 # endif
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_BROADCASTER)
-#  if CONFIG_BT_NIMBLE_EXT_ADV
+# if MYNEWT_VAL(BLE_ROLE_BROADCASTER)
+#  if MYNEWT_VAL(BLE_EXT_ADV)
 #   include "NimBLEExtAdvertising.h"
 #  else
 #   include "NimBLEAdvertising.h"
 #  endif
 # endif
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_CENTRAL) || defined(CONFIG_BT_NIMBLE_ROLE_PERIPHERAL)
+# if MYNEWT_VAL(BLE_ROLE_CENTRAL) || MYNEWT_VAL(BLE_ROLE_PERIPHERAL)
 #  include "NimBLEConnInfo.h"
+#  include "NimBLEStream.h"
 # endif
 
+# include "NimBLEAddress.h"
 # include "NimBLEUtils.h"
 
 /**
@@ -321,5 +336,5 @@ class NimBLEDeviceCallbacks {
     virtual int onStoreStatus(struct ble_store_status_event* event, void* arg);
 };
 
-#endif // CONFIG_BT_ENABLED
+#endif // CONFIG_BT_NIMBLE_ENABLED
 #endif // NIMBLE_CPP_DEVICE_H_

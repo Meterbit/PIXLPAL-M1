@@ -18,13 +18,13 @@
 #ifndef NIMBLE_CPP_SERVER_H_
 #define NIMBLE_CPP_SERVER_H_
 
-#include "nimconfig.h"
-#if defined(CONFIG_BT_ENABLED) && defined(CONFIG_BT_NIMBLE_ROLE_PERIPHERAL)
+#include "syscfg/syscfg.h"
+#if CONFIG_BT_NIMBLE_ENABLED && MYNEWT_VAL(BLE_ROLE_PERIPHERAL)
 
-# if defined(CONFIG_NIMBLE_CPP_IDF)
-#  include "host/ble_gap.h"
-# else
+# ifdef USING_NIMBLE_ARDUINO_HEADERS
 #  include "nimble/nimble/host/include/host/ble_gap.h"
+# else
+#  include "host/ble_gap.h"
 # endif
 
 /****  FIX COMPILATION ****/
@@ -45,12 +45,14 @@ class NimBLEConnInfo;
 class NimBLEAddress;
 class NimBLEService;
 class NimBLECharacteristic;
-# if CONFIG_BT_NIMBLE_EXT_ADV
+# if MYNEWT_VAL(BLE_ROLE_BROADCASTER)
+#  if MYNEWT_VAL(BLE_EXT_ADV)
 class NimBLEExtAdvertising;
-# else
+#  else
 class NimBLEAdvertising;
+#  endif
 # endif
-# if defined(CONFIG_BT_NIMBLE_ROLE_CENTRAL)
+# if MYNEWT_VAL(BLE_ROLE_CENTRAL)
 class NimBLEClient;
 # endif
 
@@ -59,7 +61,7 @@ class NimBLEClient;
  */
 class NimBLEServer {
   public:
-    void    start();
+    bool    start();
     uint8_t getConnectedCount() const;
     bool    disconnect(uint16_t connHandle, uint8_t reason = BLE_ERR_REM_USER_CONN_TERM) const;
     bool    disconnect(const NimBLEConnInfo& connInfo, uint8_t reason = BLE_ERR_REM_USER_CONN_TERM) const;
@@ -70,6 +72,7 @@ class NimBLEServer {
     NimBLEService*        getServiceByUUID(const char* uuid, uint16_t instanceId = 0) const;
     NimBLEService*        getServiceByUUID(const NimBLEUUID& uuid, uint16_t instanceId = 0) const;
     NimBLEService*        getServiceByHandle(uint16_t handle) const;
+    NimBLECharacteristic* getCharacteristicByHandle(uint16_t handle) const;
     void                  removeService(NimBLEService* service, bool deleteSvc = false);
     void                  addService(NimBLEService* service);
     uint16_t              getPeerMTU(uint16_t connHandle) const;
@@ -79,59 +82,63 @@ class NimBLEServer {
     NimBLEConnInfo        getPeerInfoByHandle(uint16_t connHandle) const;
     void                  advertiseOnDisconnect(bool enable);
     void                  setDataLen(uint16_t connHandle, uint16_t tx_octets) const;
+    bool                  updatePhy(uint16_t connHandle, uint8_t txPhysMask, uint8_t rxPhysMask, uint16_t phyOptions);
+    bool                  getPhy(uint16_t connHandle, uint8_t* txPhy, uint8_t* rxPhy);
+    void                  sendServiceChangedIndication() const;
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_CENTRAL)
+# if MYNEWT_VAL(BLE_ROLE_CENTRAL)
     NimBLEClient* getClient(uint16_t connHandle);
     NimBLEClient* getClient(const NimBLEConnInfo& connInfo);
     void          deleteClient();
 # endif
 
-# if CONFIG_BT_NIMBLE_EXT_ADV
+# if MYNEWT_VAL(BLE_ROLE_BROADCASTER)
+#  if MYNEWT_VAL(BLE_EXT_ADV)
     NimBLEExtAdvertising* getAdvertising() const;
     bool                  startAdvertising(uint8_t instanceId, int duration = 0, int maxEvents = 0) const;
     bool                  stopAdvertising(uint8_t instanceId) const;
-    bool                  updatePhy(uint16_t connHandle, uint8_t txPhysMask, uint8_t rxPhysMask, uint16_t phyOptions);
-    bool                  getPhy(uint16_t connHandle, uint8_t* txPhy, uint8_t* rxPhy);
-# endif
+#  endif
 
-# if !CONFIG_BT_NIMBLE_EXT_ADV || defined(_DOXYGEN_)
+#  if !MYNEWT_VAL(BLE_EXT_ADV) || defined(_DOXYGEN_)
     NimBLEAdvertising* getAdvertising() const;
     bool               startAdvertising(uint32_t duration = 0) const;
     bool               stopAdvertising() const;
+#  endif
 # endif
 
   private:
     friend class NimBLEDevice;
     friend class NimBLEService;
     friend class NimBLECharacteristic;
-# if CONFIG_BT_NIMBLE_EXT_ADV
+# if MYNEWT_VAL(BLE_ROLE_BROADCASTER)
+#  if MYNEWT_VAL(BLE_EXT_ADV)
     friend class NimBLEExtAdvertising;
-# else
+#  else
     friend class NimBLEAdvertising;
+#  endif
 # endif
 
     NimBLEServer();
     ~NimBLEServer();
+    static int  handleGapEvent(struct ble_gap_event* event, void* arg);
+    static int  handleGattEvent(uint16_t connHandle, uint16_t attrHandle, ble_gatt_access_ctxt* ctxt, void* arg);
+    static void gattRegisterCallback(struct ble_gatt_register_ctxt* ctxt, void* arg);
+    void        setServiceChanged();
+    bool        resetGATT();
 
     bool m_gattsStarted : 1;
     bool m_svcChanged : 1;
     bool m_deleteCallbacks : 1;
-# if !CONFIG_BT_NIMBLE_EXT_ADV
+# if !MYNEWT_VAL(BLE_EXT_ADV) && MYNEWT_VAL(BLE_ROLE_BROADCASTER)
     bool m_advertiseOnDisconnect : 1;
 # endif
-    NimBLEServerCallbacks*                                 m_pServerCallbacks;
-    std::vector<NimBLEService*>                            m_svcVec;
-    std::array<uint16_t, CONFIG_BT_NIMBLE_MAX_CONNECTIONS> m_connectedPeers;
+    NimBLEServerCallbacks*                                m_pServerCallbacks;
+    std::vector<NimBLEService*>                           m_svcVec;
+    std::array<uint16_t, MYNEWT_VAL(BLE_MAX_CONNECTIONS)> m_connectedPeers;
 
-# if defined(CONFIG_BT_NIMBLE_ROLE_CENTRAL)
+# if MYNEWT_VAL(BLE_ROLE_CENTRAL)
     NimBLEClient* m_pClient{nullptr};
 # endif
-
-    static int handleGapEvent(struct ble_gap_event* event, void* arg);
-    static int handleGattEvent(uint16_t connHandle, uint16_t attrHandle, ble_gatt_access_ctxt* ctxt, void* arg);
-    void       serviceChanged();
-    void       resetGATT();
-
 }; // NimBLEServer
 
 /**
@@ -175,6 +182,15 @@ class NimBLEServerCallbacks {
     virtual uint32_t onPassKeyDisplay();
 
     /**
+     * @brief Called when using passkey entry pairing and the peer requires the passkey to be entered.
+     * @param [in] connInfo A reference to a NimBLEConnInfo instance with information
+     * about the peer connection parameters.
+     * @details The application should call NimBLEDevice::injectPassKey with the passkey
+     * displayed on the peer device to complete the pairing process.
+     */
+    virtual void onPassKeyEntry(NimBLEConnInfo& connInfo);
+
+    /**
      * @brief Called when using numeric comparision for pairing.
      * @param [in] connInfo A reference to a NimBLEConnInfo instance with information
      * Should be passed back to NimBLEDevice::injectConfirmPasskey
@@ -203,7 +219,6 @@ class NimBLEServerCallbacks {
      */
     virtual void onConnParamsUpdate(NimBLEConnInfo& connInfo);
 
-# if CONFIG_BT_NIMBLE_EXT_ADV
     /**
      * @brief Called when the PHY update procedure is complete.
      * @param [in] connInfo A reference to a NimBLEConnInfo instance with information
@@ -216,8 +231,7 @@ class NimBLEServerCallbacks {
      * * BLE_GAP_LE_PHY_CODED
      */
     virtual void onPhyUpdate(NimBLEConnInfo& connInfo, uint8_t txPhy, uint8_t rxPhy);
-# endif
 }; // NimBLEServerCallbacks
 
-#endif // CONFIG_BT_ENABLED && CONFIG_BT_NIMBLE_ROLE_PERIPHERAL
+#endif // CONFIG_BT_NIMBLE_ENABLED && MYNEWT_VAL(BLE_ROLE_PERIPHERAL)
 #endif // NIMBLE_CPP_SERVER_H_

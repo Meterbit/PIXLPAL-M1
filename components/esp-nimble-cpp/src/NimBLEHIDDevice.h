@@ -18,8 +18,8 @@
 #ifndef NIMBLE_CPP_HIDDEVICE_H_
 #define NIMBLE_CPP_HIDDEVICE_H_
 
-#include "nimconfig.h"
-#if defined(CONFIG_BT_ENABLED) && defined(CONFIG_BT_NIMBLE_ROLE_BROADCASTER) && defined(CONFIG_BT_NIMBLE_ROLE_PERIPHERAL)
+#include "syscfg/syscfg.h"
+#if CONFIG_BT_NIMBLE_ENABLED && MYNEWT_VAL(BLE_ROLE_BROADCASTER) && MYNEWT_VAL(BLE_ROLE_PERIPHERAL)
 
 # include <stdint.h>
 # include <string>
@@ -49,7 +49,8 @@ class NimBLEHIDDevice {
     NimBLEHIDDevice(NimBLEServer* server);
 
     void                  setReportMap(uint8_t* map, uint16_t);
-    void                  startServices();
+    void                  startServices() __attribute__((deprecated("Services are now started by the server when start() is called, " 
+                                                         "this function is no longer needed and will be removed in a future release.")));
     bool                  setManufacturer(const std::string& name);
     void                  setPnp(uint8_t sig, uint16_t vid, uint16_t pid, uint16_t version);
     void                  setHidInfo(uint8_t country, uint8_t flags);
@@ -85,5 +86,5 @@ class NimBLEHIDDevice {
     NimBLECharacteristic* locateReportCharacteristicByIdAndType(uint8_t reportId, uint8_t reportType);
 };
 
-#endif // CONFIG_BT_ENABLED && CONFIG_BT_NIMBLE_ROLE_BROADCASTER && defined(CONFIG_BT_NIMBLE_ROLE_PERIPHERAL)
+#endif // CONFIG_BT_NIMBLE_ENABLED && MYNEWT_VAL(BLE_ROLE_BROADCASTER) && MYNEWT_VAL(BLE_ROLE_PERIPHERAL)
 #endif // NIMBLE_CPP_HIDDEVICE_H_

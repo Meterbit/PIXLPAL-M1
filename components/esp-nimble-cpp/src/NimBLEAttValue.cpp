@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-#include "nimconfig.h"
-#if defined(CONFIG_BT_ENABLED)
+#include "NimBLEAttValue.h"
+#if CONFIG_BT_NIMBLE_ENABLED
 
-# if defined(CONFIG_NIMBLE_CPP_IDF)
-#  include "nimble/nimble_npl.h"
-# else
+# ifdef USING_NIMBLE_ARDUINO_HEADERS
 #  include "nimble/nimble/include/nimble/nimble_npl.h"
+# else
+#  include "nimble/nimble_npl.h"
 # endif
 
-# include "NimBLEAttValue.h"
+# include "NimBLEUtils.h"
 # include "NimBLELog.h"
 
 static const char* LOG_TAG = "NimBLEAttValue";
@@ -35,7 +35,7 @@ NimBLEAttValue::NimBLEAttValue(uint16_t init_len, uint16_t max_len)
       m_attr_max_len{std::min<uint16_t>(BLE_ATT_ATTR_MAX_LEN, max_len)},
       m_attr_len{},
       m_capacity{init_len}
-# if CONFIG_NIMBLE_CPP_ATT_VALUE_TIMESTAMP_ENABLED
+# if MYNEWT_VAL(NIMBLE_CPP_ATT_VALUE_TIMESTAMP_ENABLED)
       ,
       m_timestamp{}
 # endif
@@ -105,7 +105,8 @@ void NimBLEAttValue::deepCopy(const NimBLEAttValue& source) {
 
 // Set the value of the attribute.
 bool NimBLEAttValue::setValue(const uint8_t* value, uint16_t len) {
-    m_attr_len = 0; // Just set the value length to 0 and append instead of repeating code.
+    m_attr_len      = 0;    // Just set the value length to 0 and append instead of repeating code.
+    m_attr_value[0] = '\0'; // Set the first byte to 0 incase the len of the new value is 0.
     append(value, len);
     return memcmp(m_attr_value, value, len) == 0 && m_attr_len == len;
 }
@@ -133,7 +134,7 @@ NimBLEAttValue& NimBLEAttValue::append(const uint8_t* value, uint16_t len) {
         return *this;
     }
 
-# if CONFIG_NIMBLE_CPP_ATT_VALUE_TIMESTAMP_ENABLED
+# if MYNEWT_VAL(NIMBLE_CPP_ATT_VALUE_TIMESTAMP_ENABLED)
     time_t t = time(nullptr);
 # else
     time_t t = 0;
@@ -159,4 +160,4 @@ uint8_t NimBLEAttValue::operator[](int pos) const {
     return m_attr_value[pos];
 }
 
-#endif // CONFIG_BT_ENABLED
+#endif // CONFIG_BT_NIMBLE_ENABLED

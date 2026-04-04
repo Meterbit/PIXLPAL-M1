@@ -20,7 +20,7 @@ if(__COMPONENT_TARGETS MATCHES "___idf_espressif__arduino-esp32")
 # Manual installation of Arduino framework
 elseif(__COMPONENT_TARGETS MATCHES "__idf_arduino")
     list(APPEND ESP_NIMBLE_PRIV_REQUIRES
-    arduino-esp32
+        arduino-esp32
     )
 # PlatformIO
 elseif(__COMPONENT_TARGETS MATCHES "___idf_framework-arduinoespressif32")
@@ -35,7 +35,9 @@ idf_component_register(
     "esp32s3"
     "esp32c2"
     "esp32c3"
+    "esp32c5"
     "esp32c6"
+    "esp32c61"
     "esp32h2"
     "esp32p4"
   INCLUDE_DIRS
@@ -55,6 +57,8 @@ idf_component_register(
     "src/NimBLEEddystoneTLM.cpp"
     "src/NimBLEExtAdvertising.cpp"
     "src/NimBLEHIDDevice.cpp"
+    "src/NimBLEL2CAPChannel.cpp"
+    "src/NimBLEL2CAPServer.cpp"
     "src/NimBLERemoteCharacteristic.cpp"
     "src/NimBLERemoteDescriptor.cpp"
     "src/NimBLERemoteService.cpp"
@@ -62,6 +66,7 @@ idf_component_register(
     "src/NimBLEScan.cpp"
     "src/NimBLEServer.cpp"
     "src/NimBLEService.cpp"
+    "src/NimBLEStream.cpp"
     "src/NimBLEUtils.cpp"
     "src/NimBLEUUID.cpp"
   REQUIRES

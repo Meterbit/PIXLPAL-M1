@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-#include "nimconfig.h"
-#if defined(CONFIG_BT_ENABLED) && defined(CONFIG_BT_NIMBLE_ROLE_BROADCASTER)
+#include "NimBLEEddystoneTLM.h"
+#if CONFIG_BT_NIMBLE_ENABLED && MYNEWT_VAL(BLE_ROLE_BROADCASTER)
 
-# include "NimBLEEddystoneTLM.h"
 # include "NimBLEUUID.h"
 # include "NimBLELog.h"
 
@@ -216,4 +215,4 @@ void NimBLEEddystoneTLM::setTime(uint32_t tmil) {
     m_eddystoneData.tmil = tmil;
 } // setTime
 
-#endif // CONFIG_BT_ENABLED && CONFIG_BT_NIMBLE_ROLE_BROADCASTER
+#endif // CONFIG_BT_NIMBLE_ENABLED && MYNEWT_VAL(BLE_ROLE_BROADCASTER)

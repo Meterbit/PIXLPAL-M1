@@ -15,21 +15,36 @@
  * limitations under the License.
  */
 
-#include "nimconfig.h"
-#if defined(CONFIG_BT_ENABLED)
+#include "NimBLEAddress.h"
+#if CONFIG_BT_NIMBLE_ENABLED
 
-# include "NimBLEAddress.h"
 # include "NimBLELog.h"
 
 # include <algorithm>
 
-# ifdef CONFIG_NIMBLE_CPP_ADDR_FMT_EXCLUDE_DELIMITER
+# ifndef MYNEWT_VAL_NIMBLE_CPP_ADDR_FMT_EXCLUDE_DELIMITER
+#  ifndef CONFIG_NIMBLE_CPP_ADDR_FMT_EXCLUDE_DELIMITER
+#   define MYNEWT_VAL_NIMBLE_CPP_ADDR_FMT_EXCLUDE_DELIMITER (0)
+#  else
+#   define MYNEWT_VAL_NIMBLE_CPP_ADDR_FMT_EXCLUDE_DELIMITER CONFIG_NIMBLE_CPP_ADDR_FMT_EXCLUDE_DELIMITER
+#  endif
+# endif
+
+# ifndef MYNEWT_VAL_NIMBLE_CPP_ADDR_FMT_UPPERCASE
+#  ifndef CONFIG_NIMBLE_CPP_ADDR_FMT_UPPERCASE
+#   define MYNEWT_VAL_NIMBLE_CPP_ADDR_FMT_UPPERCASE (1)
+#  else
+#   define MYNEWT_VAL_NIMBLE_CPP_ADDR_FMT_UPPERCASE CONFIG_NIMBLE_CPP_ADDR_FMT_UPPERCASE
+#  endif
+# endif
+
+# if MYNEWT_VAL(NIMBLE_CPP_ADDR_FMT_EXCLUDE_DELIMITER)
 #  define NIMBLE_CPP_ADDR_DELIMITER ""
 # else
 #  define NIMBLE_CPP_ADDR_DELIMITER ":"
 # endif
 
-# ifdef CONFIG_NIMBLE_CPP_ADDR_FMT_UPPERCASE
+# if MYNEWT_VAL(NIMBLE_CPP_ADDR_FMT_UPPERCASE)
 #  define NIMBLE_CPP_ADDR_FMT "%02X%s%02X%s%02X%s%02X%s%02X%s%02X"
 # else
 #  define NIMBLE_CPP_ADDR_FMT "%02x%s%02x%s%02x%s%02x%s%02x%s%02x"
@@ -224,11 +239,16 @@ NimBLEAddress::operator std::string() const {
     snprintf(buffer,
              sizeof(buffer),
              NIMBLE_CPP_ADDR_FMT,
-             this->val[5], NIMBLE_CPP_ADDR_DELIMITER,
-             this->val[4], NIMBLE_CPP_ADDR_DELIMITER,
-             this->val[3], NIMBLE_CPP_ADDR_DELIMITER,
-             this->val[2], NIMBLE_CPP_ADDR_DELIMITER,
-             this->val[1], NIMBLE_CPP_ADDR_DELIMITER,
+             this->val[5],
+             NIMBLE_CPP_ADDR_DELIMITER,
+             this->val[4],
+             NIMBLE_CPP_ADDR_DELIMITER,
+             this->val[3],
+             NIMBLE_CPP_ADDR_DELIMITER,
+             this->val[2],
+             NIMBLE_CPP_ADDR_DELIMITER,
+             this->val[1],
+             NIMBLE_CPP_ADDR_DELIMITER,
              this->val[0]);
     return std::string{buffer};
 } // operator std::string

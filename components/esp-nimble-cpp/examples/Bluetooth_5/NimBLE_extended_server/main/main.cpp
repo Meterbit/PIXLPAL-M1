@@ -36,7 +36,7 @@ static uint8_t secondaryPhy = BLE_HCI_LE_PHY_1M;
 /** Handler class for server events */
 class ServerCallbacks : public NimBLEServerCallbacks {
     void onConnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo) override {
-        printf("Client connected:: %s\n", connInfo.getAddress().toString().c_str());
+        printf("Client connected:\n%s", connInfo.toString().c_str());
     }
 
     void onDisconnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo, int reason) override {
@@ -65,8 +65,7 @@ class AdvertisingCallbacks : public NimBLEExtAdvertisingCallbacks {
     }
 } advertisingCallbacks;
 
-extern "C"
-void app_main(void) {
+extern "C" void app_main(void) {
     /** Initialize NimBLE and set the device name */
     NimBLEDevice::init("Extended advertiser");
 
@@ -80,9 +79,6 @@ void app_main(void) {
                                        NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY);
 
     pCharacteristic->setValue("Hello World");
-
-    /** Start the service */
-    pService->start();
 
     /**
      *  Create an extended advertisement with the instance ID 0 and set the PHY's.
@@ -105,7 +101,6 @@ void app_main(void) {
                                       "This example message is 226 bytes long "
                                       "and is using CODED_PHY for long range."));
 
-    extAdv.setCompleteServices16({NimBLEUUID(SERVICE_UUID)});
     extAdv.setName("Extended advertiser");
 
     /** When extended advertising is enabled `NimBLEDevice::getAdvertising` returns a pointer to `NimBLEExtAdvertising */

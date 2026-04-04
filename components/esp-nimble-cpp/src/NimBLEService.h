@@ -18,8 +18,8 @@
 #ifndef NIMBLE_CPP_SERVICE_H_
 #define NIMBLE_CPP_SERVICE_H_
 
-#include "nimconfig.h"
-#if defined(CONFIG_BT_ENABLED) && defined(CONFIG_BT_NIMBLE_ROLE_PERIPHERAL)
+#include "syscfg/syscfg.h"
+#if CONFIG_BT_NIMBLE_ENABLED && MYNEWT_VAL(BLE_ROLE_PERIPHERAL)
 
 class NimBLEService;
 
@@ -37,11 +37,19 @@ class NimBLEService : public NimBLELocalAttribute {
     NimBLEService(const NimBLEUUID& uuid);
     ~NimBLEService();
 
-    NimBLEServer*         getServer() const;
-    std::string           toString() const;
-    void                  dump() const;
-    bool                  isStarted() const;
-    bool                  start();
+    NimBLEServer* getServer() const;
+    std::string   toString() const;
+    void          dump() const;
+    bool          isStarted() const;
+
+    /**
+     * @brief Dummy function to start the service. Services are started when the server is started.
+     * This will be removed in a future release. Use `NimBLEServer::start()` to start the server and all associated services.
+     */
+    __attribute__((deprecated("NimBLEService::start() has no effect. "
+                   "Services are started when the server is started.")))
+    bool start() { return true; }
+
     NimBLECharacteristic* createCharacteristic(const char* uuid,
                                                uint32_t    properties = NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE,
                                                uint16_t    max_len    = BLE_ATT_ATTR_MAX_LEN);
@@ -61,6 +69,8 @@ class NimBLEService : public NimBLELocalAttribute {
 
   private:
     friend class NimBLEServer;
+    bool start_internal();
+    void clearServiceDefinitions();
 
     std::vector<NimBLECharacteristic*> m_vChars{};
     // Nimble requires an array of services to be sent to the api
@@ -69,5 +79,5 @@ class NimBLEService : public NimBLELocalAttribute {
     ble_gatt_svc_def                   m_pSvcDef[2]{};
 }; // NimBLEService
 
-#endif /* CONFIG_BT_ENABLED && CONFIG_BT_NIMBLE_ROLE_PERIPHERAL */
-#endif /* NIMBLE_CPP_SERVICE_H_ */
+#endif // CONFIG_BT_NIMBLE_ENABLED && MYNEWT_VAL(BLE_ROLE_PERIPHERAL)
+#endif // NIMBLE_CPP_SERVICE_H_

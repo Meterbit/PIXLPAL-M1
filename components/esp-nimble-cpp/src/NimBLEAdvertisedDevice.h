@@ -18,19 +18,19 @@
 #ifndef NIMBLE_CPP_ADVERTISED_DEVICE_H_
 #define NIMBLE_CPP_ADVERTISED_DEVICE_H_
 
-#include "nimconfig.h"
-#if defined(CONFIG_BT_ENABLED) && defined(CONFIG_BT_NIMBLE_ROLE_OBSERVER)
+#include "syscfg/syscfg.h"
+#if CONFIG_BT_NIMBLE_ENABLED && MYNEWT_VAL(BLE_ROLE_OBSERVER)
 
 # include "NimBLEAddress.h"
 # include "NimBLEScan.h"
 # include "NimBLEUUID.h"
 
-# if defined(CONFIG_NIMBLE_CPP_IDF)
-#  include "host/ble_hs_adv.h"
-#  include "host/ble_gap.h"
-# else
+# ifdef USING_NIMBLE_ARDUINO_HEADERS
 #  include "nimble/nimble/host/include/host/ble_hs_adv.h"
 #  include "nimble/nimble/host/include/host/ble_gap.h"
+# else
+#  include "host/ble_hs_adv.h"
+#  include "host/ble_gap.h"
 # endif
 
 # include <vector>
@@ -69,7 +69,7 @@ class NimBLEAdvertisedDevice {
     NimBLEAddress        getTargetAddress(uint8_t index = 0) const;
     uint8_t              getTargetAddressCount() const;
     int8_t               getTXPower() const;
-    uint8_t              getAdvLength() const;
+    uint16_t             getAdvLength() const;
     uint8_t              getAddressType() const;
     bool                 isAdvertisingService(const NimBLEUUID& uuid) const;
     bool                 haveAppearance() const;
@@ -87,11 +87,12 @@ class NimBLEAdvertisedDevice {
     bool                 isConnectable() const;
     bool                 isScannable() const;
     bool                 isLegacyAdvertisement() const;
-# if CONFIG_BT_NIMBLE_EXT_ADV
+# if MYNEWT_VAL(BLE_EXT_ADV)
     uint8_t  getSetId() const;
     uint8_t  getPrimaryPhy() const;
     uint8_t  getSecondaryPhy() const;
     uint16_t getPeriodicInterval() const;
+    uint8_t  getDataStatus() const;
 # endif
     operator NimBLEAddress() const;
 
@@ -157,14 +158,17 @@ class NimBLEAdvertisedDevice {
     uint8_t findAdvField(uint8_t type, uint8_t index = 0, size_t* data_loc = nullptr) const;
     size_t  findServiceData(uint8_t index, uint8_t* bytes) const;
 
-    NimBLEAddress m_address{};
-    uint8_t       m_advType{};
-    int8_t        m_rssi{};
-    uint8_t       m_callbackSent{};
-    uint8_t       m_advLength{};
+    NimBLEAddress           m_address{};
+    uint8_t                 m_advType{};
+    int8_t                  m_rssi{};
+    uint8_t                 m_callbackSent{};
+    uint16_t                m_advLength{};
+    ble_npl_time_t          m_time{};
+    NimBLEAdvertisedDevice* m_pNextWaiting{}; // intrusive list node; self-pointer means "not in list", set in ctor
 
-# if CONFIG_BT_NIMBLE_EXT_ADV
+# if MYNEWT_VAL(BLE_EXT_ADV)
     bool     m_isLegacyAdv{};
+    uint8_t  m_dataStatus{};
     uint8_t  m_sid{};
     uint8_t  m_primPhy{};
     uint8_t  m_secPhy{};
@@ -174,5 +178,5 @@ class NimBLEAdvertisedDevice {
     std::vector<uint8_t> m_payload;
 };
 
-#endif /* CONFIG_BT_ENABLED && CONFIG_BT_NIMBLE_ROLE_OBSERVER */
+#endif /* CONFIG_BT_NIMBLE_ENABLED && MYNEWT_VAL(BLE_ROLE_OBSERVER) */
 #endif /* NIMBLE_CPP_ADVERTISED_DEVICE_H_ */

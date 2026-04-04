@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-#include "nimconfig.h"
-#if defined(CONFIG_BT_ENABLED) && defined(CONFIG_BT_NIMBLE_ROLE_PERIPHERAL)
+#include "NimBLEHIDDevice.h"
+#if CONFIG_BT_NIMBLE_ENABLED && MYNEWT_VAL(BLE_ROLE_BROADCASTER) && MYNEWT_VAL(BLE_ROLE_PERIPHERAL)
 
-# include "NimBLEHIDDevice.h"
 # include "NimBLEServer.h"
 # include "NimBLEService.h"
 # include "NimBLE2904.h"
@@ -85,9 +84,7 @@ void NimBLEHIDDevice::setReportMap(uint8_t* map, uint16_t size) {
  * This function called when all the services have been created.
  */
 void NimBLEHIDDevice::startServices() {
-    m_deviceInfoSvc->start();
-    m_hidSvc->start();
-    m_batterySvc->start();
+    // no-op now, services started by server start.
 } // startServices
 
 /**
@@ -341,4 +338,4 @@ NimBLEService* NimBLEHIDDevice::getBatteryService() {
     return m_batterySvc;
 } // getBatteryService
 
-#endif /* CONFIG_BT_ENABLED && CONFIG_BT_NIMBLE_ROLE_PERIPHERAL */
+#endif // CONFIG_BT_NIMBLE_ENABLED && MYNEWT_VAL(BLE_ROLE_PERIPHERAL)

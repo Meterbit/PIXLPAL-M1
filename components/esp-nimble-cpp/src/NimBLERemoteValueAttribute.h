@@ -18,13 +18,13 @@
 #ifndef NIMBLE_CPP_REMOTE_VALUE_ATTRIBUTE_H_
 #define NIMBLE_CPP_REMOTE_VALUE_ATTRIBUTE_H_
 
-#include "nimconfig.h"
-#if defined(CONFIG_BT_ENABLED) && defined(CONFIG_BT_NIMBLE_ROLE_CENTRAL)
+#include "syscfg/syscfg.h"
+#if CONFIG_BT_NIMBLE_ENABLED && MYNEWT_VAL(BLE_ROLE_CENTRAL)
 
-# if defined(CONFIG_NIMBLE_CPP_IDF)
-#  include <host/ble_gatt.h>
+#ifdef USING_NIMBLE_ARDUINO_HEADERS
+#  include "nimble/nimble/host/include/host/ble_gatt.h"
 # else
-#  include <nimble/nimble/host/include/host/ble_gatt.h>
+#  include "host/ble_gatt.h"
 # endif
 
 /****  FIX COMPILATION ****/
@@ -32,32 +32,19 @@
 # undef max
 /**************************/
 
-# include "NimBLEAttribute.h"
+# include "NimBLEValueAttribute.h"
 # include "NimBLEAttValue.h"
 
 class NimBLEClient;
 
-class NimBLERemoteValueAttribute : public NimBLEAttribute {
+class NimBLERemoteValueAttribute : public NimBLEValueAttribute, public NimBLEAttribute {
   public:
     /**
      * @brief Read the value of the remote attribute.
      * @param [in] timestamp A pointer to a time_t struct to store the time the value was read.
      * @return The value of the remote attribute.
      */
-    NimBLEAttValue readValue(time_t* timestamp = nullptr) const;
-
-    /**
-     * @brief Get the length of the remote attribute value.
-     * @return The length of the remote attribute value.
-     */
-    size_t getLength() const { return m_value.size(); }
-
-    /**
-     * @brief Get the value of the remote attribute.
-     * @return The value of the remote attribute.
-     * @details This returns a copy of the value to avoid potential race conditions.
-     */
-    NimBLEAttValue getValue() const { return m_value; }
+    NimBLEAttValue readValue(time_t* timestamp = nullptr);
 
     /**
      * Get the client instance that owns this attribute.
@@ -122,13 +109,34 @@ class NimBLERemoteValueAttribute : public NimBLEAttribute {
      * @brief Template to set the remote characteristic value to <type\>val.
      * @param [in] v The value to write.
      * @param [in] response True == request write response.
-     * @details Only used if the <type\> has a `data()` and `size()` method.
+     * @details Only used if the <type\> has a `data()` and `size()` method with `value_type`.
+     * Correctly calculates byte size for containers with multi-byte element types.
      */
     template <typename T>
 #  ifdef _DOXYGEN_
     bool
 #  else
-    typename std::enable_if<Has_data_size<T>::value, bool>::type
+    typename std::enable_if<Has_data_size<T>::value && Has_value_type<T>::value, bool>::type
+#  endif
+    writeValue(const T& v, bool response = false) const {
+        return writeValue(
+            reinterpret_cast<const uint8_t*>(v.data()),
+            v.size() * sizeof(typename T::value_type),
+            response
+        );
+    }
+
+    /**
+     * @brief Template to set the remote characteristic value to <type\>val.
+     * @param [in] v The value to write.
+     * @param [in] response True == request write response.
+     * @details Only used if the <type\> has a `data()` and `size()` method without `value_type`.
+     */
+    template <typename T>
+#  ifdef _DOXYGEN_
+    bool
+#  else
+    typename std::enable_if<Has_data_size<T>::value && !Has_value_type<T>::value, bool>::type
 #  endif
     writeValue(const T& v, bool response = false) const {
         return writeValue(reinterpret_cast<const uint8_t*>(v.data()), v.size(), response);
@@ -144,7 +152,11 @@ class NimBLERemoteValueAttribute : public NimBLEAttribute {
     template <typename T>
     typename std::enable_if<!std::is_pointer<T>::value, bool>::type writeValue(const T& v, bool response = false) const {
         if constexpr (Has_data_size<T>::value) {
-            return writeValue(reinterpret_cast<const uint8_t*>(v.data()), v.size(), response);
+            if constexpr (Has_value_type<T>::value) {
+                return writeValue(reinterpret_cast<const uint8_t*>(v.data()), v.size() * sizeof(typename T::value_type), response);
+            } else {
+                return writeValue(reinterpret_cast<const uint8_t*>(v.data()), v.size(), response);
+            }
         } else if constexpr (Has_c_str_length<T>::value) {
             return writeValue(reinterpret_cast<const uint8_t*>(v.c_str()), v.length(), response);
         } else {
@@ -160,33 +172,19 @@ class NimBLERemoteValueAttribute : public NimBLEAttribute {
      * @param [in] skipSizeCheck If true it will skip checking if the data size is less than <tt>sizeof(<type\>)</tt>.
      * @return The data converted to <type\> or NULL if skipSizeCheck is false and the data is
      * less than <tt>sizeof(<type\>)</tt>.
-     * @details <b>Use:</b> <tt>getValue<type>(&timestamp, skipSizeCheck);</tt>
-     */
-    template <typename T>
-    T getValue(time_t* timestamp = nullptr, bool skipSizeCheck = false) const {
-        return m_value.getValue<T>(timestamp, skipSizeCheck);
-    }
-
-    /**
-     * @brief Template to convert the remote characteristic data to <type\>.
-     * @tparam T The type to convert the data to.
-     * @param [in] timestamp A pointer to a time_t struct to store the time the value was read.
-     * @param [in] skipSizeCheck If true it will skip checking if the data size is less than <tt>sizeof(<type\>)</tt>.
-     * @return The data converted to <type\> or NULL if skipSizeCheck is false and the data is
-     * less than <tt>sizeof(<type\>)</tt>.
      * @details <b>Use:</b> <tt>readValue<type>(&timestamp, skipSizeCheck);</tt>
      */
     template <typename T>
-    T readValue(time_t* timestamp = nullptr, bool skipSizeCheck = false) const {
+    T readValue(time_t* timestamp = nullptr, bool skipSizeCheck = false) {
         readValue();
-        return m_value.getValue<T>(timestamp, skipSizeCheck);
+        return getValue<T>(timestamp, skipSizeCheck);
     }
 
   protected:
     /**
      * @brief Construct a new NimBLERemoteValueAttribute object.
      */
-    NimBLERemoteValueAttribute(const ble_uuid_any_t& uuid, uint16_t handle) : NimBLEAttribute(uuid, handle) {}
+    NimBLERemoteValueAttribute(const ble_uuid_any_t& uuid, uint16_t handle) : NimBLEAttribute{uuid, handle} {}
 
     /**
      * @brief Destroy the NimBLERemoteValueAttribute object.
@@ -195,9 +193,7 @@ class NimBLERemoteValueAttribute : public NimBLEAttribute {
 
     static int onReadCB(uint16_t conn_handle, const ble_gatt_error* error, ble_gatt_attr* attr, void* arg);
     static int onWriteCB(uint16_t conn_handle, const ble_gatt_error* error, ble_gatt_attr* attr, void* arg);
-
-    mutable NimBLEAttValue m_value{};
 };
 
-#endif /* CONFIG_BT_ENABLED && CONFIG_BT_NIMBLE_ROLE_CENTRAL */
+#endif // CONFIG_BT_NIMBLE_ENABLED && MYNEWT_VAL(BLE_ROLE_CENTRAL)
 #endif // NIMBLE_CPP_REMOTE_VALUE_ATTRIBUTE_H_
