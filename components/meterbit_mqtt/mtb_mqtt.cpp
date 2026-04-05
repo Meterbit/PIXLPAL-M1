@@ -62,7 +62,9 @@ EXT_RAM_BSS_ATTR Mtb_Services *mtb_Mqtt_Client_Sv = new Mtb_Services(mqtt_Client
 void mqtt_Client_Task(void* d_Service){
     Mtb_Services *thisServ = (Mtb_Services *)d_Service;
     mqttClient.begin();   // Start MQTT Client
+    delay(100); // Short delay to ensure client is fully initialized before setting up callbacks
     mtb_Setup_Mqtt_Client();
+    delay(100); // Short delay to ensure callbacks are set before connecting
 
   while(MTB_SERV_IS_ACTIVE == pdTRUE) {
     mqttClient.loop();

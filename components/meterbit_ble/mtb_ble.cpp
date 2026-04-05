@@ -42,9 +42,6 @@ EXT_RAM_BSS_ATTR String appValue;
 EXT_RAM_BSS_ATTR String setValue;
 
 
-// See the following for generating UUIDs:
-// https://www.uuidgenerator.net/
-
 #define PXP_BLE_SERVICE_UUID "73f3ee85-31f7-4f5a-bd9c-3b469dff65c7"
 #define SETCOM_CHARACTERISTIC_UUID "472a6244-3bb8-4a7e-a107-4b47dea92bc3"
 #define APPCOM_CHARACTERISTIC_UUID "c8f1eead-48b0-449d-accb-5fdb87c4b566"

@@ -14,6 +14,7 @@
 #include "mtb_engine.h"
 #include <ctime>
 #include <string>
+#include "NimBLEDevice.h"
 //#include "esp_heap_caps.h"
 
 static const char TAG[] = "METERBIT_ENGINE";
@@ -315,11 +316,9 @@ void randomButtonControl(button_event_t button_Data){
             break;
 
             case BUTTON_PRESSED:
-            //mtb_Ble_Comm_Init();
             break;
 
             case BUTTON_PRESSED_LONG:
-            //mtb_Launch_This_App(pixelAnimClock_App);
             break;
 
             case BUTTON_CLICKED:
