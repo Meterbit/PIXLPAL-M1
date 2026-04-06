@@ -11,11 +11,11 @@ EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *exampleDrawImages_App = new Mtb_Ap
 
 void exampleDrawImageApp_Task(void* dApplication){
 // ****** Initialize the App Parameters
-  Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
-  thisApp->mtb_App_Init();
+  Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
+  THIS_APP->mtb_App_Init();
 // End of App parameter initialization
 
-    while ((Mtb_Applications::internetConnectStatus != true) && (MTB_APP_IS_ACTIVE == pdTRUE)){
+    while ((Mtb_Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)){
       ESP_LOGI(TAG, "Waiting for internet connection...");
       delay(1000);
     }
@@ -29,12 +29,12 @@ void exampleDrawImageApp_Task(void* dApplication){
     // DRAW SVG IMAGE FROM SPIFFS
     mtb_Draw_Local_Svg({"/batIcons/spain.svg", 0, 0, 1});
 
-while (MTB_APP_IS_ACTIVE == pdTRUE) {
+while (THIS_APP_IS_ACTIVE == pdTRUE) {
 ESP_LOGI(TAG, "Images drawn on the display.");
 
 delay(5000);
 }
 
 // Clean up the application before exiting
-  mtb_Delete_This_App(thisApp);
+  mtb_Delete_This_App(THIS_APP);
 }

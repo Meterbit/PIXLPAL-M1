@@ -28,8 +28,6 @@ extern "C" void app_main(){
     // Declare Variable for monitoring Free/Available internal SRAM
     size_t free_sram = 0;
 
-    Mtb_UserApp_t textVar[4];
-
     // While Loop prints available Internal SRAM every 2 seconds
     while (1){
         

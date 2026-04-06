@@ -90,11 +90,11 @@ void googleCalButtonControl(button_event_t){}
 
 //THIS IS THE APPLICATION IMPLEMENTATION ***************************************************************************
 void  googleCal_App_Task(void* dApplication){
-  Mtb_Applications *thisApp = (Mtb_Applications *) dApplication;
-  thisApp->mtb_App_Set_EC11_Cb_Fns(googleCalButtonControl, mtb_Brightness_Control);
+  Mtb_Applications *THIS_APP = (Mtb_Applications *) dApplication;
+  THIS_APP->mtb_App_Set_EC11_Cb_Fns(googleCalButtonControl, mtb_Brightness_Control);
 
-  thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(link_GoogleCal, get_GoogleCal_Refresh_Token, show_GoogleCal_Events, show_GoogleCal_Tasks, show_GoogleCal_Holidays, set_GoogleCal_ThemeColor);
-  thisApp->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
+  THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(link_GoogleCal, get_GoogleCal_Refresh_Token, show_GoogleCal_Events, show_GoogleCal_Tasks, show_GoogleCal_Holidays, set_GoogleCal_ThemeColor);
+  THIS_APP->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
   //**************************************************************************************************************************************************************** */
   
   event_Task_Title_1 = new Mtb_ScrollText_t(12, 24, 113, Terminal6x8, CYAN, 10, 0xFFFF, 15000);
@@ -121,9 +121,9 @@ void  googleCal_App_Task(void* dApplication){
 
   //mtb_Draw_Local_Png({"/batIcons/googleEvent.png", 3, 11});
 //######################################################################################### */
-  while (MTB_APP_IS_ACTIVE == pdTRUE){
+  while (THIS_APP_IS_ACTIVE == pdTRUE){
 
-  while ((Mtb_Applications::internetConnectStatus != true) && (MTB_APP_IS_ACTIVE == pdTRUE)) delay(1000);
+  while ((Mtb_Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
   
   ESP_LOGI(TAG, "The refreshToken is: %s\n", userGoogleCal.refreshToken);
   
@@ -137,7 +137,7 @@ void  googleCal_App_Task(void* dApplication){
       fetchTasks(accessToken); 
   }
 
-    while (MTB_APP_IS_ACTIVE == pdTRUE){
+    while (THIS_APP_IS_ACTIVE == pdTRUE){
       delay(100);
     }
 
@@ -157,7 +157,7 @@ void  googleCal_App_Task(void* dApplication){
   delete event_Task_Status_1;
   delete event_Task_Status_2;
 
-  mtb_Delete_This_App(thisApp);
+  mtb_Delete_This_App(THIS_APP);
 }
 
 

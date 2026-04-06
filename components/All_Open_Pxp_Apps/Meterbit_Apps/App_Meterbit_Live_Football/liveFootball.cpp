@@ -100,11 +100,11 @@ EXT_RAM_BSS_ATTR Mtb_FixedText_t* pointsStandings4;
 EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *liveFootbalScores_App = new Mtb_Applications_StatusBar(liveFootball_App_Task, &liveFootball_Task_H, "Live Football", 12288);
 
 void liveFootball_App_Task(void *dApplication){
-    Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
-    thisApp->mtb_App_Set_EC11_Cb_Fns(changeFootballTeams, mtb_Brightness_Control);
+    Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
+    THIS_APP->mtb_App_Set_EC11_Cb_Fns(changeFootballTeams, mtb_Brightness_Control);
 
-    thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(selectFBL_Leagues, setDisplayFBL_League, saveFBL_Leagues, showFBL_Fix_Stnd, setFBL_Token);
-    thisApp->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
+    THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(selectFBL_Leagues, setDisplayFBL_League, saveFBL_Leagues, showFBL_Fix_Stnd, setFBL_Token);
+    THIS_APP->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
     //************************************************************************************ */
 
     if(changeDispMatch_Sem == NULL) changeDispMatch_Sem = xSemaphoreCreateBinary();
@@ -149,14 +149,14 @@ void liveFootball_App_Task(void *dApplication){
     // Set client to insecure for now (you can secure with fingerprint or CA cert)
     client.setInsecure();
 
-    while (MTB_APP_IS_ACTIVE == pdTRUE){
+    while (THIS_APP_IS_ACTIVE == pdTRUE){
 
-        while ((Mtb_Applications::internetConnectStatus != true) && (MTB_APP_IS_ACTIVE == pdTRUE)) delay(1000);
+        while ((Mtb_Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
 
         liveFootballDispChangeIntv = 0;
         liveFootballBackgroundPtr();
 
-        while (MTB_APP_IS_ACTIVE == pdTRUE && liveFootballDispChangeIntv <= 0){
+        while (THIS_APP_IS_ACTIVE == pdTRUE && liveFootballDispChangeIntv <= 0){
         String fullUrl = BASE_URL + processJsonCommand(liveFootballData.endpointType, liveFootballData.leagueID);
         ESP_LOGI(TAG, "The Full URL is: %s\n", fullUrl.c_str());
         // Optional: stop here or repeat after a longer delay
@@ -194,7 +194,7 @@ void liveFootball_App_Task(void *dApplication){
               break;
               }
             } else {
-              liveFootballPtr(doc, thisApp);
+              liveFootballPtr(doc, THIS_APP);
             }
           } else {
             ESP_LOGI(TAG, "JSON parse error: %s\n", error.c_str());
@@ -234,13 +234,13 @@ void liveFootball_App_Task(void *dApplication){
     delete teamStandings4;
     delete pointsStandings4;
 
-    mtb_Delete_This_App(thisApp);
+    mtb_Delete_This_App(THIS_APP);
 }
 
 
   
 void processLiveMatches(SpiRamJsonDocument& doc, void* dApplication){
-      Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
+      Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
       JsonArray matches = doc["response"].as<JsonArray>();
 
       if (matches.isNull() || matches.size() == 0) {
@@ -306,14 +306,14 @@ void processLiveMatches(SpiRamJsonDocument& doc, void* dApplication){
           ESP_LOGI(TAG, "  No events recorded.\n");
         }
 
-      while(liveFootballDispChangeIntv-->0 && xSemaphoreTake(changeDispMatch_Sem, 0) != pdTRUE && MTB_APP_IS_ACTIVE == pdTRUE) delay(100);
+      while(liveFootballDispChangeIntv-->0 && xSemaphoreTake(changeDispMatch_Sem, 0) != pdTRUE && THIS_APP_IS_ACTIVE == pdTRUE) delay(100);
       if(liveFootballDispChangeIntv > 0) break;
       }
 }
 
 
 void processFituresMatches(SpiRamJsonDocument& doc, void* dApplication){
-  Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
+  Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
   JsonArray matches = doc["response"].as<JsonArray>();
   int results = doc["results"] | 0;
 //   uint8_t noOfShowCycles = 5;
@@ -357,7 +357,7 @@ void processFituresMatches(SpiRamJsonDocument& doc, void* dApplication){
     moreDataScroll->mtb_Scroll_This_Text(dTeams, GREEN);
     moreDataScroll->mtb_Scroll_This_Text(venue, PINK);
 
-    while(liveFootballDispChangeIntv-->0 && xSemaphoreTake(changeDispMatch_Sem, 0) != pdTRUE && MTB_APP_IS_ACTIVE == pdTRUE) delay(100);
+    while(liveFootballDispChangeIntv-->0 && xSemaphoreTake(changeDispMatch_Sem, 0) != pdTRUE && THIS_APP_IS_ACTIVE == pdTRUE) delay(100);
     if(liveFootballDispChangeIntv > 0) break;
   }
 //   if(liveFootballDispChangeIntv > 0) break;
@@ -368,7 +368,7 @@ void processFituresMatches(SpiRamJsonDocument& doc, void* dApplication){
 
 
 void processStandingsTable(SpiRamJsonDocument& doc, void* dApplication){
-      Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
+      Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
       JsonArray standings = doc["response"][0]["league"]["standings"];
       //String leagueName = doc["response"][0]["league"]["name"] | "Unknown League";
 
@@ -403,7 +403,7 @@ void processStandingsTable(SpiRamJsonDocument& doc, void* dApplication){
             // Delay after every 4 teams
             if (++standingIndex % 4 == 0) {
               for (; liveFootballDispChangeIntv--> 0;) {
-                if (xSemaphoreTake(changeDispMatch_Sem, 0) == pdTRUE || MTB_APP_IS_ACTIVE == false) {
+                if (xSemaphoreTake(changeDispMatch_Sem, 0) == pdTRUE || THIS_APP_IS_ACTIVE == false) {
                   return;
                 }
                 delay(100);

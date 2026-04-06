@@ -10,6 +10,8 @@
 #include "usb/usb_host.h"
 //#include "esp_log.h"
 
+extern TaskHandle_t usbFirmwareUpdate_H;
+extern void usbFirmwareUpdateTask(void *arguments);
 extern uint8_t attemptUSB_FirmwareUpdate(void);
 extern uint8_t attemptUSB_SPIFFSUpdate(void);
 extern esp_err_t flash_bin_to_spiffs_partition(const void *data, size_t data_size, const char *partition_label);

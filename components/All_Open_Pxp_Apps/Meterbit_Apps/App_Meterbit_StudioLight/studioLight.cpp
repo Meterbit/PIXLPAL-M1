@@ -40,10 +40,10 @@ void setStudioLightDuration(JsonDocument&);
 EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *studioLight_App = new Mtb_Applications_FullScreen(studioLight_App_Task, &studioLight_Task_H, "studioLight", 4096);
 
 void studioLight_App_Task(void* dApplication){
-  Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
-  thisApp->mtb_App_Set_EC11_Cb_Fns(selectStudioLightColorButton, mtb_Brightness_Control);
-  thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(setStudioLightColors, setScreenBrightness, setStudioLightMode, setStudioLightDuration);
-  thisApp->mtb_App_Init();
+  Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
+  THIS_APP->mtb_App_Set_EC11_Cb_Fns(selectStudioLightColorButton, mtb_Brightness_Control);
+  THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(setStudioLightColors, setScreenBrightness, setStudioLightMode, setStudioLightDuration);
+  THIS_APP->mtb_App_Init();
   //************************************************************************************ */
     if(studioLightMode_Sem_H == NULL) studioLightMode_Sem_H = xSemaphoreCreateBinary();
 
@@ -58,7 +58,7 @@ void studioLight_App_Task(void* dApplication){
 
     uint16_t cycleClockPeriodCounter = 0;
 
-    while (MTB_APP_IS_ACTIVE == pdTRUE){
+    while (THIS_APP_IS_ACTIVE == pdTRUE){
         if(xSemaphoreTake(studioLightMode_Sem_H, pdMS_TO_TICKS(100)) == pdTRUE || studioLightsInfo.studioLightColorMode == CYCLE_MODE){
             if(studioLightsInfo.studioLightColorMode == FULLSCREEN_MODE){
                 mtb_Panel_Fill_Screen(studioLightsInfo.studioLightColor[0]);
@@ -71,13 +71,13 @@ void studioLight_App_Task(void* dApplication){
                 mtb_Panel_Fill_Screen(studioLightsInfo.studioLightColor[colorIndex]);
                 colorIndex++;
                 if(colorIndex >= 5) colorIndex = 0;
-                while (cycleClockPeriodCounter-->0 && MTB_APP_IS_ACTIVE == pdTRUE && uxSemaphoreGetCount(studioLightMode_Sem_H) < 1) delay(100);
+                while (cycleClockPeriodCounter-->0 && THIS_APP_IS_ACTIVE == pdTRUE && uxSemaphoreGetCount(studioLightMode_Sem_H) < 1) delay(100);
             }
         }
     }
     vSemaphoreDelete(studioLightMode_Sem_H);
     studioLightMode_Sem_H = NULL;
-  mtb_Delete_This_App(thisApp);
+  mtb_Delete_This_App(THIS_APP);
 }
 
 void selectStudioLightColorButton(button_event_t button_Data){

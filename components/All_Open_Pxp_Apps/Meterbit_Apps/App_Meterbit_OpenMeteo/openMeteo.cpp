@@ -31,24 +31,24 @@ void setOpenMeteoLocation(JsonDocument&);
 EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *openMeteo_App = new Mtb_Applications_StatusBar(openMeteoUpdate_App_Task, &openMeteo_Task_H, "Open Meteo", 10240);
 
 void openMeteoUpdate_App_Task(void* dApplication){
-  Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
-  thisApp->mtb_App_Set_EC11_Cb_Fns(changeOpenMeteoLocation, mtb_Brightness_Control);
-  thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(setOpenMeteoLocation);
-  thisApp->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
+  Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
+  THIS_APP->mtb_App_Set_EC11_Cb_Fns(changeOpenMeteoLocation, mtb_Brightness_Control);
+  THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(setOpenMeteoLocation);
+  THIS_APP->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
   //************************************************************************************ */
   currentOpenMeteoData = (OpenMeteoData_t){"Lagos, Nigeria"};
   mtb_Read_Nvs_Struct("openMeteo", &currentOpenMeteoData, sizeof(OpenMeteoData_t));
 
-while (MTB_APP_IS_ACTIVE == pdTRUE) {
+while (THIS_APP_IS_ACTIVE == pdTRUE) {
 
-    while ((Mtb_Applications::internetConnectStatus != true) && (MTB_APP_IS_ACTIVE == pdTRUE)) delay(1000);
+    while ((Mtb_Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
 
 
-    while (MTB_APP_IS_ACTIVE == pdTRUE) {}
+    while (THIS_APP_IS_ACTIVE == pdTRUE) {}
 
 }
 
-  mtb_Delete_This_App(thisApp);
+  mtb_Delete_This_App(THIS_APP);
 }
 
 void changeOpenMeteoLocation(button_event_t button_Data){

@@ -47,10 +47,10 @@ void saveCurrencyAPI_key(JsonDocument&);
 EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *currencyExchange_App = new Mtb_Applications_StatusBar(currencyExchange_App_Task, &currencyExchange_Task_H, "currencyEx", 10240);
 
 void currencyExchange_App_Task(void* dApplication){
-  Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
-  thisApp->mtb_App_Set_EC11_Cb_Fns(buttonChangeDisplayCurrency, mtb_Brightness_Control);
-  thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(showParticularCurrencies, add_RemoveCurrencySymbol, setcurrencyChangeInterval, saveCurrencyAPI_key);
-  thisApp->mtb_App_Init();
+  Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
+  THIS_APP->mtb_App_Set_EC11_Cb_Fns(buttonChangeDisplayCurrency, mtb_Brightness_Control);
+  THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(showParticularCurrencies, add_RemoveCurrencySymbol, setcurrencyChangeInterval, saveCurrencyAPI_key);
+  THIS_APP->mtb_App_Init();
   //************************************************************************************ */
   currentCurrencies = (Currency_Stat_t){};
   mtb_Read_Nvs_Struct("currencyStat", &currentCurrencies, sizeof(Currency_Stat_t));
@@ -110,18 +110,18 @@ void currencyExchange_App_Task(void* dApplication){
 char apiUrl[1000]; // Adjust size as needed
 static HTTPClient http;
 
-while (MTB_APP_IS_ACTIVE == pdTRUE){
+while (THIS_APP_IS_ACTIVE == pdTRUE){
     snprintf(apiUrl, sizeof(apiUrl), "https://finnhub.io/api/v1/quote?symbol=%s&token=%s", currentCurrencies.currencyID1.c_str(), currentCurrencies.apiToken);
     //ESP_LOGI(TAG, "OUR FINAL URL IS: %s \n", apiUrl.c_str());
     //******************************************************************************************************* */
     mtb_Download_Github_Strg_File("Currencys_Icons/_" + currentCurrencies.currencyID1 +".png", String(currentCurrencies.currencyFilePath));
 
-    while ((Mtb_Applications::internetConnectStatus != true) && (MTB_APP_IS_ACTIVE == pdTRUE)) delay(1000);
+    while ((Mtb_Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
         
         if (http.connected()) { http.end(); } // Cleanup before starting a new request
 
     //************************************************************************************** */
-    while (MTB_APP_IS_ACTIVE == pdTRUE){
+    while (THIS_APP_IS_ACTIVE == pdTRUE){
         int16_t CurrencyDataRequestTim = 5000;
         http.begin(apiUrl); // Edit your key here
         // http.addHeader("x-rapidapi-key", "783152efb6mshac636e27a8f24bep10fb3ajsn5ae13bc4f722");
@@ -169,12 +169,12 @@ while (MTB_APP_IS_ACTIVE == pdTRUE){
         // Close the connection
         http.end();
 
-        while(CurrencyDataRequestTim-->0  && MTB_APP_IS_ACTIVE && xSemaphoreTake(changeDispCurrency_Sem, 0) != pdTRUE) delay(1);
+        while(CurrencyDataRequestTim-->0  && THIS_APP_IS_ACTIVE && xSemaphoreTake(changeDispCurrency_Sem, 0) != pdTRUE) delay(1);
         if(CurrencyDataRequestTim > 0) break;
     }
         moreCurrencyData.mtb_Scroll_Active(STOP_SCROLL);
 }
-  mtb_Delete_This_App(thisApp);
+  mtb_Delete_This_App(THIS_APP);
 }
 //##############################################################################################################
 

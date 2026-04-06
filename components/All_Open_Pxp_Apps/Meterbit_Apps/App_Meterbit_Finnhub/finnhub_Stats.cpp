@@ -46,10 +46,10 @@ void saveAPI_key(JsonDocument&);
 EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *finnhub_Stats_App = new Mtb_Applications_StatusBar(finhubStats_App_Task, &finhubStats_Task_H, "Finnhub Stats", 6144);
 
 void finhubStats_App_Task(void* dApplication){
-    Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
-    thisApp->mtb_App_Set_EC11_Cb_Fns(buttonChangeDisplayStock, mtb_Brightness_Control);
-    thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(showParticularStock, add_RemoveStockSymbol, setStockChangeInterval, saveAPI_key);
-    thisApp->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
+    Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
+    THIS_APP->mtb_App_Set_EC11_Cb_Fns(buttonChangeDisplayStock, mtb_Brightness_Control);
+    THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(showParticularStock, add_RemoveStockSymbol, setStockChangeInterval, saveAPI_key);
+    THIS_APP->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
     //************************************************************************************ */
     //ESP_LOGW(TAG, "THE PROGRAM GOT TO THIS POINT 0.0\n");
     currentStocks = (Stocks_Stat_t){
@@ -113,21 +113,20 @@ void finhubStats_App_Task(void* dApplication){
     
     if(currentStocks.stockChangeInterval > 1) xTimerStart(stockChangeTimer_H, 0);
 //##############################################################################################################
-//##############################################################################################################
 char apiUrl[1000]; // Adjust size as needed
 static HTTPClient http;
 
-while (MTB_APP_IS_ACTIVE == pdTRUE){
+while (THIS_APP_IS_ACTIVE == pdTRUE){
     snprintf(apiUrl, sizeof(apiUrl), "https://finnhub.io/api/v1/quote?symbol=%s&token=%s", currentStocks.stockID.c_str(), currentStocks.apiToken);
     //ESP_LOGI(TAG, "OUR FINAL URL IS: %s \n", apiUrl);
-    //******************************************************************************************************* */
-    mtb_Download_Github_Strg_File("stocks_Icons/_" + currentStocks.stockID +".png", String(currentStocks.stockFilePath));
 
-    while ((Mtb_Applications::internetConnectStatus != true) && (MTB_APP_IS_ACTIVE == pdTRUE)) delay(1000);
+
+    while ((Mtb_Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
+    mtb_Download_Github_Strg_File("stocks_Icons/_" + currentStocks.stockID +".png", String(currentStocks.stockFilePath));
         
     if (http.connected()) { http.end(); } // Cleanup before starting a new request
     //************************************************************************************** */
-    while (MTB_APP_IS_ACTIVE == pdTRUE){
+    while (THIS_APP_IS_ACTIVE == pdTRUE){
         int16_t stockDataRequestTim = 500;
         http.begin(apiUrl); // Edit your key here
         int httpCode = http.GET();
@@ -178,7 +177,7 @@ while (MTB_APP_IS_ACTIVE == pdTRUE){
         // Close the connection
         http.end();
 
-        while(stockDataRequestTim-->0  && MTB_APP_IS_ACTIVE && xSemaphoreTake(changeDispStock_Sem, 0) != pdTRUE) delay(10);
+        while(stockDataRequestTim-->0  && THIS_APP_IS_ACTIVE && xSemaphoreTake(changeDispStock_Sem, 0) != pdTRUE) delay(10);
         if(stockDataRequestTim > 0) break;
     }
         moreStockData.mtb_Scroll_Active(STOP_SCROLL);
@@ -190,7 +189,7 @@ while (MTB_APP_IS_ACTIVE == pdTRUE){
     vSemaphoreDelete(changeDispStock_Sem);
     changeDispStock_Sem = NULL;
 
-  mtb_Delete_This_App(thisApp);
+  mtb_Delete_This_App(THIS_APP);
 }
 //##############################################################################################################
 

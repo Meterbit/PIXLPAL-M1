@@ -67,12 +67,12 @@ EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *chatGPT_App = new Mtb_Applications_
 
 //***************************************************************************************************
 void  chatGPT_App_Task(void* dApplication){
-  Mtb_Applications *thisApp = (Mtb_Applications *) dApplication;
+  Mtb_Applications *THIS_APP = (Mtb_Applications *) dApplication;
   psRamWavFileChatGPT recordWavFile;
   Mtb_FixedText_t chatGPT_Text(46, 19, Terminal10x17);
   Mtb_ScrollText_t conn2Intnt(11, 55, 116, Terminal6x8, ORANGE_RED, 15, 20000, 1000);
-  thisApp->mtb_App_Set_EC11_Cb_Fns(Listen_Process_Button, mtb_Vol_Control_Encoder);
-  thisApp->mtb_App_Init(mtb_Audio_Out_Sv, mtb_Audio_In_Sv, mtb_Status_Bar_Clock_Sv);
+  THIS_APP->mtb_App_Set_EC11_Cb_Fns(Listen_Process_Button, mtb_Vol_Control_Encoder);
+  THIS_APP->mtb_App_Init(mtb_Audio_Out_Sv, mtb_Audio_In_Sv, mtb_Status_Bar_Clock_Sv);
   //**************************************************************************************************************************
   humanSpeech = new Mtb_ScrollText_t (11, 45, 116, Terminal6x8, CYAN, 25, 20000,  0);
   aiResponse = new Mtb_ScrollText_t(11, 55, 116, Terminal6x8, YELLOW, 15, 3, 0);
@@ -108,14 +108,14 @@ void  chatGPT_App_Task(void* dApplication){
   delay(500); //This delay is placed here to allow "audioTextInfo_Q" to be created.
 
 //######################################################################################### */
-    while (MTB_APP_IS_ACTIVE == pdTRUE){
+    while (THIS_APP_IS_ACTIVE == pdTRUE){
 
     conn2Intnt.mtb_Scroll_This_Text("Awaiting internet connection...", GREEN_LIZARD);
-    while((Mtb_Applications::internetConnectStatus == false) && (MTB_APP_IS_ACTIVE == pdTRUE)) vTaskDelay(pdMS_TO_TICKS(500));
+    while((Mtb_Applications::internetConnectStatus == false) && (THIS_APP_IS_ACTIVE == pdTRUE)) vTaskDelay(pdMS_TO_TICKS(500));
     conn2Intnt.mtb_Scroll_Active(STOP_SCROLL);
     humanSpeech->mtb_Scroll_This_Text("Press the knob and speak.");
 
-    while (MTB_APP_IS_ACTIVE == pdTRUE && (Mtb_Applications::internetConnectStatus == true) ){
+    while (THIS_APP_IS_ACTIVE == pdTRUE && (Mtb_Applications::internetConnectStatus == true) ){
     if(xQueueReceive(chatPrompt_Queue_H, &recordWavFile, pdMS_TO_TICKS(50)) != pdTRUE) continue;
     //delay(1000);
     // audio->connecttoFS(LittleFS, "/audio.wav"); // LittleFS
@@ -171,7 +171,7 @@ void  chatGPT_App_Task(void* dApplication){
   delete humanSpeech;
   delete aiResponse;
 
-  mtb_Delete_This_App(thisApp);
+  mtb_Delete_This_App(THIS_APP);
 }
 
 void Listen_Process_Button(button_event_t button_Data){

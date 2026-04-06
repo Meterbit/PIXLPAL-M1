@@ -10,7 +10,6 @@
 #include "esp_spi_flash.h"
 #include "Arduino.h"
 #include "mtb_engine.h"
-#include "commonApps.h"
 #include "mtb_text_scroll.h"
 #include "mtb_ota.h"
 #include "mtb_usb_ota.h"
@@ -22,8 +21,8 @@ static const char *TAG = "MTB USB OTA";
 #define OTA_FILE_NAME "/usb/PIXLPAL-M1.bin"
 
 EXT_RAM_BSS_ATTR TaskHandle_t otaFailed_MQTT_Parser_Task_H = NULL;
-EXT_RAM_BSS_ATTR TaskHandle_t firmwareUpdate_H = NULL;
-EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *usbOTA_Update_App = new Mtb_Applications_FullScreen(firmwareUpdateTask, &firmwareUpdate_H, "OTA FW UPDATE", 6144);
+EXT_RAM_BSS_ATTR TaskHandle_t usbFirmwareUpdate_H = NULL;
+EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *usbOTA_Update_App = new Mtb_Applications_FullScreen(usbFirmwareUpdateTask, &usbFirmwareUpdate_H, "OTA FW UPDATE", 6144);
 
 static void msc_ota_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data);
 uint8_t attemptUSB_FirmwareUpdate(void);
@@ -32,15 +31,10 @@ void startButton_USB_OTA_UPDATE(button_event_t);
 void startEncoder_USB_SPIFFS_UPDATE(rotary_encoder_rotation_t);
 
 //***************************************************************************************************
-void  firmwareUpdateTask(void* dApplication){
-    Mtb_Applications *thisApp = (Mtb_Applications *) dApplication;
-    thisApp->mtb_App_Set_EC11_Cb_Fns(startButton_USB_OTA_UPDATE, startEncoder_USB_SPIFFS_UPDATE);
-    thisApp->mtb_App_Init();
-    
-//****************************************************************************************************************************
-    Mtb_FixedText_t otaTextTop(16, 18, Terminal8x12);
-    Mtb_FixedText_t otaTextBotm(16, 31, Terminal8x12);
-//****************************************************************************************************************************
+void  usbFirmwareUpdateTask(void* dApplication){
+    Mtb_Applications *THIS_APP = (Mtb_Applications *) dApplication;
+    THIS_APP->mtb_App_Set_EC11_Cb_Fns(startButton_USB_OTA_UPDATE, startEncoder_USB_SPIFFS_UPDATE);
+    THIS_APP->mtb_App_Init();
     
     if(litFS_Ready){
         uint8_t countdown = panelBrightness, countup = 0;
@@ -66,7 +60,7 @@ do{
         else break;
         Mtb_Applications::firmwareOTA_Status = pdTRUE;
     } else if (Mtb_Applications::spiffsOTA_Status > 6){
-        ESP_LOGI(TAG, "Code entered USB Firmware Update\n");
+        ESP_LOGI(TAG, "Code entered USB SPIFFS Update\n");
         mtb_Panel_Clear_Screen();
         mtb_Launch_This_Service(mtb_Usb_Mass_Storage_Sv);
         uint8_t attemptResult = attemptUSB_SPIFFSUpdate();
@@ -81,8 +75,8 @@ do{
     Mtb_Applications::firmwareOTA_Status = pdFALSE;
     Mtb_Applications::spiffsOTA_Status = pdFALSE;
 
-    while (MTB_APP_IS_ACTIVE == pdTRUE) delay(2000);
-    mtb_Delete_This_App(thisApp);
+    while (THIS_APP_IS_ACTIVE == pdTRUE) delay(2000);
+    mtb_Delete_This_App(THIS_APP);
 }
 
 static void msc_ota_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data){
@@ -90,7 +84,6 @@ static void msc_ota_event_handler(void *arg, esp_event_base_t event_base, int32_
     static Mtb_FixedText_t usbOTA_Text(8, 39, Terminal8x12, LEMON_YELLOW);
     static Mtb_FixedText_t otaProgressText(8, 52, Terminal8x12, GREEN);
     static Mtb_FixedText_t otaProgressPercentage(95, 52, Terminal8x12, WHITE);
-
     static char softProgress[12] = {0};
 
     switch (event_id) {

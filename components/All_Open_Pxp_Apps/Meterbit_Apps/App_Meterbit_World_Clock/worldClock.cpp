@@ -44,10 +44,10 @@ void drawWorldClockSingleCity(void);
 EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *worldClock_App = new Mtb_Applications_StatusBar(worldClock_App_Task, &worldClock_Task_H, "world Clock", 10240);
 
 void worldClock_App_Task(void* dApplication){
-  Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
-  thisApp->mtb_App_Set_EC11_Cb_Fns(change_City_Button, mtb_Brightness_Control);
-  thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(setWorldClockCities, setWorldClockColors, setWorldClockMode, requestWorldClkNTP_Time);
-  thisApp->mtb_App_Init(mtb_Status_Bar_Calendar_Sv);
+  Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
+  THIS_APP->mtb_App_Set_EC11_Cb_Fns(change_City_Button, mtb_Brightness_Control);
+  THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(setWorldClockCities, setWorldClockColors, setWorldClockMode, requestWorldClkNTP_Time);
+  THIS_APP->mtb_App_Init(mtb_Status_Bar_Calendar_Sv);
   //************************************************************************************ */
     char worldCity_Hr_Min[10] = {0};
 
@@ -96,8 +96,8 @@ void worldClock_App_Task(void* dApplication){
 if(worldClockCities.worldClockMode == FIVE_CLOCK_MODE) drawWorldClock5CitiesBkgd();
 else drawWorldClockSingleCity();
 
-while (MTB_APP_IS_ACTIVE == pdTRUE){
-    thisApp->elementRefresh = false;
+while (THIS_APP_IS_ACTIVE == pdTRUE){
+    THIS_APP->elementRefresh = false;
     if(worldClockCities.worldClockMode == FIVE_CLOCK_MODE){
                                                                                                                 // MEMORY LEAKING OBSERVED IN THIS LOOP - NEEDS FIXING LATER
       cityMultiName0.mtb_Write_Colored_Text(worldClockCities.worldCapitals[0], worldClockCities.worldColors[0]);
@@ -106,7 +106,7 @@ while (MTB_APP_IS_ACTIVE == pdTRUE){
       cityMultiName3.mtb_Write_Colored_Text(worldClockCities.worldCapitals[3], worldClockCities.worldColors[3]);
       cityMultiName4.mtb_Write_Colored_Text(worldClockCities.worldCapitals[4], worldClockCities.worldColors[4]);
 
-      while ((Mtb_Applications::internetConnectStatus != true) && (MTB_APP_IS_ACTIVE == pdTRUE)) delay(1000);
+      while ((Mtb_Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
 
     // Cache timezones at startup
       cacheTimezone(worldClockCities.worldTimeZones[0]);
@@ -115,7 +115,7 @@ while (MTB_APP_IS_ACTIVE == pdTRUE){
       cacheTimezone(worldClockCities.worldTimeZones[3]);
       cacheTimezone(worldClockCities.worldTimeZones[4]);
 
-      while (MTB_APP_IS_ACTIVE == pdTRUE && thisApp->elementRefresh == false) {
+      while (THIS_APP_IS_ACTIVE == pdTRUE && THIS_APP->elementRefresh == false) {
         cityMultiTime0.mtb_Write_Colored_Text(getCityLocalTime(worldClockCities.worldTimeZones[0], worldCity_Hr_Min), worldClockCities.worldColors[0]);
         cityMultiTime1.mtb_Write_Colored_Text(getCityLocalTime(worldClockCities.worldTimeZones[1], worldCity_Hr_Min), worldClockCities.worldColors[1]);
         cityMultiTime2.mtb_Write_Colored_Text(getCityLocalTime(worldClockCities.worldTimeZones[2], worldCity_Hr_Min), worldClockCities.worldColors[2]);
@@ -127,7 +127,7 @@ while (MTB_APP_IS_ACTIVE == pdTRUE){
       
       dispSingleCityName.mtb_Write_Colored_Text(worldClockCities.worldCapitals[0], WHITE);
 
-      while ((Mtb_Applications::internetConnectStatus != true) && (MTB_APP_IS_ACTIVE == pdTRUE)) delay(1000);
+      while ((Mtb_Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
       
       strcpy(worldCountryFlag.imageLink, getFlag4x3ByCountry(worldClockCities.firstCountryName).c_str());
 
@@ -135,14 +135,14 @@ while (MTB_APP_IS_ACTIVE == pdTRUE){
 
       cacheTimezone(worldClockCities.worldTimeZones[0]);
 
-      while (MTB_APP_IS_ACTIVE == pdTRUE && thisApp->elementRefresh == false) {
+      while (THIS_APP_IS_ACTIVE == pdTRUE && THIS_APP->elementRefresh == false) {
         dispSingleCityTime.mtb_Write_Colored_Text(getCityLocalTime(worldClockCities.worldTimeZones[0], worldCity_Hr_Min), worldClockCities.worldColors[0]);
         delay(1000);
       }
     }
 }
 
-  mtb_Delete_This_App(thisApp);
+  mtb_Delete_This_App(THIS_APP);
 }
 
 void change_City_Button(button_event_t button_Data){

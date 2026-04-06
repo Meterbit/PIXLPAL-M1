@@ -48,10 +48,10 @@ void setCrytoAPI_key(JsonDocument&);
 EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *coinCap_Stats_App = new Mtb_Applications_StatusBar(cryptoStats_App_Task, &cryptoStats_Task_H, "Crypto Data", 10240);
 
 void cryptoStats_App_Task(void* dApplication){
-  Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
-  thisApp->mtb_App_Set_EC11_Cb_Fns(buttonChangeDisplayCrypto, mtb_Brightness_Control);
-  //thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(showParticularCrypto, add_RemoveCryptoSymbol, setCryptoChangeInterval, setCrytoAPI_key);
-  thisApp->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
+  Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
+  THIS_APP->mtb_App_Set_EC11_Cb_Fns(buttonChangeDisplayCrypto, mtb_Brightness_Control);
+  //THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(showParticularCrypto, add_RemoveCryptoSymbol, setCryptoChangeInterval, setCrytoAPI_key);
+  THIS_APP->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
   //************************************************************************************ */
     currentCryptoCurrency = (Crypto_Stat_t){
         "bitcoin",
@@ -140,19 +140,18 @@ ESP_LOGI(TAG, "Found %d coins IDs:\n", cryptoCount);
 //##############################################################################################################
 //##############################################################################################################
 
-while (MTB_APP_IS_ACTIVE == pdTRUE) {
+while (THIS_APP_IS_ACTIVE == pdTRUE) {
     // ==================== LOAD NEW COIN FOR DISPLAY ====================
     String apiUrl = "https://rest.coincap.io/v3/assets/";
     apiUrl += currentCryptoCurrency.coinID;
-    ESP_LOGI(TAG, "OUR FINAL URL IS: %s \n", apiUrl.c_str());
+    // ESP_LOGI(TAG, "OUR FINAL URL IS: %s \n", apiUrl.c_str());
 
+    while ((Mtb_Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
     currentCryptoCurrency.coinSymbol.toLowerCase();
     mtb_Download_Github_Strg_File("cryp_Icons/" + currentCryptoCurrency.coinSymbol + ".png", "/crypto/cryptIcon_1.png");
 
-    while ((Mtb_Applications::internetConnectStatus != true) && (MTB_APP_IS_ACTIVE == pdTRUE)) delay(1000);
-
     // ==================== FETCH AND UPDATE EVERY INTERVAL ====================
-    while (MTB_APP_IS_ACTIVE == pdTRUE) {
+    while (THIS_APP_IS_ACTIVE == pdTRUE) {
         int16_t cryptoDataRequestTim = 20000; // 20 seconds
         HTTPClient http;
         http.begin(apiUrl);
@@ -209,7 +208,7 @@ while (MTB_APP_IS_ACTIVE == pdTRUE) {
 
         http.end();
 
-        while (cryptoDataRequestTim--> 0 && MTB_APP_IS_ACTIVE && xSemaphoreTake(changeDispCrypto_Sem, 0) != pdTRUE) delay(1);
+        while (cryptoDataRequestTim--> 0 && THIS_APP_IS_ACTIVE && xSemaphoreTake(changeDispCrypto_Sem, 0) != pdTRUE) delay(1);
         if (cryptoDataRequestTim > 0) break;
     }
 
@@ -222,7 +221,7 @@ while (MTB_APP_IS_ACTIVE == pdTRUE) {
     vSemaphoreDelete(changeDispCrypto_Sem);
     changeDispCrypto_Sem = NULL;
 
-  mtb_Delete_This_App(thisApp);
+  mtb_Delete_This_App(THIS_APP);
 }
 
 void readCryptoSymbols(const char* filename, String coinSymbols[], int& count, const int maxSymbols){

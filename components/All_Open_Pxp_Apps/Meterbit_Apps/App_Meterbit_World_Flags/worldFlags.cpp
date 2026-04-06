@@ -41,10 +41,10 @@ void setFlagChangeIntv(JsonDocument&);
 EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *worldFlags_App = new Mtb_Applications_FullScreen(worldFlags_App_Task, &worldFlags_Task_H, "worldFlagsApp", 8192);
 
 void worldFlags_App_Task(void* dApplication){
-  Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
-  thisApp->mtb_App_Set_EC11_Cb_Fns(changeWorldFlagButton, mtb_Brightness_Control);
-  thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(selectDisplayFlag, selectPreferredFlags, cycleAllFlags, showCountryName, setFlagChangeIntv);
-  thisApp->mtb_App_Init();
+  Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
+  THIS_APP->mtb_App_Set_EC11_Cb_Fns(changeWorldFlagButton, mtb_Brightness_Control);
+  THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(selectDisplayFlag, selectPreferredFlags, cycleAllFlags, showCountryName, setFlagChangeIntv);
+  THIS_APP->mtb_App_Init();
   //************************************************************************************ */
   worldFlagsInfo = (WorldFlags_Data_t){
         "Nigeria",    // Country Name
@@ -60,20 +60,20 @@ void worldFlags_App_Task(void* dApplication){
     Mtb_OnlineImage_t small_Flag({"link placeHolder", 40, 10, 2});
     Mtb_CentreText_t dispCountryName(65, 57, Terminal8x12, WHITE);
 
-while (MTB_APP_IS_ACTIVE == pdTRUE){
+while (THIS_APP_IS_ACTIVE == pdTRUE){
 
-    while ((Mtb_Applications::internetConnectStatus != true) && (MTB_APP_IS_ACTIVE == pdTRUE)) delay(1000);
+    while ((Mtb_Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
 
         strcpy(large_Flag.imageLink, getFlag4x3ByCountry(worldFlagsInfo.countryName).c_str());
         mtb_Draw_Online_Svg(&large_Flag, 1, wipeFlagBackground);
 
-    while (MTB_APP_IS_ACTIVE == pdTRUE && Mtb_Applications::internetConnectStatus == true) {
+    while (THIS_APP_IS_ACTIVE == pdTRUE && Mtb_Applications::internetConnectStatus == true) {
         if (worldFlagsInfo.cycleAllFlags == true) {
             uint8_t changeLargeFlagIntv = worldFlagsInfo.flagChangeIntv;
             getRandomCountryAndFlag4x3(country, flagLink);
             strcpy(large_Flag.imageLink, flagLink.c_str());
             mtb_Draw_Online_Svg(&large_Flag, 1, wipeFlagBackground);
-            while(changeLargeFlagIntv-->0 && MTB_APP_IS_ACTIVE == pdTRUE) delay(1000);
+            while(changeLargeFlagIntv-->0 && THIS_APP_IS_ACTIVE == pdTRUE) delay(1000);
         } else delay(1000);
         if (worldFlagsInfo.showCountryName == true) {
             uint8_t changeSmallFlagIntv = 10;
@@ -81,11 +81,11 @@ while (MTB_APP_IS_ACTIVE == pdTRUE){
             strcpy(small_Flag.imageLink, large_Flag.imageLink);
             mtb_Draw_Online_Svg(&small_Flag, 1, wipeFlagBackground);
             dispCountryName.mtb_Write_Colored_Text(country.c_str(), WHITE, mtb_Panel_Color565(0, 0, 16));
-            while(changeSmallFlagIntv-->0 && MTB_APP_IS_ACTIVE == pdTRUE) delay(1000);
+            while(changeSmallFlagIntv-->0 && THIS_APP_IS_ACTIVE == pdTRUE) delay(1000);
         } 
     }
 }
-  mtb_Delete_This_App(thisApp);
+  mtb_Delete_This_App(THIS_APP);
 }
 
 void changeWorldFlagButton(button_event_t button_Data){

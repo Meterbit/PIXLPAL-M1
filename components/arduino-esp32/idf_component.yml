@@ -38,7 +38,7 @@ dependencies:
   espressif/esp_hosted:
     rules:
     - if: target == esp32p4
-    version: ^2.8.0
+    version: ^2.9.2
   espressif/esp_insights:
     rules:
     - if: target not in [esp32c2, esp32p4]
@@ -116,7 +116,7 @@ files:
 license: LGPL-2.1
 repository: git://github.com/espressif/arduino-esp32.git
 repository_info:
-  commit_sha: 11bc7ac1a458f1f4e7afc8fd4de1dfa710f31562
+  commit_sha: c94a9a59dfc294e99a0637cb39a855b8d3e472b5
   path: .
 tags:
 - arduino
@@ -132,4 +132,4 @@ targets:
 - esp32s2
 - esp32s3
 url: https://github.com/espressif/arduino-esp32
-version: 3.3.5
+version: 3.3.7

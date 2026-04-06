@@ -28,26 +28,26 @@ void selectNext_PreviousTrack(JsonDocument&);
 EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *musicPlayer_App = new Mtb_Applications_StatusBar(musicPlayer_App_Task, &musicPlayer_Task_H, "musicPlayer", 10240, false);
 
 void musicPlayer_App_Task(void* dApplication){
-  Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
-  thisApp->mtb_App_Set_EC11_Cb_Fns(nextTrackButton, mtb_Vol_Control_Encoder);
-  thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(selectNext_PreviousTrack);
-  thisApp->mtb_App_Init(mtb_Usb_Mass_Storage_Sv, mtb_Audio_Out_Sv);
+  Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
+  THIS_APP->mtb_App_Set_EC11_Cb_Fns(nextTrackButton, mtb_Vol_Control_Encoder);
+  THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(selectNext_PreviousTrack);
+  THIS_APP->mtb_App_Init(mtb_Usb_Mass_Storage_Sv, mtb_Audio_Out_Sv);
   //************************************************************************************ */
   musicPlayerData = (MusicPlayer_Data_t){1};
   mtb_Read_Nvs_Struct("musicPlayer", &musicPlayerData, sizeof(MusicPlayer_Data_t));
 
-while (MTB_APP_IS_ACTIVE == pdTRUE) {
+while (THIS_APP_IS_ACTIVE == pdTRUE) {
 
-    while ((Mtb_Applications::usbPenDriveConnectStatus != true) && (MTB_APP_IS_ACTIVE == pdTRUE)) delay(1000);
+    while ((Mtb_Applications::usbPenDriveConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
 
 
-    while (MTB_APP_IS_ACTIVE == pdTRUE) {
+    while (THIS_APP_IS_ACTIVE == pdTRUE) {
 
     }
 
 }
 
-  mtb_Delete_This_App(thisApp);
+  mtb_Delete_This_App(THIS_APP);
 }
 
 void nextTrackButton(button_event_t button_Data){

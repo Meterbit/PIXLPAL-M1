@@ -25,22 +25,22 @@ void cancelAppLaunch(JsonDocument&);
 EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *apple_Notifications_App = new Mtb_Applications_StatusBar(appleNotifications_App_Task, &appleNotification_Task_H, "apple Notif", 10240);
 
 void appleNotifications_App_Task(void* dApplication){
-  Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
-  thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(cancelAppLaunch);
-  thisApp->mtb_App_Init();
+  Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
+  THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(cancelAppLaunch);
+  THIS_APP->mtb_App_Init();
   //************************************************************************************ */
   mtb_Read_Nvs_Struct("appleNotif", &appleNotificationInfo, sizeof(AppleNotification_Data_t));
 
-while (MTB_APP_IS_ACTIVE == pdTRUE) {
+while (THIS_APP_IS_ACTIVE == pdTRUE) {
 
-    while ((Mtb_Applications::internetConnectStatus != true) && (MTB_APP_IS_ACTIVE == pdTRUE)) delay(1000);
+    while ((Mtb_Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
 
 
-    while (MTB_APP_IS_ACTIVE == pdTRUE) {}
+    while (THIS_APP_IS_ACTIVE == pdTRUE) {}
 
 }
 
-  mtb_Delete_This_App(thisApp);
+  mtb_Delete_This_App(THIS_APP);
 }
 
 

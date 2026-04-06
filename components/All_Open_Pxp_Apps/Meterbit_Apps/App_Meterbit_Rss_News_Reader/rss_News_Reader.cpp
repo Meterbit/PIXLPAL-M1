@@ -42,29 +42,29 @@ struct RssSettings_t {
 
 RssSettings_t rssSettings = {true, false, false};
 
-void fetchAndDisplayHeadlines(Mtb_Applications *thisApp);
+void fetchAndDisplayHeadlines(Mtb_Applications *THIS_APP);
 void updateSourceSelection(JsonDocument&);
 
 void rssNewsApp_Task(void* dApplication) {
-  Mtb_Applications *thisApp = (Mtb_Applications *) dApplication;
-  thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(updateSourceSelection);
+  Mtb_Applications *THIS_APP = (Mtb_Applications *) dApplication;
+  THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(updateSourceSelection);
 
-  thisApp->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
+  THIS_APP->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
   mtb_Read_Nvs_Struct("rssSettings", &rssSettings, sizeof(RssSettings_t));
 
   // Wait for internet connection before proceeding
-  while ((Mtb_Applications::internetConnectStatus != true) && (MTB_APP_IS_ACTIVE == pdTRUE)) delay(1000);
+  while ((Mtb_Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
 
-  while (MTB_APP_IS_ACTIVE == pdTRUE) {
-    fetchAndDisplayHeadlines(thisApp);
-    for (int i = 0; i < RSS_REFRESH_INTERVAL_MINUTES * 60 && MTB_APP_IS_ACTIVE == pdTRUE; ++i) {
+  while (THIS_APP_IS_ACTIVE == pdTRUE) {
+    fetchAndDisplayHeadlines(THIS_APP);
+    for (int i = 0; i < RSS_REFRESH_INTERVAL_MINUTES * 60 && THIS_APP_IS_ACTIVE == pdTRUE; ++i) {
       delay(1000);
     }
   }
   delete rssScroller;
   delete rssErrorMsg;
 
-  mtb_Delete_This_App(thisApp);
+  mtb_Delete_This_App(THIS_APP);
 }
 
 void updateSourceSelection(JsonDocument &doc) {
@@ -108,7 +108,7 @@ bool fetchFeed(const char* url, std::vector<String>& headlines) {
   }
 }
 
-void fetchAndDisplayHeadlines(Mtb_Applications *thisApp) {
+void fetchAndDisplayHeadlines(Mtb_Applications *THIS_APP) {
   std::vector<String> headlines;
   bool bbcOk = !rssSettings.enable_bbc || fetchFeed(bbc_url, headlines);
   bool cnnOk = !rssSettings.enable_cnn || fetchFeed(cnn_url, headlines);
@@ -125,7 +125,7 @@ void fetchAndDisplayHeadlines(Mtb_Applications *thisApp) {
   }
 
   for (auto& headline : headlines) {
-    if (MTB_APP_IS_ACTIVE != pdTRUE) break;
+    if (THIS_APP_IS_ACTIVE != pdTRUE) break;
     rssScroller->mtb_Scroll_This_Text(headline.c_str());
     ESP_LOGI(TAG, "RSS news content is: %s\n", headline.c_str());
     delay(8000);

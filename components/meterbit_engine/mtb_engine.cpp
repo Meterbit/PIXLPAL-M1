@@ -15,6 +15,7 @@
 #include <ctime>
 #include <string>
 #include "NimBLEDevice.h"
+#include "mtb_usb_ota.h"
 //#include "esp_heap_caps.h"
 
 static const char TAG[] = "METERBIT_ENGINE";
@@ -22,7 +23,6 @@ static const char TAG[] = "METERBIT_ENGINE";
 EXT_RAM_BSS_ATTR Mtb_UserApp_t activateUserApp;
 
 EXT_RAM_BSS_ATTR QueueHandle_t clock_Update_Q = NULL;
-EXT_RAM_BSS_ATTR TaskHandle_t ble_AppCom_Parser_Task_Handle = NULL;
 EXT_RAM_BSS_ATTR TaskHandle_t appLauncher_Task_H = NULL;
 EXT_RAM_BSS_ATTR TaskHandle_t nvsAccess_Task_Handle = NULL;
 EXT_RAM_BSS_ATTR TaskHandle_t freeServAndAppPSRAM_Handle = NULL;
@@ -60,7 +60,7 @@ Mtb_Applications::Mtb_Applications(void (*dApplication)(void *), TaskHandle_t* d
     strcpy(appName, dAppName);
     stackSize = dStackSize;
     appPriority = 1;
-    if(dAppHandle_ptr == (&firmwareUpdate_H)) appCore = 1;
+    if(dAppHandle_ptr == (&usbFirmwareUpdate_H)) appCore = 1;
     else appCore = 0;
     appCanCycle = canCycle;
     elementRefresh = true;

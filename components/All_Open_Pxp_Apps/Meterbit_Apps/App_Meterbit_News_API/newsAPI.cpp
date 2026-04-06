@@ -45,16 +45,16 @@ EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *newsAPI_App = new Mtb_Applications_
 
 // Main task for the News Ticker app.
 void newsAPI_App_Task(void * dApplication) {
-    Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
+    Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
     
     // Register BLE command functions.
-    thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(showLatestNewsAPI, setNewsAPIUpdateInterval, setNewsAPI_APIKey, setNewsAPI_Language);
+    THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(showLatestNewsAPI, setNewsAPIUpdateInterval, setNewsAPI_APIKey, setNewsAPI_Language);
     
     // Set button and encoder handlers.
-    thisApp->mtb_App_Set_EC11_Cb_Fns(buttonNewsAPI_Handler, mtb_Brightness_Control);
+    THIS_APP->mtb_App_Set_EC11_Cb_Fns(buttonNewsAPI_Handler, mtb_Brightness_Control);
 
     // Initialize app services.
-    thisApp->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
+    THIS_APP->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
     
     if (newsAPI_UpdateSem == NULL)
         newsAPI_UpdateSem = xSemaphoreCreateBinary();
@@ -69,13 +69,13 @@ void newsAPI_App_Task(void * dApplication) {
     displayNewsAPI_Headlines(headlines);
     
     // Main loop: update headlines when the semaphore is given (by timer or button press).
-    while (MTB_APP_IS_ACTIVE == pdTRUE) {
+    while (THIS_APP_IS_ACTIVE == pdTRUE) {
         if (xSemaphoreTake(newsAPI_UpdateSem, portMAX_DELAY) == pdTRUE) {
             headlines = fetchNewsAPI_Headlines();
             displayNewsAPI_Headlines(headlines);
         }
     }
-    mtb_Delete_This_App(thisApp);
+    mtb_Delete_This_App(THIS_APP);
 }
 
 // This function uses GNews API to fetch the latest headlines.

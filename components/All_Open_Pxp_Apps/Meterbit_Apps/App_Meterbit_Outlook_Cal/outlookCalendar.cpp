@@ -79,10 +79,10 @@ void outlookCalButtonControl(button_event_t){}
 
 //THIS IS THE APPLICATION IMPLEMENTATION ***************************************************************************
 void  outlookCal_App_Task(void* dApplication){
-  Mtb_Applications *thisApp = (Mtb_Applications *) dApplication;
-  thisApp->mtb_App_Set_EC11_Cb_Fns(outlookCalButtonControl, mtb_Brightness_Control);
-  thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(link_OutlookCal, get_OutlookCal_Refresh_Token, show_OutlookCal_Events, show_OutlookCal_Tasks, show_OutlookCal_Holidays);
-  thisApp->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
+  Mtb_Applications *THIS_APP = (Mtb_Applications *) dApplication;
+  THIS_APP->mtb_App_Set_EC11_Cb_Fns(outlookCalButtonControl, mtb_Brightness_Control);
+  THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(link_OutlookCal, get_OutlookCal_Refresh_Token, show_OutlookCal_Events, show_OutlookCal_Tasks, show_OutlookCal_Holidays);
+  THIS_APP->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
   //**************************************************************************************************************************************************************** */
   outlookEvent_Task_Name = new Mtb_FixedText_t(20, 12, Terminal6x8, BLACK, OUTER_SPACE);
   
@@ -113,8 +113,8 @@ void  outlookCal_App_Task(void* dApplication){
       "no_Refresh_Token_Saved_Yet"
   };
 
-  while (MTB_APP_IS_ACTIVE == pdTRUE){
-  while ((Mtb_Applications::internetConnectStatus != true) && (MTB_APP_IS_ACTIVE == pdTRUE)) delay(1000);
+  while (THIS_APP_IS_ACTIVE == pdTRUE){
+  while ((Mtb_Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
   
   mtb_Read_Nvs_Struct("outlookCalData", &userOutlookCal, sizeof(OutlookCal_Data_t));
   ESP_LOGI(TAG, "The refreshToken is: %s\n", userOutlookCal.refreshToken);
@@ -130,7 +130,7 @@ void  outlookCal_App_Task(void* dApplication){
   }
 
 
-    while (MTB_APP_IS_ACTIVE == pdTRUE){
+    while (THIS_APP_IS_ACTIVE == pdTRUE){
       delay(100);
     }
 
@@ -151,7 +151,7 @@ void  outlookCal_App_Task(void* dApplication){
   delete outlookEvent_Task_Status_2;
 
 
-  mtb_Delete_This_App(thisApp);
+  mtb_Delete_This_App(THIS_APP);
 }
 
 

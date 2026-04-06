@@ -15,9 +15,9 @@ EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *exampleEncoderBeep_App = new Mtb_Ap
 
 void exampleEncoderBeepApp_Task(void* dApplication){
 // ****** Initialize the App Parameters
-  Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
-  thisApp->mtb_App_Set_EC11_Cb_Fns(exampleAppButtonFn, exampleAppEncoderFn);
-  thisApp->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
+  Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
+  THIS_APP->mtb_App_Set_EC11_Cb_Fns(exampleAppButtonFn, exampleAppEncoderFn);
+  THIS_APP->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
 // End of App parameter initialization
 
 // Declare Fixed and Scroll Text Variables
@@ -26,14 +26,14 @@ Mtb_FixedText_t exampleFixedText(2,30, Terminal6x8, GREEN);
 // Write Fixed Text to display
 exampleFixedText.mtb_Write_String("Encoder and Buzzer App");
 
-while (MTB_APP_IS_ACTIVE == pdTRUE) {
+while (THIS_APP_IS_ACTIVE == pdTRUE) {
 // Scroll the ScrollText Variable on display every 15 seconds
 ESP_LOGI(TAG, "Use the Rotary Encoder to Rotate or Press the Button");
 delay(5000);
 }
 
 // Clean up the application before exiting
-  mtb_Delete_This_App(thisApp);
+  mtb_Delete_This_App(THIS_APP);
 }
 
 // ROTARY ENCODER CALLBACK FUNCTION

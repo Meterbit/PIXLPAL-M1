@@ -9,8 +9,8 @@ EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *exampleDrawShapes_App = new Mtb_App
 
 void exampleDrawShapeApp_Task(void* dApplication){
 // ****** Initialize the App Parameters
-  Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
-  thisApp->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
+  Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
+  THIS_APP->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
 // End of App parameter initialization
 
 mtb_Panel_Clear_Screen();
@@ -32,12 +32,12 @@ mtb_Panel_Draw_Round_Rect(94, 16, 30, 40, 5, PINK);
 // mtb_Panel_Fill_Screen(GREEN_LIZARD); 
 
 
-while (MTB_APP_IS_ACTIVE == pdTRUE) {
+while (THIS_APP_IS_ACTIVE == pdTRUE) {
 ESP_LOGI("ExampleDrawShapesApp", "Shapes drawn on the display.");
 
 delay(15000);
 }
 
 // Clean up the application before exiting
-  mtb_Delete_This_App(thisApp);
+  mtb_Delete_This_App(THIS_APP);
 }

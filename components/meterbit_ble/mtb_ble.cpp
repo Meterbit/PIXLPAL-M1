@@ -12,6 +12,7 @@
 #include "mtb_text_scroll.h"
 #include "mtb_engine.h"
 #include "mtb_ble.h"
+#include "mtb_ble_ota.h"
 
 
 #define BLE_COMM_QUEUE_SIZE 3         // INCREASE THIS IF YOU ANTICIPATE A HIGHER VOLUME OF BLE MESSAGES TO BE TO BE SENT FROM APP TO PIXLPAL ESPECIALLY FOR APPCOM.
@@ -23,6 +24,7 @@ bool isDisconnected = true;
 EXT_RAM_BSS_ATTR JsonDocument dCommand;
 
 EXT_RAM_BSS_ATTR TaskHandle_t ble_SetCom_Parser_Task_Handle = NULL;
+EXT_RAM_BSS_ATTR TaskHandle_t ble_AppCom_Parser_Task_Handle = NULL;
 EXT_RAM_BSS_ATTR QueueHandle_t setCom_queue = NULL;
 EXT_RAM_BSS_ATTR QueueHandle_t appCom_queue = NULL;
 
@@ -65,6 +67,13 @@ class MyServerCallbacks : public NimBLEServerCallbacks{
     isDisconnected = true;
     Mtb_Applications::bleCentralContd = false;
     mtb_Show_Status_Bar_Icon({"/batIcons/btOn.png", 18, 1});
+
+    // If an OTA transfer was in progress, abort it.
+    if (mtb_Ble_Ota_Is_Active()) {
+      ESP_LOGW(TAG, "Client disconnected during OTA. Aborting OTA session.");
+      mtb_Ble_Ota_Abort();
+    }
+
     // Start advertising
     NimBLEDevice::startAdvertising(); // Start advertising
   };
@@ -77,6 +86,12 @@ class MyServerCallbacks : public NimBLEServerCallbacks{
 
 class CharacteristicsCallbacks : public NimBLECharacteristicCallbacks{
   void onWrite(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo& connInfo){
+
+  // Block normal SETCOM / APPCOM traffic while OTA is running.
+  if (mtb_Ble_Ota_Is_Active()) {
+      ESP_LOGW(TAG, "Ignoring normal BLE write because OTA is active");
+      return;
+  }
 
   ESP_LOGI(TAG, "BLEData Received : %s \n", pCharacteristic->getValue().c_str());
 
@@ -122,6 +137,9 @@ void mtb_Ble_Comm_Init(void){
 
     pServer->setCallbacks(new MyServerCallbacks());
 
+    // Initialize BLE OTA service on the same server
+    mtb_Ble_Ota_Init(pServer);
+
     // Create the BLE Service
     pService = pServer->createService(PXP_BLE_SERVICE_UUID);
     delay(100);
@@ -144,11 +162,9 @@ void mtb_Ble_Comm_Init(void){
     // Start the BLE service
     pService->start();
 
-    // Start advertising
-    // pServer->getAdvertising()->start();
-
     NimBLEAdvertising *pAdvertising = NimBLEDevice::getAdvertising();
-    pAdvertising->addServiceUUID(PXP_BLE_SERVICE_UUID); // Add the service UUID to advertising
+    pAdvertising->addServiceUUID(PXP_BLE_SERVICE_UUID); // Add main service UUID to advertising
+    pAdvertising->addServiceUUID(MTB_BLE_OTA_SERVICE_UUID);
     pAdvertising->enableScanResponse(true);       // Include scan response if needed
 
     mtb_Read_Nvs_Struct("pxpBleDevName", pxp_BLE_Name, sizeof(pxp_BLE_Name));
@@ -172,11 +188,17 @@ void waitForDisconnections() {
 }
 
 void mtb_Ble_Comm_Deinit() {
+    // Prevent BLE shutdown while OTA is in progress
+    if (mtb_Ble_Ota_Is_Active()) {
+        ESP_LOGW(TAG, "BLE deinit blocked because OTA is in progress");
+        return;
+    }
+
     // Disconnect clients
     Serial.println("Waiting for disconnections...");
     if (pServer) {
           if(pServer->getConnectedCount() > 0){
-            pServer->disconnect(pServer->getPeerInfoByHandle(connHandle));
+            pServer->disconnect(connHandle);
             waitForDisconnections(); // Wait for disconnection callback
         }
     }
@@ -187,6 +209,10 @@ void mtb_Ble_Comm_Deinit() {
         advertising->stop();
     }
     delay(100);
+
+    // Deinitialize OTA state before BLE deinit
+    mtb_Ble_Ota_Deinit();
+
     // Deinitialize BLE Device
     NimBLEDevice::deinit();
 
@@ -195,24 +221,22 @@ void mtb_Ble_Comm_Deinit() {
 }
 
 void mtb_Ble_Change_Pxp_Ble_Name(const char* pxp_BLE_Name){
-      // 1. Stop advertising
-      NimBLEDevice::getAdvertising()->stop();
+    NimBLEAdvertising *pAdvertising = NimBLEDevice::getAdvertising();
+    if (pAdvertising == nullptr) return;
 
-        delay(100);
+    pAdvertising->stop();
+    delay(100);
 
-      // 2. Set new device name
-      NimBLEDevice::setDeviceName(pxp_BLE_Name);
+    NimBLEDevice::setDeviceName(pxp_BLE_Name);
 
-      // 3. Update advertising data
-      NimBLEAdvertising* pAdvertising = NimBLEDevice::getAdvertising();
+    NimBLEAdvertisementData advData;
+    advData.setName(pxp_BLE_Name);
+    advData.addServiceUUID(PXP_BLE_SERVICE_UUID);
+    advData.addServiceUUID(MTB_BLE_OTA_SERVICE_UUID);
 
-      NimBLEAdvertisementData advData;
-      advData.setName(pxp_BLE_Name);   // VERY IMPORTANT
-
-      pAdvertising->setAdvertisementData(advData);
-
-      // 4. Restart advertising
-      pAdvertising->start();
+    pAdvertising->setAdvertisementData(advData);
+    pAdvertising->enableScanResponse(true);
+    pAdvertising->start();
 }
 
 int bleSettingsComSend(const char* dRoute, const String& dMessage) {

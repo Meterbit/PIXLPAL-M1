@@ -39,9 +39,9 @@ Mtb_Applications_StatusBar *spotify_App = new Mtb_Applications_StatusBar(spotify
 
 //THIS IS THE APPLICATION IMPLEMENTATION ***************************************************************************
 void  spotify_App_Task(void* dApplication){
-  Mtb_Applications *thisApp = (Mtb_Applications *) dApplication;
-  thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(link_Spotify, get_Spotify_Refresh_Token);
-  thisApp->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
+  Mtb_Applications *THIS_APP = (Mtb_Applications *) dApplication;
+  THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(link_Spotify, get_Spotify_Refresh_Token);
+  THIS_APP->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
 //**************************************************************************************************************************************************************** */
 
     userSpotify = (Spotify_Data_t){
@@ -82,9 +82,9 @@ void  spotify_App_Task(void* dApplication){
   spotify_root_ca = buffer;
 
 //######################################################################################### */
-  while (MTB_APP_IS_ACTIVE == pdTRUE){
+  while (THIS_APP_IS_ACTIVE == pdTRUE){
 
-  while ((Mtb_Applications::internetConnectStatus != true) && (MTB_APP_IS_ACTIVE == pdTRUE)) delay(1000);
+  while ((Mtb_Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
   
   mtb_Read_Nvs_Struct("spotifyData", &userSpotify, sizeof(Spotify_Data_t));
   ESP_LOGI(TAG, "The refreshToken is: %s\n", userSpotify.refreshToken);
@@ -94,7 +94,7 @@ void  spotify_App_Task(void* dApplication){
     //ESP_LOGI(TAG, "I'm ready to get the now playing song.\n");
   }
 
-    while (MTB_APP_IS_ACTIVE == pdTRUE){
+    while (THIS_APP_IS_ACTIVE == pdTRUE){
   if (Serial.available()) {
     String cmd = Serial.readStringUntil('\n');
     cmd.trim();
@@ -115,7 +115,7 @@ void  spotify_App_Task(void* dApplication){
 
   }
 
-  mtb_Delete_This_App(thisApp);
+  mtb_Delete_This_App(THIS_APP);
 }
 
 

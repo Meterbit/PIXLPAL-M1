@@ -23,7 +23,7 @@ EXT_RAM_BSS_ATTR Mtb_FixedText_t* otaUpdateTextBot = NULL;
 EXT_RAM_BSS_ATTR Mtb_FixedText_t* otaUpdateTextBar = NULL;
 
 EXT_RAM_BSS_ATTR TaskHandle_t ota_Updating = NULL;
-EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *otaUpdateApplication_App = new Mtb_Applications_FullScreen(ota_Update_Task, &ota_Updating, "GHOTA Update");
+EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *ghotaOTA_Update_App = new Mtb_Applications_FullScreen(ghota_Update_Task, &ota_Updating, "GHOTA Update");
 
 EXT_RAM_BSS_ATTR SemaphoreHandle_t ota_Update_Sem = NULL;
 
@@ -54,14 +54,14 @@ String semver_t_ToString(const semver_t &version);
             //statusBarNotif.mtb_Scroll_This_Text("PIXLPAL IS UP-TO-DATE", LEMON);
             if(Mtb_Applications::currentRunningApp == Mtb_Applications::otaAppHolder) mtb_Launch_This_App(Mtb_Applications::previousRunningApp, IGNORE_PREVIOUS_APP);
             xSemaphoreGiveFromISR(ota_Update_Sem, &xHigherPriorityTaskWoken);
-            otaUpdateApplication_App->app_is_Running = pdFALSE;
+            ghotaOTA_Update_App->app_is_Running = pdFALSE;
             // bleSettingsComSend(mtb_Software_Update_Route, updateNotAvailable);
             // ESP_LOGI(TAG, "No new Update available from Ghota.\n");
         }
         else if (id == GHOTA_EVENT_START_UPDATE){
             do_beep(CLICK_BEEP);
             Mtb_Applications::appDestroy(Mtb_Applications::currentRunningApp);
-            otaUpdateApplication_App->mtb_App_Init();
+            ghotaOTA_Update_App->mtb_App_Init();
             if(litFS_Ready) mtb_Draw_Local_Png({"/batIcons/otaStatus.png", 0, 0});
             otaUpdateTextTop->mtb_Write_String("SOFTWARE UPDATE");
             otaUpdateTextBot->mtb_Write_String("IN PROGRESS:");
@@ -89,7 +89,7 @@ String semver_t_ToString(const semver_t &version);
             mtb_Launch_This_App(Mtb_Applications::previousRunningApp, IGNORE_PREVIOUS_APP);
             statusBarNotif.mtb_Scroll_This_Text("SOFTWARE UPDATE FAILED DUE TO POOR NETWORK.    PIXLPAL WILL TRY AGAIN LATER.", RED);
             ESP_LOGI(TAG, "Firmware Update Failed\n");
-            otaUpdateApplication_App->app_is_Running = pdFALSE;
+            ghotaOTA_Update_App->app_is_Running = pdFALSE;
         }
         // else if (id == GHOTA_EVENT_START_STORAGE_UPDATE){
         //     mtb_LittleFS_DeInit();
@@ -128,10 +128,10 @@ String semver_t_ToString(const semver_t &version);
         return;
 }
 
-void ota_Update_Task(void* dApplication){
-    Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
+void ghota_Update_Task(void* dApplication){
+    Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
     if(ota_Update_Sem == NULL) ota_Update_Sem = xSemaphoreCreateBinary();
-    Mtb_Applications::otaAppHolder = thisApp;
+    Mtb_Applications::otaAppHolder = THIS_APP;
     Mtb_Applications::otaAppHolder->action_On_Prev_App = SUSPEND_PREVIOUS_APP;
 
     /* initialize our ghota config */
@@ -179,7 +179,7 @@ void ota_Update_Task(void* dApplication){
 
     ghota_free(ghota_client);
 
-    while(MTB_APP_IS_ACTIVE == pdTRUE) delay(10);
+    while(THIS_APP_IS_ACTIVE == pdTRUE) delay(10);
 
     delete otaUpdateTextTop; otaUpdateTextTop = NULL;
     delete otaUpdateTextBot; otaUpdateTextBot = NULL;
@@ -188,7 +188,7 @@ void ota_Update_Task(void* dApplication){
     vSemaphoreDelete(ota_Update_Sem);
     ota_Update_Sem = NULL;
 
-    mtb_Delete_This_App(thisApp);// We are using this command, but this is an App not a service.
+    mtb_Delete_This_App(THIS_APP);// We are using this command, but this is an App not a service.
 }
 
 

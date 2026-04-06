@@ -24,10 +24,10 @@ void setPolygonAPIKey(JsonDocument &);
 EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *polygonFX_App = new Mtb_Applications_StatusBar(polygonFX_App_Task, &polygonFX_Task_H, "Polygon FX", 8192);
 
 void polygonFX_App_Task(void *dApplication){
-    Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
-    thisApp->mtb_App_Set_EC11_Cb_Fns(buttonDoNothing, mtb_Brightness_Control);
-    thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(setPolygonPair, setPolygonInterval, setPolygonAPIKey);
-    thisApp->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
+    Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
+    THIS_APP->mtb_App_Set_EC11_Cb_Fns(buttonDoNothing, mtb_Brightness_Control);
+    THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(setPolygonPair, setPolygonInterval, setPolygonAPIKey);
+    THIS_APP->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
 
       polygonFX = (PolygonFX_t){
         "EUR/USD",
@@ -46,8 +46,8 @@ void polygonFX_App_Task(void *dApplication){
     Mtb_CentreText_t pairTxt(63, 16, Terminal6x8, YELLOW);
     Mtb_CentreText_t priceTxt(63, 32, Terminal6x8, CYAN);
 
-    while(MTB_APP_IS_ACTIVE == pdTRUE){
-        while ((Mtb_Applications::internetConnectStatus != true) && (MTB_APP_IS_ACTIVE == pdTRUE)) delay(1000);
+    while(THIS_APP_IS_ACTIVE == pdTRUE){
+        while ((Mtb_Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
 
         const char *delim = "/";
         char from[8] = {0};
@@ -85,10 +85,10 @@ void polygonFX_App_Task(void *dApplication){
         http.end();
 
         int32_t waitMs = (polygonFX.updateInterval > 0 ? polygonFX.updateInterval * 1000 : 30000);
-        for(int32_t t=0; t<waitMs && MTB_APP_IS_ACTIVE; t+=1000) delay(1000);
+        for(int32_t t=0; t<waitMs && THIS_APP_IS_ACTIVE; t+=1000) delay(1000);
     }
 
-    mtb_Delete_This_App(thisApp);
+    mtb_Delete_This_App(THIS_APP);
 }
 
 

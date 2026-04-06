@@ -14,13 +14,13 @@
 #include "mtb_nvs.h"
 #include "mtb_graphics.h"
 #include "esp_heap_caps.h"
-#include "commonApps.h"
 
 #define APPS_PARSER_QUEUE_SIZE 5
 #define NVS_MEM_READ            0
 #define NVS_MEM_WRITE           1
 
-#define MTB_APP_IS_ACTIVE (thisApp->app_is_Running)
+#define THIS_APP           thisApp
+#define THIS_APP_IS_ACTIVE (THIS_APP->app_is_Running)
 #define MTB_SERV_IS_ACTIVE (thisServ->service_is_Running)
 
 extern QueueHandle_t clock_Update_Q;
@@ -308,7 +308,8 @@ extern Mtb_Services* mtb_Status_Bar_Calendar_Sv;
 
 // All System Apps
 extern Mtb_Applications_FullScreen* usbOTA_Update_App;
-extern Mtb_Applications_FullScreen* otaUpdateApplication_App;
+extern Mtb_Applications_FullScreen* bleOTA_Update_App;
+extern Mtb_Applications_FullScreen* ghotaOTA_Update_App;
 
 // All User Apps
 // Clocks and Timers

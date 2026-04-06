@@ -28,23 +28,23 @@ void setWatchTime(JsonDocument&);
 EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *stopWatch_App = new Mtb_Applications_StatusBar(realStopwatch_App_Task, &realStopwatch_Task_H, "real Stopwatch", 10240);
 
 void realStopwatch_App_Task(void* dApplication){
-  Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
-  thisApp->mtb_App_Set_EC11_Cb_Fns(selectWatchTimeButton, adjustwatchTimeEncoder);
-  thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(setWatchTime);
-  thisApp->mtb_App_Init();
+  Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
+  THIS_APP->mtb_App_Set_EC11_Cb_Fns(selectWatchTimeButton, adjustwatchTimeEncoder);
+  THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(setWatchTime);
+  THIS_APP->mtb_App_Init();
   //************************************************************************************ */
   frequentStopwatchTime = (RealStopWatch_Data_t){60};
   mtb_Read_Nvs_Struct("realStopWatch", &frequentStopwatchTime, sizeof(RealStopWatch_Data_t));
 
-while (MTB_APP_IS_ACTIVE == pdTRUE) {
+while (THIS_APP_IS_ACTIVE == pdTRUE) {
 
-    while ((Mtb_Applications::internetConnectStatus != true) && (MTB_APP_IS_ACTIVE == pdTRUE)) delay(1000);
+    while ((Mtb_Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
 
-    while (MTB_APP_IS_ACTIVE == pdTRUE) {}
+    while (THIS_APP_IS_ACTIVE == pdTRUE) {}
 
 }
 
-  mtb_Delete_This_App(thisApp);
+  mtb_Delete_This_App(THIS_APP);
 }
 
 void selectWatchTimeButton(button_event_t button_Data){

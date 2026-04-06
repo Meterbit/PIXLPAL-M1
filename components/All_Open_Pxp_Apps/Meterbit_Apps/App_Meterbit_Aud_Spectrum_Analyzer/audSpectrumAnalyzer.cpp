@@ -29,23 +29,23 @@ EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *audSpecAnalyzer_App = new Mtb_Appl
 uint32_t counterValue1 = 0;
 //***************************************************************************************************
 void  audSpecAnalyzer_App_Task(void* dApplication){
-  Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
-  thisApp->mtb_App_Set_EC11_Cb_Fns(changePattern_Button, mtb_Brightness_Control);
-  thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(selectPattern, selectNumOfBands, setRandomPatterns, setRandomInterval);
-  thisApp->mtb_App_Init(mtb_Audio_In_Sv);
+  Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
+  THIS_APP->mtb_App_Set_EC11_Cb_Fns(changePattern_Button, mtb_Brightness_Control);
+  THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(selectPattern, selectNumOfBands, setRandomPatterns, setRandomInterval);
+  THIS_APP->mtb_App_Init(mtb_Audio_In_Sv);
 
   initAudioVisualPattern();
   //**************************************************************************************************************************
   if(audioSpecVisual_Set.showRandom) xTimerStart(showRandomPatternTimer_H, 0);
   delay(200);   // This delay is played here to allow for the creation of of mic processing variables and initialization.
   mtb_Dac_Or_Mic_Status(ON_MIC);
-  while (MTB_APP_IS_ACTIVE == pdTRUE){
+  while (THIS_APP_IS_ACTIVE == pdTRUE){
     if(xSemaphoreTake(audio_In_Data_Collected_Sem_H, pdMS_TO_TICKS(50)) == pdTRUE) audioVisualizer();
   }
   mtb_Dac_Or_Mic_Status(OFF_DAC_N_MIC);
   deInitAudioVisualPattern();
   
-  mtb_Delete_This_App(thisApp);
+  mtb_Delete_This_App(THIS_APP);
 }
 
 void changePattern_Button(button_event_t button_Data){

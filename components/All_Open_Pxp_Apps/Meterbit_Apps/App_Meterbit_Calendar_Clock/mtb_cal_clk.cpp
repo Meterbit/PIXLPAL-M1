@@ -17,10 +17,10 @@ void calendarClock_App_Task(void *dApplication);
 EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *calendarClock_App = new Mtb_Applications_StatusBar(calendarClock_App_Task, &classicClock_Task_H, "Classic Clock", 4096);
 //***************************************************************************************************
 void  calendarClock_App_Task(void* dApplication){
-  Mtb_Applications *thisApp = (Mtb_Applications *)dApplication;
-  thisApp->mtb_App_Set_EC11_Cb_Fns(randomButtonControl, mtb_Brightness_Control);
-  thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(clock_Color_Change, get_NTP_Local_Time);
-  thisApp->mtb_App_Init();
+  Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
+  THIS_APP->mtb_App_Set_EC11_Cb_Fns(randomButtonControl, mtb_Brightness_Control);
+  THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(clock_Color_Change, get_NTP_Local_Time);
+  THIS_APP->mtb_App_Init();
   //**************************************************************************************************************************
 
   mtb_Read_Nvs_Struct("Clock Cols", &clk_Updt, sizeof(Clock_Colors));
@@ -58,7 +58,7 @@ void  calendarClock_App_Task(void* dApplication){
       awaitingNTP_Time_Top.mtb_Write_String("RETRIEVING TIME");
       awaitingNTP_Time_But.mtb_Write_String("FROM NETWORK...");
     }
-    while((now->tm_year) < 124 && MTB_APP_IS_ACTIVE) {
+    while((now->tm_year) < 124 && THIS_APP_IS_ACTIVE) {
       delay(1000);
       time(&present);
       now = localtime(&present);
@@ -66,12 +66,12 @@ void  calendarClock_App_Task(void* dApplication){
     awaitingNTP_Time_Top.mtb_Clear_String();
     awaitingNTP_Time_But.mtb_Clear_String();
 //************************************************** */
-  while (MTB_APP_IS_ACTIVE == pdTRUE){
+  while (THIS_APP_IS_ACTIVE == pdTRUE){
     time(&present);
     now = localtime(&present);
 
   //*************************************************
-  if (pre_Sec != now->tm_sec || thisApp->elementRefresh){
+  if (pre_Sec != now->tm_sec || THIS_APP->elementRefresh){
         pre_Sec = now->tm_sec;
         if (pre_Sec < 10){
             rtc_Sec[0] = '0';
@@ -83,7 +83,7 @@ void  calendarClock_App_Task(void* dApplication){
   sec_Obj.mtb_Write_String(rtc_Sec);
   }
 
-  if (pre_Hr != now->tm_hour || thisApp->elementRefresh){
+  if (pre_Hr != now->tm_hour || THIS_APP->elementRefresh){
 	pre_Hr = now->tm_hour;
 
   if(pre_Hr == 0){
@@ -124,7 +124,7 @@ void  calendarClock_App_Task(void* dApplication){
     am_Pm_Obj.mtb_Write_String(rtc_Am_Pm);
   }
 
-	if (pre_Min != now->tm_min || thisApp->elementRefresh){
+	if (pre_Min != now->tm_min || THIS_APP->elementRefresh){
   pre_Min = now->tm_min;
 
   if (pre_Min < 10){
@@ -139,7 +139,7 @@ void  calendarClock_App_Task(void* dApplication){
   hr_min_Obj.mtb_Write_String(rtc_Hr_Min);
 }
 //***************************************************
-if (pre_Month != now->tm_mon  || thisApp->elementRefresh){
+if (pre_Month != now->tm_mon  || THIS_APP->elementRefresh){
 pre_Month = now->tm_mon;
 
 switch (pre_Month){
@@ -172,7 +172,7 @@ switch (pre_Month){
 }
 
 //************************************************************
-if (pre_Year != now->tm_year  || thisApp->elementRefresh){
+if (pre_Year != now->tm_year  || THIS_APP->elementRefresh){
   pre_Year = now->tm_year - 100;    // subtract 2000 from the year received e.g. 2021 - 2000 = 21
 
 	if (pre_Year < 10){
@@ -183,7 +183,7 @@ if (pre_Year != now->tm_year  || thisApp->elementRefresh){
 	}
 }
 
-if(pre_Day != now->tm_mday  || thisApp->elementRefresh){
+if(pre_Day != now->tm_mday  || THIS_APP->elementRefresh){
 
   pre_WeekDay = now->tm_wday;
   pre_Day = now-> tm_mday;
@@ -225,13 +225,13 @@ if(pre_Day != now->tm_mday  || thisApp->elementRefresh){
   am_Pm_Obj.color = clk_Updt.meridiemColor;
   wkDay_Obj.color = clk_Updt.weekDayColour;
   date_Obj.color = clk_Updt.dateColour;
-  thisApp->elementRefresh = true;
+  THIS_APP->elementRefresh = true;
   } else{
-    thisApp->elementRefresh = false;
+    THIS_APP->elementRefresh = false;
     vTaskDelay(pdMS_TO_TICKS(1000));
   }
   }
-  mtb_Delete_This_App(thisApp);
+  mtb_Delete_This_App(THIS_APP);
 }
 
 //**11*********************************************************************************************************************

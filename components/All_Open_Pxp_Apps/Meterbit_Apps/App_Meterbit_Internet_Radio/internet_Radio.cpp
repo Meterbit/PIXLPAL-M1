@@ -53,10 +53,10 @@ EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *internetRadio_App = new Mtb_Applica
 
 //***************************************************************************************************
 void  internetRadio_App_Task(void* dApplication){
-    Mtb_Applications *thisApp = (Mtb_Applications *) dApplication;
-    thisApp->mtb_App_Set_EC11_Cb_Fns(intRadioButtonControl, mtb_Vol_Control_Encoder);
-    thisApp->mtb_App_Set_Ble_Comm_Sv_Fns(selectRadioStations, playRadioStationLink, updateSavedStations, volumeControl);
-    thisApp->mtb_App_Init(mtb_Status_Bar_Clock_Sv, mtb_Audio_Out_Sv);
+    Mtb_Applications *THIS_APP = (Mtb_Applications *) dApplication;
+    THIS_APP->mtb_App_Set_EC11_Cb_Fns(intRadioButtonControl, mtb_Vol_Control_Encoder);
+    THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(selectRadioStations, playRadioStationLink, updateSavedStations, volumeControl);
+    THIS_APP->mtb_App_Init(mtb_Status_Bar_Clock_Sv, mtb_Audio_Out_Sv);
   //*************************************************************************************************
     AudioTextTransfer_T audioTextReceiver;
     Mtb_ScrollText_t fmStation(11, 46, 116, Terminal6x8, CYAN, 15, 20000, 20000);
@@ -80,11 +80,11 @@ void  internetRadio_App_Task(void* dApplication){
       1
     };
     
-    while (MTB_APP_IS_ACTIVE == pdTRUE){
+    while (THIS_APP_IS_ACTIVE == pdTRUE){
     mtb_Read_Nvs_Struct("currentRadSta", &currentRadioStation, sizeof(RadioStation_t));
 
     conn2Sta.mtb_Scroll_This_Text("Awaiting internet connection...", GREEN_LIZARD);
-    while(!(Mtb_Applications::internetConnectStatus) && (MTB_APP_IS_ACTIVE == pdTRUE)) vTaskDelay(pdMS_TO_TICKS(500));
+    while(!(Mtb_Applications::internetConnectStatus) && (THIS_APP_IS_ACTIVE == pdTRUE)) vTaskDelay(pdMS_TO_TICKS(500));
 
     delay(500); //This delay is placed here to allow "audioTextInfo_Q" to be created.
     bool cont_To_Host = false;
@@ -93,13 +93,13 @@ void  internetRadio_App_Task(void* dApplication){
     do{
       delay(500);
       cont_To_Host = mtb_audioPlayer->mtb_ConnectToHost(currentRadioStation.streamLink);
-    } while((cont_To_Host != true) && (MTB_APP_IS_ACTIVE == pdTRUE));
+    } while((cont_To_Host != true) && (THIS_APP_IS_ACTIVE == pdTRUE));
 
       //conn2Sta.mtb_Scroll_Active(STOP_SCROLL);
       fmStation.mtb_Scroll_This_Text(currentRadioStation.stationName, CYAN);
       conn2Sta.mtb_Scroll_This_Text("Connected to Radio Station..!!", LEMON_MERINGUE);
 
-      while ((Mtb_Applications::internetConnectStatus) && (mic_OR_dac == ON_DAC) && (MTB_APP_IS_ACTIVE == pdTRUE)){
+      while ((Mtb_Applications::internetConnectStatus) && (mic_OR_dac == ON_DAC) && (THIS_APP_IS_ACTIVE == pdTRUE)){
         if(xQueueReceive(audioTextInfo_Q, &audioTextReceiver, 0) == pdTRUE){
           switch(audioTextReceiver.Audio_Text_type){
 
@@ -131,7 +131,7 @@ void  internetRadio_App_Task(void* dApplication){
 // fmStation.mtb_Scroll_Active(STOP_SCROLL);
 // streamTitle.mtb_Scroll_Active(STOP_SCROLL);
 // conn2Sta.mtb_Scroll_Active(STOP_SCROLL);
-mtb_Delete_This_App(thisApp);
+mtb_Delete_This_App(THIS_APP);
 }
 
 //##############################################################################################################
