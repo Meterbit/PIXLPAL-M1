@@ -28,7 +28,7 @@ EXT_RAM_BSS_ATTR Mtb_ScrollText_t *rssScroller = new Mtb_ScrollText_t(2, 52, 124
 EXT_RAM_BSS_ATTR Mtb_ScrollText_t *rssErrorMsg = new Mtb_ScrollText_t(2, 42, 124, Terminal6x8, ORANGE_RED, 20, 3);  // REVISIT -> Make Global declaration dynamic. Move definitions to PSRAM
 
 
-EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *rssNewsApp = new Mtb_Applications_StatusBar(rssNewsApp_Task, &rssNewsApp_Task_H, "RSS News", 8192);
+EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *rssNewsApp = new Mtb_Applications_StatusBar(rssNewsApp_Task, &rssNewsApp_Task_H, "RSS News", 4096);
 
 const char* bbc_url = "https://feeds.bbci.co.uk/news/rss.xml";
 const char* cnn_url = "http://rss.cnn.com/rss/edition.rss";

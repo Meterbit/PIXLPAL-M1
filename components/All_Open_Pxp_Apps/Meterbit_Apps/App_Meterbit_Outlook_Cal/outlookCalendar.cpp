@@ -75,7 +75,7 @@ void outlookCalButtonControl(button_event_t){}
   void show_OutlookCal_Tasks(JsonDocument& dCommand);
   void show_OutlookCal_Holidays(JsonDocument& dCommand);
 
-  Mtb_Applications_StatusBar *outlook_Calendar_App = new Mtb_Applications_StatusBar(outlookCal_App_Task, &outlookCal_Task_H, "outlookCal App", 10240); // Review down this stack size later.
+  Mtb_Applications_StatusBar *outlook_Calendar_App = new Mtb_Applications_StatusBar(outlookCal_App_Task, &outlookCal_Task_H, "outlookCal App", 4096); // Review down this stack size later.
 
 //THIS IS THE APPLICATION IMPLEMENTATION ***************************************************************************
 void  outlookCal_App_Task(void* dApplication){

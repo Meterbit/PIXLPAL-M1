@@ -41,7 +41,7 @@ void newsAPI_TimerCallback(TimerHandle_t timer) {
     xSemaphoreGive(newsAPI_UpdateSem);
 }
 
-EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *newsAPI_App = new Mtb_Applications_StatusBar(newsAPI_App_Task, &newsAPI_Task_H, "NewsAPI App", 10240);
+EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *newsAPI_App = new Mtb_Applications_StatusBar(newsAPI_App_Task, &newsAPI_Task_H, "NewsAPI App", 4096);
 
 // Main task for the News Ticker app.
 void newsAPI_App_Task(void * dApplication) {

@@ -23,12 +23,15 @@ extern "C" void app_main(){
 
     // Launch the Last Executed App or Launch a particular App after boot-up
     
-    if(cycling_Apps.appsShouldCycle == true) mtb_Launch_This_Service(mtb_App_Cycling_Sv);
-    else mtb_General_App_Register(activateUserApp);
-    // mtb_Launch_This_App(pixelAnimClock_App);
+    // if(cycling_Apps.appsShouldCycle == true) mtb_Launch_This_Service(mtb_App_Cycling_Sv);
+    // else mtb_General_App_Register(activateUserApp);
+    mtb_Launch_This_App(worldFlags_App);
 
     // Declare Variable for monitoring Free/Available internal SRAM
     size_t free_sram = 0;
+
+
+    printf("The size of mtb_BleCom_Data_Trans_t is: %zu bytes\n", sizeof(mtb_BleCom_Data_Trans_t));
 
     // While Loop prints available Internal SRAM every 2 seconds
     while (1){
