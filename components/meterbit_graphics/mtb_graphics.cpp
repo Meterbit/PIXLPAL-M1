@@ -56,7 +56,7 @@ uint16_t currentStatusLEDcolor = BLACK;
 Hub75Driver* mtb_Display_Driver;
 uint16_t panelBrightness = 70;
 uint8_t **Mtb_FixedText_t::scratchPad = nullptr;
-EXT_RAM_BSS_ATTR int16_t mtb_Panel_Frame_Buffer[PANEL_RES_X][PANEL_RES_Y];
+EXT_RAM_BSS_ATTR uint16_t mtb_Panel_Frame_Buffer[PANEL_RES_X][PANEL_RES_Y];
 
 // Prefer internal DRAM for these local-drawer tasks to avoid PSRAM-as-stack instability.
 EXT_RAM_BSS_ATTR Mtb_Services *mtb_Png_Local_ImageDrawer_Sv = new Mtb_Services(mtb_Draw_Local_Png_Task, &pngLocalImageDrawer_Handle, "PNG LOCAL DRAWER", 6144, 2); // Keep the task stack size at 12288 for reliability.
@@ -950,7 +950,7 @@ uint16_t Mtb_FixedText_t::mtb_Clear_String()
 //************************************************************************************ */
 void mtb_Draw_Local_Png_Task(void *dService){
 	//ESP_LOGI(TAG, "PNG Local Image Drawer Task Started\n");
-	Mtb_Services *thisService = (Mtb_Services *)dService;
+	Mtb_Services *THIS_SERVICE = (Mtb_Services *)dService;
 	Mtb_LocalImage_t holderItem;
 	unsigned error;
 	unsigned char *image = 0;
@@ -1037,7 +1037,7 @@ void mtb_Draw_Local_Png_Task(void *dService){
 		heap_caps_free(r.psram_ptr);
 	}
 
-	mtb_Delete_This_Service(thisService);
+	mtb_Delete_This_Service(THIS_SERVICE);
 }
 
 BaseType_t mtb_Draw_Local_Png(const Mtb_LocalImage_t &dImage){
@@ -1085,7 +1085,7 @@ static char* load_text_file_psram(const char* path, size_t& out_size) {
 //************************************************************************************ */
 void mtb_Draw_Local_Svg_Task(void *dService){
 	ESP_LOGI(TAG, "SVG Local Image Drawer Task Started\n");
-	Mtb_Services *thisService = (Mtb_Services *)dService;
+	Mtb_Services *THIS_SERVICE = (Mtb_Services *)dService;
 	Mtb_LocalImage_t holderItem;
 	unsigned error;
 	unsigned char *image = 0;
@@ -1198,7 +1198,7 @@ void mtb_Draw_Local_Svg_Task(void *dService){
 		// END OF SVG RENDERING     ??????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
 	}
 
-	mtb_Delete_This_Service(thisService);
+	mtb_Delete_This_Service(THIS_SERVICE);
 }
 
 BaseType_t mtb_Draw_Local_Svg(const Mtb_LocalImage_t &dImage){
@@ -1515,7 +1515,7 @@ uint8_t mtb_Draw_Local_Gif(const Mtb_LocalAnim_t &dAnim){
 				gd_render_frame(gif, buffer);
 
 				// Draw the frame to the display
-				mtb_Panel_Draw_Frame(dAnim.xAxis, dAnim.yAxis, width, height, buffer);
+				mtb_Panel_Draw_FrameRGB888(dAnim.xAxis, dAnim.yAxis, width, height, buffer);
 
 				// for (uint8_t p = 0, x = dAnim.xAxis; p < width; p++, x++){
 				// 	for (uint8_t q = 0, y = dAnim.yAxis; q < height; q++, y++){
@@ -1601,7 +1601,7 @@ void mtb_Panel_Draw_Pixel565(int16_t x, int16_t y, uint16_t color){
   	mtb_Display_Driver->draw_pixels(x, y, 1, 1, (uint8_t *)(&color), Hub75PixelFormat::RGB565, Hub75ColorOrder::RGB, false);
 }
 
-void mtb_Panel_Draw_Frame(int16_t x, int16_t y, int16_t width, int16_t height, const uint8_t *data){
+void mtb_Panel_Draw_FrameRGB888(int16_t x, int16_t y, int16_t width, int16_t height, const uint8_t *data){
 	// Update backbuffer
 	for (int16_t j = 0; j < height; j++) {
 		for (int16_t i = 0; i < width; i++) {
@@ -1614,6 +1614,21 @@ void mtb_Panel_Draw_Frame(int16_t x, int16_t y, int16_t width, int16_t height, c
 
 	mtb_Display_Driver->draw_pixels(x, y, width, height, data, Hub75PixelFormat::RGB888, Hub75ColorOrder::RGB, false);
 }
+
+// ...existing code...
+void mtb_Panel_Draw_FrameRGB565(int16_t x, int16_t y, int16_t width, int16_t height, const uint16_t *data){
+    // Update backbuffer from 16-bit RGB565 source
+    for (int16_t j = 0; j < height; j++) {
+        for (int16_t i = 0; i < width; i++) {
+            uint16_t color = data[j * width + i];
+            mtb_Panel_Frame_Buffer[x + i][y + j] = color;
+        }
+    }
+
+    // Send raw RGB565 pixel data to the driver (cast to byte pointer)
+    mtb_Display_Driver->draw_pixels(x, y, width, height, (uint8_t *)data, Hub75PixelFormat::RGB565, Hub75ColorOrder::RGB, false);
+}
+// ...existing code...
 
 void mtb_Panel_Fill(int16_t x, int16_t y, int16_t w, int16_t h, uint8_t r, uint8_t g, uint8_t b){
 	uint16_t color565 = ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);

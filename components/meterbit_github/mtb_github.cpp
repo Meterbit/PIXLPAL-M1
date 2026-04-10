@@ -179,7 +179,7 @@ bool mtb_Download_Github_Strg_File(githubStrg_UpDwn_t& downloadPaths){
 }
 
 void files2Download_Task(void* dService){
-	Mtb_Services *thisService = (Mtb_Services*) dService;
+	Mtb_Services *THIS_SERVICE = (Mtb_Services*) dService;
   File2Download_t holderItem;
   bool dwnld_Succeed = false;
 
@@ -190,7 +190,7 @@ void files2Download_Task(void* dService){
   }
 
   Mtb_Applications::internetConnectStatus = true;
-	mtb_Delete_This_Service(thisService);
+	mtb_Delete_This_Service(THIS_SERVICE);
 }
 
 // Same signature as yours, but without substring churn in the folder creation

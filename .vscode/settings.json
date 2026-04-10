@@ -106,7 +106,7 @@
   },
   "idf.flashType": "UART",
   "C_Cpp.errorSquiggles": "enabled",
-  "idf.port": "/dev/tty.usbmodem1101",
+  "idf.port": "/dev/tty.usbmodem2101",
   "idf.espIdfPath": "/Users/stephengata/esp/v5.5.3/esp-idf",
   "idf.toolsPath": "/Users/stephengata/.espressif",
   "idf.pythonInstallPath": "/opt/homebrew/bin/python3",

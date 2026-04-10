@@ -19,6 +19,7 @@
 #define NVS_MEM_READ            0
 #define NVS_MEM_WRITE           1
 
+#define CYCLING_APP_SLOTS 5
 #define THIS_APP           thisApp
 #define THIS_APP_IS_ACTIVE (THIS_APP->app_is_Running)
 #define MTB_SERV_IS_ACTIVE (thisServ->service_is_Running)
@@ -49,6 +50,14 @@ struct Mtb_UserApp_t{
     uint16_t SpeApp;
 };
 
+struct Mtb_Apps_To_Cycle_t{
+    bool appsShouldCycle;
+    // uint8_t appsNoInCycle;
+    uint16_t appCycleDuration;
+    Mtb_UserApp_t appsCycling[CYCLING_APP_SLOTS];
+    int16_t app_Frame_Buffers[CYCLING_APP_SLOTS][128][64];
+};
+
 struct NvsAccessParams_t{
   bool read_OR_Write;
   const char* key;
@@ -56,16 +65,17 @@ struct NvsAccessParams_t{
   size_t struct_size;
 };
 
-extern void appLauncherTask(void *);
-//extern void servLauncherTask(void *);
-extern void nvsAccessTask(void *);
-
-//**************************************************************************************************************************
-
 extern Mtb_UserApp_t activateUserApp;
+extern Mtb_Apps_To_Cycle_t cycling_Apps;
 
+extern void appLauncherTask(void *);
+extern void appCyclingTask(void *);
+
+extern void nvsAccessTask(void *);
 extern esp_err_t mtb_Read_Nvs_Struct(const char* key, void* struct_ptr, size_t struct_size);
 extern esp_err_t mtb_Write_Nvs_Struct(const char *key, void *struct_ptr, size_t struct_size);
+//**************************************************************************************************************************
+
 extern void (*encoderFn_ptr)(rotary_encoder_rotation_t);
 extern void (*buttonFn_ptr)(button_event_t);
 extern void encoderDoNothing(rotary_encoder_rotation_t);
@@ -177,8 +187,7 @@ public:
     static uint8_t firmwareOTA_Status;                              // This is used to check the status of the firmware OTA update. It is set to 6 when the OTA update is not started, and it can be set to other values to indicate the status of the OTA update.
     static uint8_t spiffsOTA_Status;                                // This is used to check the status of the SPIFFS OTA update. It is set to 6 when the OTA update is not started, and it can be set to other values to indicate the status of the OTA update.
     static Mtb_ShowAppUI_OR_LaunchApp_t showAppUI_OR_LaunchApp;     // This is used to check whether to show the app UI or launch the app when the mobile UI command is received. It can be set to SHOW_APP_UI or LAUNCH_SELECT_APP.
-    //void *app_Dyn_Mems[5] = {nullptr};
-
+                               
     bleCom_Parser_Fns_Ptr bleAppComServiceFns[12] = {nullptr};
 
     bool appRunner();                                               // The function that runs any selected application. It creates the task with the application function, name, stack size, priority, and core.     
@@ -298,13 +307,15 @@ extern Mtb_Services* mtb_Button_Task_Sv;
 //*********************************************************************************** */
 // Mtb_Applications SECTION (USERS AND SYSTEM APPS)
 
-// Application Mtb_Services
-            extern Mtb_Services* pixAnimClkGif_Sv;
+// Application Specific Mtb_Services
+extern Mtb_Services* pixAnimClkGif_Sv;
 extern Mtb_Services* spotifyScreenUpdate_Sv;    
 extern Mtb_Services* mtb_Audio_Listening_Sv;
 
+// Generic Mtb_Services used by multiple apps
 extern Mtb_Services* mtb_Status_Bar_Clock_Sv;    
-extern Mtb_Services* mtb_Status_Bar_Calendar_Sv; 
+extern Mtb_Services* mtb_Status_Bar_Calendar_Sv;
+extern Mtb_Services* mtb_App_Cycling_Sv;
 
 // All System Apps
 extern Mtb_Applications_FullScreen* usbOTA_Update_App;
@@ -335,7 +346,7 @@ extern Mtb_Applications_StatusBar *googleWeather_App;           // App Communica
 
 // Finance
 extern Mtb_Applications_StatusBar *finnhub_Stats_App;           // App Communication Route: 4/0
-extern Mtb_Applications_StatusBar *coinCap_Stats_App;            // App Communication Route: 4/1
+extern Mtb_Applications_StatusBar *coinCap_Stats_App;           // App Communication Route: 4/1
 extern Mtb_Applications_StatusBar *currencyExchange_App;        // App Communication Route: 4/2
 extern Mtb_Applications_StatusBar *polygonFX_App;               // App Communication Route: 4/3
 

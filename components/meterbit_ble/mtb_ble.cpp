@@ -323,7 +323,7 @@ int getIntegerAtIndex(const String& data, int index) {
 // This service self-terminates after one queue item.
 // If continuous listening is needed, consider keeping it alive or using a persistent loop task.
 void ble_SetCom_Parse_Task(void* dService){
-  Mtb_Services *thisService = (Mtb_Services *)dService;
+  Mtb_Services *THIS_SERVICE = (Mtb_Services *)dService;
   mtb_BleCom_Data_Trans_t qMessage;
   DeserializationError dError;
   String specify_Settings;
@@ -359,11 +359,11 @@ void ble_SetCom_Parse_Task(void* dService){
     //qMessage.payload = NULL; // Set pointer to NULL to avoid dangling pointer
   }
   
-  mtb_Delete_This_Service(thisService);
+  mtb_Delete_This_Service(THIS_SERVICE);
 }
 
 void ble_AppCom_Parse_Task(void* dService){
-    Mtb_Services *thisService = (Mtb_Services *)dService;
+    Mtb_Services *THIS_SERVICE = (Mtb_Services *)dService;
     mtb_BleCom_Data_Trans_t qMessage;
     DeserializationError dError;
     String dNewAppParams;
@@ -507,5 +507,5 @@ void ble_AppCom_Parse_Task(void* dService){
     free(qMessage.payload);
     //qMessage.payload = NULL; // Set pointer to NULL to avoid dangling pointer    
   }
-  mtb_Delete_This_Service(thisService);
+  mtb_Delete_This_Service(THIS_SERVICE);
 }

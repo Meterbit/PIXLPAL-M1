@@ -103,7 +103,7 @@ void Mtb_ScrollText_t::mtb_Scroll_String(TaskHandle_t& dAppTaskHandle){
 }
 //**************************************************************************************
 void mtb_Scroll_Text_0_Task(void* dService){
-    Mtb_Services *thisService = (Mtb_Services*) dService;
+    Mtb_Services *THIS_SERVICE = (Mtb_Services*) dService;
     if(Mtb_Applications::currentRunningApp->showStatusBarClock == pdTRUE) mtb_Status_Bar_Clock_Sv->service_is_Running = pdFALSE;      // End the status bar clock service.
     if(Mtb_Applications::currentRunningApp->showStatusBarCalendar == pdTRUE) mtb_Status_Bar_Calendar_Sv->service_is_Running = pdFALSE;      // End the status bar calendar service.
 
@@ -120,11 +120,11 @@ void mtb_Scroll_Text_0_Task(void* dService){
     if(Mtb_Applications::currentRunningApp->showStatusBarClock == pdTRUE) mtb_Launch_This_Service(mtb_Status_Bar_Clock_Sv);
     if(Mtb_Applications::currentRunningApp->showStatusBarCalendar == pdTRUE) mtb_Launch_This_Service(mtb_Status_Bar_Calendar_Sv);
     //delay(1000); // Wait for 1 second before killing the service.
-    mtb_Delete_This_Service(thisService);
+    mtb_Delete_This_Service(THIS_SERVICE);
 }
 //**************************************************************************************
 void scrollText_1_Task(void* dService){
-    Mtb_Services *thisService = (Mtb_Services*) dService;
+    Mtb_Services *THIS_SERVICE = (Mtb_Services*) dService;
     Mtb_ScrollText_t holder;
     Mtb_ScrollText_t::scrollTask_HolderPointers[1] = &holder;
     
@@ -134,11 +134,11 @@ void scrollText_1_Task(void* dService){
     for(int i = 0; i < holder.stretch; i++) free(holder.dText_Raw[i]);
     free(holder.dText_Raw);
     }
-    mtb_Delete_This_Service(thisService);
+    mtb_Delete_This_Service(THIS_SERVICE);
 }
 //**************************************************************************************
 void scrollText_2_Task(void* dService){
-    Mtb_Services *thisService = (Mtb_Services*) dService;
+    Mtb_Services *THIS_SERVICE = (Mtb_Services*) dService;
     Mtb_ScrollText_t holder;
     Mtb_ScrollText_t::scrollTask_HolderPointers[2] = &holder;
 
@@ -148,11 +148,11 @@ void scrollText_2_Task(void* dService){
     for(int i = 0; i < holder.stretch; i++) free(holder.dText_Raw[i]);
     free(holder.dText_Raw);
     }
-    mtb_Delete_This_Service(thisService);
+    mtb_Delete_This_Service(THIS_SERVICE);
 }
 //**************************************************************************************
 void scrollText_3_Task(void* dService){
-    Mtb_Services *thisService = (Mtb_Services*) dService;
+    Mtb_Services *THIS_SERVICE = (Mtb_Services*) dService;
     Mtb_ScrollText_t holder;
     Mtb_ScrollText_t::scrollTask_HolderPointers[3] = &holder;
 
@@ -163,11 +163,11 @@ void scrollText_3_Task(void* dService){
     free(holder.dText_Raw);
     }
 
-    mtb_Delete_This_Service(thisService);
+    mtb_Delete_This_Service(THIS_SERVICE);
 }
 //**************************************************************************************
 void scrollText_4_Task(void* dService){
-    Mtb_Services *thisService = (Mtb_Services*) dService;
+    Mtb_Services *THIS_SERVICE = (Mtb_Services*) dService;
     Mtb_ScrollText_t holder;
     Mtb_ScrollText_t::scrollTask_HolderPointers[4] = &holder;
 
@@ -178,7 +178,7 @@ void scrollText_4_Task(void* dService){
     free(holder.dText_Raw);
     }
 
-    mtb_Delete_This_Service(thisService);
+    mtb_Delete_This_Service(THIS_SERVICE);
 }
 //**************************************************************************************
 void  mtb_Text_Scrolls_Init(void){

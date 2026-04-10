@@ -486,7 +486,7 @@ while (MTB_SERV_IS_ACTIVE == pdTRUE && (entry = readdir(dir)) != NULL) {
     while (MTB_SERV_IS_ACTIVE == pdTRUE && gd_get_frame(gif)) {
       gd_render_frame(gif, buffer);
 
-      mtb_Panel_Draw_Frame(5, 25, width, height, buffer);
+      mtb_Panel_Draw_FrameRGB888(5, 25, width, height, buffer);
 
       TickType_t delay_ms = gif->gce.delay * 10;
       vTaskDelay(pdMS_TO_TICKS(delay_ms));

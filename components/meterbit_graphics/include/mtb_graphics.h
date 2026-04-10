@@ -73,6 +73,7 @@
     extern Mtb_LocalImage_t statusBarItems[];
     extern uint16_t panelBrightness;
     extern uint16_t currentStatusLEDcolor;
+    extern uint16_t mtb_Panel_Frame_Buffer[PANEL_RES_X][PANEL_RES_Y];
 
     // USER IMAGE DRAW FUNCTIONS
     extern BaseType_t mtb_Draw_Local_Png(const Mtb_LocalImage_t&);                                                                                          // Draw a local PNG image from SPIFFS
@@ -108,7 +109,8 @@
     extern uint16_t mtb_Panel_Color32bit_To_Color565(const char* dartColor, uint16_t *color565 = nullptr);
     extern void mtb_Panel_Draw_PixelRGB(int16_t x, int16_t y, uint8_t r, uint8_t g, uint8_t b);
     extern void mtb_Panel_Draw_Pixel565(int16_t x, int16_t y, uint16_t color);
-    extern void mtb_Panel_Draw_Frame(int16_t x, int16_t y, int16_t width, int16_t height, const uint8_t *data);
+    extern void mtb_Panel_Draw_FrameRGB888(int16_t x, int16_t y, int16_t width, int16_t height, const uint8_t *data);
+    extern void mtb_Panel_Draw_FrameRGB565(int16_t x, int16_t y, int16_t width, int16_t height, const uint16_t *data);
     extern void mtb_Panel_Fill(int16_t x, int16_t y, int16_t w, int16_t h, uint8_t r, uint8_t g, uint8_t b);
     extern void mtb_Panel_Set_Brightness(uint8_t brightness);
     extern void mtb_Panel_Fill_Screen(uint16_t color);
@@ -232,5 +234,6 @@ class ScrollTextHelper_t : public Mtb_Static_Text_t {
     ScrollTextHelper_t(int16_t x1, int16_t y1, const uint8_t *font = Terminal6x8) : Mtb_Static_Text_t(x1, y1, font) { textStyle = SCROLL_TEXT_STYLE;}
 };
 
-    extern Hub75Driver* mtb_Display_Driver;
+extern Hub75Driver* mtb_Display_Driver;
+
 #endif

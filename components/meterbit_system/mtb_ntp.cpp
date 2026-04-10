@@ -23,7 +23,7 @@ void on_got_time(struct timeval* tv){
 }
 
 void sntp_Time_init_Task(void* dService){
-  Mtb_Services *thisService = (Mtb_Services *)dService;
+  Mtb_Services *THIS_SERVICE = (Mtb_Services *)dService;
   uint8_t *clock_Update_Q_buffer = nullptr;
 
   if(clock_Update_Q == NULL) clock_Update_Q_buffer = (uint8_t *)heap_caps_malloc(10 * sizeof(Clock_Colors), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
@@ -40,5 +40,5 @@ void sntp_Time_init_Task(void* dService){
   esp_sntp_init();
   sntp_set_time_sync_notification_cb(on_got_time);
 
-  mtb_Delete_This_Service(thisService);
+  mtb_Delete_This_Service(THIS_SERVICE);
 }
