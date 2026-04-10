@@ -67,15 +67,10 @@ do{
         if(attemptResult != pdPASS) break;
         Mtb_Applications::spiffsOTA_Status = pdTRUE;
     } else delay(1000);
-} while (Mtb_Applications::firmwareOTA_Status--> pdTRUE && Mtb_Applications::spiffsOTA_Status--> pdTRUE);
+} while (Mtb_Applications::firmwareOTA_Status--> pdFALSE && Mtb_Applications::spiffsOTA_Status--> pdFALSE);
 
     mtb_Set_Status_RGB_LED(YELLOW);
 
-//************************************************************************************************************************************
-    Mtb_Applications::firmwareOTA_Status = pdFALSE;
-    Mtb_Applications::spiffsOTA_Status = pdFALSE;
-
-    while (THIS_APP_IS_ACTIVE == pdTRUE) delay(2000);
     mtb_Delete_This_App(THIS_APP);
 }
 

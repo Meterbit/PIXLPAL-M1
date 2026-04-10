@@ -58,10 +58,10 @@ void  pixAnimClock_App_Task(void* dApplication){
 
   THIS_APP->mtb_App_Init(pixAnimClkGif_Sv);
   //************************************************************************************************************************ */
-  ESP_LOGW(TAG, "THE PROGRAM GOT TO THIS POINT 0\n");
+
   mtb_Read_Nvs_Struct("Clock Cols", &clk_Updt, sizeof(Clock_Colors));
   mtb_Read_Nvs_Struct("ntp TimeZone", ntp_TimeZone, sizeof(ntp_TimeZone));
-  ESP_LOGW(TAG, "THE PROGRAM GOT TO THIS POINT 1\n");
+
   Mtb_FixedText_t hr_min_Obj(52, 26, Terminal10x17, clk_Updt.hourMinColour);
   Mtb_FixedText_t sec_Obj(102, 26, Terminal6x8, clk_Updt.secColor);
   Mtb_FixedText_t am_Pm_Obj(102, 36, Terminal6x8, clk_Updt.meridiemColor);
@@ -91,8 +91,6 @@ void  pixAnimClock_App_Task(void* dApplication){
   headerText = new Mtb_CentreText_t(63, 9, Terminal10x17, YELLOW);
   headerTextScroll = new Mtb_ScrollText_t(2, 1, 124, Terminal10x17, WHITE, 30, 0xFFFF, 4000);
 
-  ESP_LOGW(TAG, "THE PROGRAM GOT TO THIS POINT 2\n");
-
   savedPixAnimClkSet = (PixAnimClkSettings_t){
       .headerText = "HAPPY HOME",
       .headerTextColor = BLACK,
@@ -101,7 +99,7 @@ void  pixAnimClock_App_Task(void* dApplication){
   };
 
   mtb_Read_Nvs_Struct("pixAnimClk", &savedPixAnimClkSet, sizeof(PixAnimClkSettings_t));
-  ESP_LOGW(TAG, "THE PROGRAM GOT TO THIS POINT 3\n");
+
   
   printPixAnimClkThm(savedPixAnimClkSet.themeColor);
   if(strlen(savedPixAnimClkSet.headerText) < HEADER_TEXT_LIMIT){

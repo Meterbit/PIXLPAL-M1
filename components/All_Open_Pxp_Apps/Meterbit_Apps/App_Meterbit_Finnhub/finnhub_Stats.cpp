@@ -51,7 +51,6 @@ void finhubStats_App_Task(void* dApplication){
     THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(showParticularStock, add_RemoveStockSymbol, setStockChangeInterval, saveAPI_key);
     THIS_APP->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
     //************************************************************************************ */
-    //ESP_LOGW(TAG, "THE PROGRAM GOT TO THIS POINT 0.0\n");
     currentStocks = (Stocks_Stat_t){
             "AAPL",
             "USD",
@@ -61,7 +60,7 @@ void finhubStats_App_Task(void* dApplication){
             30
         };
     mtb_Read_Nvs_Struct("stocksStat", &currentStocks, sizeof(Stocks_Stat_t));
-    //ESP_LOGW(TAG, "THE PROGRAM GOT TO THIS POINT 0.1\n");
+
     time_t present = 0;
     if(changeDispStock_Sem == NULL) changeDispStock_Sem = xSemaphoreCreateBinary();
     if(stockChangeTimer_H == NULL) stockChangeTimer_H = xTimerCreate("stockChange Timer", pdMS_TO_TICKS(currentStocks.stockChangeInterval > 0 ? (currentStocks.stockChangeInterval * 1000) : (30 * 1000)), true, NULL, stockChange_TimerCallback);

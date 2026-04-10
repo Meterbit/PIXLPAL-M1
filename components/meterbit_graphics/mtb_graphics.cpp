@@ -1615,7 +1615,7 @@ void mtb_Panel_Draw_FrameRGB888(int16_t x, int16_t y, int16_t width, int16_t hei
 	mtb_Display_Driver->draw_pixels(x, y, width, height, data, Hub75PixelFormat::RGB888, Hub75ColorOrder::RGB, false);
 }
 
-// ...existing code...
+
 void mtb_Panel_Draw_FrameRGB565(int16_t x, int16_t y, int16_t width, int16_t height, const uint16_t *data){
     // Update backbuffer from 16-bit RGB565 source
     for (int16_t j = 0; j < height; j++) {
@@ -1628,7 +1628,48 @@ void mtb_Panel_Draw_FrameRGB565(int16_t x, int16_t y, int16_t width, int16_t hei
     // Send raw RGB565 pixel data to the driver (cast to byte pointer)
     mtb_Display_Driver->draw_pixels(x, y, width, height, (uint8_t *)data, Hub75PixelFormat::RGB565, Hub75ColorOrder::RGB, false);
 }
+
+
 // ...existing code...
+void mtb_Panel_Draw_FullScreen_RGB565(uint16_t data[128][64]){
+    // Build a row-major linear buffer (width x height) for the driver while
+    // updating the internal frame buffer which is indexed as [x][y].
+    const int16_t W = PANEL_RES_X;
+    const int16_t H = PANEL_RES_Y;
+    const size_t pixels = (size_t)W * (size_t)H;
+
+    // Allocate in PSRAM if available (safe for large buffer on ESP32)
+    uint16_t *linear = (uint16_t*) heap_caps_malloc(pixels * sizeof(uint16_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+    if (!linear) {
+        // As a fallback, update the backbuffer and send line by line to the driver
+        for (int16_t y = 0; y < H; ++y) {
+            for (int16_t x = 0; x < W; ++x) {
+                uint16_t color = data[x][y];          // data is indexed [x][y]
+                mtb_Panel_Frame_Buffer[x][y] = color;
+                uint16_t tmp = color;
+                mtb_Display_Driver->draw_pixels(x, y, 1, 1, (uint8_t*)&tmp, Hub75PixelFormat::RGB565, Hub75ColorOrder::RGB, false);
+            }
+        }
+        return;
+    }
+
+    // Fill linear buffer row-major and update internal backbuffer
+    size_t idx = 0;
+    for (int16_t y = 0; y < H; ++y) {
+        for (int16_t x = 0; x < W; ++x) {
+            uint16_t color = data[x][y]; // original array is [128][64] => [x][y]
+            mtb_Panel_Frame_Buffer[x][y] = color;
+            linear[idx++] = color;
+        }
+    }
+
+    // Send contiguous row-major RGB565 data to the driver
+    mtb_Display_Driver->draw_pixels(0, 0, W, H, (uint8_t *)linear, Hub75PixelFormat::RGB565, Hub75ColorOrder::RGB, false);
+
+    heap_caps_free(linear);
+}
+// ...existing code...
+
 
 void mtb_Panel_Fill(int16_t x, int16_t y, int16_t w, int16_t h, uint8_t r, uint8_t g, uint8_t b){
 	uint16_t color565 = ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);

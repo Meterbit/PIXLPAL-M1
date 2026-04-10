@@ -19,20 +19,17 @@
 #define NVS_MEM_READ            0
 #define NVS_MEM_WRITE           1
 
-#define CYCLING_APP_SLOTS 5
+#define CYCLING_APP_SLOTS 3
 #define THIS_APP           thisApp
 #define THIS_APP_IS_ACTIVE (THIS_APP->app_is_Running)
 #define MTB_SERV_IS_ACTIVE (thisServ->service_is_Running)
 
 extern QueueHandle_t clock_Update_Q;
 extern TaskHandle_t appLauncher_Task_H;
-//extern TaskHandle_t servLauncher_Task_H;
 extern QueueHandle_t appLauncherQueue;
-extern QueueHandle_t servLauncherQueue;
 extern QueueHandle_t nvsAccessQueue;
 extern SemaphoreHandle_t nvsAccessComplete_Sem;
-extern QueueHandle_t running_App_BLECom_Queue;
-//extern TimerHandle_t bleRestoreTimer_H;
+
 
 enum Mtb_Do_Prev_App_t{
     SUSPEND_PREVIOUS_APP = 1,
@@ -55,7 +52,7 @@ struct Mtb_Apps_To_Cycle_t{
     // uint8_t appsNoInCycle;
     uint16_t appCycleDuration;
     Mtb_UserApp_t appsCycling[CYCLING_APP_SLOTS];
-    int16_t app_Frame_Buffers[CYCLING_APP_SLOTS][128][64];
+    uint16_t app_Frame_Buffers[CYCLING_APP_SLOTS][128][64];
 };
 
 struct NvsAccessParams_t{
@@ -249,7 +246,7 @@ class Mtb_Applications_StatusBar : public Mtb_Applications{
 //*********************************************************************************** */
 
 // App Parser Functions
-extern void mtb_Launch_This_App(Mtb_Applications* dApp, Mtb_Do_Prev_App_t do_Prv_App = DESTROY_PREVIOUS_APP);
+extern Mtb_Applications* mtb_Launch_This_App(Mtb_Applications* dApp, Mtb_Do_Prev_App_t do_Prv_App = DESTROY_PREVIOUS_APP);
 extern void mtb_Launch_This_Service(Mtb_Services*);
 //extern void mtb_Queue_This_Service(Mtb_Services*);
 extern void mtb_Resume_This_Service(Mtb_Services*);
@@ -258,7 +255,7 @@ extern void mtb_Delete_This_Service(Mtb_Services *);
 extern void mtb_Kill_This_Service(Mtb_Services* );
 extern void mtb_Delete_This_App(Mtb_Applications *);
 
-extern void mtb_General_App_Register(Mtb_UserApp_t);
+extern Mtb_Applications* mtb_General_App_Register(Mtb_UserApp_t);
 
 // Supporting Apps and Tasks
 extern TaskHandle_t statusBarClock_H;
@@ -266,18 +263,18 @@ extern void mtb_StatusBar_Clock_Task(void*);
 extern void mtb_StatusBar_Calendar_Task(void*);
 
 // All Apps Categories
-extern void mtb_Clk_Tim_AppLaunch(uint16_t);
-extern void mtb_Msg_App_Launch(uint16_t);
-extern void mtb_Calendar_App_Launch(uint16_t);
-extern void mtb_Weather_App_Launch(uint16_t);
-extern void mtb_Sports_App_Launch(uint16_t);
-extern void mtb_Animations_App_Launch(uint16_t);
-extern void mtb_Finance_App_Launch(uint16_t);
-extern void mtb_sMedia_App_Launch(uint16_t);
-extern void mtb_Notifications_App_Launch(uint16_t);
-extern void mtb_AIs_App_Launch(uint16_t);
-extern void mtb_Audio_Stream_App_Launch(uint16_t);
-extern void mtb_Miscellanous_App_Launch(uint16_t);
+extern Mtb_Applications* mtb_Clk_Tim_AppLaunch(uint16_t);
+extern Mtb_Applications* mtb_Msg_App_Launch(uint16_t);
+extern Mtb_Applications* mtb_Calendar_App_Launch(uint16_t);
+extern Mtb_Applications* mtb_Weather_App_Launch(uint16_t);
+extern Mtb_Applications* mtb_Sports_App_Launch(uint16_t);
+extern Mtb_Applications* mtb_Animations_App_Launch(uint16_t);
+extern Mtb_Applications* mtb_Finance_App_Launch(uint16_t);
+extern Mtb_Applications* mtb_sMedia_App_Launch(uint16_t);
+extern Mtb_Applications* mtb_Notifications_App_Launch(uint16_t);
+extern Mtb_Applications* mtb_AIs_App_Launch(uint16_t);
+extern Mtb_Applications* mtb_Audio_Stream_App_Launch(uint16_t);
+extern Mtb_Applications* mtb_Miscellanous_App_Launch(uint16_t);
 
 // System Sevices
 

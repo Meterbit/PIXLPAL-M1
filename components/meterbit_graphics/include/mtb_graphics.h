@@ -111,6 +111,7 @@
     extern void mtb_Panel_Draw_Pixel565(int16_t x, int16_t y, uint16_t color);
     extern void mtb_Panel_Draw_FrameRGB888(int16_t x, int16_t y, int16_t width, int16_t height, const uint8_t *data);
     extern void mtb_Panel_Draw_FrameRGB565(int16_t x, int16_t y, int16_t width, int16_t height, const uint16_t *data);
+    extern void mtb_Panel_Draw_FullScreen_RGB565(uint16_t data[128][64]);
     extern void mtb_Panel_Fill(int16_t x, int16_t y, int16_t w, int16_t h, uint8_t r, uint8_t g, uint8_t b);
     extern void mtb_Panel_Set_Brightness(uint8_t brightness);
     extern void mtb_Panel_Fill_Screen(uint16_t color);
