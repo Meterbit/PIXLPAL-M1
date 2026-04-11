@@ -471,7 +471,7 @@ while (MTB_SERV_IS_ACTIVE == pdTRUE && (entry = readdir(dir)) != NULL) {
     continue;
   }
 
-  uint8_t *buffer = (uint8_t *)malloc(width * height * 3);
+  uint8_t *buffer = (uint8_t *)heap_caps_malloc(width * height * 3, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
   if (!buffer) {
     ESP_LOGE(TAG, "malloc failed (%ux%u)", width, height);
     gd_close_gif(gif);

@@ -119,7 +119,7 @@ void appCyclingTask(void * dService){
                 memcpy(cycling_Apps.app_Frame_Buffers[i], mtb_Panel_Frame_Buffer, sizeof(mtb_Panel_Frame_Buffer));
                 //else memcpy(cycling_Apps.app_Frame_Buffers[CYCLING_APP_SLOTS-1], mtb_Panel_Frame_Buffer, sizeof(mtb_Panel_Frame_Buffer));
                 
-                if(i < 2) mtb_Panel_Draw_FullScreen_RGB565(cycling_Apps.app_Frame_Buffers[i+1]);
+                if(i < 4) mtb_Panel_Draw_FullScreen_RGB565(cycling_Apps.app_Frame_Buffers[i+1]);
                 else mtb_Panel_Draw_FullScreen_RGB565(cycling_Apps.app_Frame_Buffers[0]);
 
             } else continue;

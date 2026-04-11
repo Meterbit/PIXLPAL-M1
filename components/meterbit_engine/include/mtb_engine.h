@@ -19,7 +19,7 @@
 #define NVS_MEM_READ            0
 #define NVS_MEM_WRITE           1
 
-#define CYCLING_APP_SLOTS 3
+#define CYCLING_APP_SLOTS 5
 #define THIS_APP           thisApp
 #define THIS_APP_IS_ACTIVE (THIS_APP->app_is_Running)
 #define MTB_SERV_IS_ACTIVE (thisServ->service_is_Running)

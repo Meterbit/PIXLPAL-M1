@@ -1506,7 +1506,7 @@ uint8_t mtb_Draw_Local_Gif(const Mtb_LocalAnim_t &dAnim){
 	width = gif->width;
 	height = gif->height;
 	if (width < 129 && height < 65){
-		uint8_t *buffer = (uint8_t *)malloc(width * height * 3);
+		uint8_t *buffer = (uint8_t *)heap_caps_malloc(width * height * 3, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
 		//uint8_t *buffer = (uint8_t *)heap_caps_calloc(width * height * 3,sizeof(uint8_t), MALLOC_CAP_SPIRAM);
 		for (uint32_t looped = 0; looped < dAnim.loopCount; looped++)
 		{

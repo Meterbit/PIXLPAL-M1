@@ -47,6 +47,7 @@ static const char TAG[] = "METERBIT_DAC_N_MIC";
 // Ringbuffer capacity: a few hundred ms of audio to absorb jitter
 #define PCM_RB_CAPACITY   (BYTES_PER_MS * 400)                        // ~400ms
 
+EXT_RAM_BSS_ATTR StaticQueue_t xQueueStorage_AudioTextInfo;
 EXT_RAM_BSS_ATTR RingbufHandle_t s_pcm_rb = NULL;
 EXT_RAM_BSS_ATTR TaskHandle_t s_uac_writer_task = NULL;
 static volatile bool s_uac_running = false;
@@ -143,7 +144,8 @@ void audio_Out_Processing_Task(void *d_Service){
   mtb_audioPlayer = new MTB_Audio();
   Audio::audio_info_callback = mtb_Audio_Info;
   init_Audio_Out_Processing();
-  if(audioTextInfo_Q == NULL) audioTextInfo_Q = xQueueCreate(5, sizeof(AudioTextTransfer_T));
+  uint8_t *audioTextInfoQueue_buffer = (uint8_t *)heap_caps_malloc(6 * sizeof(AudioTextTransfer_T), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+  if(audioTextInfo_Q == NULL) audioTextInfo_Q = xQueueCreateStatic(6, sizeof(AudioTextTransfer_T), audioTextInfoQueue_buffer, &xQueueStorage_AudioTextInfo);
   mtb_Read_Nvs_Struct("dev_Volume", &deviceVolume, sizeof(uint8_t));
 
   audio = new Audio();
@@ -198,10 +200,7 @@ void audio_Out_Processing_Task(void *d_Service){
 
 void audio_In_Processing_Task(void *d_Service){
   Mtb_Services *thisServ = (Mtb_Services *)d_Service;
-
   init_Audio_In_Processing();
-  if(audioTextInfo_Q == NULL) audioTextInfo_Q = xQueueCreate(5, sizeof(AudioTextTransfer_T));
-  mtb_Read_Nvs_Struct("dev_Volume", &deviceVolume, sizeof(uint8_t));
 
     // Array to store Original audio I2S input stream (reading in chunks, e.g. 1024 values) 
     int16_t audio_buffer[1024];   // 1024 values [2048 bytes] <- for the original I2S signed 16bit stream 
