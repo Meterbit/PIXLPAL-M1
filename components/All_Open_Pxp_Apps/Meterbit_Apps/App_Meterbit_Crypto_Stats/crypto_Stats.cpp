@@ -89,15 +89,15 @@ void cryptoStats_App_Task(void* dApplication){
   readCryptoSymbols(cryptoSymbolsFilePath, cryptoSymbols, cryptoCount, MAX_COINS);
   readCryptoSymbols(cryptoIDsFilePath, cryptoIDs, cryptoCount, MAX_COINS);
 
-  ESP_LOGI(TAG, "Found %d coins symbols:\n", cryptoCount);
-  for (int i = 0; i < cryptoCount; i++) {
-      ESP_LOGI(TAG, "%s\n", cryptoSymbols[i].c_str());
-  }
+//   ESP_LOGI(TAG, "Found %d coins symbols:\n", cryptoCount);
+//   for (int i = 0; i < cryptoCount; i++) {
+//       ESP_LOGI(TAG, "%s\n", cryptoSymbols[i].c_str());
+//   }
 
-ESP_LOGI(TAG, "Found %d coins IDs:\n", cryptoCount);
-  for (int i = 0; i < cryptoCount; i++) {
-      ESP_LOGI(TAG, "%s\n", cryptoIDs[i].c_str());
-  }
+// ESP_LOGI(TAG, "Found %d coins IDs:\n", cryptoCount);
+//   for (int i = 0; i < cryptoCount; i++) {
+//       ESP_LOGI(TAG, "%s\n", cryptoIDs[i].c_str());
+//   }
 
     // If no symbols are found, write default symbols to the file
     if (cryptoCount == 0) {
@@ -106,13 +106,13 @@ ESP_LOGI(TAG, "Found %d coins IDs:\n", cryptoCount);
             String defaultSymbols = "BTC,ETH,DOGE";
             file.print(defaultSymbols);
             file.close();
-            ESP_LOGI(TAG, "Default cryptoCoin symbols written to file.\n");
+            //ESP_LOGI(TAG, "Default cryptoCoin symbols written to file.\n");
 
             // Read the symbols again after writing defaults
             readCryptoSymbols(cryptoSymbolsFilePath, cryptoSymbols, cryptoCount, MAX_COINS);
-            ESP_LOGI(TAG, "After writing defaults, found %d cryptoCoin symbols:\n", cryptoCount);
+            //ESP_LOGI(TAG, "After writing defaults, found %d cryptoCoin symbols:\n", cryptoCount);
             for (int i = 0; i < cryptoCount; i++) {
-                ESP_LOGI(TAG, "%s\n",cryptoSymbols[i].c_str());
+                //ESP_LOGI(TAG, "%s\n",cryptoSymbols[i].c_str());
             }
         } else {
             ESP_LOGI(TAG, "Failed to write default symbols to file.\n");
@@ -123,13 +123,13 @@ ESP_LOGI(TAG, "Found %d coins IDs:\n", cryptoCount);
             String defaultIDs = "bitcoin, ethereum, dogecoin";
             file2.print(defaultIDs);
             file2.close();
-            ESP_LOGI(TAG, "Default cryptoCoin IDs written to file.\n");
+            //ESP_LOGI(TAG, "Default cryptoCoin IDs written to file.\n");
 
             // Read the symbols again after writing defaults
             readCryptoSymbols(cryptoIDsFilePath, cryptoIDs, cryptoCount, MAX_COINS);
-            ESP_LOGI(TAG, "After writing defaults, found %d cryptoCoin symbols:\n", cryptoCount);
+            //ESP_LOGI(TAG, "After writing defaults, found %d cryptoCoin symbols:\n", cryptoCount);
             for (int i = 0; i < cryptoCount; i++) {
-                ESP_LOGI(TAG, "%s\n",cryptoIDs[i].c_str());
+                //ESP_LOGI(TAG, "%s\n",cryptoIDs[i].c_str());
             }
         } else {
             ESP_LOGI(TAG, "Failed to write default symbols to file.\n");

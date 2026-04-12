@@ -86,7 +86,7 @@ void finhubStats_App_Task(void* dApplication){
     // Read stock symbols from the CSV file
     readStockSymbols(stockSymbolsFilePath, stockSymbols, stockCount, MAX_STOCKS);
     strcpy(currentStocks.apiToken, finnhubApiKey);
-    //ESP_LOGI(TAG, "Found %d stock symbols:\n", stockCount);
+    // ESP_LOGI(TAG, "Found %d stock symbols:\n", stockCount);
     // for (int i = 0; i < stockCount; i++) {
     //     ESP_LOGI(TAG, "%s\n",stockSymbols[i].c_str());
     // }

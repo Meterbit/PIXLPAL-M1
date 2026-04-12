@@ -456,7 +456,7 @@ while (MTB_SERV_IS_ACTIVE == pdTRUE && (entry = readdir(dir)) != NULL) {
 
   char fullPath[300];
   snprintf(fullPath, sizeof(fullPath), "/littlefs/clkgif/%s", name);
-  ESP_LOGI(TAG, "GIF File: %s", fullPath);
+  //ESP_LOGI(TAG, "GIF File: %s", fullPath);
 
   gd_GIF *gif = gd_open_gif(fullPath);
   if (!gif) {

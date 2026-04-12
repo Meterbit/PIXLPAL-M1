@@ -143,19 +143,16 @@ void cycleAllFlags(JsonDocument& dCommand){
     worldFlagsInfo.showCountryName = dCommand["showData"].as<bool>();
     worldFlagsInfo.flagChangeIntv = dCommand["dInterval"].as<uint8_t>();
     mtb_Write_Nvs_Struct("worldFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
-    //printf("cycleAllFlags: %d; showData: %d\n", worldFlagsInfo.cycleAllFlags, worldFlagsInfo.showCountryName);
 }
 
 void showCountryName(JsonDocument&){
     worldFlagsInfo.showCountryName = dCommand["showData"].as<bool>();
     mtb_Write_Nvs_Struct("worldFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
-    //printf("showCountryName: %d\n", worldFlagsInfo.showCountryName);
 }
 
 void setFlagChangeIntv(JsonDocument& dCommand){
     worldFlagsInfo.flagChangeIntv = dCommand["dInterval"].as<uint8_t>();
     mtb_Write_Nvs_Struct("worldFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
-    //printf("flagChangeIntv: %d\n", worldFlagsInfo.flagChangeIntv);
 }
 
 

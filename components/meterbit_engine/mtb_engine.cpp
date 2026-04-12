@@ -66,11 +66,16 @@ Mtb_Applications::Mtb_Applications(void (*dApplication)(void *), TaskHandle_t* d
 }
 
 Mtb_Applications* mtb_Launch_This_App(Mtb_Applications *dApp, Mtb_Do_Prev_App_t do_Prv_App){
-        if (*(dApp->appHandle_ptr) != NULL && eTaskGetState(*(dApp->appHandle_ptr)) == eSuspended) Mtb_Applications::appResume(dApp);
-        else {
-        dApp->action_On_Prev_App = do_Prv_App;
+        if (*(dApp->appHandle_ptr) != NULL && eTaskGetState(*(dApp->appHandle_ptr)) == eSuspended){
+        Mtb_Applications::appSuspend(Mtb_Applications::currentRunningApp);
+        Mtb_Applications::appResume(dApp);
+        printf("Resume (App) Service Called.\n");
+        } else {
+        if(cycling_Apps.appsShouldCycle == true && do_Prv_App != IGNORE_PREVIOUS_APP) dApp->action_On_Prev_App = SUSPEND_PREVIOUS_APP;
+        else dApp->action_On_Prev_App = do_Prv_App;
         xQueueSend(appLauncherQueue, &dApp, portMAX_DELAY);
         mtb_Launch_This_Service(mtb_App_Launcher_Sv);
+        printf("Launcher (App) Service Called.\n");
         }
         return dApp;
 }
@@ -80,10 +85,10 @@ void mtb_Launch_This_Service(Mtb_Services* dService){
     BaseType_t result;
     if(*(dService->serviceT_Handle_ptr) == NULL) {  // Prevents the service from being started multiple times
         dService->service_is_Running = pdTRUE;
-            result = xTaskCreatePinnedToCore(dService->service, dService->serviceName, dService->stackSize, dService, dService->servicePriority, dService->serviceT_Handle_ptr, dService->serviceCore);
-            //if(result == pdPASS) ESP_LOGI(TAG, "Task %s successfully launched\n", dService->serviceName);
-            if(result != pdPASS) ESP_LOGE(TAG, "Task %s failed to launch with error code: %d\n", dService->serviceName, result);
-}
+        result = xTaskCreatePinnedToCore(dService->service, dService->serviceName, dService->stackSize, dService, dService->servicePriority, dService->serviceT_Handle_ptr, dService->serviceCore);
+        //if(result == pdPASS) ESP_LOGI(TAG, "Task %s successfully launched\n", dService->serviceName);
+        if(result != pdPASS) ESP_LOGE(TAG, "Task %s failed to launch with error code: %d\n", dService->serviceName, result);
+    }
 }
 
 // void mtb_Queue_This_Service(Mtb_Services* dService){
@@ -98,38 +103,6 @@ void mtb_Suspend_This_Service(Mtb_Services* dService){
     vTaskSuspend(*(dService->serviceT_Handle_ptr));
 }
 
-void appCyclingTask(void * dService){
-    Mtb_Services *THIS_SERVICE = (Mtb_Services *)dService;
-    printf("App Cycling Task Launched on core %d\n", xPortGetCoreID());
-
-    while(THIS_SERVICE->service_is_Running == pdTRUE){
-        
-        for(uint8_t i = 0; i < CYCLING_APP_SLOTS; i++){
-            if (cycling_Apps.appsCycling[i].GenApp != 255 && cycling_Apps.appsCycling[i].SpeApp != 255){
-                printf("Launching app in slot %d: GenApp %d, SpeApp %d\n", i, cycling_Apps.appsCycling[i].GenApp, cycling_Apps.appsCycling[i].SpeApp);
-
-                Mtb_Applications* app = mtb_General_App_Register(cycling_Apps.appsCycling[i]);
-                app->action_On_Prev_App = SUSPEND_PREVIOUS_APP;
-                //delay(cycling_Apps.appCycleDuration * 1000);
-                vTaskDelay(pdMS_TO_TICKS(15 * 1000));
-
-                Mtb_Applications::appSuspend(Mtb_Applications::currentRunningApp);
-                delay(10);
-
-                memcpy(cycling_Apps.app_Frame_Buffers[i], mtb_Panel_Frame_Buffer, sizeof(mtb_Panel_Frame_Buffer));
-                //else memcpy(cycling_Apps.app_Frame_Buffers[CYCLING_APP_SLOTS-1], mtb_Panel_Frame_Buffer, sizeof(mtb_Panel_Frame_Buffer));
-                
-                if(i < 4) mtb_Panel_Draw_FullScreen_RGB565(cycling_Apps.app_Frame_Buffers[i+1]);
-                else mtb_Panel_Draw_FullScreen_RGB565(cycling_Apps.app_Frame_Buffers[0]);
-
-            } else continue;
-
-            }
-    }
-
-    mtb_Delete_This_Service(THIS_SERVICE);
-}
-
 void appLauncherTask(void * dService){
     Mtb_Services *THIS_SERVICE = (Mtb_Services *)dService;
     Mtb_Applications *appLaunchHolder = nullptr;
@@ -141,6 +114,32 @@ void appLauncherTask(void * dService){
     //ESP_LOGI(TAG, "About to run the app: %s\n", appLaunchHolder->appName);
         appLaunchHolder->appRunner();
     //ESP_LOGI(TAG, "Application %s has been launched\n", appLaunchHolder->appName);
+    }
+    mtb_Delete_This_Service(THIS_SERVICE);
+}
+
+void appCyclingTask(void * dService){
+    Mtb_Services *THIS_SERVICE = (Mtb_Services *)dService;
+
+    while(THIS_SERVICE->service_is_Running == pdTRUE){
+        
+        for(uint8_t i = 0; i < CYCLING_APP_SLOTS; i++){
+            if (cycling_Apps.appsCycling[i].GenApp != 255 && cycling_Apps.appsCycling[i].SpeApp != 255){
+                printf("Launching app in slot %d: GenApp %d, SpeApp %d\n", i, cycling_Apps.appsCycling[i].GenApp, cycling_Apps.appsCycling[i].SpeApp);
+
+                mtb_General_App_Register(cycling_Apps.appsCycling[i]);
+                
+                //delay(cycling_Apps.appCycleDuration * 1000);
+                vTaskDelay(pdMS_TO_TICKS(30 * 1000));
+
+                memcpy(cycling_Apps.app_Frame_Buffers[i], mtb_Panel_Frame_Buffer, sizeof(mtb_Panel_Frame_Buffer));
+                //else memcpy(cycling_Apps.app_Frame_Buffers[CYCLING_APP_SLOTS-1], mtb_Panel_Frame_Buffer, sizeof(mtb_Panel_Frame_Buffer));
+                
+                if(i < 4) mtb_Panel_Draw_FullScreen_RGB565(cycling_Apps.app_Frame_Buffers[i+1]);
+                else mtb_Panel_Draw_FullScreen_RGB565(cycling_Apps.app_Frame_Buffers[0]);
+
+            } else continue;
+            }
     }
     mtb_Delete_This_Service(THIS_SERVICE);
 }
@@ -193,9 +192,6 @@ bool Mtb_Applications::appRunner(){
 }
 
 void Mtb_Applications::appResume(Mtb_Applications* dApp){
-    // appDestroy(currentRunningApp);
-    // mtb_Panel_Clear_Screen();
-
     previousRunningApp = currentRunningApp;
     if(dApp->fullScreen == false) mtb_Draw_Status_Bar();
 
@@ -265,7 +261,7 @@ void Mtb_Applications::actionOnPreviousApp(Mtb_Do_Prev_App_t dAction){
         case SUSPEND_PREVIOUS_APP: Mtb_Applications::appSuspend(currentRunningApp);
             break;
         case DESTROY_PREVIOUS_APP: Mtb_Applications::appDestroy(currentRunningApp);
-            //ESP_LOGI(TAG, "Action on previous App Called.\n");
+            ESP_LOGI(TAG, "App Destroy on previous App Called.\n");
             break;
         case IGNORE_PREVIOUS_APP:
             ESP_LOGI(TAG, "Ignoring action on previous App.\n");
@@ -631,7 +627,6 @@ Mtb_Applications* mtb_Miscellanous_App_Launch(uint16_t dAppNumber){
         // case 2: return mtb_Launch_This_App(calendarClock_App);
         // case 3: return mtb_Launch_This_App(calendarClock_App);
         // case 4: return mtb_Launch_This_App(calendarClock_App);
-        // case 5: return mtb_Launch_This_App(calendarClock_App);
         // case 6: return mtb_Launch_This_App(calendarClock_App);
 
         default: ESP_LOGI(TAG, "No Apps to Launch.\n");
