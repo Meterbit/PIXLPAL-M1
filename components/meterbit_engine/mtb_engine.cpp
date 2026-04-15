@@ -33,9 +33,9 @@ EXT_RAM_BSS_ATTR SemaphoreHandle_t nvsAccessComplete_Sem = NULL;
 void (*encoderFn_ptr)(rotary_encoder_rotation_t) = encoderDoNothing;
 void (*buttonFn_ptr)(button_event_t) = buttonDoNothing;
 
-EXT_RAM_BSS_ATTR Mtb_Services *mtb_App_Cycling_Sv = new Mtb_Services(appCyclingTask, &appCycling_Task_H, "App Cycling Task", 4096, 3);
-EXT_RAM_BSS_ATTR Mtb_Services *mtb_App_Launcher_Sv = new Mtb_Services(appLauncherTask, &appLauncher_Task_H, "App Launcher Task", 4096, 3);
-EXT_RAM_BSS_ATTR Mtb_Services *mtb_Read_Write_NVS_Sv = new Mtb_Services(nvsAccessTask, &nvsAccess_Task_Handle, "NVS Access Tsk", 4096, 3);
+EXT_RAM_BSS_ATTR Mtb_Services *mtb_App_Cycling_Sv = new Mtb_Services(appCyclingTask, &appCycling_Task_H, "App Cycling Task", 3072, 3);
+EXT_RAM_BSS_ATTR Mtb_Services *mtb_App_Launcher_Sv = new Mtb_Services(appLauncherTask, &appLauncher_Task_H, "App Launcher Task", 2560, 3);
+EXT_RAM_BSS_ATTR Mtb_Services *mtb_Read_Write_NVS_Sv = new Mtb_Services(nvsAccessTask, &nvsAccess_Task_Handle, "NVS Access Tsk", 2560, 3);
 
 EXT_RAM_BSS_ATTR Mtb_Applications* Mtb_Applications::otaAppHolder = nullptr;
 EXT_RAM_BSS_ATTR Mtb_Applications* Mtb_Applications::currentRunningApp = nullptr;
@@ -259,6 +259,7 @@ void Mtb_Applications::actionOnPreviousApp(Mtb_Do_Prev_App_t dAction){
     if(litFS_Ready){
         switch (dAction){
         case SUSPEND_PREVIOUS_APP: Mtb_Applications::appSuspend(currentRunningApp);
+            ESP_LOGI(TAG, "App Suspend on previous App Called.\n");
             break;
         case DESTROY_PREVIOUS_APP: Mtb_Applications::appDestroy(currentRunningApp);
             ESP_LOGI(TAG, "App Destroy on previous App Called.\n");
@@ -285,21 +286,25 @@ void Mtb_Applications::mtb_App_Set_Mobile_UI(const char* manifest, const char* u
 }
 
 void mtb_Delete_This_App(Mtb_Applications* dApp){
-        *(dApp->appHandle_ptr) = NULL;
-        //ESP_LOGI(TAG, "THIS APPLICATION HAS BEEN DELETED: %s \n", dApp->appName);
-        vTaskDelete(NULL);
+    UBaseType_t hwm = uxTaskGetStackHighWaterMark(*(dApp->appHandle_ptr));
+    ESP_LOGW(TAG, "The %s App free stack min so far: %u bytes", dApp->appName, (unsigned)(hwm * sizeof(StackType_t)));
+    *(dApp->appHandle_ptr) = NULL;
+    //ESP_LOGI(TAG, "THIS APPLICATION HAS BEEN DELETED: %s \n", dApp->appName);
+    vTaskDelete(NULL);
 }
 
 // This function deletes a service task and frees its resources. Only call from within a service task.
 void mtb_Delete_This_Service(Mtb_Services* dService){
-        *(dService->serviceT_Handle_ptr) = NULL;
-        //ESP_LOGI(TAG, "THIS SERVICE HAS BEEN DELETED: %s \n", dService->serviceName);
-        vTaskDelete(NULL);
+    UBaseType_t hwm = uxTaskGetStackHighWaterMark(*(dService->serviceT_Handle_ptr));
+    ESP_LOGW(TAG, "The %s Service Task free stack min so far: %u bytes", dService->serviceName, (unsigned)(hwm * sizeof(StackType_t)));    
+    *(dService->serviceT_Handle_ptr) = NULL;
+    //ESP_LOGI(TAG, "THIS SERVICE HAS BEEN DELETED: %s \n", dService->serviceName);
+    vTaskDelete(NULL);
 }
 
 // This function deletes a service task and frees its resources. Call from outside the service task.
 void mtb_Kill_This_Service(Mtb_Services* dService){
-        *(dService->serviceT_Handle_ptr) = NULL;
+    *(dService->serviceT_Handle_ptr) = NULL;
         //ESP_LOGI(TAG, "THIS SERVICE HAS BEEN KILLED: %s \n", dService->serviceName);
 }
 

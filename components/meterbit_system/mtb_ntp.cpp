@@ -13,7 +13,7 @@
 EXT_RAM_BSS_ATTR StaticQueue_t xQueueStorage_Clock_Colors;
 EXT_RAM_BSS_ATTR TaskHandle_t sntp_Time_handle = NULL;
 
-EXT_RAM_BSS_ATTR Mtb_Services *mtb_Sntp_Time_Sv = new Mtb_Services(sntp_Time_init_Task, &sntp_Time_handle, "NTP Init", 4096);
+EXT_RAM_BSS_ATTR Mtb_Services *mtb_Sntp_Time_Sv = new Mtb_Services(sntp_Time_init_Task, &sntp_Time_handle, "NTP Init", 2048);
 
 void on_got_time(struct timeval* tv){
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;

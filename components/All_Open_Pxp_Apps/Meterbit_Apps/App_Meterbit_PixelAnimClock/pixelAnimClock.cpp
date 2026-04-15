@@ -47,8 +47,8 @@ void requestNTP_Time(JsonDocument&);
 Mtb_CentreText_t* headerText;
 Mtb_ScrollText_t* headerTextScroll;
 
-EXT_RAM_BSS_ATTR Mtb_Services *pixAnimClkGif_Sv = new Mtb_Services(pixAnimClockGif_Task, &pixAnimClockGif_Task_H, "Anim Clk Task", 4096);
-EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *pixelAnimClock_App = new Mtb_Applications_FullScreen(pixAnimClock_App_Task, &pixAnimClock_Task_H, "Pixel Anim Clk", 4096);
+EXT_RAM_BSS_ATTR Mtb_Services *pixAnimClkGif_Sv = new Mtb_Services(pixAnimClockGif_Task, &pixAnimClockGif_Task_H, "Anim Clk Task", 2560);
+EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *pixelAnimClock_App = new Mtb_Applications_FullScreen(pixAnimClock_App_Task, &pixAnimClock_Task_H, "Pixel Anim Clk", 2560);
 
 void  pixAnimClock_App_Task(void* dApplication){
   Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;

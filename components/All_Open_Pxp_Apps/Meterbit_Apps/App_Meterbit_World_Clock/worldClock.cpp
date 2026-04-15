@@ -41,7 +41,7 @@ void drawWorldClock5CitiesBkgd(void);
 void drawWorldClockSingleCity(void);
 
 // Declare the World Clock App in Status Bar Mode
-EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *worldClock_App = new Mtb_Applications_StatusBar(worldClock_App_Task, &worldClock_Task_H, "world Clock", 10240);
+EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *worldClock_App = new Mtb_Applications_StatusBar(worldClock_App_Task, &worldClock_Task_H, "world Clock", 3072);
 
 void worldClock_App_Task(void* dApplication){
   Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
@@ -61,7 +61,7 @@ void worldClock_App_Task(void* dApplication){
     "MSK-3"
     },
     "United States of America",
-    { GREEN, WHITE, YELLOW, CYAN, MAGENTA },
+    {GREEN, WHITE, YELLOW, CYAN, MAGENTA},
     0
     };
 
@@ -91,7 +91,6 @@ void worldClock_App_Task(void* dApplication){
     };
 
   mtb_Read_Nvs_Struct("worldClockNv", &worldClockCities, sizeof(WorldClock_Data_t));
-  strcpy(ntp_TimeZone, worldClockCities.worldTimeZones[0]);
 
 if(worldClockCities.worldClockMode == FIVE_CLOCK_MODE) drawWorldClock5CitiesBkgd();
 else drawWorldClockSingleCity();
@@ -218,7 +217,6 @@ void setWorldClockCities(JsonDocument& dCommand){
   strcpy(worldClockCities.worldTimeZones[dCityIndex], dTimeZone.c_str());
 
   mtb_Write_Nvs_Struct("worldClockNv", &worldClockCities, sizeof(WorldClock_Data_t));
-  strcpy(ntp_TimeZone, worldClockCities.worldTimeZones[0]);
 
   clearTimezoneCache();
 

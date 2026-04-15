@@ -59,8 +59,8 @@ uint8_t **Mtb_FixedText_t::scratchPad = nullptr;
 EXT_RAM_BSS_ATTR uint16_t mtb_Panel_Frame_Buffer[PANEL_RES_X][PANEL_RES_Y];
 
 // Prefer internal DRAM for these local-drawer tasks to avoid PSRAM-as-stack instability.
-EXT_RAM_BSS_ATTR Mtb_Services *mtb_Png_Local_ImageDrawer_Sv = new Mtb_Services(mtb_Draw_Local_Png_Task, &pngLocalImageDrawer_Handle, "PNG LOCAL DRAWER", 6144, 2); // Keep the task stack size at 12288 for reliability.
-EXT_RAM_BSS_ATTR Mtb_Services *mtb_SvgLocal_ImageDrawer_Sv = new Mtb_Services(mtb_Draw_Local_Svg_Task, &svgLocalImageDrawer_Handle, "SVG LOCAL DRAWER", 6144, 2); // Keep the task stack size at 10240 for reliability.
+EXT_RAM_BSS_ATTR Mtb_Services *mtb_Png_Local_ImageDrawer_Sv = new Mtb_Services(mtb_Draw_Local_Png_Task, &pngLocalImageDrawer_Handle, "PNG LOCAL DRAWER", 3072, 2); // Keep the task stack size at 3072 for reliability.
+EXT_RAM_BSS_ATTR Mtb_Services *mtb_SvgLocal_ImageDrawer_Sv = new Mtb_Services(mtb_Draw_Local_Svg_Task, &svgLocalImageDrawer_Handle, "SVG LOCAL DRAWER", 3072, 2); // Keep the task stack size at 3072 for reliability.
 
 #define RGB_LED_PIN_R 3
 #define RGB_LED_PIN_G 42

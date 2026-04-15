@@ -9,7 +9,7 @@
 
 EXT_RAM_BSS_ATTR TaskHandle_t statusBarCalendar_H = NULL;
 
-EXT_RAM_BSS_ATTR Mtb_Services *mtb_Status_Bar_Calendar_Sv = new Mtb_Services(mtb_StatusBar_Calendar_Task, &statusBarCalendar_H, "StatBar Cal Serv.", 4096, 1, pdTRUE);
+EXT_RAM_BSS_ATTR Mtb_Services *mtb_Status_Bar_Calendar_Sv = new Mtb_Services(mtb_StatusBar_Calendar_Task, &statusBarCalendar_H, "StatBar Cal Serv.", 2048, 1, pdTRUE);
 
 void mtb_StatusBar_Calendar_Task(void* dService){
   Mtb_Services *thisServ = (Mtb_Services *)dService;

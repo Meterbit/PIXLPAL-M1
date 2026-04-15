@@ -25,22 +25,23 @@ extern "C" void app_main(){
     
     if(cycling_Apps.appsShouldCycle == true) mtb_Launch_This_Service(mtb_App_Cycling_Sv);
     else mtb_General_App_Register(activateUserApp);
-    // mtb_Launch_This_App(coinCap_Stats_App);
+    // // mtb_Launch_This_App(coinCap_Stats_App);
+    //mtb_General_App_Register(activateUserApp);
 
-    // // Declare Variable for monitoring Free/Available internal SRAM
-    // size_t free_sram = 0;
+    // Declare Variable for monitoring Free/Available internal SRAM
+    size_t free_sram = 0;
 
-    // // While Loop prints available Internal SRAM every 2 seconds
-    // while (1){
+    // While Loop prints available Internal SRAM every 2 seconds
+    while (1){
         
-    // // Get the total free size of internal SRAM
-    // free_sram = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
+    // Get the total free size of internal SRAM
+    free_sram = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
     
-    // // Print the free SRAM size to the console.
-    // ///printf("############ Free Internal SRAM: %zu bytes\n", free_sram);
+    // Print the free SRAM size to the console.
+    printf("############ Free Internal SRAM: %zu bytes\n", free_sram);
 
-    // // delay 5 seconds
-    // delay(5000);
-    //  }
+    // delay 5 seconds
+    delay(5000);
+     }
 }
 

@@ -23,7 +23,7 @@ EXT_RAM_BSS_ATTR Mtb_FixedText_t* otaUpdateTextBot = NULL;
 EXT_RAM_BSS_ATTR Mtb_FixedText_t* otaUpdateTextBar = NULL;
 
 EXT_RAM_BSS_ATTR TaskHandle_t ota_Updating = NULL;
-EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *ghotaOTA_Update_App = new Mtb_Applications_FullScreen(ghota_Update_Task, &ota_Updating, "GHOTA Update");
+EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *ghotaOTA_Update_App = new Mtb_Applications_FullScreen(ghota_Update_Task, &ota_Updating, "GHOTA Update", 3072);
 
 EXT_RAM_BSS_ATTR SemaphoreHandle_t ota_Update_Sem = NULL;
 

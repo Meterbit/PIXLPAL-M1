@@ -191,7 +191,7 @@ void  mtb_Text_Scrolls_Init(void){
         mtb_Scroll_Tasks_Sv[v]->serviceT_Handle_ptr = &scrollText_Handles[v];
         mtb_Scroll_Tasks_Sv[v]->serviceCore = 0;
         mtb_Scroll_Tasks_Sv[v]->servicePriority = 3;
-        mtb_Scroll_Tasks_Sv[v]->stackSize = 3072;
+        mtb_Scroll_Tasks_Sv[v]->stackSize = 2560;
         snprintf(mtb_Scroll_Tasks_Sv[v]->serviceName, 50, "%d", v);
         strcat(mtb_Scroll_Tasks_Sv[v]->serviceName, " Scrl Txt Tsk");
     }
