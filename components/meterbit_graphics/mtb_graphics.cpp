@@ -951,12 +951,13 @@ uint16_t Mtb_FixedText_t::mtb_Clear_String()
 void mtb_Draw_Local_Png_Task(void *dService){
 	//ESP_LOGI(TAG, "PNG Local Image Drawer Task Started\n");
 	Mtb_Services *THIS_SERVICE = (Mtb_Services *)dService;
+	Mtb_Applications* appHolder_Ptr = Mtb_Applications::currentRunningApp;
 	Mtb_LocalImage_t holderItem;
 	unsigned error;
 	unsigned char *image = 0;
 	unsigned int width, height;
 
-	while ((xQueueReceive(pngLocalImageDrawer_Q, &holderItem, pdMS_TO_TICKS(200)) == pdTRUE) && (litFS_Ready == true)){
+	while ((xQueueReceive(pngLocalImageDrawer_Q, &holderItem, pdMS_TO_TICKS(200)) == pdTRUE) && (litFS_Ready == true) && appHolder_Ptr == Mtb_Applications::currentRunningApp){
 		//printf("Drawing status bar from %s\n", holderItem.imagePath);
 		// Check if the file exists, if not, download the file if internet connection exists.
 		// xQueuePeek(pngLocalImageDrawer_Q, &holderItem, pdMS_TO_TICKS(100));
@@ -976,6 +977,8 @@ void mtb_Draw_Local_Png_Task(void *dService){
 			// xQueueReceive(pngLocalImageDrawer_Q, &holderItem, pdMS_TO_TICKS(100));
 			if (dwnld_Succeed == false) continue; // Skip to the next item in the queue if the file does not exist.
 		}
+
+			if(appHolder_Ptr != Mtb_Applications::currentRunningApp) break;
 
 			//String imageFilePath = "/littlefs" + String(holderItem.imagePath);
 			PsramFileCopyResult_t r = copy_file_littlefs_to_psram_blocking(holderItem.imagePath, 5000);
@@ -1086,13 +1089,14 @@ static char* load_text_file_psram(const char* path, size_t& out_size) {
 void mtb_Draw_Local_Svg_Task(void *dService){
 	ESP_LOGI(TAG, "SVG Local Image Drawer Task Started\n");
 	Mtb_Services *THIS_SERVICE = (Mtb_Services *)dService;
+	Mtb_Applications* appHolder_Ptr = Mtb_Applications::currentRunningApp;
 	Mtb_LocalImage_t holderItem;
 	unsigned error;
 	unsigned char *image = 0;
 	unsigned int width, height;
 	uint16_t colorHolder = 0;
 
-	while ((xQueueReceive(svgLocalImageDrawer_Q, &holderItem, pdMS_TO_TICKS(100)) == pdTRUE) && (litFS_Ready == true)){
+	while ((xQueueReceive(svgLocalImageDrawer_Q, &holderItem, pdMS_TO_TICKS(100)) == pdTRUE) && (litFS_Ready == true) && appHolder_Ptr == Mtb_Applications::currentRunningApp){
 
 		if (!LittleFS.exists(holderItem.imagePath)){
 			bool dwnld_Succeed = false;
@@ -1109,6 +1113,8 @@ void mtb_Draw_Local_Svg_Task(void *dService){
 			}
 			if (dwnld_Succeed == false) continue; // Skip to the next item in the queue if the file does not exist.
 		}
+
+		if(appHolder_Ptr != Mtb_Applications::currentRunningApp) break;
 
 		// SVG RENDERING PATH     ??????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
 		// build path

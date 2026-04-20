@@ -48,8 +48,8 @@ EXT_RAM_BSS_ATTR String setValue;
 #define SETCOM_CHARACTERISTIC_UUID "472a6244-3bb8-4a7e-a107-4b47dea92bc3"
 #define APPCOM_CHARACTERISTIC_UUID "c8f1eead-48b0-449d-accb-5fdb87c4b566"
 
-EXT_RAM_BSS_ATTR Mtb_Services *mtb_Sett_BleComm_Parser_Sv = new Mtb_Services(ble_SetCom_Parse_Task, &ble_SetCom_Parser_Task_Handle, "bleSetCom_parser_task", 2560, 4); 
-EXT_RAM_BSS_ATTR Mtb_Services *mtb_App_BleComm_Parser_Sv = new Mtb_Services(ble_AppCom_Parse_Task, &ble_AppCom_Parser_Task_Handle, "bleAppCom_Parser_task", 2560, 4);
+EXT_RAM_BSS_ATTR Mtb_Services *mtb_Sett_BleComm_Parser_Sv = new Mtb_Services(ble_SetCom_Parse_Task, &ble_SetCom_Parser_Task_Handle, "bleSetCom_parser_task", 3072, 4); 
+EXT_RAM_BSS_ATTR Mtb_Services *mtb_App_BleComm_Parser_Sv = new Mtb_Services(ble_AppCom_Parse_Task, &ble_AppCom_Parser_Task_Handle, "bleAppCom_Parser_task", 3072, 4);
 
 class MyServerCallbacks : public NimBLEServerCallbacks{
   void onConnect(NimBLEServer *pServer, NimBLEConnInfo& connInfo){
@@ -59,11 +59,11 @@ class MyServerCallbacks : public NimBLEServerCallbacks{
     mtb_Show_Status_Bar_Icon({"/batIcons/phoneCont.png", 18, 1});
     mtb_Read_Nvs_Struct("pxpBleDevName", pxp_BLE_Name, sizeof(pxp_BLE_Name));
     mtb_Current_Ble_Device(pxp_BLE_Name);
-    ESP_LOGI(TAG, "Connected\n");
+    // ESP_LOGI(TAG, "Connected\n");
   };
 
   void onDisconnect(NimBLEServer *pServer, NimBLEConnInfo& connInfo, int reason){
-    ESP_LOGI(TAG, "Disconnection detected.\n");
+    // ESP_LOGI(TAG, "Disconnection detected.\n");
     isDisconnected = true;
     Mtb_Applications::bleCentralContd = false;
     mtb_Show_Status_Bar_Icon({"/batIcons/btOn.png", 18, 1});
@@ -369,6 +369,7 @@ void ble_AppCom_Parse_Task(void* dService){
     String dNewAppParams;
     uint16_t dAppGen = 0;
     uint16_t dAppSpe = 0;
+    Mtb_UserApp_t userAppHolder;
     uint16_t dCmd_num = 0;
 
     while(xQueueReceive(appCom_queue, &qMessage, pdMS_TO_TICKS(500))){
@@ -386,13 +387,13 @@ void ble_AppCom_Parse_Task(void* dService){
         ESP_LOGI(TAG, "The specific App is: %s\n", specific_Application.c_str());
         // ESP_LOGI(TAG, "The dPayload for App is: %s\n", dPayload.c_str());
  
-        dAppGen = getIntegerAtIndex(specific_Application, 0);
-        dAppSpe = getIntegerAtIndex(specific_Application, 1);
+        userAppHolder.GenApp = getIntegerAtIndex(specific_Application, 0);
+        userAppHolder.SpeApp = getIntegerAtIndex(specific_Application, 1);
 
         //ESP_LOGI(TAG, "The dAppGen is: %d\n", dAppGen);
         //ESP_LOGI(TAG, "The dAppSpe is: %d\n", dAppSpe);
 
-        if (dAppGen == activateUserApp.GenApp && dAppSpe == activateUserApp.SpeApp){
+        if (userAppHolder.GenApp == activateUserApp.GenApp && userAppHolder.SpeApp == activateUserApp.SpeApp){
 
             dError = deserializeJson(dCommand, dJsonPayload);
             if(dError.code() == dError.Ok) dCmd_num = dCommand["app_command"];
@@ -461,15 +462,16 @@ void ble_AppCom_Parse_Task(void* dService){
             //     break;
 
             case 250:
+                mtb_Add_App_To_Cycle_App_List(userAppHolder);
                 bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 250}");
                 break;
             case 251:
+                mtb_Remove_App_From_Cycle_App_List(userAppHolder);
                 bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 251}");
                 break;
             case 252:
                 Mtb_Applications::showAppUI_OR_LaunchApp = SHOW_APP_UI;
-                showAppUI.GenApp = dAppGen;
-                showAppUI.SpeApp = dAppSpe;
+                memcpy(&showAppUI, &userAppHolder, sizeof(Mtb_UserApp_t));
                 mtb_General_App_Register(showAppUI);
                 break;
             case 255:
@@ -484,18 +486,16 @@ void ble_AppCom_Parse_Task(void* dService){
           dCmd_num = dCommand["app_command"];
 
           if(dError.code() == dError.Ok && dCmd_num == 250){
-              bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 250}");
+            mtb_Add_App_To_Cycle_App_List(userAppHolder);
+            bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 250}");
           }else if(dError.code() == dError.Ok && dCmd_num == 251){
-              bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 251}");
+            mtb_Remove_App_From_Cycle_App_List(userAppHolder);
+            bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 251}");
           }else if(dError.code() == dError.Ok && dCmd_num == 252){
-              showAppUI.GenApp = dAppGen;
-              showAppUI.SpeApp = dAppSpe;
+            memcpy(&showAppUI, &userAppHolder, sizeof(Mtb_UserApp_t));
               Mtb_Applications::showAppUI_OR_LaunchApp = SHOW_APP_UI; 
               mtb_General_App_Register(showAppUI);
           }else if (dError.code() == dError.Ok && dCmd_num == 255){
-              activateUserApp.GenApp = dAppGen;
-              activateUserApp.SpeApp = dAppSpe;
-              mtb_Write_Nvs_Struct("activateUserApp", &activateUserApp, sizeof(Mtb_UserApp_t));
               mtb_General_App_Register(activateUserApp);
               bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 253}");
           }else{

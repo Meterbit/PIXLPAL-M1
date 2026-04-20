@@ -256,6 +256,8 @@ extern void mtb_Kill_This_Service(Mtb_Services* );
 extern void mtb_Delete_This_App(Mtb_Applications *);
 
 extern Mtb_Applications* mtb_General_App_Register(Mtb_UserApp_t);
+extern uint8_t mtb_Add_App_To_Cycle_App_List(Mtb_UserApp_t);
+extern uint8_t mtb_Remove_App_From_Cycle_App_List(Mtb_UserApp_t);
 
 // Supporting Apps and Tasks
 extern TaskHandle_t statusBarClock_H;
@@ -321,55 +323,55 @@ extern Mtb_Applications_FullScreen* ghotaOTA_Update_App;
 
 // All User Apps
 // Clocks and Timers
-extern Mtb_Applications_StatusBar* calendarClock_App;           // App Communication Route: 0/0
-extern Mtb_Applications_FullScreen* pixelAnimClock_App;         // App Communication Route: 0/1
-extern Mtb_Applications_StatusBar* worldClock_App;              // App Communication Route: 0/2
-extern Mtb_Applications_FullScreen* bigClockCalendar_App;       // App Communication Route: 0/3
-extern Mtb_Applications_StatusBar* stopWatch_App;               // App Communication Route: 0/4
+extern Mtb_Applications_StatusBar* calendarClock_App;           // App ID: 0/0
+extern Mtb_Applications_FullScreen* pixelAnimClock_App;         // App ID: 0/1
+extern Mtb_Applications_StatusBar* worldClock_App;              // App ID: 0/2
+extern Mtb_Applications_FullScreen* bigClockCalendar_App;       // App ID: 0/3
+extern Mtb_Applications_StatusBar* stopWatch_App;               // App ID: 0/4
 
 // News and Messages
-extern Mtb_Applications_StatusBar *googleNews_App;              // App Communication Route: 1/0 .... Replace this with google news app. Find api in Rapid API.
-extern Mtb_Applications_StatusBar *rssNewsApp;                  // App Communication Route: 1/1
-extern Mtb_Applications_StatusBar *newsAPI_App;                 // App Communication Route: 1/2
+extern Mtb_Applications_StatusBar *googleNews_App;              // App ID: 1/0 .... Replace this with google news app. Find api in Rapid API.
+extern Mtb_Applications_StatusBar *rssNewsApp;                  // App ID: 1/1
+extern Mtb_Applications_StatusBar *newsAPI_App;                 // App ID: 1/2
 
 // Calendars
-extern Mtb_Applications_StatusBar *google_Calendar_App;         // App Communication Route: 2/0
-extern Mtb_Applications_StatusBar *outlook_Calendar_App;        // App Communication Route: 2/1
+extern Mtb_Applications_StatusBar *google_Calendar_App;         // App ID: 2/0
+extern Mtb_Applications_StatusBar *outlook_Calendar_App;        // App ID: 2/1
 
 // Weather Updates
-extern Mtb_Applications_StatusBar *openWeather_App;             // App Communication Route: 3/0
-extern Mtb_Applications_StatusBar *openMeteo_App;               // App Communication Route: 3/1
-extern Mtb_Applications_StatusBar *googleWeather_App;           // App Communication Route: 3/2
+extern Mtb_Applications_StatusBar *openWeather_App;             // App ID: 3/0
+extern Mtb_Applications_StatusBar *openMeteo_App;               // App ID: 3/1
+extern Mtb_Applications_StatusBar *googleWeather_App;           // App ID: 3/2
 
 // Finance
-extern Mtb_Applications_StatusBar *finnhub_Stats_App;           // App Communication Route: 4/0
-extern Mtb_Applications_StatusBar *coinCap_Stats_App;           // App Communication Route: 4/1
-extern Mtb_Applications_StatusBar *currencyExchange_App;        // App Communication Route: 4/2
-extern Mtb_Applications_StatusBar *polygonFX_App;               // App Communication Route: 4/3
+extern Mtb_Applications_StatusBar *finnhub_Stats_App;           // App ID: 4/0
+extern Mtb_Applications_StatusBar *coinCap_Stats_App;           // App ID: 4/1
+extern Mtb_Applications_StatusBar *currencyExchange_App;        // App ID: 4/2
+extern Mtb_Applications_StatusBar *polygonFX_App;               // App ID: 4/3
 
 // Sports
-extern Mtb_Applications_StatusBar *liveFootbalScores_App;       // App Communication Route: 5/0
+extern Mtb_Applications_StatusBar *liveFootbalScores_App;       // App ID: 5/0
 
 // Animations
-extern Mtb_Applications_FullScreen *studioLight_App;            // App Communication Route: 6/0
-extern Mtb_Applications_FullScreen *worldFlags_App;             // App Communication Route: 6/1
+extern Mtb_Applications_FullScreen *studioLight_App;            // App ID: 6/0
+extern Mtb_Applications_FullScreen *worldFlags_App;             // App ID: 6/1
 
 // Notifications
-extern Mtb_Applications_StatusBar *apple_Notifications_App;     // App Communication Route: 7/0
+extern Mtb_Applications_StatusBar *apple_Notifications_App;     // App ID: 7/0
 
 // Artificial Intelligence
-extern Mtb_Applications_StatusBar *chatGPT_App;                 // App Communication Route: 8/0
+extern Mtb_Applications_StatusBar *chatGPT_App;                 // App ID: 8/0
 
 // Audio and Media
-extern Mtb_Applications_StatusBar* internetRadio_App;           // App Communication Route: 9/0
-extern Mtb_Applications_StatusBar* musicPlayer_App;             // App Communication Route: 9/1
-extern Mtb_Applications_FullScreen* audSpecAnalyzer_App;        // App Communication Route: 9/2
-extern Mtb_Applications_StatusBar *spotify_App;                 // App Communication Route: 9/3
+extern Mtb_Applications_StatusBar* internetRadio_App;           // App ID: 9/0
+extern Mtb_Applications_StatusBar* musicPlayer_App;             // App ID: 9/1
+extern Mtb_Applications_FullScreen* audSpecAnalyzer_App;        // App ID: 9/2
+extern Mtb_Applications_StatusBar *spotify_App;                 // App ID: 9/3
 
 // Example Apps
 extern Mtb_Applications_FullScreen* exampleWriteText_App;        
 extern Mtb_Applications_StatusBar* exampleDrawShapes_App;          
 extern Mtb_Applications_FullScreen* exampleDrawImages_App;          
 extern Mtb_Applications_StatusBar* exampleEncoderBeep_App;
-extern Mtb_Applications_FullScreen* exampleDesignMobileUI_App;  // App Communication Route: 11/0
+extern Mtb_Applications_FullScreen* exampleDesignMobileUI_App;  // App ID: 11/0
 #endif

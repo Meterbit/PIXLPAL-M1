@@ -85,9 +85,9 @@ void Mtb_ScrollText_t::mtb_Scroll_String(TaskHandle_t& dAppTaskHandle){
         if(uxNumberOfMessages > 1 && pass > 1) break;
             for (uint32_t xPix = 0; xPix < scroll_Length; xPix++){
                 if(scroll_Quit == pdTRUE) return; //if scroll_Quit is made True, scrolling stops and the function returns.
-                while(dAppTaskHandle != NULL && eTaskGetState(dAppTaskHandle) == eSuspended) delay(100); // while the app is suspended, pause the scrolling until the app is resumed.
                 for (uint16_t i = xPos, p = xPix; i < xPos2; i++, p++){
                     for (uint16_t j = yPos, q = 0; j < yPos2; j++, q++){
+                        while(dAppTaskHandle != NULL && eTaskGetState(dAppTaskHandle) == eSuspended) delay(100); // while the app is suspended, pause the scrolling until the app is resumed.
                         if (dText_Raw[p][q]) mtb_Panel_Draw_Pixel565(i, j, color); // update color.
                         else mtb_Panel_Draw_Pixel565(i, j, backgroundColor);         // update background color.
                     }
