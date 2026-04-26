@@ -69,7 +69,7 @@ struct NvsAccessParams_t{
   size_t struct_size;
 };
 
-extern Mtb_UserApp_t activateUserApp;
+extern Mtb_UserApp_t activeUserApp;
 extern Mtb_Apps_To_Cycle_t cycling_Apps;
 
 extern void appLauncherTask(void *);

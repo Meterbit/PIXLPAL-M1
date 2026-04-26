@@ -19,7 +19,7 @@
 
 static const char TAG[] = "METERBIT_ENGINE";
 
-EXT_RAM_BSS_ATTR Mtb_UserApp_t activateUserApp;
+EXT_RAM_BSS_ATTR Mtb_UserApp_t activeUserApp;
 EXT_RAM_BSS_ATTR Mtb_Apps_To_Cycle_t cycling_Apps;
 
 EXT_RAM_BSS_ATTR QueueHandle_t clock_Update_Q = NULL;
@@ -119,7 +119,7 @@ void appCyclingTask(void * dService){
     Mtb_Services *THIS_SERVICE = (Mtb_Services *)dService;
     Mtb_Applications *appCyclingHolder = nullptr;
 
-    mtb_Identify_App_By_ID(activateUserApp, KILL_PXP_APP);
+    mtb_Identify_App_By_ID(activeUserApp, KILL_PXP_APP);
 
         uint32_t p = 0;
         for(uint8_t i = 0; THIS_SERVICE->service_is_Running == pdTRUE; ++p, i = p % CYCLING_APP_SLOTS){
@@ -139,7 +139,7 @@ void appCyclingTask(void * dService){
             } else continue;
         }
 
-    mtb_Identify_App_By_ID(activateUserApp, LAUNCH_PXP_APP);
+    mtb_Identify_App_By_ID(activeUserApp, LAUNCH_PXP_APP);
 
     mtb_Delete_This_Service(THIS_SERVICE);
 }
@@ -192,7 +192,7 @@ bool Mtb_Applications::appRunner(){
 }
 
 void Mtb_Applications::appResume(Mtb_Applications* dApp){
-    ESP_LOGI(TAG, "App Resume on %s Called.\n", dApp->appName);
+    ESP_LOGI(TAG, "App Resume on \"%s\" Called.\n", dApp->appName);
 
     previousRunningApp = currentRunningApp;
 
@@ -220,7 +220,7 @@ void Mtb_Applications::appResume(Mtb_Applications* dApp){
 }
 
 void Mtb_Applications::appSuspend(Mtb_Applications* dApp){
-    ESP_LOGI(TAG, "App Suspend on %s Called.\n", dApp->appName);
+    ESP_LOGI(TAG, "App Suspend on \"%s\" Called.\n", dApp->appName);
 
     if(*(dApp->appHandle_ptr) == NULL) return;
 
@@ -233,7 +233,7 @@ void Mtb_Applications::appSuspend(Mtb_Applications* dApp){
 
 void Mtb_Applications::appDestroy(Mtb_Applications* dApp){
 
-    ESP_LOGI(TAG, "App Destroy on %s Called.\n", dApp->appName);
+    ESP_LOGI(TAG, "App Destroy on \"%s\" Called.\n", dApp->appName);
 
     if(*(dApp->appHandle_ptr) != NULL && dApp->app_is_Running == pdTRUE){
         dApp->app_is_Running = pdFALSE;
@@ -265,7 +265,7 @@ void Mtb_Applications::appDestroy(Mtb_Applications* dApp){
 void Mtb_Applications::mtb_App_Show_Mobile_UI(void){
     char appID[20];
     String mobileUICommand;
-    snprintf(appID, sizeof(appID), "%u/%u", activateUserApp.GenApp, activateUserApp.SpeApp);
+    snprintf(appID, sizeof(appID), "%u/%u", activeUserApp.GenApp, activeUserApp.SpeApp);
 
     if(appMobile_Data == nullptr) mobileUICommand = "{\"app_command\": 252, \"manifest\": " + String(appMobile_Manifest) + ", \"ui_api\": " + String(appMobile_UiApi) + "}";
     else mobileUICommand = "{\"app_command\": 252, \"manifest\": " + String(appMobile_Manifest) + ", \"ui_api\": " + String(appMobile_UiApi) + ", \"data\": " + String(appMobile_Data) + "}";
@@ -411,12 +411,16 @@ void Mtb_Applications::mtb_App_Init(Mtb_Services* pointer_0, Mtb_Services* point
     Mtb_Services* pointer_5, Mtb_Services* pointer_6, Mtb_Services* pointer_7, 
     Mtb_Services* pointer_8, Mtb_Services* pointer_9){
 
+    printf("APP INIT DEBUG: First Stage -> App: %s\n", appName);
+
     if(showAppUI_OR_LaunchApp == SHOW_PXP_APP_UI){
         mtb_App_Show_Mobile_UI();
         showAppUI_OR_LaunchApp = LAUNCH_PXP_APP;
         mtb_Delete_This_App(this);
         return;
     }
+
+    printf("APP INIT DEBUG: Second Stage -> App: %s\n", appName);
 
     currentRunningApp = this;
 
@@ -440,6 +444,8 @@ void Mtb_Applications::mtb_App_Init(Mtb_Services* pointer_0, Mtb_Services* point
 
     for (Mtb_Services *element : appServices) if (element != nullptr) mtb_Launch_This_Service(element);
 
+    printf("APP INIT DEBUG: Third Stage -> App: %s\n", appName);
+
     switch(statusBarType){
         case CLOCK_STATUS_BAR:
             mtb_Launch_This_Service(mtb_Status_Bar_Clock_Sv);  
@@ -451,6 +457,8 @@ void Mtb_Applications::mtb_App_Init(Mtb_Services* pointer_0, Mtb_Services* point
             break;
     }
 
+    printf("APP INIT DEBUG: Fourth Stage -> App: %s\n", appName);
+
     if(mtb_App_ButtonFn_ptr != buttonDoNothing) mtb_Launch_This_Service(mtb_Button_Task_Sv);
 
     if(mtb_App_EncoderFn_ptr != encoderDoNothing) mtb_Launch_This_Service(mtb_Encoder_Task_Sv);
@@ -459,6 +467,7 @@ void Mtb_Applications::mtb_App_Init(Mtb_Services* pointer_0, Mtb_Services* point
 
     app_is_Running = pdTRUE;
 
+    printf("APP INIT DEBUG: Fifth Stage -> App: %s\n", appName);
     //ESP_LOGI(TAG, "THIS APPLICATION HAS BEEN STARTED: %s \n", Mtb_Applications::currentRunningApp->appName);
 }
 
@@ -511,28 +520,28 @@ extern uint8_t mtb_Remove_App_From_Cycle_App_List(Mtb_UserApp_t appToRemove){
     return 0;
 }
 
-Mtb_Applications* mtb_Identify_App_By_ID(Mtb_UserApp_t dAppPath, Mtb_Action_On_App_t actionOnApp){
+    Mtb_Applications* mtb_Identify_App_By_ID(Mtb_UserApp_t dAppID, Mtb_Action_On_App_t actionOnApp){
     if(actionOnApp == LAUNCH_PXP_APP){
-    memcpy(&activateUserApp, &dAppPath, sizeof(Mtb_UserApp_t));
-    mtb_Write_Nvs_Struct("activateUserApp", &activateUserApp, sizeof(Mtb_UserApp_t));
+    memcpy(&activeUserApp, &dAppID, sizeof(Mtb_UserApp_t));
+    mtb_Write_Nvs_Struct("activeUserApp", &activeUserApp, sizeof(Mtb_UserApp_t));
     Mtb_Applications::showAppUI_OR_LaunchApp = LAUNCH_PXP_APP;
     } else if (actionOnApp == SHOW_PXP_APP_UI){
     Mtb_Applications::showAppUI_OR_LaunchApp = SHOW_PXP_APP_UI;
     }
 
-    switch(dAppPath.GenApp){
-    case 0: return mtb_Clk_Tim_AppLaunch(dAppPath.SpeApp, actionOnApp);
-    case 1: return mtb_Msg_App_Launch(dAppPath.SpeApp, actionOnApp);
-    case 2: return mtb_Calendar_App_Launch(dAppPath.SpeApp, actionOnApp);
-    case 3: return mtb_Weather_App_Launch(dAppPath.SpeApp, actionOnApp);
-    case 4: return mtb_Finance_App_Launch(dAppPath.SpeApp, actionOnApp);
-    case 5: return mtb_Sports_App_Launch(dAppPath.SpeApp, actionOnApp);
-    case 6: return mtb_Animations_App_Launch(dAppPath.SpeApp, actionOnApp);
-    case 7: return mtb_Notifications_App_Launch(dAppPath.SpeApp, actionOnApp);
-    case 8: return mtb_AIs_App_Launch(dAppPath.SpeApp, actionOnApp);
-    case 9: return mtb_Audio_Stream_App_Launch(dAppPath.SpeApp, actionOnApp);
-    case 10: return mtb_sMedia_App_Launch(dAppPath.SpeApp, actionOnApp);
-    case 11: return mtb_Miscellanous_App_Launch(dAppPath.SpeApp, actionOnApp);
+    switch(dAppID.GenApp){
+    case 0: return mtb_Clk_Tim_AppLaunch(dAppID.SpeApp, actionOnApp);
+    case 1: return mtb_Msg_App_Launch(dAppID.SpeApp, actionOnApp);
+    case 2: return mtb_Calendar_App_Launch(dAppID.SpeApp, actionOnApp);
+    case 3: return mtb_Weather_App_Launch(dAppID.SpeApp, actionOnApp);
+    case 4: return mtb_Finance_App_Launch(dAppID.SpeApp, actionOnApp);
+    case 5: return mtb_Sports_App_Launch(dAppID.SpeApp, actionOnApp);
+    case 6: return mtb_Animations_App_Launch(dAppID.SpeApp, actionOnApp);
+    case 7: return mtb_Notifications_App_Launch(dAppID.SpeApp, actionOnApp);
+    case 8: return mtb_AIs_App_Launch(dAppID.SpeApp, actionOnApp);
+    case 9: return mtb_Audio_Stream_App_Launch(dAppID.SpeApp, actionOnApp);
+    case 10: return mtb_sMedia_App_Launch(dAppID.SpeApp, actionOnApp);
+    case 11: return mtb_Miscellanous_App_Launch(dAppID.SpeApp, actionOnApp);
     default: ESP_LOGI(TAG, "No Apps to Launch.\n");
     }
         return nullptr;

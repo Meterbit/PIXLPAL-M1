@@ -381,11 +381,6 @@ void ble_AppCom_Parse_Task(void* dService){
         String specific_Application = dInstruction.substring(0, charIndex);  // copy up to the target character
         String dJsonPayload = dInstruction.substring(++charIndex);
 
-        Mtb_UserApp_t showAppUI{
-            .GenApp = 0,
-            .SpeApp = 1
-            };
-
         ESP_LOGI(TAG, "The specific App is: %s\n", specific_Application.c_str());
         // ESP_LOGI(TAG, "The dPayload for App is: %s\n", dPayload.c_str());
  
@@ -395,7 +390,7 @@ void ble_AppCom_Parse_Task(void* dService){
         //ESP_LOGI(TAG, "The dAppGen is: %d\n", dAppGen);
         //ESP_LOGI(TAG, "The dAppSpe is: %d\n", dAppSpe);
 
-        if (userAppHolder.GenApp == activateUserApp.GenApp && userAppHolder.SpeApp == activateUserApp.SpeApp){
+        if (userAppHolder.GenApp == activeUserApp.GenApp && userAppHolder.SpeApp == activeUserApp.SpeApp){
 
             dError = deserializeJson(dCommand, dJsonPayload);
             if(dError.code() == dError.Ok) dCmd_num = dCommand["app_command"];
@@ -464,8 +459,7 @@ void ble_AppCom_Parse_Task(void* dService){
             //     break;
 
             case 252:
-                memcpy(&showAppUI, &userAppHolder, sizeof(Mtb_UserApp_t));
-                mtb_Identify_App_By_ID(showAppUI, SHOW_PXP_APP_UI);
+                mtb_Identify_App_By_ID(userAppHolder, SHOW_PXP_APP_UI);
                 break;
             case 255:
                 statusBarNotif.mtb_Scroll_This_Text("APP IS ALREADY ACTIVE", CYAN);
@@ -479,11 +473,9 @@ void ble_AppCom_Parse_Task(void* dService){
           dCmd_num = dCommand["app_command"];
 
           if(dError.code() == dError.Ok && dCmd_num == 252){
-            memcpy(&showAppUI, &userAppHolder, sizeof(Mtb_UserApp_t));
-            mtb_Identify_App_By_ID(showAppUI, SHOW_PXP_APP_UI);
+            mtb_Identify_App_By_ID(userAppHolder, SHOW_PXP_APP_UI);
           }else if (dError.code() == dError.Ok && dCmd_num == 255){
-            memcpy(&activateUserApp, &userAppHolder, sizeof(Mtb_UserApp_t));
-            mtb_Identify_App_By_ID(activateUserApp, LAUNCH_PXP_APP);
+            mtb_Identify_App_By_ID(userAppHolder, LAUNCH_PXP_APP);
             bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 253}");
           }else{
               bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 254}");

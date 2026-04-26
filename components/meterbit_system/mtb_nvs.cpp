@@ -48,7 +48,7 @@ void init_nvs_mem(void){
         strcpy(serial_No, "MTB000001");
         strcpy(pxp_BLE_Name, "PIXLPAL-M1");
         strcpy(ntp_TimeZone, "WAT-1");
-        activateUserApp = {
+        activeUserApp = {
             .GenApp = 0,
             .SpeApp = 0
             };
@@ -73,7 +73,7 @@ void init_nvs_mem(void){
     strcpy(serial_No, "MTB000001");
     strcpy(pxp_BLE_Name, "PIXLPAL-M1");
     strcpy(ntp_TimeZone, "WAT-1");
-    activateUserApp = {
+    activeUserApp = {
         .GenApp = 0,
         .SpeApp = 0
         };
