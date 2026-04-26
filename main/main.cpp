@@ -26,7 +26,6 @@ extern "C" void app_main(){
     if(cycling_Apps.appsShouldCycle == true) mtb_Launch_This_Service(mtb_App_Cycling_Sv);
     else mtb_Identify_App_By_ID(activateUserApp, LAUNCH_PXP_APP);
     // mtb_Launch_This_App(coinCap_Stats_App);
-    // mtb_Identify_App_By_ID(activateUserApp, LAUNCH_PXP_APP);
 
     // Declare Variable for monitoring Free/Available internal SRAM
     size_t free_sram = 0;
@@ -40,8 +39,8 @@ extern "C" void app_main(){
     // Print the free SRAM size to the console.
     printf("############ Free Internal SRAM: %zu bytes\n", free_sram);
 
-    // delay 5 seconds
-    delay(5000);
+    // delay 10 seconds
+    delay(10000);
      }
 }
 

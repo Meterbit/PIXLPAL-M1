@@ -464,7 +464,6 @@ void ble_AppCom_Parse_Task(void* dService){
             //     break;
 
             case 252:
-                
                 memcpy(&showAppUI, &userAppHolder, sizeof(Mtb_UserApp_t));
                 mtb_Identify_App_By_ID(showAppUI, SHOW_PXP_APP_UI);
                 break;
@@ -481,10 +480,11 @@ void ble_AppCom_Parse_Task(void* dService){
 
           if(dError.code() == dError.Ok && dCmd_num == 252){
             memcpy(&showAppUI, &userAppHolder, sizeof(Mtb_UserApp_t));
-              mtb_Identify_App_By_ID(showAppUI, SHOW_PXP_APP_UI);
+            mtb_Identify_App_By_ID(showAppUI, SHOW_PXP_APP_UI);
           }else if (dError.code() == dError.Ok && dCmd_num == 255){
-              mtb_Identify_App_By_ID(activateUserApp, LAUNCH_PXP_APP);
-              bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 253}");
+            memcpy(&activateUserApp, &userAppHolder, sizeof(Mtb_UserApp_t));
+            mtb_Identify_App_By_ID(activateUserApp, LAUNCH_PXP_APP);
+            bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 253}");
           }else{
               bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 254}");
               statusBarNotif.mtb_Scroll_This_Text("TAP 'LAUNCH' TO START APP", MAGENTA);

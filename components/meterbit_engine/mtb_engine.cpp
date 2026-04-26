@@ -69,14 +69,14 @@ Mtb_Applications* mtb_Launch_This_App(Mtb_Applications *dApp, Mtb_Do_Prev_App_t 
         if (*(dApp->appHandle_ptr) != NULL && eTaskGetState(*(dApp->appHandle_ptr)) == eSuspended){
         Mtb_Applications::appSuspend(Mtb_Applications::currentRunningApp);
         Mtb_Applications::appResume(dApp);
-        printf("Resume (App) Service Called.\n");
+        //printf("Resume (App) Service Called.\n");
         } else {
         if(cycling_Apps.appsShouldCycle == true && do_Prv_App != IGNORE_PREVIOUS_APP) dApp->action_On_Prev_App = SUSPEND_PREVIOUS_APP;
         else dApp->action_On_Prev_App = do_Prv_App;
 
         xQueueSend(appLauncherQueue, &dApp, portMAX_DELAY);
         mtb_Launch_This_Service(mtb_App_Launcher_Sv);
-        printf("Launcher (App) Service Called.\n");
+        //printf("Launcher (App) Service Called.\n");
         }
         return dApp;
 }
@@ -126,7 +126,7 @@ void appCyclingTask(void * dService){
             if (cycling_Apps.appsCycling[i].GenApp != 255 && cycling_Apps.appsCycling[i].SpeApp != 255){
                 appCyclingHolder = mtb_Identify_App_By_ID(cycling_Apps.appsCycling[i], LAUNCH_PXP_APP);
                 if(p >= CYCLING_APP_SLOTS) mtb_Panel_Draw_FullScreen_RGB565(cycling_Apps.app_Frame_Buffers[i]);
-                printf("++++++++++++++++ Showing app %s in slot %d: GenApp %d, SpeApp %d\n", appCyclingHolder->appName, i, cycling_Apps.appsCycling[i].GenApp, cycling_Apps.appsCycling[i].SpeApp);
+                printf("@@@@@@@@ Showing \"%s\" app in slot %d: GenApp %d, SpeApp %d\n", appCyclingHolder->appName, i, cycling_Apps.appsCycling[i].GenApp, cycling_Apps.appsCycling[i].SpeApp);
                 delay(cycling_Apps.appCycleDuration * 1000);
                 memcpy(cycling_Apps.app_Frame_Buffers[i], mtb_Panel_Frame_Buffer, sizeof(mtb_Panel_Frame_Buffer));
             } else continue;
@@ -135,7 +135,7 @@ void appCyclingTask(void * dService){
         for(uint8_t i = 0; i < CYCLING_APP_SLOTS; i++){
             if (cycling_Apps.appsCycling[i].GenApp != 255 && cycling_Apps.appsCycling[i].SpeApp != 255){
                 appCyclingHolder = mtb_Identify_App_By_ID(cycling_Apps.appsCycling[i], KILL_PXP_APP);
-                printf("++++++++++++++++ Killing app %s in slot %d: GenApp %d, SpeApp %d\n", appCyclingHolder->appName, i, cycling_Apps.appsCycling[i].GenApp, cycling_Apps.appsCycling[i].SpeApp);
+                printf("^^^^^^^ Killing app %s in slot %d: GenApp %d, SpeApp %d\n", appCyclingHolder->appName, i, cycling_Apps.appsCycling[i].GenApp, cycling_Apps.appsCycling[i].SpeApp);
             } else continue;
         }
 
@@ -182,16 +182,18 @@ void nvsAccessTask(void * dService){
 }
 
 bool Mtb_Applications::appRunner(){
-        // Dynamic task creation
-        if (xTaskCreatePinnedToCore(application, appName, stackSize, this, appPriority, appHandle_ptr, appCore) != pdPASS) {
-            ESP_LOGE(TAG, "Failed to create application task in INTERNAL DRAM: %s\n", appName);
-            return false; // Task creation failed
-        }
-    ESP_LOGI(TAG, "Application %s is Launched on core %d\n", appName, xPortGetCoreID());
+    // Dynamic task creation
+    if (xTaskCreatePinnedToCore(application, appName, stackSize, this, appPriority, appHandle_ptr, appCore) != pdPASS) {
+        ESP_LOGE(TAG, "Failed to create application task in INTERNAL DRAM: %s\n", appName);
+        return false; // Task creation failed
+    }
+    ESP_LOGI(TAG, "App \"%s\" Launched on core %d\n", appName, xPortGetCoreID());
     return true; // Task creation successful
 }
 
 void Mtb_Applications::appResume(Mtb_Applications* dApp){
+    ESP_LOGI(TAG, "App Resume on %s Called.\n", dApp->appName);
+
     previousRunningApp = currentRunningApp;
 
     if(dApp->statusBarType == CLOCK_STATUS_BAR){
@@ -218,14 +220,15 @@ void Mtb_Applications::appResume(Mtb_Applications* dApp){
 }
 
 void Mtb_Applications::appSuspend(Mtb_Applications* dApp){
+    ESP_LOGI(TAG, "App Suspend on %s Called.\n", dApp->appName);
+
     if(*(dApp->appHandle_ptr) == NULL) return;
+
     for (Mtb_Services* element : dApp->appServices) if (element != nullptr) mtb_Suspend_This_Service(element);
     vTaskSuspend(*(dApp->appHandle_ptr));
 
     if(dApp->statusBarType == CLOCK_STATUS_BAR) mtb_Status_Bar_Clock_Sv->service_is_Running = pdFALSE;
     if(dApp->statusBarType == WEEKDAY_STATUS_BAR) mtb_Status_Bar_Calendar_Sv->service_is_Running = pdFALSE;
-
-    ESP_LOGI(TAG, "App Suspend on %s Called.\n", dApp->appName);
 }
 
 void Mtb_Applications::appDestroy(Mtb_Applications* dApp){
@@ -246,6 +249,7 @@ void Mtb_Applications::appDestroy(Mtb_Applications* dApp){
 
     if(dApp->statusBarType == CLOCK_STATUS_BAR) mtb_Status_Bar_Clock_Sv->service_is_Running = pdFALSE;
     else if(dApp->statusBarType == WEEKDAY_STATUS_BAR) mtb_Status_Bar_Calendar_Sv->service_is_Running = pdFALSE;
+
 
     for (uint8_t i = 0; i < 5; i++){
     if((scrollText_Handles[i]) != NULL){
@@ -312,10 +316,8 @@ Mtb_Applications* mtb_Kill_This_App(Mtb_Applications* dApp){
     if (*(dApp->appHandle_ptr) != NULL && eTaskGetState(*(dApp->appHandle_ptr)) == eSuspended){
         Mtb_Applications::appResume(dApp);
         Mtb_Applications::appDestroy(dApp);
-        ESP_LOGI(TAG, "THIS APP HAS BEEN KILLED: %s \n", dApp->appName);
         } else if (*(dApp->appHandle_ptr) != NULL && eTaskGetState(*(dApp->appHandle_ptr)) != eSuspended){
         Mtb_Applications::appDestroy(dApp);
-        ESP_LOGI(TAG, "THIS APP HAS BEEN KILLED: %s \n", dApp->appName);
         } else ESP_LOGI(TAG, "THIS APP IS NOT ACTIVE: %s \n", dApp->appName);
     return dApp;
 }
@@ -514,7 +516,7 @@ Mtb_Applications* mtb_Identify_App_By_ID(Mtb_UserApp_t dAppPath, Mtb_Action_On_A
     memcpy(&activateUserApp, &dAppPath, sizeof(Mtb_UserApp_t));
     mtb_Write_Nvs_Struct("activateUserApp", &activateUserApp, sizeof(Mtb_UserApp_t));
     Mtb_Applications::showAppUI_OR_LaunchApp = LAUNCH_PXP_APP;
-    }else if (actionOnApp == SHOW_PXP_APP_UI){
+    } else if (actionOnApp == SHOW_PXP_APP_UI){
     Mtb_Applications::showAppUI_OR_LaunchApp = SHOW_PXP_APP_UI;
     }
 
@@ -538,7 +540,7 @@ Mtb_Applications* mtb_Identify_App_By_ID(Mtb_UserApp_t dAppPath, Mtb_Action_On_A
 
 //********NUMBER 0 */
 Mtb_Applications* mtb_Clk_Tim_AppLaunch(uint16_t dAppNumber, Mtb_Action_On_App_t actionOnApp){
-    if(actionOnApp == LAUNCH_PXP_APP){    
+    if(actionOnApp == LAUNCH_PXP_APP || actionOnApp == SHOW_PXP_APP_UI){    
     switch(dAppNumber){
         case 0: return mtb_Launch_This_App(calendarClock_App);
         case 1: return mtb_Launch_This_App(pixelAnimClock_App);
@@ -564,7 +566,7 @@ Mtb_Applications* mtb_Clk_Tim_AppLaunch(uint16_t dAppNumber, Mtb_Action_On_App_t
 
 //********NUMBER 1 */
 Mtb_Applications* mtb_Msg_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t actionOnApp){
-    if(actionOnApp == LAUNCH_PXP_APP){  
+    if(actionOnApp == LAUNCH_PXP_APP || actionOnApp == SHOW_PXP_APP_UI){   
     switch(dAppNumber){
         case 0: return mtb_Launch_This_App(googleNews_App);
         case 1: return mtb_Launch_This_App(rssNewsApp);
@@ -588,7 +590,7 @@ Mtb_Applications* mtb_Msg_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t ac
 
 //********NUMBER 2 */
 Mtb_Applications* mtb_Calendar_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t actionOnApp){
-    if(actionOnApp == LAUNCH_PXP_APP){  
+    if(actionOnApp == LAUNCH_PXP_APP || actionOnApp == SHOW_PXP_APP_UI){   
     switch(dAppNumber){
         case 0: return mtb_Launch_This_App(google_Calendar_App);
         case 1: return mtb_Launch_This_App(outlook_Calendar_App);
@@ -609,7 +611,7 @@ Mtb_Applications* mtb_Calendar_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App
 
 //********NUMBER 3 */
 Mtb_Applications* mtb_Weather_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t actionOnApp){
-    if(actionOnApp == LAUNCH_PXP_APP){
+    if(actionOnApp == LAUNCH_PXP_APP || actionOnApp == SHOW_PXP_APP_UI){   
     switch(dAppNumber){
         case 0: return mtb_Launch_This_App(openWeather_App);
         case 1: return mtb_Launch_This_App(openMeteo_App);
@@ -632,7 +634,7 @@ Mtb_Applications* mtb_Weather_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_
 
 //********NUMBER 4 */
 Mtb_Applications* mtb_Finance_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t actionOnApp){
-    if(actionOnApp == LAUNCH_PXP_APP){  
+    if(actionOnApp == LAUNCH_PXP_APP || actionOnApp == SHOW_PXP_APP_UI){   
     switch(dAppNumber){
         case 0: return mtb_Launch_This_App(finnhub_Stats_App);
         case 1: return mtb_Launch_This_App(coinCap_Stats_App);
@@ -657,7 +659,7 @@ Mtb_Applications* mtb_Finance_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_
 
 //********NUMBER 5 */
 Mtb_Applications* mtb_Sports_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t actionOnApp){
-        if(actionOnApp == LAUNCH_PXP_APP){  
+    if(actionOnApp == LAUNCH_PXP_APP || actionOnApp == SHOW_PXP_APP_UI){   
     switch(dAppNumber){
         case 0: return mtb_Launch_This_App(liveFootbalScores_App);
 
@@ -676,7 +678,7 @@ Mtb_Applications* mtb_Sports_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t
 
 //********NUMBER 6 */
 Mtb_Applications* mtb_Animations_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t actionOnApp){
-        if(actionOnApp == LAUNCH_PXP_APP){  
+    if(actionOnApp == LAUNCH_PXP_APP || actionOnApp == SHOW_PXP_APP_UI){    
     switch(dAppNumber){
         case 0: return mtb_Launch_This_App(studioLight_App);
         case 1: return mtb_Launch_This_App(worldFlags_App);
@@ -696,7 +698,7 @@ Mtb_Applications* mtb_Animations_App_Launch(uint16_t dAppNumber, Mtb_Action_On_A
 
 //********NUMBER 7 */
 Mtb_Applications* mtb_Notifications_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t actionOnApp){
-        if(actionOnApp == LAUNCH_PXP_APP){  
+    if(actionOnApp == LAUNCH_PXP_APP || actionOnApp == SHOW_PXP_APP_UI){   
     switch(dAppNumber){
         case 0: return mtb_Launch_This_App(apple_Notifications_App);
 
@@ -715,7 +717,7 @@ Mtb_Applications* mtb_Notifications_App_Launch(uint16_t dAppNumber, Mtb_Action_O
 
 //********NUMBER 8 */
 Mtb_Applications* mtb_AIs_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t actionOnApp){
-    if(actionOnApp == LAUNCH_PXP_APP){  
+    if(actionOnApp == LAUNCH_PXP_APP || actionOnApp == SHOW_PXP_APP_UI){ 
         switch(dAppNumber){
         case 0: return mtb_Launch_This_App(chatGPT_App);
 
@@ -734,7 +736,7 @@ Mtb_Applications* mtb_AIs_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t ac
 
 //********NUMBER 9 */
 Mtb_Applications* mtb_Audio_Stream_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t actionOnApp){
-        if(actionOnApp == LAUNCH_PXP_APP){  
+        if(actionOnApp == LAUNCH_PXP_APP || actionOnApp == SHOW_PXP_APP_UI){  
     switch(dAppNumber){
         case 0: return mtb_Launch_This_App(internetRadio_App);
         case 1: return mtb_Launch_This_App(musicPlayer_App);
@@ -757,7 +759,7 @@ Mtb_Applications* mtb_Audio_Stream_App_Launch(uint16_t dAppNumber, Mtb_Action_On
 
 //********NUMBER 10 */
 Mtb_Applications* mtb_sMedia_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t actionOnApp){
-        if(actionOnApp == LAUNCH_PXP_APP){  
+        if(actionOnApp == LAUNCH_PXP_APP || actionOnApp == SHOW_PXP_APP_UI){  
     switch(dAppNumber){
         // case 0: return mtb_Launch_This_App(calendarClock_App);
 
@@ -776,7 +778,7 @@ Mtb_Applications* mtb_sMedia_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t
 
 //********NUMBER 11 */
 Mtb_Applications* mtb_Miscellanous_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t actionOnApp){
-        if(actionOnApp == LAUNCH_PXP_APP){  
+        if(actionOnApp == LAUNCH_PXP_APP || actionOnApp == SHOW_PXP_APP_UI){  
     switch(dAppNumber){
         case 0: return mtb_Launch_This_App(exampleDesignMobileUI_App);
 
