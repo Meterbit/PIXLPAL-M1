@@ -21,10 +21,10 @@ extern "C" void app_main(){
     mtb_Ble_Comm_Init();
     mtb_Wifi_Init();
 
-    // Launch the Last Executed App or Launch a particular App after boot-up
-    
+    // Cycling through a number of user selected apps, or Launch the Last Executed App or Launch a particular App after boot-up
     if(cycling_Apps.appsShouldCycle == true) mtb_Launch_This_Service(mtb_App_Cycling_Sv);
     else mtb_Identify_App_By_ID(activeUserApp, LAUNCH_PXP_APP);
+
     // mtb_Launch_This_App(coinCap_Stats_App);
 
     // Declare Variable for monitoring Free/Available internal SRAM
@@ -37,10 +37,10 @@ extern "C" void app_main(){
     free_sram = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
     
     // Print the free SRAM size to the console.
-    printf("############ Free Internal SRAM: %zu bytes\n", free_sram);
+    printf("Current app is \"%s\" and internal Free Internal SRAM: %zu bytes\n", Mtb_Applications::currentRunningApp->appName, free_sram);
 
-    // delay 10 seconds
-    delay(10000);
+    // delay 15 seconds
+    delay(15000);
      }
 }
 

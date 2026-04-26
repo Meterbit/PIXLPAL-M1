@@ -70,7 +70,7 @@ do{
 } while (Mtb_Applications::firmwareOTA_Status--> pdFALSE && Mtb_Applications::spiffsOTA_Status--> pdFALSE);
 
     mtb_Set_Status_RGB_LED(YELLOW);
-
+    printf("Exiting USB OTA Update App, Free Internal SRAM: %zu bytes\n", heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
     mtb_Delete_This_App(THIS_APP);
 }
 

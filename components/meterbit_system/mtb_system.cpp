@@ -104,12 +104,12 @@ void mtb_System_Init(void){
     }
 
     Mtb_Static_Text_t::mtb_Config_Disp_Panel_Pins();
-    uint8_t *appLauncherQueue_buffer = (uint8_t *)heap_caps_malloc(4 * sizeof(Mtb_Applications*), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+    uint8_t *appLauncherQueue_buffer = (uint8_t *)heap_caps_malloc(6 * sizeof(Mtb_Applications*), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
     init_nvs_mem();
     Mtb_Static_Text_t::mtb_Init_Led_Matrix_Panel();
 	mtb_Read_Nvs_Struct("dev_Volume", &deviceVolume, sizeof(uint8_t));
     mtb_Text_Scrolls_Init();
-    if(appLauncherQueue == NULL) appLauncherQueue = xQueueCreateStatic(4, sizeof(Mtb_Applications*), appLauncherQueue_buffer, &xQueueStorage_AppLauncher);
+    if(appLauncherQueue == NULL) appLauncherQueue = xQueueCreateStatic(6, sizeof(Mtb_Applications*), appLauncherQueue_buffer, &xQueueStorage_AppLauncher);
 
     // Attempt OTA Update from USB Flash Drive
     mtb_Launch_This_App(usbOTA_Update_App);

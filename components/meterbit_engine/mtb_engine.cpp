@@ -69,14 +69,14 @@ Mtb_Applications* mtb_Launch_This_App(Mtb_Applications *dApp, Mtb_Do_Prev_App_t 
         if (*(dApp->appHandle_ptr) != NULL && eTaskGetState(*(dApp->appHandle_ptr)) == eSuspended){
         Mtb_Applications::appSuspend(Mtb_Applications::currentRunningApp);
         Mtb_Applications::appResume(dApp);
-        //printf("Resume (App) Service Called.\n");
+        printf("Resume (App) Service Called.\n");
         } else {
         if(cycling_Apps.appsShouldCycle == true && do_Prv_App != IGNORE_PREVIOUS_APP) dApp->action_On_Prev_App = SUSPEND_PREVIOUS_APP;
         else dApp->action_On_Prev_App = do_Prv_App;
 
         xQueueSend(appLauncherQueue, &dApp, portMAX_DELAY);
         mtb_Launch_This_Service(mtb_App_Launcher_Sv);
-        //printf("Launcher (App) Service Called.\n");
+        printf("Launcher (App) Service Called.\n");
         }
         return dApp;
 }
@@ -186,10 +186,10 @@ bool Mtb_Applications::appRunner(){
     // Dynamic task creation
     if (xTaskCreatePinnedToCore(application, appName, stackSize, this, appPriority, appHandle_ptr, appCore) != pdPASS) {
         ESP_LOGE(TAG, "Failed to create application task in INTERNAL DRAM: %s\n", appName);
-        return false; // Task creation failed
+        return false; 
     }
     ESP_LOGI(TAG, "App \"%s\" Launched on core %d\n", appName, xPortGetCoreID());
-    return true; // Task creation successful
+    return true; 
 }
 
 void Mtb_Applications::appResume(Mtb_Applications* dApp){
@@ -225,7 +225,7 @@ void Mtb_Applications::appSuspend(Mtb_Applications* dApp){
 
     if(*(dApp->appHandle_ptr) == NULL) return;
 
-    for (Mtb_Services* THIS_SERV : dApp->appServices) if (THIS_SERV != nullptr) mtb_Suspend_This_Service(THIS_SERV);
+    for (Mtb_Services* servElement : dApp->appServices) if (servElement != nullptr) mtb_Suspend_This_Service(servElement);
     vTaskSuspend(*(dApp->appHandle_ptr));
 
     if(dApp->statusBarType == CLOCK_STATUS_BAR) mtb_Status_Bar_Clock_Sv->service_is_Running = pdFALSE;
@@ -234,23 +234,20 @@ void Mtb_Applications::appSuspend(Mtb_Applications* dApp){
 
 void Mtb_Applications::appDestroy(Mtb_Applications* dApp){
 
-    ESP_LOGI(TAG, "App Destroy on \"%s\" Called.\n", dApp->appName);
-
     if(*(dApp->appHandle_ptr) != NULL && dApp->app_is_Running == pdTRUE){
         dApp->app_is_Running = pdFALSE;
         while(*(dApp->appHandle_ptr) != NULL) delay(1);
     }
 
-    for (Mtb_Services *THIS_SERV : dApp->appServices){
-    if(THIS_SERV != nullptr && MTB_SERV_IS_ACTIVE == pdTRUE){
-        MTB_SERV_IS_ACTIVE = pdFALSE;
-        while(*(THIS_SERV->serviceT_Handle_ptr) != NULL) delay(1);
+    for (Mtb_Services *servElement : dApp->appServices){
+    if(servElement != nullptr && servElement->service_is_Running == pdTRUE){
+        servElement->service_is_Running = pdFALSE;
+        while(*(servElement->serviceT_Handle_ptr) != NULL) delay(1);
         }
     }
 
     if(dApp->statusBarType == CLOCK_STATUS_BAR) mtb_Status_Bar_Clock_Sv->service_is_Running = pdFALSE;
     else if(dApp->statusBarType == WEEKDAY_STATUS_BAR) mtb_Status_Bar_Calendar_Sv->service_is_Running = pdFALSE;
-
 
     for (uint8_t i = 0; i < 5; i++){
     if((scrollText_Handles[i]) != NULL){
@@ -261,6 +258,8 @@ void Mtb_Applications::appDestroy(Mtb_Applications* dApp){
             } 
         }
     }
+
+    ESP_LOGW(TAG, "App Destroy on \"%s\" Called.\n", dApp->appName);
 }
 
 void Mtb_Applications::mtb_App_Show_Mobile_UI(void){
@@ -307,8 +306,9 @@ void Mtb_Applications::mtb_App_Set_Mobile_UI(const char* manifest, const char* u
 void mtb_Delete_This_App(Mtb_Applications* dApp){
     // UBaseType_t hwm = uxTaskGetStackHighWaterMark(*(dApp->appHandle_ptr));
     // ESP_LOGW(TAG, "The %s App free stack min so far: %u bytes", dApp->appName, (unsigned)(hwm * sizeof(StackType_t)));
+    dApp->app_is_Running = pdFALSE;
     *(dApp->appHandle_ptr) = NULL;
-    //ESP_LOGI(TAG, "THIS APPLICATION HAS BEEN DELETED: %s \n", dApp->appName);
+    ESP_LOGW(TAG, "THIS APPLICATION HAS BEEN DELETED: %s \n", dApp->appName);
     vTaskDelete(NULL);
 }
 
@@ -319,23 +319,24 @@ Mtb_Applications* mtb_Kill_This_App(Mtb_Applications* dApp){
         Mtb_Applications::appDestroy(dApp);
         } else if (*(dApp->appHandle_ptr) != NULL && eTaskGetState(*(dApp->appHandle_ptr)) != eSuspended){
         Mtb_Applications::appDestroy(dApp);
-        } else ESP_LOGI(TAG, "THIS APP IS NOT ACTIVE: %s \n", dApp->appName);
+        } else ESP_LOGE(TAG, "The \"%s\" is not active, app handler is NULL.\n", dApp->appName);
     return dApp;
 }
 
 // This function deletes a service task and frees its resources. Only call from within a service task.
-void mtb_Delete_This_Service(Mtb_Services* THIS_SERV){
-    // UBaseType_t hwm = uxTaskGetStackHighWaterMark(*(THIS_SERV->serviceT_Handle_ptr));
-    // ESP_LOGW(TAG, "The %s Service Task free stack min so far: %u bytes", THIS_SERV->serviceName, (unsigned)(hwm * sizeof(StackType_t)));    
-    *(THIS_SERV->serviceT_Handle_ptr) = NULL;
-    //ESP_LOGI(TAG, "THIS SERVICE HAS BEEN DELETED: %s \n", THIS_SERV->serviceName);
+void mtb_Delete_This_Service(Mtb_Services* dService){
+    // UBaseType_t hwm = uxTaskGetStackHighWaterMark(*(dService->serviceT_Handle_ptr));
+    // ESP_LOGW(TAG, "The %s Service Task free stack min so far: %u bytes", dService->serviceName, (unsigned)(hwm * sizeof(StackType_t)));  
+    dService->service_is_Running = pdFALSE;  
+    *(dService->serviceT_Handle_ptr) = NULL;
+    //ESP_LOGI(TAG, "THIS SERVICE HAS BEEN DELETED: %s \n", dService->serviceName);
     vTaskDelete(NULL);
 }
 
 // This function deletes a service task and frees its resources. Call from outside the service task.
-void mtb_Kill_This_Service(Mtb_Services* THIS_SERV){
-    MTB_SERV_IS_ACTIVE = pdFALSE;
-    ESP_LOGI(TAG, "THIS SERVICE HAS BEEN KILLED: %s \n", THIS_SERV->serviceName);
+void mtb_Kill_This_Service(Mtb_Services* dService){
+    dService->service_is_Running = pdFALSE;
+    ESP_LOGI(TAG, "THIS SERVICE HAS BEEN KILLED: %s \n", dService->serviceName);
 }
 
 void encoderDoNothing(rotary_encoder_rotation_t){}

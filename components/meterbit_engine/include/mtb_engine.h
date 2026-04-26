@@ -149,7 +149,7 @@ Mtb_Services(void (*dService)(void *), TaskHandle_t* dServiceHandle_ptr, const c
 }
 };
 
-using bleCom_Parser_Fns_Ptr = void (*)(JsonDocument&);     // Defining the signature of a function pointer.
+using bleCom_Parser_Fns_Ptr = void (*)(JsonDocument&);  
 
 // The Applications Class
 class Mtb_Applications{
