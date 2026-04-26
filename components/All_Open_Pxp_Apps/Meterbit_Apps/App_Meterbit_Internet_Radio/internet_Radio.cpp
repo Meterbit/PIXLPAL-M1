@@ -49,14 +49,14 @@ void intRadioButtonControl(button_event_t);
 //bool decodeSaveBase64(String &base64Image, String &fileName);
 //void station_Poster_Download(void);
 
-EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *internetRadio_App = new Mtb_Applications_StatusBar(internetRadio_App_Task, &internet_Radio_Task_H, "Int Rad Task", 6144, false);
+EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *internetRadio_App = new Mtb_Applications_StatusBar(internetRadio_App_Task, &internet_Radio_Task_H, "Int Rad Task", 6144);
 
 //***************************************************************************************************
 void  internetRadio_App_Task(void* dApplication){
     Mtb_Applications *THIS_APP = (Mtb_Applications *) dApplication;
     THIS_APP->mtb_App_Set_EC11_Cb_Fns(intRadioButtonControl, mtb_Vol_Control_Encoder);
     THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(selectRadioStations, playRadioStationLink, updateSavedStations, volumeControl);
-    THIS_APP->mtb_App_Init(mtb_Status_Bar_Clock_Sv, mtb_Audio_Out_Sv);
+    THIS_APP->mtb_App_Init(mtb_Audio_Out_Sv);
   //*************************************************************************************************
     AudioTextTransfer_T audioTextReceiver;
     Mtb_ScrollText_t fmStation(11, 46, 116, Terminal6x8, CYAN, 15, 20000, 20000);

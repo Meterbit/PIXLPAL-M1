@@ -342,6 +342,8 @@ void ble_SetCom_Parse_Task(void* dService){
     else dSetCategory = 0xFFFF;
 
     switch (dSetCategory){
+    case 0: app_Cycle_Settings(dCommand);
+    break;
     case 1: systemSettings(dCommand);
       break;
     case 2: wifiSettings(dCommand);
@@ -461,18 +463,10 @@ void ble_AppCom_Parse_Task(void* dService){
             //     mtb_Ble_App_Cmd_Respond_Success(specific_Application.c_str(), dCmd_num);
             //     break;
 
-            case 250:
-                mtb_Add_App_To_Cycle_App_List(userAppHolder);
-                bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 250}");
-                break;
-            case 251:
-                mtb_Remove_App_From_Cycle_App_List(userAppHolder);
-                bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 251}");
-                break;
             case 252:
-                Mtb_Applications::showAppUI_OR_LaunchApp = SHOW_APP_UI;
+                
                 memcpy(&showAppUI, &userAppHolder, sizeof(Mtb_UserApp_t));
-                mtb_General_App_Register(showAppUI);
+                mtb_Identify_App_By_ID(showAppUI, SHOW_PXP_APP_UI);
                 break;
             case 255:
                 statusBarNotif.mtb_Scroll_This_Text("APP IS ALREADY ACTIVE", CYAN);
@@ -485,18 +479,11 @@ void ble_AppCom_Parse_Task(void* dService){
           dError = deserializeJson(dCommand, dJsonPayload);
           dCmd_num = dCommand["app_command"];
 
-          if(dError.code() == dError.Ok && dCmd_num == 250){
-            mtb_Add_App_To_Cycle_App_List(userAppHolder);
-            bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 250}");
-          }else if(dError.code() == dError.Ok && dCmd_num == 251){
-            mtb_Remove_App_From_Cycle_App_List(userAppHolder);
-            bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 251}");
-          }else if(dError.code() == dError.Ok && dCmd_num == 252){
+          if(dError.code() == dError.Ok && dCmd_num == 252){
             memcpy(&showAppUI, &userAppHolder, sizeof(Mtb_UserApp_t));
-              Mtb_Applications::showAppUI_OR_LaunchApp = SHOW_APP_UI; 
-              mtb_General_App_Register(showAppUI);
+              mtb_Identify_App_By_ID(showAppUI, SHOW_PXP_APP_UI);
           }else if (dError.code() == dError.Ok && dCmd_num == 255){
-              mtb_General_App_Register(activateUserApp);
+              mtb_Identify_App_By_ID(activateUserApp, LAUNCH_PXP_APP);
               bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 253}");
           }else{
               bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 254}");

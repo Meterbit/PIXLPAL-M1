@@ -81,9 +81,9 @@ void  calendarClock_App_Task(void* dApplication){
 	}
   rtc_Sec[2] = 0;
   sec_Obj.mtb_Write_String(rtc_Sec);
-  }
+  // }
 
-  if (pre_Hr != now->tm_hour || THIS_APP->elementRefresh){
+  // if (pre_Hr != now->tm_hour || THIS_APP->elementRefresh){
 	pre_Hr = now->tm_hour;
 
   if(pre_Hr == 0){

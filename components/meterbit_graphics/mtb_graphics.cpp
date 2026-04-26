@@ -320,6 +320,7 @@ void mtb_Draw_Status_Bar(void){
 	if (Mtb_Applications::currentRunningApp->fullScreen == false){
 		//ESP_LOGI(TAG, "Called Draw status bar...\n");
 		for (uint8_t i = 0; i < 11; i++) if (statusBarItems[i].xAxis != 0 && statusBarItems[i].yAxis != 0) xQueueSend(pngLocalImageDrawer_Q, &statusBarItems[i], 0);
+		mtb_Panel_Fill_Rect(0, 0, PANEL_RES_X, 9, BLACK); // Darker background for status bar
 		mtb_Launch_This_Service(mtb_Png_Local_ImageDrawer_Sv);
 		mtb_Panel_Draw_HLine(9, 0, PANEL_RES_X, mtb_Panel_Color565(35, 35, 35)); // Dark gray line
 	}

@@ -51,7 +51,7 @@ void cryptoStats_App_Task(void* dApplication){
   Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
   THIS_APP->mtb_App_Set_EC11_Cb_Fns(buttonChangeDisplayCrypto, mtb_Brightness_Control);
   //THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(showParticularCrypto, add_RemoveCryptoSymbol, setCryptoChangeInterval, setCrytoAPI_key);
-  THIS_APP->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
+  THIS_APP->mtb_App_Init();
   //************************************************************************************ */
     currentCryptoCurrency = (Crypto_Stat_t){
         "bitcoin",

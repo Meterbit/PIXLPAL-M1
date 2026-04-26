@@ -10,7 +10,7 @@ EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *exampleDrawShapes_App = new Mtb_App
 void exampleDrawShapeApp_Task(void* dApplication){
 // ****** Initialize the App Parameters
   Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
-  THIS_APP->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
+  THIS_APP->mtb_App_Init();
 // End of App parameter initialization
 
 mtb_Panel_Clear_Screen();

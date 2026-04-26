@@ -82,7 +82,7 @@ void  outlookCal_App_Task(void* dApplication){
   Mtb_Applications *THIS_APP = (Mtb_Applications *) dApplication;
   THIS_APP->mtb_App_Set_EC11_Cb_Fns(outlookCalButtonControl, mtb_Brightness_Control);
   THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(link_OutlookCal, get_OutlookCal_Refresh_Token, show_OutlookCal_Events, show_OutlookCal_Tasks, show_OutlookCal_Holidays);
-  THIS_APP->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
+  THIS_APP->mtb_App_Init();
   //**************************************************************************************************************************************************************** */
   outlookEvent_Task_Name = new Mtb_FixedText_t(20, 12, Terminal6x8, BLACK, OUTER_SPACE);
   

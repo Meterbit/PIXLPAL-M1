@@ -13,7 +13,6 @@ EXT_RAM_BSS_ATTR Mtb_Services *mtb_Status_Bar_Calendar_Sv = new Mtb_Services(mtb
 
 void mtb_StatusBar_Calendar_Task(void* dService){
   Mtb_Services *thisServ = (Mtb_Services *)dService;
-  Mtb_Applications::currentRunningApp->showStatusBarCalendar = pdTRUE;
     uint8_t timeRefresh = pdTRUE;
     mtb_Read_Nvs_Struct("Clock Cols", &clk_Updt, sizeof(Clock_Colors));
     Mtb_FixedText_t weekday_Obj(35, 1, Terminal6x8, clk_Updt.weekDayColour);

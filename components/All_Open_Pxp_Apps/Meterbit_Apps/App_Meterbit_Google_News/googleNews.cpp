@@ -55,7 +55,7 @@ void googleNews_App_Task(void * dApplication) {
 
       THIS_APP->mtb_App_Set_EC11_Cb_Fns(buttonNewsTickerHandler, mtb_Brightness_Control);
     // Initialize app services.
-    THIS_APP->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
+    THIS_APP->mtb_App_Init();
     
     if (googleNewsupdateSem == NULL)
         googleNewsupdateSem = xSemaphoreCreateBinary();

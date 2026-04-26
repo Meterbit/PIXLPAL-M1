@@ -115,9 +115,9 @@ void mtb_System_Init(void){
     mtb_Launch_This_App(usbOTA_Update_App);
     while(*(usbOTA_Update_App->appHandle_ptr) != NULL) delay(1000); 
 
-    cycling_Apps = (Mtb_Apps_To_Cycle_t){.appsShouldCycle = true, .appCycleDuration = 15, .appsCycling = {{0,0},{0,1},{0,2}}, .app_Frame_Buffers = {{{0}}}}; // Default values for the app cycling struct. The app cycling feature is disabled by default, and the number of apps in cycle is set to 0. The app cycle duration is set to 10 seconds by default, and the apps in cycle are set to 0,0 (no apps) by default.
+    cycling_Apps = (Mtb_Apps_To_Cycle_t){.appsShouldCycle = true, .appsNoInCycle = 5, .appCycleDuration = 15, .appsCycling = {{0,0},{0,1},{0,2},{4,0},{6,1}}, .app_Frame_Buffers = {{{0}}}}; // Default values for the app cycling struct. The app cycling feature is disabled by default, and the number of apps in cycle is set to 0. The app cycle duration is set to 10 seconds by default, and the apps in cycle are set to 0,0 (no apps) by default.
 
     // Read the last executed App from NVS
     mtb_Read_Nvs_Struct("activateUserApp", &activateUserApp, sizeof(Mtb_UserApp_t));
-    mtb_Read_Nvs_Struct("cycling_Apps", &cycling_Apps, sizeof(Mtb_Apps_To_Cycle_t));
+    mtb_Read_Nvs_Struct("cycl_Apps", &cycling_Apps, sizeof(Mtb_Apps_To_Cycle_t));
 }

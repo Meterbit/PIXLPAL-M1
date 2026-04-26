@@ -63,7 +63,7 @@ void delete_file(const char *path) {
 }
 
 EXT_RAM_BSS_ATTR Mtb_Services *mtb_Audio_Listening_Sv = new Mtb_Services(micAudioListen_Task, &micAudioListen_Task_H, "Aud listen Serv", 4096);
-EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *chatGPT_App = new Mtb_Applications_StatusBar(chatGPT_App_Task, &chatGPT_Task_H, "chatGPT App", 6144, false); // Review down this stack size later.
+EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *chatGPT_App = new Mtb_Applications_StatusBar(chatGPT_App_Task, &chatGPT_Task_H, "chatGPT App", 6144); // Review down this stack size later.
 
 //***************************************************************************************************
 void  chatGPT_App_Task(void* dApplication){
@@ -72,7 +72,7 @@ void  chatGPT_App_Task(void* dApplication){
   Mtb_FixedText_t chatGPT_Text(46, 19, Terminal10x17);
   Mtb_ScrollText_t conn2Intnt(11, 55, 116, Terminal6x8, ORANGE_RED, 15, 20000, 1000);
   THIS_APP->mtb_App_Set_EC11_Cb_Fns(Listen_Process_Button, mtb_Vol_Control_Encoder);
-  THIS_APP->mtb_App_Init(mtb_Audio_Out_Sv, mtb_Audio_In_Sv, mtb_Status_Bar_Clock_Sv);
+  THIS_APP->mtb_App_Init(mtb_Audio_Out_Sv, mtb_Audio_In_Sv);
   //**************************************************************************************************************************
   humanSpeech = new Mtb_ScrollText_t (11, 45, 116, Terminal6x8, CYAN, 25, 20000,  0);
   aiResponse = new Mtb_ScrollText_t(11, 55, 116, Terminal6x8, YELLOW, 15, 3, 0);

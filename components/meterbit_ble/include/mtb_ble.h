@@ -6,6 +6,7 @@
 
 
 // All Settings Communication Routes
+static const char mtb_App_Cycle_Settings_Route[] = "0";
 static const char mtb_System_Settings_Route[] = "1";
 static const char mtb_Wifi_Settings_Route[] = "2";
 static const char mtb_Ble_Settings_Route[] = "3";
@@ -47,6 +48,7 @@ extern void systemSettings(JsonDocument&);
 extern void wifiSettings(JsonDocument&);
 extern void bleSettings(JsonDocument&);
 extern void softwareUpdate(JsonDocument&);
+extern void app_Cycle_Settings(JsonDocument&);
 
 //BLE SECTION
 void mtb_Current_Ble_Device(const char*);

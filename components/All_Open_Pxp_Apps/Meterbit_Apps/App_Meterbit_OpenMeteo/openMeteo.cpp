@@ -34,7 +34,7 @@ void openMeteoUpdate_App_Task(void* dApplication){
   Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
   THIS_APP->mtb_App_Set_EC11_Cb_Fns(changeOpenMeteoLocation, mtb_Brightness_Control);
   THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(setOpenMeteoLocation);
-  THIS_APP->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
+  THIS_APP->mtb_App_Init();
   //************************************************************************************ */
   currentOpenMeteoData = (OpenMeteoData_t){"Lagos, Nigeria"};
   mtb_Read_Nvs_Struct("openMeteo", &currentOpenMeteoData, sizeof(OpenMeteoData_t));

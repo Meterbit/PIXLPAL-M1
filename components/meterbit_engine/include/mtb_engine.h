@@ -30,6 +30,11 @@ extern QueueHandle_t appLauncherQueue;
 extern QueueHandle_t nvsAccessQueue;
 extern SemaphoreHandle_t nvsAccessComplete_Sem;
 
+enum Mtb_Action_On_App_t{
+    LAUNCH_PXP_APP = 1,
+    KILL_PXP_APP,
+    SHOW_PXP_APP_UI
+};
 
 enum Mtb_Do_Prev_App_t{
     SUSPEND_PREVIOUS_APP = 1,
@@ -37,9 +42,11 @@ enum Mtb_Do_Prev_App_t{
     IGNORE_PREVIOUS_APP,
 };
 
-enum Mtb_ShowAppUI_OR_LaunchApp_t{
-    LAUNCH_SELECT_APP = 1,
-    SHOW_APP_UI 
+enum Mtb_Status_Bar_t{
+    NO_STATUS_BAR = 0,
+    PLAIN_STATUS_BAR,
+    CLOCK_STATUS_BAR,
+    WEEKDAY_STATUS_BAR,
 };
 
 struct Mtb_UserApp_t{
@@ -49,7 +56,7 @@ struct Mtb_UserApp_t{
 
 struct Mtb_Apps_To_Cycle_t{
     bool appsShouldCycle;
-    // uint8_t appsNoInCycle;
+    uint8_t appsNoInCycle;
     uint16_t appCycleDuration;
     Mtb_UserApp_t appsCycling[CYCLING_APP_SLOTS];
     uint16_t app_Frame_Buffers[CYCLING_APP_SLOTS][128][64];
@@ -152,7 +159,7 @@ public:
     uint8_t appPriority;                // Priority of the application
     TaskHandle_t* appHandle_ptr;        // Pointer to the application task handle.
     uint8_t appCore;                    // Core on which the application task is running on.
-    bool appCanCycle;                   // This is used to check if the application can be cycled or not. If true, the application can be suspended and resumed, otherwise the app plays until it is destroyed.
+    Mtb_Status_Bar_t statusBarType;                   // This is used to check if the application can be cycled or not. If true, the application can be suspended and resumed, otherwise the app plays until it is destroyed.
 
     const char* appMobile_Manifest;
     const char* appMobile_UiApi;
@@ -165,8 +172,6 @@ public:
     bool fullScreen = false;                                        // If true, the application will run in full screen mode, otherwise it will run in status bar mode.
     bool elementRefresh;                                            // Refresh the various elements/components displayed onscreen by the app.
     uint8_t app_is_Running = pdFALSE;                               // This is used to check if the application is running or not. It is set to pdTRUE when the application is running, and pdFALSE when it is not running.
-    uint8_t showStatusBarClock = pdFALSE;                           // This is used to check if the status bar clock should be shown or not. It is set to pdTRUE when the status bar clock should be shown, and pdFALSE when it should not be shown.
-    uint8_t showStatusBarCalendar = pdFALSE;                        // This is used to check if the status bar calendar should be shown or not. It is set to pdTRUE when the status bar calendar should be shown, and pdFALSE when it should not be shown.
 
     Mtb_Do_Prev_App_t action_On_Prev_App = DESTROY_PREVIOUS_APP;    // This is used to check what action should be taken on the previous application when a new application is launched. It can be set to SUSPEND_PREVIOUS_APP, DESTROY_PREVIOUS_APP, or IGNORE_PREVIOUS_APP.
 
@@ -183,7 +188,7 @@ public:
     // static bool mqttPhoneConnectStatus;
     static uint8_t firmwareOTA_Status;                              // This is used to check the status of the firmware OTA update. It is set to 6 when the OTA update is not started, and it can be set to other values to indicate the status of the OTA update.
     static uint8_t spiffsOTA_Status;                                // This is used to check the status of the SPIFFS OTA update. It is set to 6 when the OTA update is not started, and it can be set to other values to indicate the status of the OTA update.
-    static Mtb_ShowAppUI_OR_LaunchApp_t showAppUI_OR_LaunchApp;     // This is used to check whether to show the app UI or launch the app when the mobile UI command is received. It can be set to SHOW_APP_UI or LAUNCH_SELECT_APP.
+    static Mtb_Action_On_App_t showAppUI_OR_LaunchApp;     // This is used to check whether to show the app UI or launch the app when the mobile UI command is received. It can be set to SHOW_APP_UI or LAUNCH_SELECT_APP.
                                
     bleCom_Parser_Fns_Ptr bleAppComServiceFns[12] = {nullptr};
 
@@ -219,7 +224,7 @@ public:
 
     // Applications Constructors
     Mtb_Applications();                                             // Default constructor
-    Mtb_Applications(void (*dApplication)(void *), TaskHandle_t* dAppHandle_ptr, const char* dAppName, uint32_t dStackSize, bool canCycle);
+    Mtb_Applications(void (*dApplication)(void *), TaskHandle_t* dAppHandle_ptr, const char* dAppName, uint32_t dStackSize, Mtb_Status_Bar_t statusBarType);
     //virtual 
 };
 
@@ -227,8 +232,8 @@ public:
 class Mtb_Applications_FullScreen : public Mtb_Applications{            
     public:
         Mtb_Applications_FullScreen();
-        Mtb_Applications_FullScreen(void (*dApplication)(void *), TaskHandle_t *dAppHandle_ptr, const char *dAppName, uint32_t dStackSize = 4096, bool canCycle = true) : 
-        Mtb_Applications(dApplication, dAppHandle_ptr, dAppName, dStackSize, canCycle) { 
+        Mtb_Applications_FullScreen(void (*dApplication)(void *), TaskHandle_t *dAppHandle_ptr, const char *dAppName, uint32_t dStackSize = 4096, Mtb_Status_Bar_t statusBarType = NO_STATUS_BAR) : 
+        Mtb_Applications(dApplication, dAppHandle_ptr, dAppName, dStackSize, statusBarType) { 
             fullScreen = true;
         }
 };
@@ -237,8 +242,8 @@ class Mtb_Applications_FullScreen : public Mtb_Applications{
 class Mtb_Applications_StatusBar : public Mtb_Applications{
     public:
         Mtb_Applications_StatusBar();
-        Mtb_Applications_StatusBar(void (*dApplication)(void *), TaskHandle_t *dAppHandle_ptr, const char *dAppName, uint32_t dStackSize = 4096, bool canCycle = true) : 
-        Mtb_Applications(dApplication, dAppHandle_ptr, dAppName, dStackSize, canCycle) { 
+        Mtb_Applications_StatusBar(void (*dApplication)(void *), TaskHandle_t *dAppHandle_ptr, const char *dAppName, uint32_t dStackSize = 4096, Mtb_Status_Bar_t statusBarType = CLOCK_STATUS_BAR) : 
+        Mtb_Applications(dApplication, dAppHandle_ptr, dAppName, dStackSize, statusBarType) { 
             fullScreen = false;
         }
 };
@@ -254,8 +259,9 @@ extern void mtb_Suspend_This_Service(Mtb_Services*);
 extern void mtb_Delete_This_Service(Mtb_Services *);
 extern void mtb_Kill_This_Service(Mtb_Services* );
 extern void mtb_Delete_This_App(Mtb_Applications *);
+extern Mtb_Applications* mtb_Kill_This_App(Mtb_Applications*);
 
-extern Mtb_Applications* mtb_General_App_Register(Mtb_UserApp_t);
+extern Mtb_Applications* mtb_Identify_App_By_ID(Mtb_UserApp_t, Mtb_Action_On_App_t);
 extern uint8_t mtb_Add_App_To_Cycle_App_List(Mtb_UserApp_t);
 extern uint8_t mtb_Remove_App_From_Cycle_App_List(Mtb_UserApp_t);
 
@@ -265,18 +271,18 @@ extern void mtb_StatusBar_Clock_Task(void*);
 extern void mtb_StatusBar_Calendar_Task(void*);
 
 // All Apps Categories
-extern Mtb_Applications* mtb_Clk_Tim_AppLaunch(uint16_t);
-extern Mtb_Applications* mtb_Msg_App_Launch(uint16_t);
-extern Mtb_Applications* mtb_Calendar_App_Launch(uint16_t);
-extern Mtb_Applications* mtb_Weather_App_Launch(uint16_t);
-extern Mtb_Applications* mtb_Sports_App_Launch(uint16_t);
-extern Mtb_Applications* mtb_Animations_App_Launch(uint16_t);
-extern Mtb_Applications* mtb_Finance_App_Launch(uint16_t);
-extern Mtb_Applications* mtb_sMedia_App_Launch(uint16_t);
-extern Mtb_Applications* mtb_Notifications_App_Launch(uint16_t);
-extern Mtb_Applications* mtb_AIs_App_Launch(uint16_t);
-extern Mtb_Applications* mtb_Audio_Stream_App_Launch(uint16_t);
-extern Mtb_Applications* mtb_Miscellanous_App_Launch(uint16_t);
+extern Mtb_Applications* mtb_Clk_Tim_AppLaunch(uint16_t, Mtb_Action_On_App_t);
+extern Mtb_Applications* mtb_Msg_App_Launch(uint16_t, Mtb_Action_On_App_t);
+extern Mtb_Applications* mtb_Calendar_App_Launch(uint16_t, Mtb_Action_On_App_t);
+extern Mtb_Applications* mtb_Weather_App_Launch(uint16_t, Mtb_Action_On_App_t);
+extern Mtb_Applications* mtb_Sports_App_Launch(uint16_t, Mtb_Action_On_App_t);
+extern Mtb_Applications* mtb_Animations_App_Launch(uint16_t, Mtb_Action_On_App_t);
+extern Mtb_Applications* mtb_Finance_App_Launch(uint16_t, Mtb_Action_On_App_t);
+extern Mtb_Applications* mtb_sMedia_App_Launch(uint16_t, Mtb_Action_On_App_t);
+extern Mtb_Applications* mtb_Notifications_App_Launch(uint16_t, Mtb_Action_On_App_t);
+extern Mtb_Applications* mtb_AIs_App_Launch(uint16_t, Mtb_Action_On_App_t);
+extern Mtb_Applications* mtb_Audio_Stream_App_Launch(uint16_t, Mtb_Action_On_App_t);
+extern Mtb_Applications* mtb_Miscellanous_App_Launch(uint16_t, Mtb_Action_On_App_t);
 
 // System Sevices
 

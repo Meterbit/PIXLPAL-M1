@@ -24,9 +24,9 @@ extern "C" void app_main(){
     // Launch the Last Executed App or Launch a particular App after boot-up
     
     if(cycling_Apps.appsShouldCycle == true) mtb_Launch_This_Service(mtb_App_Cycling_Sv);
-    else mtb_General_App_Register(activateUserApp);
-    // // mtb_Launch_This_App(coinCap_Stats_App);
-    //mtb_General_App_Register(activateUserApp);
+    else mtb_Identify_App_By_ID(activateUserApp, LAUNCH_PXP_APP);
+    // mtb_Launch_This_App(coinCap_Stats_App);
+    // mtb_Identify_App_By_ID(activateUserApp, LAUNCH_PXP_APP);
 
     // Declare Variable for monitoring Free/Available internal SRAM
     size_t free_sram = 0;

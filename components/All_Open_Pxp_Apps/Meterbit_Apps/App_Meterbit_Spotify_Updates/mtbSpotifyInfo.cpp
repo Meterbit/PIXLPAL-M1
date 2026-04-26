@@ -41,7 +41,7 @@ Mtb_Applications_StatusBar *spotify_App = new Mtb_Applications_StatusBar(spotify
 void  spotify_App_Task(void* dApplication){
   Mtb_Applications *THIS_APP = (Mtb_Applications *) dApplication;
   THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(link_Spotify, get_Spotify_Refresh_Token);
-  THIS_APP->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
+  THIS_APP->mtb_App_Init();
 //**************************************************************************************************************************************************************** */
 
     userSpotify = (Spotify_Data_t){

@@ -49,7 +49,7 @@ void rssNewsApp_Task(void* dApplication) {
   Mtb_Applications *THIS_APP = (Mtb_Applications *) dApplication;
   THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(updateSourceSelection);
 
-  THIS_APP->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
+  THIS_APP->mtb_App_Init();
   mtb_Read_Nvs_Struct("rssSettings", &rssSettings, sizeof(RssSettings_t));
 
   // Wait for internet connection before proceeding

@@ -13,7 +13,6 @@ EXT_RAM_BSS_ATTR Mtb_Services *mtb_Status_Bar_Clock_Sv = new Mtb_Services(mtb_St
 
 void mtb_StatusBar_Clock_Task(void* dService){
   Mtb_Services *thisServ = (Mtb_Services *)dService;
-  Mtb_Applications::currentRunningApp->showStatusBarClock = pdTRUE;
     uint8_t timeRefresh = pdTRUE;
     mtb_Read_Nvs_Struct("Clock Cols", &clk_Updt, sizeof(Clock_Colors));
     Mtb_FixedText_t hr_min_Obj(52, 1, Terminal6x8, clk_Updt.hourMinColour);
@@ -23,6 +22,7 @@ void mtb_StatusBar_Clock_Task(void* dService){
     time_t present = 0;
     struct tm *now = nullptr;
 //    char AM_or_PM;
+    uint8_t pre_Sec = 111; // 111 is an abitrary number choosen which is greater than 59 seconds but less than 256 count of 8bytes
     uint8_t pre_Hr = 111;
     uint8_t pre_Min = 111;
     uint8_t pre_Day = 111;
@@ -37,7 +37,7 @@ void mtb_StatusBar_Clock_Task(void* dService){
     //ESP_LOGI(TAG, "Time is not correct. The year is: %d\n", now->tm_year);
   }else{
 //*************************************************
-  if (pre_Hr != now->tm_hour || timeRefresh){
+  if (pre_Sec != now->tm_sec || timeRefresh){
 	pre_Hr = now->tm_hour;
 
     if(pre_Hr == 0){
@@ -51,21 +51,11 @@ void mtb_StatusBar_Clock_Task(void* dService){
     else{
         sprintf( rtc_Hr_Min, "%d", pre_Hr );
     }	
-	// else if (pre_Hr == 12){
-  //   sprintf( rtc_Hr_Min, "%d", pre_Hr);
-	// }
-	// else if(pre_Hr > 12 && pre_Hr < 22){
-	// 	pre_Hr -= 12;
-	// 	rtc_Hr_Min[0] = '0';
-  //   sprintf(&rtc_Hr_Min[1], "%d", pre_Hr );
-	// 	}
-	// else { pre_Hr -= 12;
-  //   sprintf( rtc_Hr_Min, "%d", pre_Hr );
-	// 	}
-    pre_Hr = now->tm_hour;        // Code is placed here because pre_Hr was changed.
-  }
 
-  	if (pre_Min != now->tm_min || timeRefresh){
+    pre_Hr = now->tm_hour;        // Code is placed here because pre_Hr was changed.
+  // }
+
+  // 	if (pre_Min != now->tm_min || timeRefresh){
   pre_Min = now->tm_min;
 
   if (pre_Min < 10){

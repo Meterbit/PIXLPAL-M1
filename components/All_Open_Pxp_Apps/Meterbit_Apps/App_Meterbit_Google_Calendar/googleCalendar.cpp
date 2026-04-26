@@ -94,7 +94,7 @@ void  googleCal_App_Task(void* dApplication){
   THIS_APP->mtb_App_Set_EC11_Cb_Fns(googleCalButtonControl, mtb_Brightness_Control);
 
   THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(link_GoogleCal, get_GoogleCal_Refresh_Token, show_GoogleCal_Events, show_GoogleCal_Tasks, show_GoogleCal_Holidays, set_GoogleCal_ThemeColor);
-  THIS_APP->mtb_App_Init(mtb_Status_Bar_Clock_Sv);
+  THIS_APP->mtb_App_Init();
   //**************************************************************************************************************************************************************** */
   
   event_Task_Title_1 = new Mtb_ScrollText_t(12, 24, 113, Terminal6x8, CYAN, 10, 0xFFFF, 15000);

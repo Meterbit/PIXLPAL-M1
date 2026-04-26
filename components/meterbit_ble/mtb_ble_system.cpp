@@ -142,7 +142,7 @@ void system_Clock_Format_Change(JsonDocument& dCommand){
 //**07*********************************************************************************************************************
 void system_Restart_Device(){
   statusBarNotif.mtb_Scroll_This_Text("RESTARTING PIXLPAL", YELLOW);
-  String acknowledge = "{\"set_command\": 7, \"response:\": 1}";
+  String acknowledge = "{\"set_command\": 7, \"response\": 1}";
   bleSettingsComSend(mtb_System_Settings_Route, acknowledge);
   delay(10000);
   device_SD_RS(TEMP_RS);
@@ -150,9 +150,9 @@ void system_Restart_Device(){
 //**08*********************************************************************************************************************
 void system_Shutdown_Device(){
   statusBarNotif.mtb_Scroll_This_Text("SHUTTING DOWN PIXLPAL", RED);
-  String acknowledge = "{\"set_command\": 8, \"response:\": 1}";
+  String acknowledge = "{\"set_command\": 8, \"response\": 1}";
   delay(12000);
-  bleSettingsComSend(mtb_System_Settings_Route, acknowledge);
+  bleSettingsComSend(mtb_System_Settings_Route, acknowledge); 
 	device_SD_RS(PERM_SH);
   mtb_Set_Status_RGB_LED(RED);
 }
