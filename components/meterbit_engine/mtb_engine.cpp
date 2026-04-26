@@ -81,27 +81,27 @@ Mtb_Applications* mtb_Launch_This_App(Mtb_Applications *dApp, Mtb_Do_Prev_App_t 
         return dApp;
 }
 
-void mtb_Launch_This_Service(Mtb_Services* dService){
-    //ESP_LOGI(TAG, "Attempting to start service: %s\n", dService->serviceName);
+void mtb_Launch_This_Service(Mtb_Services* THIS_SERV){
+    //ESP_LOGI(TAG, "Attempting to start service: %s\n", THIS_SERV->serviceName);
     BaseType_t result;
-    if(*(dService->serviceT_Handle_ptr) == NULL) {  // Prevents the service from being started multiple times
-        dService->service_is_Running = pdTRUE;
-        result = xTaskCreatePinnedToCore(dService->service, dService->serviceName, dService->stackSize, dService, dService->servicePriority, dService->serviceT_Handle_ptr, dService->serviceCore);
-        //if(result == pdPASS) ESP_LOGI(TAG, "Task %s successfully launched\n", dService->serviceName);
-        if(result != pdPASS) ESP_LOGE(TAG, "Task %s failed to launch with error code: %d\n", dService->serviceName, result);
+    if(*(THIS_SERV->serviceT_Handle_ptr) == NULL) {  // Prevents the service from being started multiple times
+        MTB_SERV_IS_ACTIVE = pdTRUE;
+        result = xTaskCreatePinnedToCore(THIS_SERV->service, THIS_SERV->serviceName, THIS_SERV->stackSize, THIS_SERV, THIS_SERV->servicePriority, THIS_SERV->serviceT_Handle_ptr, THIS_SERV->serviceCore);
+        //if(result == pdPASS) ESP_LOGI(TAG, "Task %s successfully launched\n", THIS_SERV->serviceName);
+        if(result != pdPASS) ESP_LOGE(TAG, "Task %s failed to launch with error code: %d\n", THIS_SERV->serviceName, result);
     }
 }
 
-void mtb_Resume_This_Service(Mtb_Services* dService){
-    vTaskResume(*(dService->serviceT_Handle_ptr));
+void mtb_Resume_This_Service(Mtb_Services* THIS_SERV){
+    vTaskResume(*(THIS_SERV->serviceT_Handle_ptr));
 }
 
-void mtb_Suspend_This_Service(Mtb_Services* dService){
-    vTaskSuspend(*(dService->serviceT_Handle_ptr));
+void mtb_Suspend_This_Service(Mtb_Services* THIS_SERV){
+    vTaskSuspend(*(THIS_SERV->serviceT_Handle_ptr));
 }
 
 void appLauncherTask(void * dService){
-    Mtb_Services *THIS_SERVICE = (Mtb_Services *)dService;
+    Mtb_Services *THIS_SERV = (Mtb_Services *)dService;
     Mtb_Applications *appLaunchHolder = nullptr;
     while (xQueueReceive(appLauncherQueue, &appLaunchHolder, pdMS_TO_TICKS(500))){
     if (Mtb_Applications::currentRunningApp != nullptr && Mtb_Applications::showAppUI_OR_LaunchApp == LAUNCH_PXP_APP){
@@ -112,22 +112,24 @@ void appLauncherTask(void * dService){
         appLaunchHolder->appRunner();
     //ESP_LOGI(TAG, "Application %s has been launched\n", appLaunchHolder->appName);
     }
-    mtb_Delete_This_Service(THIS_SERVICE);
+    mtb_Delete_This_Service(THIS_SERV);
 }
 
-void appCyclingTask(void * dService){
-    Mtb_Services *THIS_SERVICE = (Mtb_Services *)dService;
+void appCyclingTask(void* dService){
+    Mtb_Services *THIS_SERV = (Mtb_Services *)dService;
     Mtb_Applications *appCyclingHolder = nullptr;
+    uint16_t appDurationCounter = 0;
 
     mtb_Identify_App_By_ID(activeUserApp, KILL_PXP_APP);
 
         uint32_t p = 0;
-        for(uint8_t i = 0; THIS_SERVICE->service_is_Running == pdTRUE; ++p, i = p % CYCLING_APP_SLOTS){
+        for(uint8_t i = 0; MTB_SERV_IS_ACTIVE == pdTRUE; ++p, i = p % CYCLING_APP_SLOTS){
             if (cycling_Apps.appsCycling[i].GenApp != 255 && cycling_Apps.appsCycling[i].SpeApp != 255){
+                appDurationCounter = cycling_Apps.appCycleDuration * 100;
                 appCyclingHolder = mtb_Identify_App_By_ID(cycling_Apps.appsCycling[i], LAUNCH_PXP_APP);
                 if(p >= CYCLING_APP_SLOTS) mtb_Panel_Draw_FullScreen_RGB565(cycling_Apps.app_Frame_Buffers[i]);
                 printf("@@@@@@@@ Showing \"%s\" app in slot %d: GenApp %d, SpeApp %d\n", appCyclingHolder->appName, i, cycling_Apps.appsCycling[i].GenApp, cycling_Apps.appsCycling[i].SpeApp);
-                delay(cycling_Apps.appCycleDuration * 1000);
+                while(appDurationCounter --> 0 && MTB_SERV_IS_ACTIVE == pdTRUE) delay(10);
                 memcpy(cycling_Apps.app_Frame_Buffers[i], mtb_Panel_Frame_Buffer, sizeof(mtb_Panel_Frame_Buffer));
             } else continue;
         }
@@ -141,11 +143,11 @@ void appCyclingTask(void * dService){
 
     mtb_Identify_App_By_ID(activeUserApp, LAUNCH_PXP_APP);
 
-    mtb_Delete_This_Service(THIS_SERVICE);
+    mtb_Delete_This_Service(THIS_SERV);
 }
 
-void nvsAccessTask(void * dService){
-    Mtb_Services *THIS_SERVICE = (Mtb_Services *)dService;
+void nvsAccessTask(void* dService){
+    Mtb_Services *THIS_SERV = (Mtb_Services *)dService;
     NvsAccessParams_t nvsAccessObjHolder;
     while (xQueueReceive(nvsAccessQueue, &nvsAccessObjHolder, pdMS_TO_TICKS(500))){     // the pdMS_TO_TICKS(500) here waits for another nvs read/write command to be added before killing the task
         if(nvsAccessObjHolder.read_OR_Write == NVS_MEM_READ){
@@ -165,8 +167,7 @@ void nvsAccessTask(void * dService){
                 ESP_LOGI(TAG, "Error reading NVS: %s\n", esp_err_to_name(error1));
             }
             xSemaphoreGive(nvsAccessComplete_Sem);
-        }
-        else if(nvsAccessObjHolder.read_OR_Write == NVS_MEM_WRITE){
+        } else if(nvsAccessObjHolder.read_OR_Write == NVS_MEM_WRITE){
                 nvs_handle write_nvs_handle;
                 esp_err_t err = nvs_open("hx_list", NVS_READWRITE, &write_nvs_handle);
                 esp_err_t error1 = nvs_set_blob(write_nvs_handle, nvsAccessObjHolder.key, nvsAccessObjHolder.struct_ptr, nvsAccessObjHolder.struct_size);
@@ -178,7 +179,7 @@ void nvsAccessTask(void * dService){
                 xSemaphoreGive(nvsAccessComplete_Sem);
         }
     }
-        mtb_Delete_This_Service(THIS_SERVICE);
+        mtb_Delete_This_Service(THIS_SERV);
 }
 
 bool Mtb_Applications::appRunner(){
@@ -207,7 +208,7 @@ void Mtb_Applications::appResume(Mtb_Applications* dApp){
 
     if(litFS_Ready){
     vTaskResume(*(dApp->appHandle_ptr));
-    for (Mtb_Services* element : dApp->appServices) if (element != nullptr) mtb_Resume_This_Service(element);
+    for (Mtb_Services* THIS_SERV : dApp->appServices) if (THIS_SERV != nullptr) mtb_Resume_This_Service(THIS_SERV);
     }
 
     encoderFn_ptr = dApp->mtb_App_EncoderFn_ptr; 
@@ -224,7 +225,7 @@ void Mtb_Applications::appSuspend(Mtb_Applications* dApp){
 
     if(*(dApp->appHandle_ptr) == NULL) return;
 
-    for (Mtb_Services* element : dApp->appServices) if (element != nullptr) mtb_Suspend_This_Service(element);
+    for (Mtb_Services* THIS_SERV : dApp->appServices) if (THIS_SERV != nullptr) mtb_Suspend_This_Service(THIS_SERV);
     vTaskSuspend(*(dApp->appHandle_ptr));
 
     if(dApp->statusBarType == CLOCK_STATUS_BAR) mtb_Status_Bar_Clock_Sv->service_is_Running = pdFALSE;
@@ -240,10 +241,10 @@ void Mtb_Applications::appDestroy(Mtb_Applications* dApp){
         while(*(dApp->appHandle_ptr) != NULL) delay(1);
     }
 
-    for (Mtb_Services *element : dApp->appServices){
-    if(element != nullptr && element->service_is_Running == pdTRUE){
-        element->service_is_Running = pdFALSE;
-        while(*(element->serviceT_Handle_ptr) != NULL) delay(1);
+    for (Mtb_Services *THIS_SERV : dApp->appServices){
+    if(THIS_SERV != nullptr && MTB_SERV_IS_ACTIVE == pdTRUE){
+        MTB_SERV_IS_ACTIVE = pdFALSE;
+        while(*(THIS_SERV->serviceT_Handle_ptr) != NULL) delay(1);
         }
     }
 
@@ -323,18 +324,18 @@ Mtb_Applications* mtb_Kill_This_App(Mtb_Applications* dApp){
 }
 
 // This function deletes a service task and frees its resources. Only call from within a service task.
-void mtb_Delete_This_Service(Mtb_Services* dService){
-    // UBaseType_t hwm = uxTaskGetStackHighWaterMark(*(dService->serviceT_Handle_ptr));
-    // ESP_LOGW(TAG, "The %s Service Task free stack min so far: %u bytes", dService->serviceName, (unsigned)(hwm * sizeof(StackType_t)));    
-    *(dService->serviceT_Handle_ptr) = NULL;
-    //ESP_LOGI(TAG, "THIS SERVICE HAS BEEN DELETED: %s \n", dService->serviceName);
+void mtb_Delete_This_Service(Mtb_Services* THIS_SERV){
+    // UBaseType_t hwm = uxTaskGetStackHighWaterMark(*(THIS_SERV->serviceT_Handle_ptr));
+    // ESP_LOGW(TAG, "The %s Service Task free stack min so far: %u bytes", THIS_SERV->serviceName, (unsigned)(hwm * sizeof(StackType_t)));    
+    *(THIS_SERV->serviceT_Handle_ptr) = NULL;
+    //ESP_LOGI(TAG, "THIS SERVICE HAS BEEN DELETED: %s \n", THIS_SERV->serviceName);
     vTaskDelete(NULL);
 }
 
 // This function deletes a service task and frees its resources. Call from outside the service task.
-void mtb_Kill_This_Service(Mtb_Services* thisServ){
+void mtb_Kill_This_Service(Mtb_Services* THIS_SERV){
     MTB_SERV_IS_ACTIVE = pdFALSE;
-    ESP_LOGI(TAG, "THIS SERVICE HAS BEEN KILLED: %s \n", thisServ->serviceName);
+    ESP_LOGI(TAG, "THIS SERVICE HAS BEEN KILLED: %s \n", THIS_SERV->serviceName);
 }
 
 void encoderDoNothing(rotary_encoder_rotation_t){}
@@ -411,16 +412,12 @@ void Mtb_Applications::mtb_App_Init(Mtb_Services* pointer_0, Mtb_Services* point
     Mtb_Services* pointer_5, Mtb_Services* pointer_6, Mtb_Services* pointer_7, 
     Mtb_Services* pointer_8, Mtb_Services* pointer_9){
 
-    printf("APP INIT DEBUG: First Stage -> App: %s\n", appName);
-
     if(showAppUI_OR_LaunchApp == SHOW_PXP_APP_UI){
         mtb_App_Show_Mobile_UI();
         showAppUI_OR_LaunchApp = LAUNCH_PXP_APP;
         mtb_Delete_This_App(this);
         return;
     }
-
-    printf("APP INIT DEBUG: Second Stage -> App: %s\n", appName);
 
     currentRunningApp = this;
 
@@ -442,9 +439,7 @@ void Mtb_Applications::mtb_App_Init(Mtb_Services* pointer_0, Mtb_Services* point
 
     mtb_Panel_Clear_Screen();
 
-    for (Mtb_Services *element : appServices) if (element != nullptr) mtb_Launch_This_Service(element);
-
-    printf("APP INIT DEBUG: Third Stage -> App: %s\n", appName);
+    for (Mtb_Services *THIS_SERV : appServices) if (THIS_SERV != nullptr) mtb_Launch_This_Service(THIS_SERV);
 
     switch(statusBarType){
         case CLOCK_STATUS_BAR:
@@ -457,8 +452,6 @@ void Mtb_Applications::mtb_App_Init(Mtb_Services* pointer_0, Mtb_Services* point
             break;
     }
 
-    printf("APP INIT DEBUG: Fourth Stage -> App: %s\n", appName);
-
     if(mtb_App_ButtonFn_ptr != buttonDoNothing) mtb_Launch_This_Service(mtb_Button_Task_Sv);
 
     if(mtb_App_EncoderFn_ptr != encoderDoNothing) mtb_Launch_This_Service(mtb_Encoder_Task_Sv);
@@ -467,7 +460,6 @@ void Mtb_Applications::mtb_App_Init(Mtb_Services* pointer_0, Mtb_Services* point
 
     app_is_Running = pdTRUE;
 
-    printf("APP INIT DEBUG: Fifth Stage -> App: %s\n", appName);
     //ESP_LOGI(TAG, "THIS APPLICATION HAS BEEN STARTED: %s \n", Mtb_Applications::currentRunningApp->appName);
 }
 

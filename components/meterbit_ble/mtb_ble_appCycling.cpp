@@ -37,7 +37,7 @@ void app_Cycle_Settings(JsonDocument& dCommand){
       break;
     case 3: appCycling_Selections(dCommand);
       break;
-    default: ESP_LOGI(TAG, "Wi-fi Settings Number not Recognised.\n");
+    default: ESP_LOGW(TAG, "App Cycling Settings Number not Recognised.\n");
       break;
     }
 }
@@ -48,8 +48,12 @@ void appCycling_Status(JsonDocument& dCommand){
   char* acknowledge = "{\"set_command\": 1, \"response\": 1}";
   tempStatus = dCommand["value"];
   cycling_Apps.appsShouldCycle = tempStatus;
-  if(cycling_Apps.appsShouldCycle && cycling_Apps.appsNoInCycle > 0) mtb_Launch_This_Service(mtb_App_Cycling_Sv);
-  else mtb_Kill_This_Service(mtb_App_Cycling_Sv);
+
+  if(cycling_Apps.appsShouldCycle && cycling_Apps.appsNoInCycle > 0){
+    mtb_Kill_This_App(Mtb_Applications::currentRunningApp);
+    mtb_Launch_This_Service(mtb_App_Cycling_Sv);
+  } else mtb_Kill_This_Service(mtb_App_Cycling_Sv);
+
   mtb_Write_Nvs_Struct("cycl_Apps", &cycling_Apps, sizeof(Mtb_Apps_To_Cycle_t));
   bleSettingsComSend(mtb_App_Cycle_Settings_Route, acknowledge);
 }

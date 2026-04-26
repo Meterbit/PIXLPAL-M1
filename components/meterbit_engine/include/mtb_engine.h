@@ -21,7 +21,8 @@
 
 #define CYCLING_APP_SLOTS 5
 #define THIS_APP           thisApp
-#define THIS_APP_IS_ACTIVE (THIS_APP->app_is_Running)
+#define THIS_SERV          thisServ
+#define THIS_APP_IS_ACTIVE (thisApp->app_is_Running)
 #define MTB_SERV_IS_ACTIVE (thisServ->service_is_Running)
 
 extern QueueHandle_t clock_Update_Q;
