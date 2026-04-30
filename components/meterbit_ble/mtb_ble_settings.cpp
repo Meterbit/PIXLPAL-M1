@@ -63,13 +63,12 @@ if (newBleName.length() == 0) {
     bleSettingsComSend(mtb_Ble_Settings_Route, emptyName);
     return;
 }
-strcpy(pxp_BLE_Name, newBleName.c_str());
-mtb_Write_Nvs_Struct("pxpBleDevName", pxp_BLE_Name, sizeof(pxp_BLE_Name));
 
 // mtb_Ble_Change_Pxp_Ble_Name(pxp_BLE_Name);
 
 bleSettingsComSend(mtb_Ble_Settings_Route, success);
-
+strcpy(pxp_BLE_Name, newBleName.c_str());
+mtb_Write_Nvs_Struct("pxpBleDevName", pxp_BLE_Name, sizeof(pxp_BLE_Name));
 statusBarNotif.mtb_Scroll_This_Text("BLUETOOTH NAME CHANGED TO: \"" + newBleName + "\".    PIXLPAL WILL RESTART", SKY_BLUE_CRAYOLA);
 
 delay(13000);

@@ -367,33 +367,3 @@ uint8_t* create_wav_in_psram(const int16_t* buffer, uint32_t numSamples, uint32_
 // }
 
 
-
-// void selectNumOfBands(JsonDocument& dCommand){
-//   uint8_t cmd = dCommand["app_command"];
-//   audioSpecVisual_Set.noOfBands = dCommand["numOfBands"];
-//   mtb_Write_Nvs_Struct("audioSpecSet", &audioSpecVisual_Set, sizeof(AudioSpectVisual_Set_t));        
-//   mqtt_Command_Respond_Success(cmd, pdPASS);
-// }
-
-// void selectPattern(JsonDocument& dCommand){
-//   uint8_t cmd = dCommand["app_command"];
-//   audioSpecVisual_Set.selectedPattern = dCommand["selectedPattern"];
-//   mtb_Write_Nvs_Struct("audioSpecSet", &audioSpecVisual_Set, sizeof(AudioSpectVisual_Set_t));        
-//   mqtt_Command_Respond_Success(cmd, pdPASS);
-// }
-
-// void setRandomPatterns(JsonDocument& dCommand){
-//   uint8_t cmd = dCommand["app_command"];
-//   audioSpecVisual_Set.showRandom = dCommand["showRandom"];
-//   if(audioSpecVisual_Set.showRandom) xTimerStart(showRandomPatternTimer_H, 0);
-//   else xTimerStop(showRandomPatternTimer_H, 0);
-//   mtb_Write_Nvs_Struct("audioSpecSet", &audioSpecVisual_Set, sizeof(AudioSpectVisual_Set_t));        
-//   mqtt_Command_Respond_Success(cmd, pdPASS);
-// }
-
-// void setSensitivity(JsonDocument& dCommand){
-//   uint8_t cmd = dCommand["app_command"];
-//   audioSpecVisual_Set.sensitivity = dCommand["sensitivity"];
-//   mtb_Write_Nvs_Struct("audioSpecSet", &audioSpecVisual_Set, sizeof(AudioSpectVisual_Set_t));        
-//   mqtt_Command_Respond_Success(cmd, pdPASS);
-// }

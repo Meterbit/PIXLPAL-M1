@@ -77,13 +77,13 @@ tempBrightness = dCommand["value"];
 
 panelBrightness = (tempBrightness * 2.55) + 1; // One (1) is added to make the 100% correspond to 255
 if (panelBrightness == 0)panelBrightness = 5;
-mtb_Write_Nvs_Struct("pan_brghnss", &panelBrightness, sizeof(uint8_t));
 mtb_Panel_Set_Brightness(panelBrightness); // 0-255
 mtb_Set_Status_RGB_LED(currentStatusLEDcolor);
 sprintf(brightnsValue, "%d", (uint8_t)(panelBrightness / 2.55));
 strcat(setPanBrightness, brightnsValue);
 strcat(setPanBrightness, "}");
 bleSettingsComSend(mtb_System_Settings_Route, String(setPanBrightness));
+mtb_Write_Nvs_Struct("pan_brghnss", &panelBrightness, sizeof(uint8_t));
 }
 
 //**02*********************************************************************************************************************
@@ -122,9 +122,10 @@ void system_Time_Zone(JsonDocument& dCommand){
   setenv("TZ", ntp_TimeZone, 1);
   tzset();
   Mtb_Applications::currentRunningApp->elementRefresh = true;
-  mtb_Write_Nvs_Struct("ntp TimeZone", ntp_TimeZone, sizeof(ntp_TimeZone));
+  
   //mtb_Launch_This_Service(mtb_Sntp_Time_Sv);
   bleSettingsComSend(mtb_System_Settings_Route, success);
+  mtb_Write_Nvs_Struct("ntp TimeZone", ntp_TimeZone, sizeof(ntp_TimeZone));
 }
 //**06*********************************************************************************************************************
 void system_Clock_Format_Change(JsonDocument& dCommand){

@@ -37,7 +37,7 @@ extern "C" void app_main(){
     free_sram = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
     
     // Print the free SRAM size to the console.
-    printf("Current app is \"%s\" and internal Free Internal SRAM: %zu bytes\n", Mtb_Applications::currentRunningApp->appName, free_sram);
+    //printf("Current app is \"%s\" and internal Free Internal SRAM: %zu bytes\n", Mtb_Applications::currentRunningApp->appName, free_sram);
 
     // delay 15 seconds
     delay(15000);

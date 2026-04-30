@@ -40,6 +40,8 @@ void app_Cycle_Settings(JsonDocument& dCommand){
     default: ESP_LOGW(TAG, "App Cycling Settings Number not Recognised.\n");
       break;
     }
+
+    mtb_Write_Nvs_Struct("testCycling", &cycling_Apps, sizeof(Mtb_Apps_To_Cycle_t));
 }
 
 //**01*********************************************************************************************************************
@@ -54,7 +56,6 @@ void appCycling_Status(JsonDocument& dCommand){
     mtb_Launch_This_Service(mtb_App_Cycling_Sv);
   } else mtb_Kill_This_Service(mtb_App_Cycling_Sv);
 
-  mtb_Write_Nvs_Struct("testCycling", &cycling_Apps, sizeof(Mtb_Apps_To_Cycle_t));
   bleSettingsComSend(mtb_App_Cycle_Settings_Route, acknowledge);
 }
 
@@ -64,7 +65,7 @@ uint16_t tempDuration;
 String acknowledge = "{\"set_command\": 2, \"response\": 1}";
 tempDuration = dCommand["value"];
 cycling_Apps.appCycleDuration = tempDuration;
-mtb_Write_Nvs_Struct("testCycling", &cycling_Apps, sizeof(Mtb_Apps_To_Cycle_t));
+printf("App Cycle Duration is now set to: %d seconds.\n", cycling_Apps.appCycleDuration);
 bleSettingsComSend(mtb_App_Cycle_Settings_Route, acknowledge);
 }
 

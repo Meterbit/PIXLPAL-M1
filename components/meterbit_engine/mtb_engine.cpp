@@ -19,7 +19,7 @@
 
 static const char TAG[] = "METERBIT_ENGINE";
 
-EXT_RAM_BSS_ATTR Mtb_User_AppID_t lastSavedApp = {0,0}; // Default to Calendar Clock App.
+EXT_RAM_BSS_ATTR Mtb_User_AppID_t lastSavedApp = {0,1}; // Default to Calendar Clock App.
 EXT_RAM_BSS_ATTR Mtb_Apps_To_Cycle_t cycling_Apps;
 
 EXT_RAM_BSS_ATTR QueueHandle_t clock_Update_Q = NULL;
@@ -500,7 +500,7 @@ extern uint8_t mtb_Add_App_To_Cycle_App_List( Mtb_User_AppID_t appToAdd){
     for(uint8_t i = 0; i < CYCLING_APP_SLOTS; i++){
         if(cycling_Apps.appsCycling[i].GenApp == 255 && cycling_Apps.appsCycling[i].SpeApp == 255){
             cycling_Apps.appsCycling[i] = appToAdd;
-            mtb_Write_Nvs_Struct("testCycling", &cycling_Apps, sizeof(Mtb_Apps_To_Cycle_t));
+            
             return 1;
         }
     }
@@ -511,7 +511,6 @@ extern uint8_t mtb_Remove_App_From_Cycle_App_List(Mtb_User_AppID_t appToRemove){
         if(cycling_Apps.appsCycling[i].GenApp == appToRemove.GenApp && cycling_Apps.appsCycling[i].SpeApp == appToRemove.SpeApp){
             cycling_Apps.appsCycling[i].GenApp = 255;
             cycling_Apps.appsCycling[i].SpeApp = 255;
-            mtb_Write_Nvs_Struct("testCycling", &cycling_Apps, sizeof(Mtb_Apps_To_Cycle_t));
             mtb_Identify_App_By_ID(appToRemove, KILL_PXP_APP);
             return 1;
         }
