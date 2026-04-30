@@ -11,7 +11,7 @@ void exampleEncoderBeepApp_Task(void *dApplication);
 void exampleAppButtonFn(button_event_t button_Data);
 void exampleAppEncoderFn(rotary_encoder_rotation_t direction);
 
-EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *exampleEncoderBeep_App = new Mtb_Applications_StatusBar(exampleEncoderBeepApp_Task, &exampleEncoderBeepApp_Task_H, "exampleEncoderBeepApp", 4096);
+EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *exampleEncoderBeep_App = new Mtb_Applications_StatusBar(exampleEncoderBeepApp_Task, &exampleEncoderBeepApp_Task_H, "exampleEncoderBeepApp", {11,2}, 4096);
 
 void exampleEncoderBeepApp_Task(void* dApplication){
 // ****** Initialize the App Parameters

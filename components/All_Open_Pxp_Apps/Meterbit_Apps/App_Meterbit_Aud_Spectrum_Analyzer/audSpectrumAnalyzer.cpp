@@ -25,7 +25,7 @@ void setRandomInterval(JsonDocument&);
 EXT_RAM_BSS_ATTR TaskHandle_t audSpecAnalyzer_Task_H = NULL;
 void audSpecAnalyzer_App_Task(void *dApplication);
 
-EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *audSpecAnalyzer_App = new Mtb_Applications_FullScreen(audSpecAnalyzer_App_Task, &audSpecAnalyzer_Task_H, "Audio Spectr", 6144);
+EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *audSpecAnalyzer_App = new Mtb_Applications_FullScreen(audSpecAnalyzer_App_Task, &audSpecAnalyzer_Task_H, "Audio Spectr", {9,2}, 6144);
 uint32_t counterValue1 = 0;
 //***************************************************************************************************
 void  audSpecAnalyzer_App_Task(void* dApplication){

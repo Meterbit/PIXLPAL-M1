@@ -97,7 +97,7 @@ EXT_RAM_BSS_ATTR Mtb_FixedText_t* rankStandings4;
 EXT_RAM_BSS_ATTR Mtb_FixedText_t* teamStandings4;
 EXT_RAM_BSS_ATTR Mtb_FixedText_t* pointsStandings4;
 
-EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *liveFootbalScores_App = new Mtb_Applications_StatusBar(liveFootball_App_Task, &liveFootball_Task_H, "Live Football", 12288);
+EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *liveFootbalScores_App = new Mtb_Applications_StatusBar(liveFootball_App_Task, &liveFootball_Task_H, "Live Football", {5,0}, 12288);
 
 void liveFootball_App_Task(void *dApplication){
     Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;

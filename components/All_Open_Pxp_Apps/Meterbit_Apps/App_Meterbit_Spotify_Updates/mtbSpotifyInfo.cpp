@@ -35,7 +35,7 @@ void link_Spotify(JsonDocument&);
 void get_Spotify_Refresh_Token(JsonDocument&);
 
 //Mtb_Services *spotifyScreenUpdate_Sv = new Mtb_Services(performScreenUpdate_Task, &screenUpdates_Task_H, "screenUpdates", 10240, pdTRUE);
-Mtb_Applications_StatusBar *spotify_App = new Mtb_Applications_StatusBar(spotify_App_Task, &spotify_Task_H, "spotify App", 4096);
+Mtb_Applications_StatusBar *spotify_App = new Mtb_Applications_StatusBar(spotify_App_Task, &spotify_Task_H, "spotify App", {9,3}, 4096);
 
 //THIS IS THE APPLICATION IMPLEMENTATION ***************************************************************************
 void  spotify_App_Task(void* dApplication){

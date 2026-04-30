@@ -5,7 +5,7 @@
 EXT_RAM_BSS_ATTR TaskHandle_t exampleWriteTextApp_Task_H = NULL;
 void exampleWriteTextApp_Task(void *dApplication);
 
-EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *exampleWriteText_App = new Mtb_Applications_FullScreen(exampleWriteTextApp_Task, &exampleWriteTextApp_Task_H, "exampleWriteTextApp", 4096);
+EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *exampleWriteText_App = new Mtb_Applications_FullScreen(exampleWriteTextApp_Task, &exampleWriteTextApp_Task_H, "exampleWriteTextApp", {11,1}, 4096);
 
 void exampleWriteTextApp_Task(void* dApplication){
 // ****** Initialize the App Parameters

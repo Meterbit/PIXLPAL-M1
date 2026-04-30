@@ -66,14 +66,14 @@ void device_SD_RS(power_States_t wake_Plan){
 void encoder_Task (void* dService){
     Mtb_Services *thisServ = (Mtb_Services *)dService;
     rotary_encoder_event_t encoder_Data;
-    while (MTB_SERV_IS_ACTIVE == pdTRUE) if(xQueueReceive(encoderEvent_Q, &encoder_Data, pdMS_TO_TICKS(500)) == pdTRUE) encoderFn_ptr(encoder_Data.dir);
+    while (MTB_SERV_IS_ACTIVE == pdTRUE) if(xQueueReceive(encoderEvent_Q, &encoder_Data, pdMS_TO_TICKS(500)) == pdTRUE) mtb_Common_EncoderFn_ptr(encoder_Data.dir);
     mtb_Delete_This_Service(thisServ);
 }
 
 void button_Task (void* dService){
     Mtb_Services *thisServ = (Mtb_Services *)dService;
 	button_event_t button_Data;
-    while (MTB_SERV_IS_ACTIVE == pdTRUE) if(xQueueReceive(buttonEvent_Q, &button_Data, pdMS_TO_TICKS(500)) == pdTRUE) buttonFn_ptr(button_Data);
+    while (MTB_SERV_IS_ACTIVE == pdTRUE) if(xQueueReceive(buttonEvent_Q, &button_Data, pdMS_TO_TICKS(500)) == pdTRUE) mtb_Common_ButtonFn_Ptr(button_Data);
     mtb_Delete_This_Service(thisServ);
 }
 
@@ -111,13 +111,15 @@ void mtb_System_Init(void){
     mtb_Text_Scrolls_Init();
     if(appLauncherQueue == NULL) appLauncherQueue = xQueueCreateStatic(6, sizeof(Mtb_Applications*), appLauncherQueue_buffer, &xQueueStorage_AppLauncher);
 
-    // Attempt OTA Update from USB Flash Drive
+    // Read the last executed App from NVS
+  
+
+    // // Attempt OTA Update from USB Flash Drive
     mtb_Launch_This_App(usbOTA_Update_App);
-    while(*(usbOTA_Update_App->appHandle_ptr) != NULL) delay(1000); 
+    while(*(usbOTA_Update_App->appHandle_ptr) != NULL) delay(1000);
 
     cycling_Apps = (Mtb_Apps_To_Cycle_t){.appsShouldCycle = true, .appsNoInCycle = 5, .appCycleDuration = 15, .appsCycling = {{0,0},{0,1},{0,2},{4,0},{6,1}}, .app_Frame_Buffers = {{{0}}}}; // Default values for the app cycling struct. The app cycling feature is disabled by default, and the number of apps in cycle is set to 0. The app cycle duration is set to 10 seconds by default, and the apps in cycle are set to 0,0 (no apps) by default.
 
-    // Read the last executed App from NVS
-    mtb_Read_Nvs_Struct("activeUserApp", &activeUserApp, sizeof(Mtb_UserApp_t));
-    mtb_Read_Nvs_Struct("cycl_Apps", &cycling_Apps, sizeof(Mtb_Apps_To_Cycle_t));
+    mtb_Read_Nvs_Struct("nvsUserApp", &lastSavedApp, sizeof(Mtb_User_AppID_t));
+    mtb_Read_Nvs_Struct("testCycling", &cycling_Apps, sizeof(Mtb_Apps_To_Cycle_t));
 }

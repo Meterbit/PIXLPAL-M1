@@ -19,7 +19,7 @@
 
 static const char TAG[] = "METERBIT_ENGINE";
 
-EXT_RAM_BSS_ATTR Mtb_UserApp_t activeUserApp;
+EXT_RAM_BSS_ATTR Mtb_User_AppID_t lastSavedApp = {0,0}; // Default to Calendar Clock App.
 EXT_RAM_BSS_ATTR Mtb_Apps_To_Cycle_t cycling_Apps;
 
 EXT_RAM_BSS_ATTR QueueHandle_t clock_Update_Q = NULL;
@@ -30,8 +30,8 @@ EXT_RAM_BSS_ATTR QueueHandle_t appLauncherQueue = NULL;
 EXT_RAM_BSS_ATTR QueueHandle_t nvsAccessQueue = NULL;
 EXT_RAM_BSS_ATTR SemaphoreHandle_t nvsAccessComplete_Sem = NULL;
 
-void (*encoderFn_ptr)(rotary_encoder_rotation_t) = encoderDoNothing;
-void (*buttonFn_ptr)(button_event_t) = buttonDoNothing;
+void (*mtb_Common_EncoderFn_ptr)(rotary_encoder_rotation_t) = encoderDoNothing;
+void (*mtb_Common_ButtonFn_Ptr)(button_event_t) = buttonDoNothing;
 
 EXT_RAM_BSS_ATTR Mtb_Services *mtb_App_Cycling_Sv = new Mtb_Services(appCyclingTask, &appCycling_Task_H, "App Cycling Task", 3072, 3);
 EXT_RAM_BSS_ATTR Mtb_Services *mtb_App_Launcher_Sv = new Mtb_Services(appLauncherTask, &appLauncher_Task_H, "App Launcher Task", 2560, 3);
@@ -51,12 +51,13 @@ bool Mtb_Applications::bleCentralContd = false;
 uint16_t Mtb_Applications::bleCentralNegotiatedMtu = 512;  // Default to 512, can be updated based on actual negotiation results
 uint8_t Mtb_Applications::firmwareOTA_Status = 6;
 uint8_t Mtb_Applications::spiffsOTA_Status = 6;
-Mtb_Action_On_App_t Mtb_Applications::showAppUI_OR_LaunchApp = LAUNCH_PXP_APP;
+Mtb_Action_On_App_t Mtb_Applications::actionOnApp = LAUNCH_PXP_APP;
 
-Mtb_Applications::Mtb_Applications(void (*dApplication)(void *), TaskHandle_t* dAppHandle_ptr, const char* dAppName, uint32_t dStackSize, Mtb_Status_Bar_t statusBarType){
+Mtb_Applications::Mtb_Applications(void (*dApplication)(void *), TaskHandle_t* dAppHandle_ptr, const char* dAppName, Mtb_User_AppID_t applicationID, uint32_t dStackSize, Mtb_Status_Bar_t statusBarType){
     application = dApplication;
     appHandle_ptr = dAppHandle_ptr;
     strcpy(appName, dAppName);
+    appID = applicationID;
     stackSize = dStackSize;
     appPriority = 1;
     if(dAppHandle_ptr == (&usbFirmwareUpdate_H)) appCore = 1;
@@ -65,18 +66,19 @@ Mtb_Applications::Mtb_Applications(void (*dApplication)(void *), TaskHandle_t* d
     elementRefresh = true;
 }
 
-Mtb_Applications* mtb_Launch_This_App(Mtb_Applications *dApp, Mtb_Do_Prev_App_t do_Prv_App){
+Mtb_Applications* mtb_Launch_This_App(Mtb_Applications *dApp, Mtb_Action_On_App_t action, Mtb_Do_Prev_App_t do_Prv_App){
+        Mtb_Applications::actionOnApp = action;
         if (*(dApp->appHandle_ptr) != NULL && eTaskGetState(*(dApp->appHandle_ptr)) == eSuspended){
         Mtb_Applications::appSuspend(Mtb_Applications::currentRunningApp);
         Mtb_Applications::appResume(dApp);
-        printf("Resume (App) Service Called.\n");
+        printf("Resume (App) Service Called on \"%s\"\n", dApp->appName);
         } else {
         if(cycling_Apps.appsShouldCycle == true && do_Prv_App != IGNORE_PREVIOUS_APP) dApp->action_On_Prev_App = SUSPEND_PREVIOUS_APP;
         else dApp->action_On_Prev_App = do_Prv_App;
-
+        printf("Queueing \"%s\" app for launch\n", dApp->appName);
         xQueueSend(appLauncherQueue, &dApp, portMAX_DELAY);
         mtb_Launch_This_Service(mtb_App_Launcher_Sv);
-        printf("Launcher (App) Service Called.\n");
+        printf("Launcher (App) Service Called on \"%s\"\n", dApp->appName);
         }
         return dApp;
 }
@@ -104,13 +106,15 @@ void appLauncherTask(void * dService){
     Mtb_Services *THIS_SERV = (Mtb_Services *)dService;
     Mtb_Applications *appLaunchHolder = nullptr;
     while (xQueueReceive(appLauncherQueue, &appLaunchHolder, pdMS_TO_TICKS(500))){
-    if (Mtb_Applications::currentRunningApp != nullptr && Mtb_Applications::showAppUI_OR_LaunchApp == LAUNCH_PXP_APP){
+    if (Mtb_Applications::currentRunningApp != nullptr && Mtb_Applications::actionOnApp == LAUNCH_PXP_APP){
         Mtb_Applications::previousRunningApp = Mtb_Applications::currentRunningApp;
+
+        ESP_LOGI(TAG, "Initiating action on previous app: %s\n", Mtb_Applications::previousRunningApp->appName);
         Mtb_Applications::actionOnPreviousApp(appLaunchHolder->action_On_Prev_App);
     }
-    //ESP_LOGI(TAG, "About to run the app: %s\n", appLaunchHolder->appName);
+    ESP_LOGI(TAG, "About to run the app: %s\n", appLaunchHolder->appName);
         appLaunchHolder->appRunner();
-    //ESP_LOGI(TAG, "Application %s has been launched\n", appLaunchHolder->appName);
+    ESP_LOGI(TAG, "Application %s has been launched\n", appLaunchHolder->appName);
     }
     mtb_Delete_This_Service(THIS_SERV);
 }
@@ -120,7 +124,7 @@ void appCyclingTask(void* dService){
     Mtb_Applications *appCyclingHolder = nullptr;
     uint16_t appDurationCounter = 0;
 
-    mtb_Identify_App_By_ID(activeUserApp, KILL_PXP_APP);
+    mtb_Identify_App_By_ID(Mtb_Applications::currentRunningApp->appID, KILL_PXP_APP);
 
         uint32_t p = 0;
         for(uint8_t i = 0; MTB_SERV_IS_ACTIVE == pdTRUE; ++p, i = p % CYCLING_APP_SLOTS){
@@ -141,7 +145,7 @@ void appCyclingTask(void* dService){
             } else continue;
         }
 
-    mtb_Identify_App_By_ID(activeUserApp, LAUNCH_PXP_APP);
+    mtb_Identify_App_By_ID(Mtb_Applications::currentRunningApp->appID, LAUNCH_PXP_APP);
 
     mtb_Delete_This_Service(THIS_SERV);
 }
@@ -211,8 +215,8 @@ void Mtb_Applications::appResume(Mtb_Applications* dApp){
     for (Mtb_Services* THIS_SERV : dApp->appServices) if (THIS_SERV != nullptr) mtb_Resume_This_Service(THIS_SERV);
     }
 
-    encoderFn_ptr = dApp->mtb_App_EncoderFn_ptr; 
-    buttonFn_ptr = dApp->mtb_App_ButtonFn_ptr;
+    mtb_Common_EncoderFn_ptr = dApp->mtb_App_EncoderFn_ptr; 
+    mtb_Common_ButtonFn_Ptr = dApp->mtb_App_ButtonFn_Ptr;
 
     // dApp->mtb_App_Set_Ble_Comm_Sv_Fns(clock_Color_Change, get_NTP_Local_Time);
     
@@ -263,16 +267,16 @@ void Mtb_Applications::appDestroy(Mtb_Applications* dApp){
 }
 
 void Mtb_Applications::mtb_App_Show_Mobile_UI(void){
-    char appID[20];
+    char applicationID[20];
     String mobileUICommand;
-    snprintf(appID, sizeof(appID), "%u/%u", activeUserApp.GenApp, activeUserApp.SpeApp);
+    snprintf(applicationID, sizeof(applicationID), "%u/%u", appID.GenApp, appID.SpeApp);
 
     if(appMobile_Data == nullptr) mobileUICommand = "{\"app_command\": 252, \"manifest\": " + String(appMobile_Manifest) + ", \"ui_api\": " + String(appMobile_UiApi) + "}";
     else mobileUICommand = "{\"app_command\": 252, \"manifest\": " + String(appMobile_Manifest) + ", \"ui_api\": " + String(appMobile_UiApi) + ", \"data\": " + String(appMobile_Data) + "}";
 
     ESP_LOGI(TAG, "Mobile UI Command: %s\n", mobileUICommand.c_str());
     
-    bleApplicationComSend(appID, mobileUICommand);
+    bleApplicationComSend(applicationID, mobileUICommand);
 }
 
 void Mtb_Applications::actionOnPreviousApp(Mtb_Do_Prev_App_t dAction){
@@ -292,9 +296,9 @@ void Mtb_Applications::actionOnPreviousApp(Mtb_Do_Prev_App_t dAction){
     }
 }
 
-void Mtb_Applications::mtb_App_Set_EC11_Cb_Fns(buttonFn_ptr_t but_Fn, encoderFn_ptr_t enc_Fn){
+void Mtb_Applications::mtb_App_Set_EC11_Cb_Fns(mtb_Common_ButtonFn_Ptr_t but_Fn, encoderFn_ptr_t enc_Fn){
     mtb_App_EncoderFn_ptr = enc_Fn;
-    mtb_App_ButtonFn_ptr = but_Fn;
+    mtb_App_ButtonFn_Ptr = but_Fn;
 }
 
 void Mtb_Applications::mtb_App_Set_Mobile_UI(const char* manifest, const char* ui_api, const char* data){
@@ -303,6 +307,7 @@ void Mtb_Applications::mtb_App_Set_Mobile_UI(const char* manifest, const char* u
     appMobile_Data = data;
 }
 
+// This function deletes an App task and frees its resources. IMPORTANT:Only call from within a App task.
 void mtb_Delete_This_App(Mtb_Applications* dApp){
     // UBaseType_t hwm = uxTaskGetStackHighWaterMark(*(dApp->appHandle_ptr));
     // ESP_LOGW(TAG, "The %s App free stack min so far: %u bytes", dApp->appName, (unsigned)(hwm * sizeof(StackType_t)));
@@ -323,7 +328,7 @@ Mtb_Applications* mtb_Kill_This_App(Mtb_Applications* dApp){
     return dApp;
 }
 
-// This function deletes a service task and frees its resources. Only call from within a service task.
+// This function deletes a service task and frees its resources. IMPORTANT:Only call from within a service task.
 void mtb_Delete_This_Service(Mtb_Services* dService){
     // UBaseType_t hwm = uxTaskGetStackHighWaterMark(*(dService->serviceT_Handle_ptr));
     // ESP_LOGW(TAG, "The %s Service Task free stack min so far: %u bytes", dService->serviceName, (unsigned)(hwm * sizeof(StackType_t)));  
@@ -413,17 +418,16 @@ void Mtb_Applications::mtb_App_Init(Mtb_Services* pointer_0, Mtb_Services* point
     Mtb_Services* pointer_5, Mtb_Services* pointer_6, Mtb_Services* pointer_7, 
     Mtb_Services* pointer_8, Mtb_Services* pointer_9){
 
-    if(showAppUI_OR_LaunchApp == SHOW_PXP_APP_UI){
+    if(actionOnApp == SHOW_PXP_APP_UI){
         mtb_App_Show_Mobile_UI();
-        showAppUI_OR_LaunchApp = LAUNCH_PXP_APP;
         mtb_Delete_This_App(this);
         return;
     }
 
     currentRunningApp = this;
 
-    buttonFn_ptr = mtb_App_ButtonFn_ptr;
-    encoderFn_ptr = mtb_App_EncoderFn_ptr;
+    mtb_Common_ButtonFn_Ptr = mtb_App_ButtonFn_Ptr;
+    mtb_Common_EncoderFn_ptr = mtb_App_EncoderFn_ptr;
 
     appServices[0] = pointer_0;
     appServices[1] = pointer_1;
@@ -453,11 +457,13 @@ void Mtb_Applications::mtb_App_Init(Mtb_Services* pointer_0, Mtb_Services* point
             break;
     }
 
-    if(mtb_App_ButtonFn_ptr != buttonDoNothing) mtb_Launch_This_Service(mtb_Button_Task_Sv);
+    if(mtb_App_ButtonFn_Ptr != buttonDoNothing) mtb_Launch_This_Service(mtb_Button_Task_Sv);
 
     if(mtb_App_EncoderFn_ptr != encoderDoNothing) mtb_Launch_This_Service(mtb_Encoder_Task_Sv);
 
     if(fullScreen == false) mtb_Draw_Status_Bar();
+
+    if(Mtb_Applications::currentRunningApp->appID.GenApp <= 11) mtb_Write_Nvs_Struct("nvsUserApp", &Mtb_Applications::currentRunningApp->appID, sizeof(Mtb_User_AppID_t));
 
     app_is_Running = pdTRUE;
 
@@ -490,22 +496,22 @@ void Mtb_Applications::mtb_App_Set_Ble_Comm_Sv_Fns(bleCom_Parser_Fns_Ptr Fn_0, b
     bleAppComServiceFns[11] = Fn_11;
 }
 
-extern uint8_t mtb_Add_App_To_Cycle_App_List( Mtb_UserApp_t appToAdd){
+extern uint8_t mtb_Add_App_To_Cycle_App_List( Mtb_User_AppID_t appToAdd){
     for(uint8_t i = 0; i < CYCLING_APP_SLOTS; i++){
         if(cycling_Apps.appsCycling[i].GenApp == 255 && cycling_Apps.appsCycling[i].SpeApp == 255){
             cycling_Apps.appsCycling[i] = appToAdd;
-            mtb_Write_Nvs_Struct("cycling_Apps", &cycling_Apps, sizeof(Mtb_Apps_To_Cycle_t));
+            mtb_Write_Nvs_Struct("testCycling", &cycling_Apps, sizeof(Mtb_Apps_To_Cycle_t));
             return 1;
         }
     }
     return 0;
 }
-extern uint8_t mtb_Remove_App_From_Cycle_App_List(Mtb_UserApp_t appToRemove){
+extern uint8_t mtb_Remove_App_From_Cycle_App_List(Mtb_User_AppID_t appToRemove){
     for(uint8_t i = 0; i < CYCLING_APP_SLOTS; i++){
         if(cycling_Apps.appsCycling[i].GenApp == appToRemove.GenApp && cycling_Apps.appsCycling[i].SpeApp == appToRemove.SpeApp){
             cycling_Apps.appsCycling[i].GenApp = 255;
             cycling_Apps.appsCycling[i].SpeApp = 255;
-            mtb_Write_Nvs_Struct("cycling_Apps", &cycling_Apps, sizeof(Mtb_Apps_To_Cycle_t));
+            mtb_Write_Nvs_Struct("testCycling", &cycling_Apps, sizeof(Mtb_Apps_To_Cycle_t));
             mtb_Identify_App_By_ID(appToRemove, KILL_PXP_APP);
             return 1;
         }
@@ -513,46 +519,42 @@ extern uint8_t mtb_Remove_App_From_Cycle_App_List(Mtb_UserApp_t appToRemove){
     return 0;
 }
 
-    Mtb_Applications* mtb_Identify_App_By_ID(Mtb_UserApp_t dAppID, Mtb_Action_On_App_t actionOnApp){
-    if(actionOnApp == LAUNCH_PXP_APP){
-    memcpy(&activeUserApp, &dAppID, sizeof(Mtb_UserApp_t));
-    mtb_Write_Nvs_Struct("activeUserApp", &activeUserApp, sizeof(Mtb_UserApp_t));
-    Mtb_Applications::showAppUI_OR_LaunchApp = LAUNCH_PXP_APP;
-    } else if (actionOnApp == SHOW_PXP_APP_UI){
-    Mtb_Applications::showAppUI_OR_LaunchApp = SHOW_PXP_APP_UI;
-    }
 
+Mtb_Applications* mtb_Identify_App_By_ID(Mtb_User_AppID_t dAppID, Mtb_Action_On_App_t action){
+    Mtb_Applications::actionOnApp = action;
+    printf("Identifying app with GenApp: %d, SpeApp: %d\n", dAppID.GenApp, dAppID.SpeApp);
     switch(dAppID.GenApp){
-    case 0: return mtb_Clk_Tim_AppLaunch(dAppID.SpeApp, actionOnApp);
-    case 1: return mtb_Msg_App_Launch(dAppID.SpeApp, actionOnApp);
-    case 2: return mtb_Calendar_App_Launch(dAppID.SpeApp, actionOnApp);
-    case 3: return mtb_Weather_App_Launch(dAppID.SpeApp, actionOnApp);
-    case 4: return mtb_Finance_App_Launch(dAppID.SpeApp, actionOnApp);
-    case 5: return mtb_Sports_App_Launch(dAppID.SpeApp, actionOnApp);
-    case 6: return mtb_Animations_App_Launch(dAppID.SpeApp, actionOnApp);
-    case 7: return mtb_Notifications_App_Launch(dAppID.SpeApp, actionOnApp);
-    case 8: return mtb_AIs_App_Launch(dAppID.SpeApp, actionOnApp);
-    case 9: return mtb_Audio_Stream_App_Launch(dAppID.SpeApp, actionOnApp);
-    case 10: return mtb_sMedia_App_Launch(dAppID.SpeApp, actionOnApp);
-    case 11: return mtb_Miscellanous_App_Launch(dAppID.SpeApp, actionOnApp);
-    default: ESP_LOGI(TAG, "No Apps to Launch.\n");
+        case 0: return mtb_Clk_Tim_AppLaunch(dAppID.SpeApp, action);
+        case 1: return mtb_Msg_App_Launch(dAppID.SpeApp, action);
+        case 2: return mtb_Calendar_App_Launch(dAppID.SpeApp, action);
+        case 3: return mtb_Weather_App_Launch(dAppID.SpeApp, action);
+        case 4: return mtb_Finance_App_Launch(dAppID.SpeApp, action);
+        case 5: return mtb_Sports_App_Launch(dAppID.SpeApp, action);
+        case 6: return mtb_Animations_App_Launch(dAppID.SpeApp, action);
+        case 7: return mtb_Notifications_App_Launch(dAppID.SpeApp, action);
+        case 8: return mtb_AIs_App_Launch(dAppID.SpeApp, action);
+        case 9: return mtb_Audio_Stream_App_Launch(dAppID.SpeApp, action);
+        case 10: return mtb_sMedia_App_Launch(dAppID.SpeApp, action);
+        case 11: return mtb_Miscellanous_App_Launch(dAppID.SpeApp, action);
+        default: ESP_LOGE(TAG, "No Apps to Launch.\n");
+            break;
     }
         return nullptr;
 }
 
 //********NUMBER 0 */
-Mtb_Applications* mtb_Clk_Tim_AppLaunch(uint16_t dAppNumber, Mtb_Action_On_App_t actionOnApp){
-    if(actionOnApp == LAUNCH_PXP_APP || actionOnApp == SHOW_PXP_APP_UI){    
+Mtb_Applications* mtb_Clk_Tim_AppLaunch(uint16_t dAppNumber, Mtb_Action_On_App_t action){
+    if(action == LAUNCH_PXP_APP || action == SHOW_PXP_APP_UI){    
     switch(dAppNumber){
-        case 0: return mtb_Launch_This_App(calendarClock_App);
-        case 1: return mtb_Launch_This_App(pixelAnimClock_App);
-        case 2: return mtb_Launch_This_App(worldClock_App);
-        case 3: return mtb_Launch_This_App(bigClockCalendar_App);
-        case 4: return mtb_Launch_This_App(stopWatch_App);
-        case 5: return mtb_Launch_This_App(worldClock_App);
-        default: ESP_LOGI(TAG, "No Apps to Launch.\n"); break;
+        case 0: return mtb_Launch_This_App(calendarClock_App, action);
+        case 1: return mtb_Launch_This_App(pixelAnimClock_App, action);
+        case 2: return mtb_Launch_This_App(worldClock_App, action);
+        case 3: return mtb_Launch_This_App(bigClockCalendar_App, action);
+        case 4: return mtb_Launch_This_App(stopWatch_App, action);
+        case 5: return mtb_Launch_This_App(worldClock_App, action);
+        default: ESP_LOGE(TAG, "No Apps to Launch.\n"); break;
         }
-    } else if(actionOnApp == KILL_PXP_APP) {
+    } else if(action == KILL_PXP_APP) {
         switch(dAppNumber){
         case 0: return mtb_Kill_This_App(calendarClock_App);
         case 1: return mtb_Kill_This_App(pixelAnimClock_App);
@@ -560,30 +562,49 @@ Mtb_Applications* mtb_Clk_Tim_AppLaunch(uint16_t dAppNumber, Mtb_Action_On_App_t
         case 3: return mtb_Kill_This_App(bigClockCalendar_App);
         case 4: return mtb_Kill_This_App(stopWatch_App);
         case 5: return mtb_Kill_This_App(worldClock_App);
-        default: ESP_LOGI(TAG, "No Apps to Kill.\n"); break;
+        default: ESP_LOGE(TAG, "No Apps to Kill.\n"); break;
+        }
+    } else if(action == IDENTIFY_PXP_APP) {
+        switch(dAppNumber){
+        case 0: return calendarClock_App;
+        case 1: return pixelAnimClock_App;
+        case 2: return worldClock_App;
+        case 3: return bigClockCalendar_App;
+        case 4: return stopWatch_App;
+        case 5: return worldClock_App;
+        default: ESP_LOGE(TAG, "No Apps to Identify.\n"); break;
         }
     }
         return nullptr;
 }
 
 //********NUMBER 1 */
-Mtb_Applications* mtb_Msg_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t actionOnApp){
-    if(actionOnApp == LAUNCH_PXP_APP || actionOnApp == SHOW_PXP_APP_UI){   
+Mtb_Applications* mtb_Msg_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t action){
+    if(action == LAUNCH_PXP_APP || action == SHOW_PXP_APP_UI){   
     switch(dAppNumber){
-        case 0: return mtb_Launch_This_App(googleNews_App);
-        case 1: return mtb_Launch_This_App(rssNewsApp);
-        case 2: return mtb_Launch_This_App(newsAPI_App);
+        case 0: return mtb_Launch_This_App(googleNews_App, action);
+        case 1: return mtb_Launch_This_App(rssNewsApp, action);
+        case 2: return mtb_Launch_This_App(newsAPI_App, action);
 
-        default: ESP_LOGI(TAG, "No Apps to Launch.\n");
+        default: ESP_LOGE(TAG, "No Apps to Launch.\n");
             break;
     }
-} else if(actionOnApp == KILL_PXP_APP) {
+} else if(action == KILL_PXP_APP) {
     switch(dAppNumber){
         case 0: return mtb_Kill_This_App(googleNews_App);
         case 1: return mtb_Kill_This_App(rssNewsApp);
         case 2: return mtb_Kill_This_App(newsAPI_App);
         
-        default: ESP_LOGI(TAG, "No Apps to Kill.\n");
+        default: ESP_LOGE(TAG, "No Apps to Kill.\n");
+        break;
+    }
+} else if(action == IDENTIFY_PXP_APP) {
+    switch(dAppNumber){
+        case 0: return googleNews_App;
+        case 1: return rssNewsApp;
+        case 2: return newsAPI_App;
+
+        default: ESP_LOGE(TAG, "No Apps to Kill.\n");
         break;
     }
 }
@@ -591,20 +612,27 @@ Mtb_Applications* mtb_Msg_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t ac
 }
 
 //********NUMBER 2 */
-Mtb_Applications* mtb_Calendar_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t actionOnApp){
-    if(actionOnApp == LAUNCH_PXP_APP || actionOnApp == SHOW_PXP_APP_UI){   
+Mtb_Applications* mtb_Calendar_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t action){
+    if(action == LAUNCH_PXP_APP || action == SHOW_PXP_APP_UI){   
     switch(dAppNumber){
-        case 0: return mtb_Launch_This_App(google_Calendar_App);
-        case 1: return mtb_Launch_This_App(outlook_Calendar_App);
+        case 0: return mtb_Launch_This_App(google_Calendar_App, action);
+        case 1: return mtb_Launch_This_App(outlook_Calendar_App, action);
 
-        default: ESP_LOGI(TAG, "No Apps to Launch.\n");
+        default: ESP_LOGE(TAG, "No Apps to Launch.\n");
             break;
     }
-} else if(actionOnApp == KILL_PXP_APP) {
+} else if(action == KILL_PXP_APP) {
     switch(dAppNumber){
         case 0: return mtb_Kill_This_App(google_Calendar_App);
         case 1: return mtb_Kill_This_App(outlook_Calendar_App);
-        default: ESP_LOGI(TAG, "No Apps to Kill.\n");
+        default: ESP_LOGE(TAG, "No Apps to Kill.\n");
+        break;
+    }
+} else if(action == IDENTIFY_PXP_APP) {
+    switch(dAppNumber){
+        case 0: return google_Calendar_App;
+        case 1: return outlook_Calendar_App;
+        default: ESP_LOGE(TAG, "No Apps to Identify.\n");
         break;
     }
 }
@@ -612,22 +640,30 @@ Mtb_Applications* mtb_Calendar_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App
 }
 
 //********NUMBER 3 */
-Mtb_Applications* mtb_Weather_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t actionOnApp){
-    if(actionOnApp == LAUNCH_PXP_APP || actionOnApp == SHOW_PXP_APP_UI){   
+Mtb_Applications* mtb_Weather_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t action){
+    if(action == LAUNCH_PXP_APP || action == SHOW_PXP_APP_UI){   
     switch(dAppNumber){
-        case 0: return mtb_Launch_This_App(openWeather_App);
-        case 1: return mtb_Launch_This_App(openMeteo_App);
-        case 2: return mtb_Launch_This_App(googleWeather_App);
+        case 0: return mtb_Launch_This_App(openWeather_App, action);
+        case 1: return mtb_Launch_This_App(openMeteo_App, action);
+        case 2: return mtb_Launch_This_App(googleWeather_App, action);
 
-        default: ESP_LOGI(TAG, "No Apps to Launch.\n");
+        default: ESP_LOGE(TAG, "No Apps to Launch.\n");
             break;
     }
-} else if(actionOnApp == KILL_PXP_APP) {
+} else if(action == KILL_PXP_APP) {
     switch(dAppNumber){
         case 0: return mtb_Kill_This_App(openWeather_App);
         case 1: return mtb_Kill_This_App(openMeteo_App);
         case 2: return mtb_Kill_This_App(googleWeather_App);
-        default: ESP_LOGI(TAG, "No Apps to Kill.\n");
+        default: ESP_LOGE(TAG, "No Apps to Kill.\n");
+        break;
+    }
+} else if(action == IDENTIFY_PXP_APP) {
+    switch(dAppNumber){
+        case 0: return openWeather_App;
+        case 1: return openMeteo_App;
+        case 2: return googleWeather_App;
+        default: ESP_LOGE(TAG, "No Apps to Identify.\n");
         break;
     }
 }
@@ -635,24 +671,33 @@ Mtb_Applications* mtb_Weather_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_
 }
 
 //********NUMBER 4 */
-Mtb_Applications* mtb_Finance_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t actionOnApp){
-    if(actionOnApp == LAUNCH_PXP_APP || actionOnApp == SHOW_PXP_APP_UI){   
+Mtb_Applications* mtb_Finance_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t action){
+    if(action == LAUNCH_PXP_APP || action == SHOW_PXP_APP_UI){   
     switch(dAppNumber){
-        case 0: return mtb_Launch_This_App(finnhub_Stats_App);
-        case 1: return mtb_Launch_This_App(coinCap_Stats_App);
-        case 2: return mtb_Launch_This_App(currencyExchange_App);
-        case 3: return mtb_Launch_This_App(polygonFX_App);
+        case 0: return mtb_Launch_This_App(finnhub_Stats_App, action);
+        case 1: return mtb_Launch_This_App(coinCap_Stats_App, action);
+        case 2: return mtb_Launch_This_App(currencyExchange_App, action);
+        case 3: return mtb_Launch_This_App(polygonFX_App, action);
 
-        default: ESP_LOGI(TAG, "No Apps to Launch.\n");
+        default: ESP_LOGE(TAG, "No Apps to Launch.\n");
             break;
     }
-} else if(actionOnApp == KILL_PXP_APP) {
+} else if(action == KILL_PXP_APP) {
     switch(dAppNumber){
         case 0: return mtb_Kill_This_App(finnhub_Stats_App);
         case 1: return mtb_Kill_This_App(coinCap_Stats_App);
         case 2: return mtb_Kill_This_App(currencyExchange_App);
         case 3: return mtb_Kill_This_App(polygonFX_App);
-        default: ESP_LOGI(TAG, "No Apps to Kill.\n");
+        default: ESP_LOGE(TAG, "No Apps to Kill.\n");
+        break;
+    }
+} else if(action == IDENTIFY_PXP_APP) {
+    switch(dAppNumber){
+        case 0: return finnhub_Stats_App;
+        case 1: return coinCap_Stats_App;
+        case 2: return currencyExchange_App;
+        case 3: return polygonFX_App;
+        default: ESP_LOGE(TAG, "No Apps to Identify.\n");
         break;
     }
 }
@@ -660,18 +705,24 @@ Mtb_Applications* mtb_Finance_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_
 }
 
 //********NUMBER 5 */
-Mtb_Applications* mtb_Sports_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t actionOnApp){
-    if(actionOnApp == LAUNCH_PXP_APP || actionOnApp == SHOW_PXP_APP_UI){   
+Mtb_Applications* mtb_Sports_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t action){
+    if(action == LAUNCH_PXP_APP || action == SHOW_PXP_APP_UI){   
     switch(dAppNumber){
-        case 0: return mtb_Launch_This_App(liveFootbalScores_App);
+        case 0: return mtb_Launch_This_App(liveFootbalScores_App, action);
 
-        default: ESP_LOGI(TAG, "No Apps to Launch.\n");
+        default: ESP_LOGE(TAG, "No Apps to Launch.\n");
             break;
     }
-} else if(actionOnApp == KILL_PXP_APP) {
+} else if(action == KILL_PXP_APP) {
     switch(dAppNumber){
         case 0: return mtb_Kill_This_App(liveFootbalScores_App);
-        default: ESP_LOGI(TAG, "No Apps to Kill.\n");
+        default: ESP_LOGE(TAG, "No Apps to Kill.\n");
+        break;
+    }
+} else if(action == IDENTIFY_PXP_APP) {
+    switch(dAppNumber){
+        case 0: return liveFootbalScores_App;
+        default: ESP_LOGE(TAG, "No Apps to Identify.\n");
         break;
     }
 }
@@ -679,19 +730,26 @@ Mtb_Applications* mtb_Sports_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t
 }
 
 //********NUMBER 6 */
-Mtb_Applications* mtb_Animations_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t actionOnApp){
-    if(actionOnApp == LAUNCH_PXP_APP || actionOnApp == SHOW_PXP_APP_UI){    
+Mtb_Applications* mtb_Animations_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t action){
+    if(action == LAUNCH_PXP_APP || action == SHOW_PXP_APP_UI){    
     switch(dAppNumber){
-        case 0: return mtb_Launch_This_App(studioLight_App);
-        case 1: return mtb_Launch_This_App(worldFlags_App);
-        default: ESP_LOGI(TAG, "No Apps to Launch.\n");
+        case 0: return mtb_Launch_This_App(studioLight_App, action);
+        case 1: return mtb_Launch_This_App(worldFlags_App, action);
+        default: ESP_LOGE(TAG, "No Apps to Launch.\n");
             break;
     }
-} else if(actionOnApp == KILL_PXP_APP) {
+} else if(action == KILL_PXP_APP) {
     switch(dAppNumber){
         case 0: return mtb_Kill_This_App(studioLight_App);
         case 1: return mtb_Kill_This_App(worldFlags_App);
-        default: ESP_LOGI(TAG, "No Apps to Kill.\n");
+        default: ESP_LOGE(TAG, "No Apps to Kill.\n");
+        break;
+    }
+} else if(action == IDENTIFY_PXP_APP) {
+    switch(dAppNumber){
+        case 0: return studioLight_App;
+        case 1: return worldFlags_App;
+        default: ESP_LOGE(TAG, "No Apps to Identify.\n");
         break;
     }
 }
@@ -699,18 +757,24 @@ Mtb_Applications* mtb_Animations_App_Launch(uint16_t dAppNumber, Mtb_Action_On_A
 }
 
 //********NUMBER 7 */
-Mtb_Applications* mtb_Notifications_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t actionOnApp){
-    if(actionOnApp == LAUNCH_PXP_APP || actionOnApp == SHOW_PXP_APP_UI){   
+Mtb_Applications* mtb_Notifications_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t action){
+    if(action == LAUNCH_PXP_APP || action == SHOW_PXP_APP_UI){   
     switch(dAppNumber){
-        case 0: return mtb_Launch_This_App(apple_Notifications_App);
+        case 0: return mtb_Launch_This_App(apple_Notifications_App, action);
 
-        default: ESP_LOGI(TAG, "No Apps to Launch.\n");
+        default: ESP_LOGE(TAG, "No Apps to Launch.\n");
             break;
     }
-} else if(actionOnApp == KILL_PXP_APP) {
+} else if(action == KILL_PXP_APP) {
     switch(dAppNumber){
         case 0: return mtb_Kill_This_App(apple_Notifications_App);
-        default: ESP_LOGI(TAG, "No Apps to Kill.\n");
+        default: ESP_LOGE(TAG, "No Apps to Kill.\n");
+        break;
+    }
+} else if(action == IDENTIFY_PXP_APP) {
+    switch(dAppNumber){
+        case 0: return apple_Notifications_App;
+        default: ESP_LOGE(TAG, "No Apps to Identify.\n");
         break;
     }
 }
@@ -718,18 +782,24 @@ Mtb_Applications* mtb_Notifications_App_Launch(uint16_t dAppNumber, Mtb_Action_O
 }
 
 //********NUMBER 8 */
-Mtb_Applications* mtb_AIs_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t actionOnApp){
-    if(actionOnApp == LAUNCH_PXP_APP || actionOnApp == SHOW_PXP_APP_UI){ 
+Mtb_Applications* mtb_AIs_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t action){
+    if(action == LAUNCH_PXP_APP || action == SHOW_PXP_APP_UI){ 
         switch(dAppNumber){
-        case 0: return mtb_Launch_This_App(chatGPT_App);
+        case 0: return mtb_Launch_This_App(chatGPT_App, action);
 
-        default: ESP_LOGI(TAG, "No Apps to Launch.\n");
+        default: ESP_LOGE(TAG, "No Apps to Launch.\n");
             break;
     }
-} else if(actionOnApp == KILL_PXP_APP) {
+} else if(action == KILL_PXP_APP) {
     switch(dAppNumber){
         case 0: return mtb_Kill_This_App(chatGPT_App);
-        default: ESP_LOGI(TAG, "No Apps to Kill.\n");
+        default: ESP_LOGE(TAG, "No Apps to Kill.\n");
+        break;
+    }
+} else if(action == IDENTIFY_PXP_APP) {
+    switch(dAppNumber){
+        case 0: return chatGPT_App;
+        default: ESP_LOGE(TAG, "No Apps to Identify.\n");
         break;
     }
 }
@@ -737,41 +807,55 @@ Mtb_Applications* mtb_AIs_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t ac
 }
 
 //********NUMBER 9 */
-Mtb_Applications* mtb_Audio_Stream_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t actionOnApp){
-        if(actionOnApp == LAUNCH_PXP_APP || actionOnApp == SHOW_PXP_APP_UI){  
+Mtb_Applications* mtb_Audio_Stream_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t action){
+        if(action == LAUNCH_PXP_APP || action == SHOW_PXP_APP_UI){  
     switch(dAppNumber){
-        case 0: return mtb_Launch_This_App(internetRadio_App);
-        case 1: return mtb_Launch_This_App(musicPlayer_App);
-        case 2: return mtb_Launch_This_App(audSpecAnalyzer_App);
-        case 3: return mtb_Launch_This_App(spotify_App);
-        default: ESP_LOGI(TAG, "No Apps to Launch.\n");
+        case 0: return mtb_Launch_This_App(internetRadio_App, action);
+        case 1: return mtb_Launch_This_App(musicPlayer_App, action);
+        case 2: return mtb_Launch_This_App(audSpecAnalyzer_App, action);
+        case 3: return mtb_Launch_This_App(spotify_App, action);
+        default: ESP_LOGE(TAG, "No Apps to Launch.\n");
         break;
     }
-} else if(actionOnApp == KILL_PXP_APP) {
+} else if(action == KILL_PXP_APP) {
     switch(dAppNumber){
         case 0: return mtb_Kill_This_App(internetRadio_App);
         case 1: return mtb_Kill_This_App(musicPlayer_App);
         case 2: return mtb_Kill_This_App(audSpecAnalyzer_App);
         case 3: return mtb_Kill_This_App(spotify_App);
-        default: ESP_LOGI(TAG, "No Apps to Kill.\n");
+        default: ESP_LOGE(TAG, "No Apps to Kill.\n");
+    }
+} else if(action == IDENTIFY_PXP_APP) {
+    switch(dAppNumber){
+        case 0: return internetRadio_App;
+        case 1: return musicPlayer_App;
+        case 2: return audSpecAnalyzer_App;
+        case 3: return spotify_App;
+        default: ESP_LOGE(TAG, "No Apps to Identify.\n");
     }
 }
     return nullptr;
 }
 
 //********NUMBER 10 */
-Mtb_Applications* mtb_sMedia_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t actionOnApp){
-        if(actionOnApp == LAUNCH_PXP_APP || actionOnApp == SHOW_PXP_APP_UI){  
+Mtb_Applications* mtb_sMedia_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t action){
+        if(action == LAUNCH_PXP_APP || action == SHOW_PXP_APP_UI){  
     switch(dAppNumber){
-        // case 0: return mtb_Launch_This_App(calendarClock_App);
+        // case 0: return mtb_Launch_This_App(calendarClock_App, action);
 
-        default: ESP_LOGI(TAG, "No Apps to Launch.\n");
+        default: ESP_LOGE(TAG, "No Apps to Launch.\n");
             break;
     }
-} else if(actionOnApp == KILL_PXP_APP) {
+} else if(action == KILL_PXP_APP) {
     switch(dAppNumber){
         // case 0: return mtb_Kill_This_App(calendarClock_App);
-        default: ESP_LOGI(TAG, "No Apps to Kill.\n");
+        default: ESP_LOGE(TAG, "No Apps to Kill.\n");
+        break;
+    }
+} else if(action == IDENTIFY_PXP_APP) {
+    switch(dAppNumber){
+        // case 0: return mtb_Kill_This_App(calendarClock_App);
+        default: ESP_LOGE(TAG, "No Apps to Identify.\n");
         break;
     }
 }
@@ -779,18 +863,24 @@ Mtb_Applications* mtb_sMedia_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t
 }
 
 //********NUMBER 11 */
-Mtb_Applications* mtb_Miscellanous_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t actionOnApp){
-        if(actionOnApp == LAUNCH_PXP_APP || actionOnApp == SHOW_PXP_APP_UI){  
+Mtb_Applications* mtb_Miscellanous_App_Launch(uint16_t dAppNumber, Mtb_Action_On_App_t action){
+        if(action == LAUNCH_PXP_APP || action == SHOW_PXP_APP_UI){  
     switch(dAppNumber){
-        case 0: return mtb_Launch_This_App(exampleDesignMobileUI_App);
+        case 0: return mtb_Launch_This_App(exampleDesignMobileUI_App, action);
 
-        default: ESP_LOGI(TAG, "No Apps to Launch.\n");
+        default: ESP_LOGE(TAG, "No Apps to Launch.\n");
             break;
     }
-} else if(actionOnApp == KILL_PXP_APP) {
+} else if(action == KILL_PXP_APP) {
     switch(dAppNumber){
         case 0: return mtb_Kill_This_App(exampleDesignMobileUI_App);
-        default: ESP_LOGI(TAG, "No Apps to Kill.\n");
+        default: ESP_LOGE(TAG, "No Apps to Kill.\n");
+        break;
+    }
+} else if(action == IDENTIFY_PXP_APP) {
+    switch(dAppNumber){
+        case 0: return exampleDesignMobileUI_App;
+        default: ESP_LOGE(TAG, "No Apps to Identify.\n");
         break;
     }
 }

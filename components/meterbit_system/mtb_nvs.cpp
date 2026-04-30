@@ -48,10 +48,6 @@ void init_nvs_mem(void){
         strcpy(serial_No, "MTB000001");
         strcpy(pxp_BLE_Name, "PIXLPAL-M1");
         strcpy(ntp_TimeZone, "WAT-1");
-        activeUserApp = {
-            .GenApp = 0,
-            .SpeApp = 0
-            };
         clk_Updt = {LASER_LEMON, LASER_LEMON, WHITE, WHITE, WHITE};
      }
      else {
@@ -73,9 +69,5 @@ void init_nvs_mem(void){
     strcpy(serial_No, "MTB000001");
     strcpy(pxp_BLE_Name, "PIXLPAL-M1");
     strcpy(ntp_TimeZone, "WAT-1");
-    activeUserApp = {
-        .GenApp = 0,
-        .SpeApp = 0
-        };
     clk_Updt = {LASER_LEMON, LASER_LEMON, WHITE, WHITE, WHITE};
  }

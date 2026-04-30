@@ -32,7 +32,7 @@ void ble_Ota_Control(JsonDocument &doc);
 void abort_Ble_Ota_Update_Manually(void);
 
 
-EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *bleOTA_Update_App = new Mtb_Applications_FullScreen(bleFirmwareUpdateTask, &bleFirmwareUpdate_H, "BLE OTA TASK", 6144);
+EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *bleOTA_Update_App = new Mtb_Applications_FullScreen(bleFirmwareUpdateTask, &bleFirmwareUpdate_H, "BLE OTA TASK", {12,1}, 6144);
 
 void  bleFirmwareUpdateTask(void* dApplication){
     Mtb_Applications *THIS_APP = (Mtb_Applications *) dApplication;
@@ -100,7 +100,7 @@ void attemptSoftwareUpdate(JsonDocument& dCommand){
 String failure = "{\"set_command\": 2, \"response\": 0}";
 
 if(Mtb_Applications::internetConnectStatus == pdTRUE){
-  mtb_Launch_This_App(ghotaOTA_Update_App, IGNORE_PREVIOUS_APP);
+  mtb_Launch_This_App(ghotaOTA_Update_App, LAUNCH_PXP_APP, IGNORE_PREVIOUS_APP);
 } else{
   bleSettingsComSend(mtb_Software_Update_Route, failure);
 }

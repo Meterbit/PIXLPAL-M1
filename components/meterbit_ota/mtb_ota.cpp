@@ -23,7 +23,7 @@ EXT_RAM_BSS_ATTR Mtb_FixedText_t* otaUpdateTextBot = NULL;
 EXT_RAM_BSS_ATTR Mtb_FixedText_t* otaUpdateTextBar = NULL;
 
 EXT_RAM_BSS_ATTR TaskHandle_t ota_Updating = NULL;
-EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *ghotaOTA_Update_App = new Mtb_Applications_FullScreen(ghota_Update_Task, &ota_Updating, "GHOTA Update", 3072);
+EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *ghotaOTA_Update_App = new Mtb_Applications_FullScreen(ghota_Update_Task, &ota_Updating, "GHOTA Update", {12,2}, 3072);
 
 EXT_RAM_BSS_ATTR SemaphoreHandle_t ota_Update_Sem = NULL;
 
@@ -52,7 +52,7 @@ String semver_t_ToString(const semver_t &version);
         else if (id == GHOTA_EVENT_NOUPDATE_AVAILABLE){
             //String updateNotAvailable = "{\"set_command\": 2, \"response\": 1, \"available\": 0}";
             //statusBarNotif.mtb_Scroll_This_Text("PIXLPAL IS UP-TO-DATE", LEMON);
-            if(Mtb_Applications::currentRunningApp == Mtb_Applications::otaAppHolder) mtb_Launch_This_App(Mtb_Applications::previousRunningApp, IGNORE_PREVIOUS_APP);
+            if(Mtb_Applications::currentRunningApp == Mtb_Applications::otaAppHolder) mtb_Launch_This_App(Mtb_Applications::previousRunningApp, LAUNCH_PXP_APP, IGNORE_PREVIOUS_APP);
             xSemaphoreGiveFromISR(ota_Update_Sem, &xHigherPriorityTaskWoken);
             ghotaOTA_Update_App->app_is_Running = pdFALSE;
             // bleSettingsComSend(mtb_Software_Update_Route, updateNotAvailable);
@@ -86,7 +86,7 @@ String semver_t_ToString(const semver_t &version);
         else if (id == GHOTA_EVENT_UPDATE_FAILED){   
             //esp_restart();
             xSemaphoreGiveFromISR(ota_Update_Sem,&xHigherPriorityTaskWoken);
-            mtb_Launch_This_App(Mtb_Applications::previousRunningApp, IGNORE_PREVIOUS_APP);
+            mtb_Launch_This_App(Mtb_Applications::previousRunningApp, LAUNCH_PXP_APP, IGNORE_PREVIOUS_APP);
             statusBarNotif.mtb_Scroll_This_Text("SOFTWARE UPDATE FAILED DUE TO POOR NETWORK.    PIXLPAL WILL TRY AGAIN LATER.", RED);
             ESP_LOGI(TAG, "Firmware Update Failed\n");
             ghotaOTA_Update_App->app_is_Running = pdFALSE;

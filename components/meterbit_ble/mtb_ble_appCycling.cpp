@@ -54,7 +54,7 @@ void appCycling_Status(JsonDocument& dCommand){
     mtb_Launch_This_Service(mtb_App_Cycling_Sv);
   } else mtb_Kill_This_Service(mtb_App_Cycling_Sv);
 
-  mtb_Write_Nvs_Struct("cycl_Apps", &cycling_Apps, sizeof(Mtb_Apps_To_Cycle_t));
+  mtb_Write_Nvs_Struct("testCycling", &cycling_Apps, sizeof(Mtb_Apps_To_Cycle_t));
   bleSettingsComSend(mtb_App_Cycle_Settings_Route, acknowledge);
 }
 
@@ -64,14 +64,14 @@ uint16_t tempDuration;
 String acknowledge = "{\"set_command\": 2, \"response\": 1}";
 tempDuration = dCommand["value"];
 cycling_Apps.appCycleDuration = tempDuration;
-mtb_Write_Nvs_Struct("cycl_Apps", &cycling_Apps, sizeof(Mtb_Apps_To_Cycle_t));
+mtb_Write_Nvs_Struct("testCycling", &cycling_Apps, sizeof(Mtb_Apps_To_Cycle_t));
 bleSettingsComSend(mtb_App_Cycle_Settings_Route, acknowledge);
 }
 
 //**03*********************************************************************************************************************
 void appCycling_Selections(JsonDocument& dCommand){
   printf("appCycling_Selections command received.\n");
-  Mtb_UserApp_t userAppHolder;
+  Mtb_User_AppID_t userAppHolder;
   bool dAction = dCommand["action"];
   String appID = dCommand["appID"];
 

@@ -5,7 +5,7 @@
 EXT_RAM_BSS_ATTR TaskHandle_t exampleDrawShapeApp_Task_H = NULL;
 void exampleDrawShapeApp_Task(void *dApplication);
 
-EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *exampleDrawShapes_App = new Mtb_Applications_StatusBar(exampleDrawShapeApp_Task, &exampleDrawShapeApp_Task_H, "exampleDrawShapeApp", 4096);
+EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *exampleDrawShapes_App = new Mtb_Applications_StatusBar(exampleDrawShapeApp_Task, &exampleDrawShapeApp_Task_H, "exampleDrawShapeApp", {11,3},4096);
 
 void exampleDrawShapeApp_Task(void* dApplication){
 // ****** Initialize the App Parameters

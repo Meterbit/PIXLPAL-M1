@@ -48,8 +48,8 @@ EXT_RAM_BSS_ATTR String setValue;
 #define SETCOM_CHARACTERISTIC_UUID "472a6244-3bb8-4a7e-a107-4b47dea92bc3"
 #define APPCOM_CHARACTERISTIC_UUID "c8f1eead-48b0-449d-accb-5fdb87c4b566"
 
-EXT_RAM_BSS_ATTR Mtb_Services *mtb_Sett_BleComm_Parser_Sv = new Mtb_Services(ble_SetCom_Parse_Task, &ble_SetCom_Parser_Task_Handle, "bleSetCom_parser_task", 3072, 4); 
-EXT_RAM_BSS_ATTR Mtb_Services *mtb_App_BleComm_Parser_Sv = new Mtb_Services(ble_AppCom_Parse_Task, &ble_AppCom_Parser_Task_Handle, "bleAppCom_Parser_task", 3072, 4);
+EXT_RAM_BSS_ATTR Mtb_Services *mtb_Sett_BleComm_Parser_Sv = new Mtb_Services(ble_SetCom_Parse_Task, &ble_SetCom_Parser_Task_Handle, "bleSetCom_parser_task", 4096, 4); 
+EXT_RAM_BSS_ATTR Mtb_Services *mtb_App_BleComm_Parser_Sv = new Mtb_Services(ble_AppCom_Parse_Task, &ble_AppCom_Parser_Task_Handle, "bleAppCom_Parser_task", 4096, 4);
 
 class MyServerCallbacks : public NimBLEServerCallbacks{
   void onConnect(NimBLEServer *pServer, NimBLEConnInfo& connInfo){
@@ -67,7 +67,7 @@ class MyServerCallbacks : public NimBLEServerCallbacks{
     isDisconnected = true;
     Mtb_Applications::bleCentralContd = false;
     mtb_Show_Status_Bar_Icon({"/batIcons/btOn.png", 18, 1});
-
+//
     // If an OTA transfer was in progress, abort it.
     if (mtb_Ble_Ota_Is_Active()) {
       ESP_LOGW(TAG, "Client disconnected during OTA. Aborting OTA session.");
@@ -371,7 +371,7 @@ void ble_AppCom_Parse_Task(void* dService){
     String dNewAppParams;
     uint16_t dAppGen = 0;
     uint16_t dAppSpe = 0;
-    Mtb_UserApp_t appHolder;
+    Mtb_User_AppID_t appHolder;
     uint16_t dCmd_num = 0;
 
     while(xQueueReceive(appCom_queue, &qMessage, pdMS_TO_TICKS(500))){
@@ -390,7 +390,7 @@ void ble_AppCom_Parse_Task(void* dService){
         //ESP_LOGI(TAG, "The dAppGen is: %d\n", dAppGen);
         //ESP_LOGI(TAG, "The dAppSpe is: %d\n", dAppSpe);
 
-        if (appHolder.GenApp == activeUserApp.GenApp && appHolder.SpeApp == activeUserApp.SpeApp){
+        if (appHolder.GenApp == Mtb_Applications::currentRunningApp->appID.GenApp && appHolder.SpeApp == Mtb_Applications::currentRunningApp->appID.SpeApp){
 
             dError = deserializeJson(dCommand, dJsonPayload);
             if(dError.code() == dError.Ok) dCmd_num = dCommand["app_command"];

@@ -13,6 +13,7 @@
 #include <ArduinoJson.h>
 #include "mtb_nvs.h"
 #include "mtb_graphics.h"
+#include <cstddef>
 #include "esp_heap_caps.h"
 
 #define APPS_PARSER_QUEUE_SIZE 5
@@ -34,7 +35,8 @@ extern SemaphoreHandle_t nvsAccessComplete_Sem;
 enum Mtb_Action_On_App_t{
     LAUNCH_PXP_APP = 1,
     KILL_PXP_APP,
-    SHOW_PXP_APP_UI
+    SHOW_PXP_APP_UI,
+    IDENTIFY_PXP_APP,
 };
 
 enum Mtb_Do_Prev_App_t{
@@ -50,7 +52,7 @@ enum Mtb_Status_Bar_t{
     WEEKDAY_STATUS_BAR,
 };
 
-struct Mtb_UserApp_t{
+struct Mtb_User_AppID_t{
     uint16_t GenApp;
     uint16_t SpeApp;
 };
@@ -59,7 +61,7 @@ struct Mtb_Apps_To_Cycle_t{
     bool appsShouldCycle;
     uint8_t appsNoInCycle;
     uint16_t appCycleDuration;
-    Mtb_UserApp_t appsCycling[CYCLING_APP_SLOTS];
+    Mtb_User_AppID_t appsCycling[CYCLING_APP_SLOTS];
     uint16_t app_Frame_Buffers[CYCLING_APP_SLOTS][128][64];
 };
 
@@ -70,7 +72,7 @@ struct NvsAccessParams_t{
   size_t struct_size;
 };
 
-extern Mtb_UserApp_t activeUserApp;
+extern Mtb_User_AppID_t lastSavedApp;
 extern Mtb_Apps_To_Cycle_t cycling_Apps;
 
 extern void appLauncherTask(void *);
@@ -81,8 +83,8 @@ extern esp_err_t mtb_Read_Nvs_Struct(const char* key, void* struct_ptr, size_t s
 extern esp_err_t mtb_Write_Nvs_Struct(const char *key, void *struct_ptr, size_t struct_size);
 //**************************************************************************************************************************
 
-extern void (*encoderFn_ptr)(rotary_encoder_rotation_t);
-extern void (*buttonFn_ptr)(button_event_t);
+extern void (*mtb_Common_EncoderFn_ptr)(rotary_encoder_rotation_t);
+extern void (*mtb_Common_ButtonFn_Ptr)(button_event_t);
 extern void encoderDoNothing(rotary_encoder_rotation_t);
 extern void buttonDoNothing(button_event_t);
 
@@ -118,7 +120,7 @@ struct SpiRamAllocator {
 using SpiRamJsonDocument = BasicJsonDocument<SpiRamAllocator>;
 
 typedef void (*encoderFn_ptr_t)(rotary_encoder_rotation_t);
-typedef void (*buttonFn_ptr_t)(button_event_t);
+typedef void (*mtb_Common_ButtonFn_Ptr_t)(button_event_t);
 
 // Services Class
 class Mtb_Services {
@@ -132,7 +134,7 @@ uint8_t serviceCore = 0;                   // Core on which the application task
 uint8_t service_is_Running = pdFALSE;
 
 // Overload the new operator
-void *operator new(size_t size){return heap_caps_malloc(size, MALLOC_CAP_SPIRAM);}
+void *operator new(std::size_t size){return heap_caps_malloc(size, MALLOC_CAP_SPIRAM);}
 
 // Overload the delete operator
 void operator delete(void* ptr) {heap_caps_free(ptr);}
@@ -160,7 +162,8 @@ public:
     uint8_t appPriority;                // Priority of the application
     TaskHandle_t* appHandle_ptr;        // Pointer to the application task handle.
     uint8_t appCore;                    // Core on which the application task is running on.
-    Mtb_Status_Bar_t statusBarType;                   // This is used to check if the application can be cycled or not. If true, the application can be suspended and resumed, otherwise the app plays until it is destroyed.
+    Mtb_User_AppID_t appID;             // The App Identity -> Default to Calendar Clock.
+    Mtb_Status_Bar_t statusBarType;     // This is used to check if the application can be cycled or not. If true, the application can be suspended and resumed, otherwise the app plays until it is destroyed.
 
     const char* appMobile_Manifest;
     const char* appMobile_UiApi;
@@ -168,7 +171,7 @@ public:
 
     Mtb_Services* appServices[10] = {nullptr};  // An array of 10 Service Pointers. This will hold pointers to the Mtb_Services tasks both generic and perculiar. e.g. Mic Service 
     void (*mtb_App_EncoderFn_ptr)(rotary_encoder_rotation_t) = encoderDoNothing;     // Pointer to the function that will be called when the rotary encoder is rotated.
-    void (*mtb_App_ButtonFn_ptr)(button_event_t) = buttonDoNothing;                  // Pointer to the function that will be called when the button is pressed.
+    void (*mtb_App_ButtonFn_Ptr)(button_event_t) = buttonDoNothing;                  // Pointer to the function that will be called when the button is pressed.
     void *parameters;                                               // Pointer to the parameters that will be passed to the application task.
     bool fullScreen = false;                                        // If true, the application will run in full screen mode, otherwise it will run in status bar mode.
     bool elementRefresh;                                            // Refresh the various elements/components displayed onscreen by the app.
@@ -189,7 +192,7 @@ public:
     // static bool mqttPhoneConnectStatus;
     static uint8_t firmwareOTA_Status;                              // This is used to check the status of the firmware OTA update. It is set to 6 when the OTA update is not started, and it can be set to other values to indicate the status of the OTA update.
     static uint8_t spiffsOTA_Status;                                // This is used to check the status of the SPIFFS OTA update. It is set to 6 when the OTA update is not started, and it can be set to other values to indicate the status of the OTA update.
-    static Mtb_Action_On_App_t showAppUI_OR_LaunchApp;     // This is used to check whether to show the app UI or launch the app when the mobile UI command is received. It can be set to SHOW_APP_UI or LAUNCH_SELECT_APP.
+    static Mtb_Action_On_App_t actionOnApp;     // This is used to check whether to show the app UI or launch the app when the mobile UI command is received. It can be set to SHOW_APP_UI or LAUNCH_SELECT_APP.
                                
     bleCom_Parser_Fns_Ptr bleAppComServiceFns[12] = {nullptr};
 
@@ -200,7 +203,7 @@ public:
     static void appDestroy(Mtb_Applications *);
     static void actionOnPreviousApp(Mtb_Do_Prev_App_t);             // This function is used to take action on the previous application when a new application is launched. It can be set to SUSPEND_PREVIOUS_APP, DESTROY_PREVIOUS_APP, or IGNORE_PREVIOUS_APP.
 
-    void mtb_App_Set_EC11_Cb_Fns(buttonFn_ptr_t but_Fn = buttonDoNothing, encoderFn_ptr_t enc_Fn = mtb_Brightness_Control); // This function is used to set the encoder and button functions for the application.
+    void mtb_App_Set_EC11_Cb_Fns(mtb_Common_ButtonFn_Ptr_t but_Fn = buttonDoNothing, encoderFn_ptr_t enc_Fn = mtb_Brightness_Control); // This function is used to set the encoder and button functions for the application.
 
     void mtb_App_Show_Mobile_UI(void);
     void mtb_App_Set_Mobile_UI(const char*, const char*, const char* data = nullptr);  // This function is used to set the mobile UI manifest and API for the application. The manifest is a JSON string that describes the UI elements and their properties, and the ui_api is a JSON string that describes the API endpoints and their properties.
@@ -214,18 +217,15 @@ public:
                                     Mtb_Services* pointer_9 = nullptr);
 
     // Overload the new operator
-    void* operator new(size_t size) {
-        return heap_caps_malloc(size, MALLOC_CAP_SPIRAM);           // Allocate memory in PSRAM
-    }
+    void* operator new(std::size_t size) { return heap_caps_malloc(size, MALLOC_CAP_SPIRAM);}           // Allocate memory in PSRAM
 
     // Overload the delete operator
-    void operator delete(void* ptr) {
-        heap_caps_free(ptr);                                        // Free memory allocated in PSRAM
-    }
+    void operator delete(void* ptr) { heap_caps_free(ptr); }                                       // Free memory allocated in PSRAM
+    
 
     // Applications Constructors
     Mtb_Applications();                                             // Default constructor
-    Mtb_Applications(void (*dApplication)(void *), TaskHandle_t* dAppHandle_ptr, const char* dAppName, uint32_t dStackSize, Mtb_Status_Bar_t statusBarType);
+    Mtb_Applications(void (*dApplication)(void *), TaskHandle_t* dAppHandle_ptr, const char* dAppName, Mtb_User_AppID_t applicationID, uint32_t dStackSize,  Mtb_Status_Bar_t statusBarType);
     //virtual 
 };
 
@@ -233,8 +233,8 @@ public:
 class Mtb_Applications_FullScreen : public Mtb_Applications{            
     public:
         Mtb_Applications_FullScreen();
-        Mtb_Applications_FullScreen(void (*dApplication)(void *), TaskHandle_t *dAppHandle_ptr, const char *dAppName, uint32_t dStackSize = 4096, Mtb_Status_Bar_t statusBarType = NO_STATUS_BAR) : 
-        Mtb_Applications(dApplication, dAppHandle_ptr, dAppName, dStackSize, statusBarType) { 
+        Mtb_Applications_FullScreen(void (*dApplication)(void *), TaskHandle_t *dAppHandle_ptr, const char *dAppName, Mtb_User_AppID_t applicationID, uint32_t dStackSize = 4096) : 
+        Mtb_Applications(dApplication, dAppHandle_ptr, dAppName, applicationID, dStackSize, NO_STATUS_BAR) { 
             fullScreen = true;
         }
 };
@@ -243,8 +243,8 @@ class Mtb_Applications_FullScreen : public Mtb_Applications{
 class Mtb_Applications_StatusBar : public Mtb_Applications{
     public:
         Mtb_Applications_StatusBar();
-        Mtb_Applications_StatusBar(void (*dApplication)(void *), TaskHandle_t *dAppHandle_ptr, const char *dAppName, uint32_t dStackSize = 4096, Mtb_Status_Bar_t statusBarType = CLOCK_STATUS_BAR) : 
-        Mtb_Applications(dApplication, dAppHandle_ptr, dAppName, dStackSize, statusBarType) { 
+        Mtb_Applications_StatusBar(void (*dApplication)(void *), TaskHandle_t *dAppHandle_ptr, const char *dAppName, Mtb_User_AppID_t applicationID, uint32_t dStackSize = 4096, Mtb_Status_Bar_t statusBarType = CLOCK_STATUS_BAR) : 
+        Mtb_Applications(dApplication, dAppHandle_ptr, dAppName, applicationID, dStackSize, statusBarType) { 
             fullScreen = false;
         }
 };
@@ -252,7 +252,7 @@ class Mtb_Applications_StatusBar : public Mtb_Applications{
 //*********************************************************************************** */
 
 // App Parser Functions
-extern Mtb_Applications* mtb_Launch_This_App(Mtb_Applications* dApp, Mtb_Do_Prev_App_t do_Prv_App = DESTROY_PREVIOUS_APP);
+extern Mtb_Applications* mtb_Launch_This_App(Mtb_Applications* dApp, Mtb_Action_On_App_t actionOnApp = LAUNCH_PXP_APP, Mtb_Do_Prev_App_t do_Prv_App = DESTROY_PREVIOUS_APP);
 extern void mtb_Launch_This_Service(Mtb_Services*);
 //extern void mtb_Queue_This_Service(Mtb_Services*);
 extern void mtb_Resume_This_Service(Mtb_Services*);
@@ -262,9 +262,9 @@ extern void mtb_Kill_This_Service(Mtb_Services* );
 extern void mtb_Delete_This_App(Mtb_Applications *);
 extern Mtb_Applications* mtb_Kill_This_App(Mtb_Applications*);
 
-extern Mtb_Applications* mtb_Identify_App_By_ID(Mtb_UserApp_t, Mtb_Action_On_App_t);
-extern uint8_t mtb_Add_App_To_Cycle_App_List(Mtb_UserApp_t);
-extern uint8_t mtb_Remove_App_From_Cycle_App_List(Mtb_UserApp_t);
+extern Mtb_Applications* mtb_Identify_App_By_ID(Mtb_User_AppID_t, Mtb_Action_On_App_t);
+extern uint8_t mtb_Add_App_To_Cycle_App_List(Mtb_User_AppID_t);
+extern uint8_t mtb_Remove_App_From_Cycle_App_List(Mtb_User_AppID_t);
 
 // Supporting Apps and Tasks
 extern TaskHandle_t statusBarClock_H;
@@ -324,9 +324,9 @@ extern Mtb_Services* mtb_Status_Bar_Calendar_Sv;
 extern Mtb_Services* mtb_App_Cycling_Sv;
 
 // All System Apps
-extern Mtb_Applications_FullScreen* usbOTA_Update_App;
-extern Mtb_Applications_FullScreen* bleOTA_Update_App;
-extern Mtb_Applications_FullScreen* ghotaOTA_Update_App;
+extern Mtb_Applications_FullScreen* usbOTA_Update_App;          // App ID: 12/0
+extern Mtb_Applications_FullScreen* bleOTA_Update_App;          // App ID: 12/1
+extern Mtb_Applications_FullScreen* ghotaOTA_Update_App;        // App ID: 12/2
 
 // All User Apps
 // Clocks and Timers
@@ -374,6 +374,10 @@ extern Mtb_Applications_StatusBar* internetRadio_App;           // App ID: 9/0
 extern Mtb_Applications_StatusBar* musicPlayer_App;             // App ID: 9/1
 extern Mtb_Applications_FullScreen* audSpecAnalyzer_App;        // App ID: 9/2
 extern Mtb_Applications_StatusBar *spotify_App;                 // App ID: 9/3
+
+// Miscellanous
+extern Mtb_Applications_StatusBar* cpuTemp_App;                 // App ID: 11/1
+extern Mtb_Applications_StatusBar* memUsage_App;                // App ID: 11/2
 
 // Example Apps
 extern Mtb_Applications_FullScreen* exampleWriteText_App;        
