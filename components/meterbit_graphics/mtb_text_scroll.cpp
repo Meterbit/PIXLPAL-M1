@@ -104,8 +104,8 @@ void Mtb_ScrollText_t::mtb_Scroll_String(TaskHandle_t& dAppTaskHandle){
 //**************************************************************************************
 void mtb_Scroll_Text_0_Task(void* dService){
     Mtb_Services *THIS_SERVICE = (Mtb_Services*) dService;
-    if(Mtb_Applications::currentRunningApp->statusBarType == CLOCK_STATUS_BAR) mtb_Status_Bar_Clock_Sv->service_is_Running = pdFALSE;      // End the status bar clock service.
-    if(Mtb_Applications::currentRunningApp->statusBarType == WEEKDAY_STATUS_BAR) mtb_Status_Bar_Calendar_Sv->service_is_Running = pdFALSE;      // End the status bar calendar service.
+    if(Mtb_Applications::currentRunningApp->appStatusBarType == CLOCK_STATUS_BAR) mtb_Status_Bar_Clock_Sv->service_is_Running = pdFALSE;      // End the status bar clock service.
+    if(Mtb_Applications::currentRunningApp->appStatusBarType == WEEKDAY_STATUS_BAR) mtb_Status_Bar_Calendar_Sv->service_is_Running = pdFALSE;      // End the status bar calendar service.
 
     Mtb_ScrollText_t holder;
     Mtb_ScrollText_t::scrollTask_HolderPointers[0] = &holder;
@@ -117,8 +117,8 @@ void mtb_Scroll_Text_0_Task(void* dService){
             free(holder.dText_Raw);
         }
     mtb_Draw_Status_Bar();
-    if(Mtb_Applications::currentRunningApp->statusBarType == CLOCK_STATUS_BAR) mtb_Launch_This_Service(mtb_Status_Bar_Clock_Sv);
-    if(Mtb_Applications::currentRunningApp->statusBarType == WEEKDAY_STATUS_BAR) mtb_Launch_This_Service(mtb_Status_Bar_Calendar_Sv);
+    if(Mtb_Applications::currentRunningApp->appStatusBarType == CLOCK_STATUS_BAR) mtb_Launch_This_Service(mtb_Status_Bar_Clock_Sv);
+    if(Mtb_Applications::currentRunningApp->appStatusBarType == WEEKDAY_STATUS_BAR) mtb_Launch_This_Service(mtb_Status_Bar_Calendar_Sv);
     //delay(1000); // Wait for 1 second before killing the service.
     mtb_Delete_This_Service(THIS_SERVICE);
 }

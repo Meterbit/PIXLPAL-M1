@@ -47,7 +47,7 @@ enum Mtb_Do_Prev_App_t{
 
 enum Mtb_Status_Bar_t{
     NO_STATUS_BAR = 0,
-    PLAIN_STATUS_BAR,
+    ICONS_ONLY_STATUS_BAR,
     CLOCK_STATUS_BAR,
     WEEKDAY_STATUS_BAR,
 };
@@ -163,7 +163,7 @@ public:
     TaskHandle_t* appHandle_ptr;        // Pointer to the application task handle.
     uint8_t appCore;                    // Core on which the application task is running on.
     Mtb_User_AppID_t appID;             // The App Identity -> Default to Calendar Clock.
-    Mtb_Status_Bar_t statusBarType;     // This is used to check if the application can be cycled or not. If true, the application can be suspended and resumed, otherwise the app plays until it is destroyed.
+    Mtb_Status_Bar_t appStatusBarType;     // This is used to check if the application can be cycled or not. If true, the application can be suspended and resumed, otherwise the app plays until it is destroyed.
 
     const char* appMobile_Manifest;
     const char* appMobile_UiApi;

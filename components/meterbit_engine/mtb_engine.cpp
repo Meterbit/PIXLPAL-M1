@@ -62,7 +62,7 @@ Mtb_Applications::Mtb_Applications(void (*dApplication)(void *), TaskHandle_t* d
     appPriority = 1;
     if(dAppHandle_ptr == (&usbFirmwareUpdate_H)) appCore = 1;
     else appCore = 0;
-    statusBarType = statusBarType;
+    appStatusBarType = statusBarType;
     elementRefresh = true;
 }
 
@@ -132,7 +132,7 @@ void appCyclingTask(void* dService){
                 appDurationCounter = cycling_Apps.appCycleDuration * 100;
                 appCyclingHolder = mtb_Identify_App_By_ID(cycling_Apps.appsCycling[i], LAUNCH_PXP_APP);
                 if(p >= CYCLING_APP_SLOTS) mtb_Panel_Draw_FullScreen_RGB565(cycling_Apps.app_Frame_Buffers[i]);
-                printf("@@@@@@@@ Showing \"%s\" app in slot %d: GenApp %d, SpeApp %d\n", appCyclingHolder->appName, i, cycling_Apps.appsCycling[i].GenApp, cycling_Apps.appsCycling[i].SpeApp);
+                //printf("@@@@@@@@ Showing \"%s\" app in slot %d: GenApp %d, SpeApp %d\n", appCyclingHolder->appName, i, cycling_Apps.appsCycling[i].GenApp, cycling_Apps.appsCycling[i].SpeApp);
                 while(appDurationCounter --> 0 && MTB_SERV_IS_ACTIVE == pdTRUE) delay(10);
                 memcpy(cycling_Apps.app_Frame_Buffers[i], mtb_Panel_Frame_Buffer, sizeof(mtb_Panel_Frame_Buffer));
             } else continue;
@@ -141,7 +141,7 @@ void appCyclingTask(void* dService){
         for(uint8_t i = 0; i < CYCLING_APP_SLOTS; i++){
             if (cycling_Apps.appsCycling[i].GenApp != 255 && cycling_Apps.appsCycling[i].SpeApp != 255){
                 appCyclingHolder = mtb_Identify_App_By_ID(cycling_Apps.appsCycling[i], KILL_PXP_APP);
-                printf("^^^^^^^ Killing app %s in slot %d: GenApp %d, SpeApp %d\n", appCyclingHolder->appName, i, cycling_Apps.appsCycling[i].GenApp, cycling_Apps.appsCycling[i].SpeApp);
+                //printf("^^^^^^^ Killing app %s in slot %d: GenApp %d, SpeApp %d\n", appCyclingHolder->appName, i, cycling_Apps.appsCycling[i].GenApp, cycling_Apps.appsCycling[i].SpeApp);
             } else continue;
         }
 
@@ -201,11 +201,11 @@ void Mtb_Applications::appResume(Mtb_Applications* dApp){
 
     previousRunningApp = currentRunningApp;
 
-    if(dApp->statusBarType == CLOCK_STATUS_BAR){
+    if(dApp->appStatusBarType == CLOCK_STATUS_BAR){
         mtb_Draw_Status_Bar();
         mtb_Launch_This_Service(mtb_Status_Bar_Clock_Sv);
     } 
-    else if(dApp->statusBarType == WEEKDAY_STATUS_BAR){
+    else if(dApp->appStatusBarType == WEEKDAY_STATUS_BAR){
         mtb_Draw_Status_Bar();
         mtb_Launch_This_Service(mtb_Status_Bar_Calendar_Sv);
     } 
@@ -232,8 +232,8 @@ void Mtb_Applications::appSuspend(Mtb_Applications* dApp){
     for (Mtb_Services* servElement : dApp->appServices) if (servElement != nullptr) mtb_Suspend_This_Service(servElement);
     vTaskSuspend(*(dApp->appHandle_ptr));
 
-    if(dApp->statusBarType == CLOCK_STATUS_BAR) mtb_Status_Bar_Clock_Sv->service_is_Running = pdFALSE;
-    if(dApp->statusBarType == WEEKDAY_STATUS_BAR) mtb_Status_Bar_Calendar_Sv->service_is_Running = pdFALSE;
+    if(dApp->appStatusBarType == CLOCK_STATUS_BAR) mtb_Status_Bar_Clock_Sv->service_is_Running = pdFALSE;
+    if(dApp->appStatusBarType == WEEKDAY_STATUS_BAR) mtb_Status_Bar_Calendar_Sv->service_is_Running = pdFALSE;
 }
 
 void Mtb_Applications::appDestroy(Mtb_Applications* dApp){
@@ -250,8 +250,8 @@ void Mtb_Applications::appDestroy(Mtb_Applications* dApp){
         }
     }
 
-    if(dApp->statusBarType == CLOCK_STATUS_BAR) mtb_Status_Bar_Clock_Sv->service_is_Running = pdFALSE;
-    else if(dApp->statusBarType == WEEKDAY_STATUS_BAR) mtb_Status_Bar_Calendar_Sv->service_is_Running = pdFALSE;
+    if(dApp->appStatusBarType == CLOCK_STATUS_BAR) mtb_Status_Bar_Clock_Sv->service_is_Running = pdFALSE;
+    else if(dApp->appStatusBarType == WEEKDAY_STATUS_BAR) mtb_Status_Bar_Calendar_Sv->service_is_Running = pdFALSE;
 
     for (uint8_t i = 0; i < 5; i++){
     if((scrollText_Handles[i]) != NULL){
@@ -446,7 +446,7 @@ void Mtb_Applications::mtb_App_Init(Mtb_Services* pointer_0, Mtb_Services* point
 
     for (Mtb_Services *THIS_SERV : appServices) if (THIS_SERV != nullptr) mtb_Launch_This_Service(THIS_SERV);
 
-    switch(statusBarType){
+    switch(appStatusBarType){
         case CLOCK_STATUS_BAR:
             mtb_Launch_This_Service(mtb_Status_Bar_Clock_Sv);  
             break;

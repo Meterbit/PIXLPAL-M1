@@ -124,7 +124,7 @@ while (THIS_APP_IS_ACTIVE == pdTRUE){
     while (THIS_APP_IS_ACTIVE == pdTRUE){
         int16_t CurrencyDataRequestTim = 5000;
         http.begin(apiUrl); // Edit your key here
-        // http.addHeader("x-rapidapi-key", "783152efb6mshac636e27a8f24bep10fb3ajsn5ae13bc4f722");
+        // http.addHeader("x-rapidapi-key", "inputYourAPIKeyHere");
         int httpCode = http.GET();
         if (httpCode > 0){
             String payload = http.getString();
