@@ -72,7 +72,7 @@ Mtb_Applications* mtb_Launch_This_App(Mtb_Applications *dApp, Mtb_Action_On_App_
         Mtb_Applications::appSuspend(Mtb_Applications::currentRunningApp);
         Mtb_Applications::appResume(dApp);
         } else {
-        if(cycling_Apps.appsShouldCycle == true && do_Prv_App != IGNORE_PREVIOUS_APP) dApp->action_On_Prev_App = SUSPEND_PREVIOUS_APP;
+        if(cycling_Apps.appsCycleActive == true && do_Prv_App != IGNORE_PREVIOUS_APP) dApp->action_On_Prev_App = SUSPEND_PREVIOUS_APP;
         else dApp->action_On_Prev_App = do_Prv_App;
         xQueueSend(appLauncherQueue, &dApp, portMAX_DELAY);
         mtb_Launch_This_Service(mtb_App_Launcher_Sv);
@@ -121,6 +121,7 @@ void appCyclingTask(void* dService){
 
         uint32_t p = 0;
         for(uint8_t i = 0; MTB_SERV_IS_ACTIVE == pdTRUE; ++p, i = p % cycling_Apps.appsNoInCycle){
+            if(cycling_Apps.appsNoInCycle == 0) break;
             if (cycling_Apps.appsCycling[i].GenApp != 255 && cycling_Apps.appsCycling[i].SpeApp != 255){
                 appDurationCounter = cycling_Apps.appCycleDuration * 100;
                 appCyclingHolder = mtb_Identify_App_By_ID(cycling_Apps.appsCycling[i], LAUNCH_PXP_APP);
@@ -527,21 +528,23 @@ void Mtb_Applications::mtb_App_Set_Ble_Comm_Sv_Fns(bleCom_Parser_Fns_Ptr Fn_0, b
 }
 
  uint8_t mtb_Add_App_To_Cycle_App_List( Mtb_User_AppID_t appToAdd){
-    for(uint8_t i = 0; i < CYCLING_APP_SLOTS; i++){
-        if(cycling_Apps.appsCycling[i].GenApp == 255 && cycling_Apps.appsCycling[i].SpeApp == 255){
-            cycling_Apps.appsCycling[i] = appToAdd;
-            return 1;
-        }
-    }
-    return 0;
+    if(cycling_Apps.appsNoInCycle >= CYCLING_APP_SLOTS) return 0;
+    cycling_Apps.appsCycling[cycling_Apps.appsNoInCycle] = appToAdd;
+    cycling_Apps.appsNoInCycle++;
+    return 1;
 }
 
  uint8_t mtb_Remove_App_From_Cycle_App_List(Mtb_User_AppID_t appToRemove){
     for(uint8_t i = 0; i < cycling_Apps.appsNoInCycle; i++){
         if(cycling_Apps.appsCycling[i].GenApp == appToRemove.GenApp && cycling_Apps.appsCycling[i].SpeApp == appToRemove.SpeApp){
-            cycling_Apps.appsCycling[i].GenApp = 255;
-            cycling_Apps.appsCycling[i].SpeApp = 255;
-            mtb_Identify_App_By_ID(appToRemove, KILL_PXP_APP);
+            if(cycling_Apps.appsCycleActive) mtb_Identify_App_By_ID(appToRemove, KILL_PXP_APP);
+            for(uint8_t j = i; j < cycling_Apps.appsNoInCycle - 1; j++){
+                cycling_Apps.appsCycling[j] = cycling_Apps.appsCycling[j + 1];
+                memcpy(cycling_Apps.app_Frame_Buffers[j], cycling_Apps.app_Frame_Buffers[j + 1], sizeof(cycling_Apps.app_Frame_Buffers[0]));
+            }
+            cycling_Apps.appsNoInCycle--;
+            cycling_Apps.appsCycling[cycling_Apps.appsNoInCycle] = {255, 255};
+            memset(cycling_Apps.app_Frame_Buffers[cycling_Apps.appsNoInCycle], 0, sizeof(cycling_Apps.app_Frame_Buffers[0]));
             return 1;
         }
     }

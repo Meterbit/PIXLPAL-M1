@@ -22,7 +22,7 @@ extern "C" void app_main(){
     mtb_Wifi_Init();
 
     // Cycling through a number of user selected apps, or Launch the Last Executed App or Launch a particular App after boot-up
-    if(cycling_Apps.appsShouldCycle == true) mtb_Launch_This_Service(mtb_App_Cycling_Sv);
+    if(cycling_Apps.appsCycleActive == true) mtb_Launch_This_Service(mtb_App_Cycling_Sv);
     else mtb_Identify_App_By_ID(lastSavedApp, LAUNCH_PXP_APP);
 
     // mtb_Launch_This_App(calendarClock_App);

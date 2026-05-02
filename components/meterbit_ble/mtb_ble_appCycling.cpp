@@ -52,9 +52,9 @@ void appCycling_Status(JsonDocument& dCommand){
   bool tempStatus;
   char* acknowledge = "{\"set_command\": 1, \"response\": 1}";
   tempStatus = dCommand["value"];
-  cycling_Apps.appsShouldCycle = tempStatus;
+  cycling_Apps.appsCycleActive = tempStatus;
 
-  if(cycling_Apps.appsShouldCycle && cycling_Apps.appsNoInCycle > 0){
+  if(cycling_Apps.appsCycleActive && cycling_Apps.appsNoInCycle > 0){
     mtb_Kill_This_App(Mtb_Applications::currentRunningApp);
     mtb_Launch_This_Service(mtb_App_Cycling_Sv);
   } else mtb_Kill_This_Service(mtb_App_Cycling_Sv);
@@ -77,7 +77,6 @@ void appCycling_Selections(JsonDocument& dCommand){
   Mtb_User_AppID_t userAppHolder;
   String jsonString;
   JsonDocument doc;
-  JsonArray apps;
 
   bool dAction = dCommand["action"];
   String appID = dCommand["appID"];
@@ -86,10 +85,14 @@ void appCycling_Selections(JsonDocument& dCommand){
   userAppHolder.SpeApp = getIntegerAtIndex(appID, 1);
 
   if(dAction){
-  mtb_Add_App_To_Cycle_App_List(userAppHolder);
-  doc["app_command"] = 250;
-  apps = doc["apps"].to<JsonArray>();
+    mtb_Add_App_To_Cycle_App_List(userAppHolder);
+    doc["app_command"] = 250;
+  } else {
+    mtb_Remove_App_From_Cycle_App_List(userAppHolder);
+    doc["app_command"] = 251;
+  }
 
+  JsonArray apps = doc["apps"].to<JsonArray>();
   for(uint8_t i = 0; i < cycling_Apps.appsNoInCycle; i++){
     String appEntry = String(cycling_Apps.appsCycling[i].GenApp) + "/" + String(cycling_Apps.appsCycling[i].SpeApp);
     apps.add(appEntry);
@@ -97,21 +100,6 @@ void appCycling_Selections(JsonDocument& dCommand){
 
   serializeJson(doc, jsonString);
   bleApplicationComSend(appID.c_str(), jsonString.c_str());
-  }else{
-  mtb_Remove_App_From_Cycle_App_List(userAppHolder);
-
-  doc["app_command"] = 251;
-  apps = doc["apps"].to<JsonArray>();
-
-  for(uint8_t i = 0; i < cycling_Apps.appsNoInCycle; i++){
-    String appEntry = String(cycling_Apps.appsCycling[i].GenApp) + "/" + String(cycling_Apps.appsCycling[i].SpeApp);
-    apps.add(appEntry);
-  }
-
-  serializeJson(doc, jsonString);
-  bleApplicationComSend(appID.c_str(), jsonString.c_str());
-
-  }
 }
 
 //**04*********************************************************************************************************************
@@ -123,7 +111,7 @@ void getUserCyclingApps(JsonDocument& dCommand){
   doc["set_command"] = 4;
   JsonArray apps = doc["apps"].to<JsonArray>();
 
-  for(uint8_t i = 0; i < CYCLING_APP_SLOTS; i++){
+  for(uint8_t i = 0; i < cycling_Apps.appsNoInCycle; i++){
     String appEntry = String(cycling_Apps.appsCycling[i].GenApp) + "/" + String(cycling_Apps.appsCycling[i].SpeApp);
     apps.add(appEntry);
   }

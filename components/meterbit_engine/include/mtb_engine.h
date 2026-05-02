@@ -58,7 +58,7 @@ struct Mtb_User_AppID_t{
 };
 
 struct Mtb_Apps_To_Cycle_t{
-    bool appsShouldCycle;
+    bool appsCycleActive;
     uint8_t appsNoInCycle;
     uint16_t appCycleDuration;
     Mtb_User_AppID_t appsCycling[CYCLING_APP_SLOTS];
