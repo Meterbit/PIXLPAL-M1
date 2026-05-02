@@ -284,7 +284,7 @@ int bleApplicationComSend(const char* dRoute, const String& dMessage) {
             chunkData;
 
         appCom_characteristic->setValue(packet.c_str());
-
+        ESP_LOGI(TAG, "BLE Application Data Sent (Chunk %d/%d): %s\n", chunkIndex + 1, totalChunks, packet.c_str());
         if (!appCom_characteristic->notify()) {
             ESP_LOGW("BLE", "Notify failed for appCom_characteristic");
             return 0;

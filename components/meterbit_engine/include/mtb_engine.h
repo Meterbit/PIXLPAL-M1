@@ -376,8 +376,8 @@ extern Mtb_Applications_FullScreen* audSpecAnalyzer_App;        // App ID: 9/2
 extern Mtb_Applications_StatusBar *spotify_App;                 // App ID: 9/3
 
 // Miscellanous
-extern Mtb_Applications_StatusBar* cpuTemp_App;                 // App ID: 11/1
-extern Mtb_Applications_StatusBar* memUsage_App;                // App ID: 11/2
+// extern Mtb_Applications_StatusBar* cpuTemp_App;                 // App ID: 11/1
+// extern Mtb_Applications_StatusBar* memUsage_App;                // App ID: 11/2
 
 // Example Apps
 extern Mtb_Applications_FullScreen* exampleWriteText_App;        
