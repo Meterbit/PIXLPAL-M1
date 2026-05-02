@@ -15,7 +15,7 @@ void mtb_StatusBar_Calendar_Task(void* dService){
   Mtb_Services *thisServ = (Mtb_Services *)dService;
     uint8_t timeRefresh = pdTRUE;
     mtb_Read_Nvs_Struct("Clock Cols", &clk_Updt, sizeof(Clock_Colors));
-    Mtb_FixedText_t weekday_Obj(35, 1, Terminal6x8, clk_Updt.weekDayColour);
+    Mtb_CentreText_t weekday_Obj(64, 5, Terminal6x8, clk_Updt.weekDayColour);
     Mtb_FixedText_t mnth_day_Obj(93, 1, Terminal6x8, clk_Updt.dateColour);
     char rtc_WkDay[15] = {0};
     char rtc_Dated[10] = {0};
@@ -41,19 +41,19 @@ if(pre_Day != now->tm_mday  || timeRefresh){
   pre_Day = now-> tm_mday;
   
   switch (pre_WeekDay){
-  case SUN: strcpy(rtc_WkDay, "Sunday");
+  case SUN: strcpy(rtc_WkDay, "SUN");
     break;
-  case MON: strcpy(rtc_WkDay, "Monday");
+  case MON: strcpy(rtc_WkDay, "MON");
     break;
-  case TUE: strcpy(rtc_WkDay, "Tuesday");
+  case TUE: strcpy(rtc_WkDay, "TUE");
     break;
-  case WED: strcpy(rtc_WkDay, "Wednesday");
+  case WED: strcpy(rtc_WkDay, "WED");
     break;
-  case THU: strcpy(rtc_WkDay, "Thursday");
+  case THU: strcpy(rtc_WkDay, "THU");
     break;
-  case FRI: strcpy(rtc_WkDay, "Friday");
+  case FRI: strcpy(rtc_WkDay, "FRI");
     break;
-  case SAT: strcpy(rtc_WkDay, "Saturday");
+  case SAT: strcpy(rtc_WkDay, "SAT");
     break;
     default: strcpy(rtc_WkDay, "ERR");
   }
@@ -74,31 +74,31 @@ if (pre_Month != now->tm_mon  || timeRefresh){
 pre_Month = now->tm_mon;
 
 switch (pre_Month){
-      case JANUARY: strcpy(&rtc_Dated[0], "Jan");
+      case JANUARY: strcpy(&rtc_Dated[0], "JAN");
       break;
-      case FEBUARY: strcpy(&rtc_Dated[0], "Feb");
+      case FEBUARY: strcpy(&rtc_Dated[0], "FEB");
       break;
-      case MARCH: strcpy(&rtc_Dated[0], "Mar");
+      case MARCH: strcpy(&rtc_Dated[0], "MAR");
       break;
-      case APRIL: strcpy(&rtc_Dated[0], "Apr");
+      case APRIL: strcpy(&rtc_Dated[0], "APR");
       break;
-      case MAY: strcpy(&rtc_Dated[0], "May");
+      case MAY: strcpy(&rtc_Dated[0], "MAY");
       break;
-      case JUNE: strcpy(&rtc_Dated[0], "Jun");
+      case JUNE: strcpy(&rtc_Dated[0], "JUN");
       break;
-      case JULY: strcpy(&rtc_Dated[0], "Jul");
+      case JULY: strcpy(&rtc_Dated[0], "JUL");
       break;
-      case AUGUST: strcpy(&rtc_Dated[0], "Aug");
+      case AUGUST: strcpy(&rtc_Dated[0], "AUG");
       break;
-      case SEPTEMBER: strcpy(&rtc_Dated[0], "Sep");
+      case SEPTEMBER: strcpy(&rtc_Dated[0], "SEP");
       break;
-      case OCTOBER: strcpy(&rtc_Dated[0], "Oct");
+      case OCTOBER: strcpy(&rtc_Dated[0], "OCT");
       break;
-      case NOVEMBER: strcpy(&rtc_Dated[0], "Nov");
+      case NOVEMBER: strcpy(&rtc_Dated[0], "NOV");
       break;
-      case DECEMBER: strcpy(&rtc_Dated[0], "Dec");
+      case DECEMBER: strcpy(&rtc_Dated[0], "DEC");
       break;
-      default: strcpy(&rtc_Dated[0], "Err");
+      default: strcpy(&rtc_Dated[0], "ERR");
 }
 }
 

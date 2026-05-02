@@ -139,45 +139,14 @@ void appCyclingTask(void* dService){
             } else continue;
         }
 
-
+    if(cycling_Apps.appsCycleActive == false){    
     mtb_Identify_App_By_ID(Mtb_Applications::currentRunningApp->appID, LAUNCH_PXP_APP);
     mtb_Show_Status_Bar_Icon({"/batIcons/wipe7x7.png", 27, 1});
+}
+
 
     mtb_Delete_This_Service(THIS_SERV);
 }
-
-// void appCyclingTask(void* dService){
-//     Mtb_Services *THIS_SERV = (Mtb_Services *)dService;
-//     Mtb_Applications *appCyclingHolder = nullptr;
-//     uint16_t appDurationCounter = 0;
-//     mtb_Show_Status_Bar_Icon({"/batIcons/appCycle.png", 27, 1});
-//     mtb_Identify_App_By_ID(Mtb_Applications::currentRunningApp->appID, KILL_PXP_APP);
-
-//         uint32_t p = 0;
-//         for(uint8_t i = 0; MTB_SERV_IS_ACTIVE == pdTRUE; ++p, i = p % CYCLING_APP_SLOTS){
-//             if (cycling_Apps.appsCycling[i].GenApp != 255 && cycling_Apps.appsCycling[i].SpeApp != 255){
-//                 appDurationCounter = cycling_Apps.appCycleDuration * 100;
-//                 appCyclingHolder = mtb_Identify_App_By_ID(cycling_Apps.appsCycling[i], LAUNCH_PXP_APP);
-//                 if(p >= CYCLING_APP_SLOTS) mtb_Panel_Draw_FullScreen_RGB565(cycling_Apps.app_Frame_Buffers[i]);
-//                 //printf("@@@@@@@@ Showing \"%s\" app in slot %d: GenApp %d, SpeApp %d\n", appCyclingHolder->appName, i, cycling_Apps.appsCycling[i].GenApp, cycling_Apps.appsCycling[i].SpeApp);
-//                 while(appDurationCounter --> 0 && MTB_SERV_IS_ACTIVE == pdTRUE) delay(10);
-//                 memcpy(cycling_Apps.app_Frame_Buffers[i], mtb_Panel_Frame_Buffer, sizeof(mtb_Panel_Frame_Buffer));
-//             } else continue;
-//         }
-
-//         for(uint8_t i = 0; i < CYCLING_APP_SLOTS; i++){
-//             if (cycling_Apps.appsCycling[i].GenApp != 255 && cycling_Apps.appsCycling[i].SpeApp != 255){
-//                 appCyclingHolder = mtb_Identify_App_By_ID(cycling_Apps.appsCycling[i], KILL_PXP_APP);
-//                 //printf("^^^^^^^ Killing app %s in slot %d: GenApp %d, SpeApp %d\n", appCyclingHolder->appName, i, cycling_Apps.appsCycling[i].GenApp, cycling_Apps.appsCycling[i].SpeApp);
-//             } else continue;
-//         }
-
-
-//     mtb_Identify_App_By_ID(Mtb_Applications::currentRunningApp->appID, LAUNCH_PXP_APP);
-//     mtb_Show_Status_Bar_Icon({"/batIcons/wipe7x7.png", 27, 1});
-
-//     mtb_Delete_This_Service(THIS_SERV);
-// }
 
 
 void nvsAccessTask(void* dService){
@@ -544,7 +513,12 @@ void Mtb_Applications::mtb_App_Set_Ble_Comm_Sv_Fns(bleCom_Parser_Fns_Ptr Fn_0, b
             }
             cycling_Apps.appsNoInCycle--;
             cycling_Apps.appsCycling[cycling_Apps.appsNoInCycle] = {255, 255};
-            memset(cycling_Apps.app_Frame_Buffers[cycling_Apps.appsNoInCycle], 0, sizeof(cycling_Apps.app_Frame_Buffers[0]));
+            if(cycling_Apps.appsCycleActive){
+                mtb_Kill_This_Service(mtb_App_Cycling_Sv);
+                while(*(mtb_App_Cycling_Sv->serviceT_Handle_ptr) == NULL) delay(10);
+                delay(2000);
+                mtb_Launch_This_Service(mtb_App_Cycling_Sv);
+            } 
             return 1;
         }
     }

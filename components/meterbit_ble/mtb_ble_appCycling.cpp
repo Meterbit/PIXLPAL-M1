@@ -22,7 +22,7 @@ static const char TAG[] = "BLE_WIFI_SETTINGS";
 
 void appCycling_Status(JsonDocument&);
 void appCycling_Duration(JsonDocument&);
-void appCycling_Selections(JsonDocument&);
+void appCycling_Add_Remove(JsonDocument&);
 void getUserCyclingApps(JsonDocument&);
 
 void app_Cycle_Settings(JsonDocument& dCommand){
@@ -36,7 +36,7 @@ void app_Cycle_Settings(JsonDocument& dCommand){
       break;
     case 2: appCycling_Duration(dCommand);
       break;
-    case 3: appCycling_Selections(dCommand);
+    case 3: appCycling_Add_Remove(dCommand);
       break;
     case 4: getUserCyclingApps(dCommand);
       break;
@@ -72,8 +72,7 @@ bleSettingsComSend(mtb_App_Cycle_Settings_Route, acknowledge);
 }
 
 //**03*********************************************************************************************************************
-void appCycling_Selections(JsonDocument& dCommand){
-  printf("appCycling_Selections command received.\n");
+void appCycling_Add_Remove(JsonDocument& dCommand){
   Mtb_User_AppID_t userAppHolder;
   String jsonString;
   JsonDocument doc;
@@ -84,13 +83,17 @@ void appCycling_Selections(JsonDocument& dCommand){
   userAppHolder.GenApp = getIntegerAtIndex(appID, 0);
   userAppHolder.SpeApp = getIntegerAtIndex(appID, 1);
 
-  if(dAction){
+  printf("The dAction value is: %d\n", dAction);
+
+  if(dAction == false){
     mtb_Add_App_To_Cycle_App_List(userAppHolder);
     doc["app_command"] = 250;
   } else {
     mtb_Remove_App_From_Cycle_App_List(userAppHolder);
     doc["app_command"] = 251;
   }
+
+  // doc["appCount"] = cycling_Apps.appsNoInCycle;
 
   JsonArray apps = doc["apps"].to<JsonArray>();
   for(uint8_t i = 0; i < cycling_Apps.appsNoInCycle; i++){
