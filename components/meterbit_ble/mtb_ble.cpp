@@ -475,8 +475,12 @@ void ble_AppCom_Parse_Task(void* dService){
           if(dError.code() == dError.Ok && dCmd_num == 252){
             mtb_Identify_App_By_ID(appHolder, SHOW_PXP_APP_UI);
           }else if (dError.code() == dError.Ok && dCmd_num == 255){
-            mtb_Identify_App_By_ID(appHolder, LAUNCH_PXP_APP);
-            bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 253}");
+            String jsonString;
+            JsonDocument doc;
+            doc["app_command"] = 253;
+            doc["appCyclingActive"] = cycling_Apps.appsCycleActive;
+            if(!cycling_Apps.appsCycleActive) mtb_Identify_App_By_ID(appHolder, LAUNCH_PXP_APP);
+            bleApplicationComSend(specific_Application.c_str(), doc.as<String>());
           }else{
               bleApplicationComSend(specific_Application.c_str(), "{\"app_command\": 254}");
               statusBarNotif.mtb_Scroll_This_Text("TAP 'LAUNCH' TO START APP", MAGENTA);

@@ -274,7 +274,7 @@ void Mtb_Applications::mtb_App_Show_Mobile_UI(void){
     if(appMobile_Data == nullptr) mobileUICommand = "{\"app_command\": 252, \"manifest\": " + String(appMobile_Manifest) + ", \"ui_api\": " + String(appMobile_UiApi) + "}";
     else mobileUICommand = "{\"app_command\": 252, \"manifest\": " + String(appMobile_Manifest) + ", \"ui_api\": " + String(appMobile_UiApi) + ", \"data\": " + String(appMobile_Data) + "}";
 
-    ESP_LOGI(TAG, "Mobile UI Command: %s\n", mobileUICommand.c_str());
+    // ESP_LOGI(TAG, "Mobile UI Command: %s\n", mobileUICommand.c_str());
     
     bleApplicationComSend(applicationID, mobileUICommand);
 }
@@ -313,7 +313,7 @@ void mtb_Delete_This_App(Mtb_Applications* dApp){
     // ESP_LOGW(TAG, "The %s App free stack min so far: %u bytes", dApp->appName, (unsigned)(hwm * sizeof(StackType_t)));
     dApp->app_is_Running = pdFALSE;
     *(dApp->appHandle_ptr) = NULL;
-    ESP_LOGW(TAG, "THIS APPLICATION HAS BEEN DELETED: %s \n", dApp->appName);
+    //ESP_LOGW(TAG, "THIS APPLICATION HAS BEEN DELETED: %s \n", dApp->appName);
     vTaskDelete(NULL);
 }
 
@@ -324,7 +324,7 @@ Mtb_Applications* mtb_Kill_This_App(Mtb_Applications* dApp){
         Mtb_Applications::appDestroy(dApp);
         } else if (*(dApp->appHandle_ptr) != NULL && eTaskGetState(*(dApp->appHandle_ptr)) != eSuspended){
         Mtb_Applications::appDestroy(dApp);
-        } else ESP_LOGE(TAG, "The \"%s\" is not active, app handler is NULL.\n", dApp->appName);
+        } else ESP_LOGW(TAG, "The \"%s\" is not active, app handler is NULL.\n", dApp->appName);
     return dApp;
 }
 
@@ -341,7 +341,7 @@ void mtb_Delete_This_Service(Mtb_Services* dService){
 // This function deletes a service task and frees its resources. Call from outside the service task.
 void mtb_Kill_This_Service(Mtb_Services* dService){
     dService->service_is_Running = pdFALSE;
-    ESP_LOGI(TAG, "THIS SERVICE HAS BEEN KILLED: %s \n", dService->serviceName);
+    //ESP_LOGI(TAG, "THIS SERVICE HAS BEEN KILLED: %s \n", dService->serviceName);
 }
 
 void encoderDoNothing(rotary_encoder_rotation_t){}

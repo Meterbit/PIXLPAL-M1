@@ -83,8 +83,6 @@ void appCycling_Add_Remove(JsonDocument& dCommand){
   userAppHolder.GenApp = getIntegerAtIndex(appID, 0);
   userAppHolder.SpeApp = getIntegerAtIndex(appID, 1);
 
-  printf("The dAction value is: %d\n", dAction);
-
   if(dAction == false){
     mtb_Add_App_To_Cycle_App_List(userAppHolder);
     doc["app_command"] = 250;
@@ -107,8 +105,6 @@ void appCycling_Add_Remove(JsonDocument& dCommand){
 
 //**04*********************************************************************************************************************
 void getUserCyclingApps(JsonDocument& dCommand){
-  printf("getUserCyclingApps command received.\n");
-
   String jsonString;
   JsonDocument doc;
   doc["set_command"] = 4;
@@ -121,5 +117,4 @@ void getUserCyclingApps(JsonDocument& dCommand){
 
   serializeJson(doc, jsonString);
   bleSettingsComSend(mtb_App_Cycle_Settings_Route, jsonString.c_str());
-  //printf("Sending user cycling apps data: %s\n", jsonString.c_str());
 }
