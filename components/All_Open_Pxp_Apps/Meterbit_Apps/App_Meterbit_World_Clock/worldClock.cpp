@@ -18,9 +18,9 @@
 struct WorldClock_Data_t {
 char worldCapitals[5][50];
 char worldTimeZones[5][50];
-char firstCountryName[50];
-uint16_t worldColors[5];
-uint8_t worldClockMode;
+ char firstCountryName[50];
+ uint16_t worldColors[5];
+ uint8_t worldClockMode;
 };
 
 EXT_RAM_BSS_ATTR TaskHandle_t worldClock_Task_H = NULL;

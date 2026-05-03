@@ -25,7 +25,7 @@
  */
 
 #include "mtb_PosixTZtoLocalTime.h"
-
+#include <Arduino.h>
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -35,7 +35,8 @@
  * Private Variables
  ******************************************************************************/
 
-static TimezoneInfo tzCache[MAX_WORLD_CLOCKS];
+EXT_RAM_BSS_ATTR TimezoneInfo tzCache[MAX_WORLD_CLOCKS];
+
 static uint8_t tzCacheCount = 0;
 
 /*******************************************************************************
