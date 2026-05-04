@@ -123,12 +123,17 @@ void appCyclingTask(void* dService){
         for(uint8_t i = 0; MTB_SERV_IS_ACTIVE == pdTRUE; ++p, i = p % cycling_Apps.appsNoInCycle){
             if(cycling_Apps.appsNoInCycle == 0) break;
             if (cycling_Apps.appsCycling[i].GenApp != 255 && cycling_Apps.appsCycling[i].SpeApp != 255){
-                appDurationCounter = cycling_Apps.appCycleDuration * 100;
-                appCyclingHolder = mtb_Identify_App_By_ID(cycling_Apps.appsCycling[i], LAUNCH_PXP_APP);
-                if(p >= cycling_Apps.appsNoInCycle) mtb_Panel_Draw_FullScreen_RGB565(cycling_Apps.app_Frame_Buffers[i]);
-                //printf("@@@@@@@@ Showing \"%s\" app in slot %d: GenApp %d, SpeApp %d\n", appCyclingHolder->appName, i, cycling_Apps.appsCycling[i].GenApp, cycling_Apps.appsCycling[i].SpeApp);
-                while(appDurationCounter --> 0 && MTB_SERV_IS_ACTIVE == pdTRUE) delay(10);
-                memcpy(cycling_Apps.app_Frame_Buffers[i], mtb_Panel_Frame_Buffer, sizeof(mtb_Panel_Frame_Buffer));
+                if(cycling_Apps.appsNoInCycle > 1 || p == 0){
+                    appCyclingHolder = mtb_Identify_App_By_ID(cycling_Apps.appsCycling[i], LAUNCH_PXP_APP);
+                    if(p >= cycling_Apps.appsNoInCycle) mtb_Panel_Draw_FullScreen_RGB565(cycling_Apps.app_Frame_Buffers[i]);
+                }
+                if(cycling_Apps.appsNoInCycle > 1){
+                    appDurationCounter = cycling_Apps.appCycleDuration * 100;
+                    while(appDurationCounter --> 0 && MTB_SERV_IS_ACTIVE == pdTRUE) delay(10);
+                    memcpy(cycling_Apps.app_Frame_Buffers[i], mtb_Panel_Frame_Buffer, sizeof(mtb_Panel_Frame_Buffer));
+                } else {
+                    while(MTB_SERV_IS_ACTIVE == pdTRUE && cycling_Apps.appsNoInCycle <= 1) delay(10);
+                }
             } else continue;
         }
 
@@ -143,8 +148,6 @@ void appCyclingTask(void* dService){
     mtb_Identify_App_By_ID(Mtb_Applications::currentRunningApp->appID, LAUNCH_PXP_APP);
     mtb_Show_Status_Bar_Icon({"/batIcons/wipe7x7.png", 27, 1});
 }
-
-
     mtb_Delete_This_Service(THIS_SERV);
 }
 
