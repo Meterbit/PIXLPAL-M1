@@ -32,7 +32,7 @@ EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *openWeather_App = new Mtb_Applicati
 void openWeather_App_Task(void* dApplication){
   Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
   THIS_APP->mtb_App_Set_EC11_Cb_Fns(changeOpenWeatherLocation, mtb_Brightness_Control);
-  THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(setOpenWeatherLocation);
+  THIS_APP->mtb_App_Set_Ble_Comm_Fns(setOpenWeatherLocation);
   THIS_APP->mtb_App_Init();
   //************************************************************************************ */
   currentOpenWeatherData = (OpenWeatherData_t){

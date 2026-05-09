@@ -48,7 +48,7 @@ void newsAPI_App_Task(void * dApplication) {
     Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
     
     // Register BLE command functions.
-    THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(showLatestNewsAPI, setNewsAPIUpdateInterval, setNewsAPI_APIKey, setNewsAPI_Language);
+    THIS_APP->mtb_App_Set_Ble_Comm_Fns(showLatestNewsAPI, setNewsAPIUpdateInterval, setNewsAPI_APIKey, setNewsAPI_Language);
     
     // Set button and encoder handlers.
     THIS_APP->mtb_App_Set_EC11_Cb_Fns(buttonNewsAPI_Handler, mtb_Brightness_Control);

@@ -48,7 +48,7 @@ EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *finnhub_Stats_App = new Mtb_Applica
 void finhubStats_App_Task(void* dApplication){
     Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
     THIS_APP->mtb_App_Set_EC11_Cb_Fns(buttonChangeDisplayStock, mtb_Brightness_Control);
-    THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(showParticularStock, add_RemoveStockSymbol, setStockChangeInterval, saveAPI_key);
+    THIS_APP->mtb_App_Set_Ble_Comm_Fns(showParticularStock, add_RemoveStockSymbol, setStockChangeInterval, saveAPI_key);
     THIS_APP->mtb_App_Init();
     //************************************************************************************ */
     currentStocks = (Stocks_Stat_t){

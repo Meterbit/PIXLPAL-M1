@@ -17,7 +17,7 @@ EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *bigClockCalendar_App = new Mtb_App
 void  bigClock_App_Task(void* dApplication){
   Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
   THIS_APP->mtb_App_Set_EC11_Cb_Fns(randomButtonControl, mtb_Brightness_Control);
-  THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(bigClock_Color_Change, bigClockGet_NTP_Local_Time);
+  THIS_APP->mtb_App_Set_Ble_Comm_Fns(bigClock_Color_Change, bigClockGet_NTP_Local_Time);
   THIS_APP->mtb_App_Init();
   //**************************************************************************************************************************
   mtb_Read_Nvs_Struct("Clock Cols", &clk_Updt, sizeof(Clock_Colors));

@@ -221,7 +221,7 @@ void Mtb_Applications::appResume(Mtb_Applications* dApp){
     mtb_Common_EncoderFn_ptr = dApp->mtb_App_EncoderFn_ptr; 
     mtb_Common_ButtonFn_Ptr = dApp->mtb_App_ButtonFn_Ptr;
 
-    // dApp->mtb_App_Set_Ble_Comm_Sv_Fns(clock_Color_Change, get_NTP_Local_Time);
+    // dApp->mtb_App_Set_Ble_Comm_Fns(clock_Color_Change, get_NTP_Local_Time);
     
     currentRunningApp = dApp;
     dApp->elementRefresh = true;
@@ -484,7 +484,7 @@ void mtb_Ble_App_Cmd_Respond_Success(const char* appID, uint8_t commandNumber, u
     bleApplicationComSend(appID, jsonString);
 }
 
-void Mtb_Applications::mtb_App_Set_Ble_Comm_Sv_Fns(bleCom_Parser_Fns_Ptr Fn_0, bleCom_Parser_Fns_Ptr Fn_1, bleCom_Parser_Fns_Ptr Fn_2 , bleCom_Parser_Fns_Ptr Fn_3, bleCom_Parser_Fns_Ptr Fn_4, bleCom_Parser_Fns_Ptr Fn_5, bleCom_Parser_Fns_Ptr Fn_6, bleCom_Parser_Fns_Ptr Fn_7, bleCom_Parser_Fns_Ptr Fn_8, bleCom_Parser_Fns_Ptr Fn_9, bleCom_Parser_Fns_Ptr Fn_10, bleCom_Parser_Fns_Ptr Fn_11){
+void Mtb_Applications::mtb_App_Set_Ble_Comm_Fns(bleCom_Parser_Fns_Ptr Fn_0, bleCom_Parser_Fns_Ptr Fn_1, bleCom_Parser_Fns_Ptr Fn_2 , bleCom_Parser_Fns_Ptr Fn_3, bleCom_Parser_Fns_Ptr Fn_4, bleCom_Parser_Fns_Ptr Fn_5, bleCom_Parser_Fns_Ptr Fn_6, bleCom_Parser_Fns_Ptr Fn_7, bleCom_Parser_Fns_Ptr Fn_8, bleCom_Parser_Fns_Ptr Fn_9, bleCom_Parser_Fns_Ptr Fn_10, bleCom_Parser_Fns_Ptr Fn_11){
     bleAppComServiceFns[0] = Fn_0;
     bleAppComServiceFns[1] = Fn_1;
     bleAppComServiceFns[2] = Fn_2;

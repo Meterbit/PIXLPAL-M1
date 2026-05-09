@@ -43,7 +43,7 @@ EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *worldFlags_App = new Mtb_Applicati
 void worldFlags_App_Task(void* dApplication){
   Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
   THIS_APP->mtb_App_Set_EC11_Cb_Fns(changeWorldFlagButton, mtb_Brightness_Control);
-  THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(selectDisplayFlag, selectPreferredFlags, cycleAllFlags, showCountryName, setFlagChangeIntv);
+  THIS_APP->mtb_App_Set_Ble_Comm_Fns(selectDisplayFlag, selectPreferredFlags, cycleAllFlags, showCountryName, setFlagChangeIntv);
   THIS_APP->mtb_App_Init();
   //************************************************************************************ */
   worldFlagsInfo = (WorldFlags_Data_t){

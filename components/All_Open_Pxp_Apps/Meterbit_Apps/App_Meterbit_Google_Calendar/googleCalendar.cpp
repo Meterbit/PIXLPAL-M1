@@ -93,7 +93,7 @@ void  googleCal_App_Task(void* dApplication){
   Mtb_Applications *THIS_APP = (Mtb_Applications *) dApplication;
   THIS_APP->mtb_App_Set_EC11_Cb_Fns(googleCalButtonControl, mtb_Brightness_Control);
 
-  THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(link_GoogleCal, get_GoogleCal_Refresh_Token, show_GoogleCal_Events, show_GoogleCal_Tasks, show_GoogleCal_Holidays, set_GoogleCal_ThemeColor);
+  THIS_APP->mtb_App_Set_Ble_Comm_Fns(link_GoogleCal, get_GoogleCal_Refresh_Token, show_GoogleCal_Events, show_GoogleCal_Tasks, show_GoogleCal_Holidays, set_GoogleCal_ThemeColor);
   THIS_APP->mtb_App_Init();
   //**************************************************************************************************************************************************************** */
   

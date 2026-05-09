@@ -30,7 +30,7 @@ EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *musicPlayer_App = new Mtb_Applicati
 void musicPlayer_App_Task(void* dApplication){
   Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
   THIS_APP->mtb_App_Set_EC11_Cb_Fns(nextTrackButton, mtb_Vol_Control_Encoder);
-  THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(selectNext_PreviousTrack);
+  THIS_APP->mtb_App_Set_Ble_Comm_Fns(selectNext_PreviousTrack);
   THIS_APP->mtb_App_Init(mtb_Usb_Mass_Storage_Sv, mtb_Audio_Out_Sv);
   //************************************************************************************ */
   musicPlayerData = (MusicPlayer_Data_t){1};

@@ -33,7 +33,7 @@ EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *openMeteo_App = new Mtb_Application
 void openMeteoUpdate_App_Task(void* dApplication){
   Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
   THIS_APP->mtb_App_Set_EC11_Cb_Fns(changeOpenMeteoLocation, mtb_Brightness_Control);
-  THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(setOpenMeteoLocation);
+  THIS_APP->mtb_App_Set_Ble_Comm_Fns(setOpenMeteoLocation);
   THIS_APP->mtb_App_Init();
   //************************************************************************************ */
   currentOpenMeteoData = (OpenMeteoData_t){"Lagos, Nigeria"};

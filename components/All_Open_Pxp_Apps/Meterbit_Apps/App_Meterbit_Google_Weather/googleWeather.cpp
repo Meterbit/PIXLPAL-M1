@@ -32,7 +32,7 @@ EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *googleWeather_App = new Mtb_Applica
 void googleWeatherUpdate_App_Task(void* dApplication){
   Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
   THIS_APP->mtb_App_Set_EC11_Cb_Fns(changeGoogleWeatherLocation, mtb_Brightness_Control);
-  THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(setGoogleWeatherLocation);
+  THIS_APP->mtb_App_Set_Ble_Comm_Fns(setGoogleWeatherLocation);
   THIS_APP->mtb_App_Init();
   //************************************************************************************ */
     currentGoogleWeatherData = (GoogleWeatherData_t){

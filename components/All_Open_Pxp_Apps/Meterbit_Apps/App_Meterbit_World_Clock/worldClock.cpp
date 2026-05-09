@@ -46,7 +46,7 @@ EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *worldClock_App = new Mtb_Applicatio
 void worldClock_App_Task(void* dApplication){
   Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
   THIS_APP->mtb_App_Set_EC11_Cb_Fns(change_City_Button, mtb_Brightness_Control);
-  THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(setWorldClockCities, setWorldClockColors, setWorldClockMode, requestWorldClkNTP_Time);
+  THIS_APP->mtb_App_Set_Ble_Comm_Fns(setWorldClockCities, setWorldClockColors, setWorldClockMode, requestWorldClkNTP_Time);
   THIS_APP->mtb_App_Init();
   //************************************************************************************ */
     char worldCity_Hr_Min[10] = {0};

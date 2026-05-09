@@ -49,7 +49,7 @@ void googleNews_App_Task(void * dApplication) {
     Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
     
     // Register BLE command functions.
-    THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(showLatestNews, setNewsUpdateInterval, setNewsAPIKey, setNewsLanguage);
+    THIS_APP->mtb_App_Set_Ble_Comm_Fns(showLatestNews, setNewsUpdateInterval, setNewsAPIKey, setNewsLanguage);
     
     // Set button and encoder handlers.
 

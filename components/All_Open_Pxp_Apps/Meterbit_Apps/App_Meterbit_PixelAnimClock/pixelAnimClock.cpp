@@ -54,7 +54,7 @@ void  pixAnimClock_App_Task(void* dApplication){
   Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
   THIS_APP->mtb_App_Set_EC11_Cb_Fns(pixelAnimChangeButton, mtb_Brightness_Control);
 
-  THIS_APP->mtb_App_Set_Ble_Comm_Sv_Fns(setClockTitleAndColor, setPixAnimTheme, setPixAnimClkColors, requestNTP_Time);
+  THIS_APP->mtb_App_Set_Ble_Comm_Fns(setClockTitleAndColor, setPixAnimTheme, setPixAnimClkColors, requestNTP_Time);
 
   THIS_APP->mtb_App_Init(pixAnimClkGif_Sv);
   //************************************************************************************************************************ */
