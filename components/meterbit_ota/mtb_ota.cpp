@@ -166,7 +166,7 @@ void ghota_Update_Task(void* dApplication){
     // //  * 
     // //  * Be carefull, as the PAT token will be stored in your firmware etc and can be used to access your github account.
     // //  */
-    ESP_ERROR_CHECK(ghota_set_auth(ghota_client, "Meterbit", "Input your Classic PAT token here."));
+    ESP_ERROR_CHECK(ghota_set_auth(ghota_client, "Meterbit", ""));
     // // /* or do a check/update now */
 
 
