@@ -142,7 +142,7 @@ void ghota_Update_Task(void* dApplication){
         "spiffs",
         "api.github.com",
         "Meterbit",
-        "MTB-F1",
+        "PIXLPAL-M1",
         1
     };
 
@@ -190,6 +190,7 @@ void ghota_Update_Task(void* dApplication){
     /* do some comparisions */
     if (semver_gt(*latest, *cur) == 1) {
         statusBarNotif.mtb_Scroll_This_Text("NEW UPDATE IS AVAILABLE. INSTALL FROM MOBILE APP.", YELLOW);
+        do_beep(BEEP_0);
         ESP_LOGI(TAG, "Latest version is greater than current version");
     } else if (semver_eq(*latest, *cur) == 1) {
         statusBarNotif.mtb_Scroll_This_Text("NO NEW UPDATE FOUND. DEVICE IS UP-TO-DATE.", MAGENTA);
