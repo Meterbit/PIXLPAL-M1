@@ -121,7 +121,7 @@ while (THIS_APP_IS_ACTIVE == pdTRUE){
 
 
     while ((Mtb_Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
-    mtb_Download_Github_Strg_File("stocks_Icons/_" + currentStocks.stockID +".png", String(currentStocks.stockFilePath));
+    mtb_Download_Github_File_To_SPIFFS("stocks_Icons/_" + currentStocks.stockID +".png", String(currentStocks.stockFilePath));
         
     if (http.connected()) { http.end(); } // Cleanup before starting a new request
     //************************************************************************************** */

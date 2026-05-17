@@ -16,14 +16,14 @@ void files2Download_Task(void*);
 
 EXT_RAM_BSS_ATTR Mtb_Services *mtb_GitHub_File_Dwnload_Sv = new Mtb_Services(files2Download_Task, &files2Download_Task_H, "Github Dwnld", 10240, 2, 1);
 
-bool mtb_Download_Github_Strg_File(String bucketPath, String flashPath){
+bool mtb_Download_Github_File_To_SPIFFS(const String& bucketPath, const String& flashPath, const String& account_Owner, const String& repo_Name, const String& github_PAT){
     // GitHub repository details
     const char* host = "api.github.com";
     const int httpsPort = 443;
-    const char* owner = "Meterbit";
-    const char* repo = "PXP_X1_STORAGE";
+    const char* owner = account_Owner.c_str();
+    const char* repo = repo_Name.c_str();
     const char* path = bucketPath.c_str();  // Path to the file in the repository
-    const char* token = "";       // GitHub personal access token
+    const char* token = github_PAT.c_str();       // GitHub personal access token
     
 
   WiFiClientSecure client;
@@ -99,14 +99,14 @@ bool mtb_Download_Github_Strg_File(String bucketPath, String flashPath){
   return true;
 }
 
-bool mtb_Download_Github_File_To_PSRAM(const String& bucketPath, uint8_t** outBuffer, size_t* outSize) {
+bool mtb_Download_Github_File_To_PSRAM(const String& bucketPath, uint8_t** outBuffer, size_t* outSize, const String& account_Owner, const String& repo_Name, const String& github_PAT) {
     // GitHub repo details
     const char* host = "api.github.com";
     const int httpsPort = 443;
-    const char* owner = "Meterbit";
-    const char* repo = "PXP_X1_STORAGE";
+    const char* owner = account_Owner.c_str();
+    const char* repo = repo_Name.c_str();
     const char* path = bucketPath.c_str();
-    const char* token = ""; // Personal Access Token
+    const char* token = github_PAT.c_str(); // Personal Access Token
 
     WiFiClientSecure client;
     client.setInsecure();  // Insecure, for testing only
@@ -178,8 +178,8 @@ bool mtb_Download_Github_File_To_PSRAM(const String& bucketPath, uint8_t** outBu
     return true;
 }
 
-bool mtb_Download_Github_Strg_File(githubStrg_UpDwn_t& downloadPaths){
-    return mtb_Download_Github_Strg_File(downloadPaths.bucketFilePath, downloadPaths.flashFilePath);
+bool mtb_Download_Github_File_To_SPIFFS(githubStrg_UpDwn_t& downloadPaths){
+    return mtb_Download_Github_File_To_SPIFFS(downloadPaths.bucketFilePath, downloadPaths.flashFilePath);
 }
 
 void files2Download_Task(void* dService){
@@ -189,7 +189,7 @@ void files2Download_Task(void* dService){
 
   while (xQueueReceive(files2Download_Q, &holderItem, pdMS_TO_TICKS(100)) == pdTRUE){
     statusBarNotif.mtb_Scroll_This_Text("UPDATING FILES", GREEN);
-    dwnld_Succeed = mtb_Download_Github_Strg_File(String(holderItem.githubFilePath), String(holderItem.flashFilePath));
+    dwnld_Succeed = mtb_Download_Github_File_To_SPIFFS(String(holderItem.githubFilePath), String(holderItem.flashFilePath));
     if(dwnld_Succeed) statusBarNotif.mtb_Scroll_This_Text("FILE STORAGE UPDATE SUCCESSFUL", SANDY_BROWN);
     else statusBarNotif.mtb_Scroll_This_Text("FILE STORAGE UPDATE FAILED", RED);
   }

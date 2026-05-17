@@ -148,7 +148,7 @@ while (THIS_APP_IS_ACTIVE == pdTRUE) {
 
     while ((Mtb_Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
     currentCryptoCurrency.coinSymbol.toLowerCase();
-    mtb_Download_Github_Strg_File("cryp_Icons/" + currentCryptoCurrency.coinSymbol + ".png", "/crypto/cryptIcon_1.png");
+    mtb_Download_Github_File_To_SPIFFS("cryp_Icons/" + currentCryptoCurrency.coinSymbol + ".png", "/crypto/cryptIcon_1.png");
 
     // ==================== FETCH AND UPDATE EVERY INTERVAL ====================
     while (THIS_APP_IS_ACTIVE == pdTRUE) {

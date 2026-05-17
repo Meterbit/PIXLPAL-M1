@@ -967,7 +967,7 @@ void mtb_Draw_Local_Png_Task(void *dService){
 			ESP_LOGI(TAG, "PNG File Does Not Exist\n");
 			if (Mtb_Applications::internetConnectStatus == true){
 				ESP_LOGI(TAG, "Downloading the file......\n");
-				dwnld_Succeed = mtb_Download_Github_Strg_File(String(holderItem.imagePath + 1), String(holderItem.imagePath));
+				dwnld_Succeed = mtb_Download_Github_File_To_SPIFFS(String(holderItem.imagePath + 1), String(holderItem.imagePath));
 			}else{
 				File2Download_t dFile;
 				memcpy(dFile.flashFilePath, holderItem.imagePath, 50);
@@ -1104,7 +1104,7 @@ void mtb_Draw_Local_Svg_Task(void *dService){
 			ESP_LOGI(TAG, "SVG File Does Not Exist\n");
 			if (Mtb_Applications::internetConnectStatus == true){
 				ESP_LOGI(TAG, "Downloading the file......\n");
-				dwnld_Succeed = mtb_Download_Github_Strg_File(String(holderItem.imagePath + 1), String(holderItem.imagePath));
+				dwnld_Succeed = mtb_Download_Github_File_To_SPIFFS(String(holderItem.imagePath + 1), String(holderItem.imagePath));
 			}else{
 				File2Download_t dFile;
 				memcpy(dFile.flashFilePath, holderItem.imagePath, 50);

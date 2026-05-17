@@ -114,7 +114,7 @@ while (THIS_APP_IS_ACTIVE == pdTRUE){
     snprintf(apiUrl, sizeof(apiUrl), "https://finnhub.io/api/v1/quote?symbol=%s&token=%s", currentCurrencies.currencyID1.c_str(), currentCurrencies.apiToken);
     //ESP_LOGI(TAG, "OUR FINAL URL IS: %s \n", apiUrl.c_str());
     //******************************************************************************************************* */
-    mtb_Download_Github_Strg_File("Currencys_Icons/_" + currentCurrencies.currencyID1 +".png", String(currentCurrencies.currencyFilePath));
+    mtb_Download_Github_File_To_SPIFFS("Currencys_Icons/_" + currentCurrencies.currencyID1 +".png", String(currentCurrencies.currencyFilePath));
 
     while ((Mtb_Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
         
