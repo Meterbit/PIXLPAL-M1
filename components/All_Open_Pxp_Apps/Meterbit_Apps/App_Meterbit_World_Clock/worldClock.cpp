@@ -210,7 +210,7 @@ void setWorldClockCities(JsonDocument& dCommand){
   }
 
   if (commaIndex != -1) {
-    dCityName.remove(commaIndex);   // Removes from the comma to the end
+    dCityName.remove(commaIndex);
   }
 
   strcpy(worldClockCities.worldCapitals[dCityIndex], dCityName.c_str());
@@ -219,7 +219,7 @@ void setWorldClockCities(JsonDocument& dCommand){
   mtb_Write_Nvs_Struct("worldClockNv", &worldClockCities, sizeof(WorldClock_Data_t));
 
   clearTimezoneCache();
-
+  // TO-DO: CLEAR THE FLAG IMAGE OF THE PREVIOUS COUNTRY BEFORE TIMEZONE CHANGE, BECAUSE FLAGS ARE NOT OF SAME DIMENSIONS
   Mtb_Applications::currentRunningApp->elementRefresh = true;
 }
 

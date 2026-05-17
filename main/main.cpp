@@ -25,8 +25,6 @@ extern "C" void app_main(){
     if(cycling_Apps.appsCycleActive == true) mtb_Launch_This_Service(mtb_App_Cycling_Sv);
     else mtb_Identify_App_By_ID(lastSavedApp, LAUNCH_PXP_APP);
 
-    // mtb_Launch_This_App(calendarClock_App);
-
     // Declare Variable for monitoring Free/Available internal SRAM
     size_t free_sram = 0;
 

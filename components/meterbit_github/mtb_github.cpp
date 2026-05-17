@@ -187,6 +187,7 @@ void files2Download_Task(void* dService){
     statusBarNotif.mtb_Scroll_This_Text("UPDATING FILES", GREEN);
     dwnld_Succeed = mtb_Download_Github_Strg_File(String(holderItem.githubFilePath), String(holderItem.flashFilePath));
     if(dwnld_Succeed) statusBarNotif.mtb_Scroll_This_Text("FILE STORAGE UPDATE SUCCESSFUL", SANDY_BROWN);
+    else statusBarNotif.mtb_Scroll_This_Text("FILE STORAGE UPDATE FAILED", RED);
   }
 
   Mtb_Applications::internetConnectStatus = true;
