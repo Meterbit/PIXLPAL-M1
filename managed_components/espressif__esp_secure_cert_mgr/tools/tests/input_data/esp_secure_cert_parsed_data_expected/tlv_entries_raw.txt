@@ -1,6 +1,6 @@
 ESP Secure Certificate TLV Parser
 File: esp_secure_cert.bin
-File size: 5232 bytes
+File size: 5280 bytes
 ================================================================================
 
 TLV Entry #1: ESP_SECURE_CERT_CA_CERT_TLV
@@ -170,11 +170,24 @@ CRC32:      0x2AF3C61C (✓ VALID)
 Data:
     Hex data: deadbeefcafebabe1234567890abcdef
 
+TLV Entry #7: ESP_SECURE_CERT_INTEGRITY_TLV
+------------------------------------------------------------
+Offset:     0x1470
+Type:       9 (ESP_SECURE_CERT_INTEGRITY_TLV)
+Subtype:    0
+Flags:      0x00
+Length:     32 bytes
+Padding:    0 bytes
+Total size: 48 bytes
+CRC32:      0xEBB07DAE (✓ VALID)
+Data:
+    Raw data: 0be6bd6613bebb26f7939b2b5a7fcd550bab9ebf5a4e77a2912b67bf1346aa99
+
 ================================================================================
 PARTITION SUMMARY
 ================================================================================
-Total TLV entries: 6
-Total partition size: 5232 bytes
+Total TLV entries: 7
+Total partition size: 5280 bytes
 
 Found TLV types:
   - ESP_SECURE_CERT_CA_CERT_TLV: 2 entries, 2216 bytes total
@@ -182,6 +195,7 @@ Found TLV types:
   - ESP_SECURE_CERT_PRIV_KEY_TLV: 1680 bytes
   - ESP_SECURE_CERT_USER_DATA_1_TLV: 31 bytes
   - ESP_SECURE_CERT_USER_DATA_2_TLV: 16 bytes
+  - ESP_SECURE_CERT_INTEGRITY_TLV: 32 bytes
 
 Key Configuration:
   - Software-based (Plaintext)

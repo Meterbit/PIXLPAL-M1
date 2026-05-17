@@ -26,3 +26,4 @@ dependencies:
   # espressif/thorvg: ^1.0.1
   # h2zero/esp-nimble-cpp: ^2.5.0
   # espressif/esp_bt_audio: ^0.8.2
+  espressif/usb_host_uac: ^1.4.0

@@ -31,7 +31,7 @@
 #endif
 
 #include "esp_secure_cert_tlv_config.h"
-
+#include "esp_partition.h"
 #ifdef __cplusplus
 extern "C"
 {
@@ -183,8 +183,40 @@ esp_err_t esp_secure_cert_map_partition(esp_secure_cert_partition_ctx_t **ctx);
  * @note
  * After calling this function, any subsequent calls to esp_secure_cert APIs
  * will automatically remap the partition as needed.
+ *
+ * @note
+ * This API is to unmap the partition from the memory. So if any esp_secure_cert API returned pointer(s), those pointers will become invalid after the usage of this API.
  */
 void esp_secure_cert_unmap_partition(void);
+
+
+/**
+ * @brief Set the esp_secure_cert partition to be used for the next esp_secure_cert operation.
+ *
+ * @param partition The partition to be used for the next esp_secure_cert operation.
+ *
+ * @return ESP_OK on success, otherwise an error code.
+ *
+ * @note
+ * This API, before setting new partition, internally unmaps the previously set partition. So if any esp_secure_cert is called before which had returned pointer(s), those pointers will become invalid after the usage of this API.
+ * User should call again those APIs after setting new partition.
+ */
+esp_err_t esp_secure_cert_tlv_set_partition(const esp_partition_t *partition);
+
+/**
+ * @brief Check the integrity TLV entry and verify partition integrity.
+ *
+ * This API checks if an integrity TLV entry is present in the esp_secure_cert partition.
+ * It finds the integrity TLV entry with the highest subtype and extracts the SHA256 value
+ * from it, then compares it with the calculated SHA256 of the entire partition
+ * (excluding the integrity TLV itself).
+ *
+ * @return
+ *      - ESP_OK    Integrity TLV found and SHA256 verification passed
+ *      - ESP_FAIL  Integrity TLV not found or SHA256 verification failed
+ *      - ESP_ERR_NOT_FOUND Integrity TLV not present in partition
+ */
+esp_err_t esp_secure_cert_verify_partition_integrity(void);
 
 #ifdef __cplusplus
 }

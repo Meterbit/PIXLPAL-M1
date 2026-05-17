@@ -2,7 +2,7 @@
 > WARNING: This tool is to be used only for development purpose. It does not enable any kind security feature for the protection of the sensitive data in the `esp_secure_cert` partition.
 
 The script [configure_esp_secure_cert.py](https://github.com/espressif/esp_secure_cert_mgr/blob/main/tools/configure_esp_secure_cert.py) is used for configuring the ESP platform with PKI credentials into the esp_secure_cert partition which shall reside on its flash storage.
-It also configures the DS peripheral on the ESP32-S2/ESP32-S3/ESP32-C3 SoC. The steps in the script are based on technical details of certain operations in the Digital Signature calculation, which can be found in the Digital Signature Section of [ESP32-S2 TRM](https://www.espressif.com/sites/default/files/documentation/esp32-s2_technical_reference_manual_en.pdf).
+It also configures the DS peripheral on the ESP32-S2/ESP32-S3/ESP32-C3/ESP32-C5 SoC. The steps in the script are based on technical details of certain operations in the Digital Signature calculation, which can be found in the Digital Signature Section of [ESP32-S2 TRM](https://www.espressif.com/sites/default/files/documentation/esp32-s2_technical_reference_manual_en.pdf).
 
 The script generates a partition named `esp_secure_cert` on host machine, that contains the parameters required by the DS peripheral. The `configure_esp_secure_cert.py` utility automatically flashes the partition to the ESP platform which has been connected.
 
@@ -65,6 +65,8 @@ configure_esp_secure_cert.py -p /* Serial port */ --keep_ds_data_on_host --efuse
 	More details regarding [esptool.py](https://docs.espressif.com/projects/esptool/en/latest/esp32/esptool/index.html#esptool-py) utility can be found [here](https://docs.espressif.com/projects/esptool/en/latest/esp32/esptool/index.html).
 
     Note: This is only applicable for [Development mode](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/security/flash-encryption.html#flash-enc-development-mode) of Flash Encryption.
+
+**NOTE - While generating partition, at the end of partition automatically `ESP_SECURE_CERT_INTEGRITY_TLV` TLV will be appended, and this happens only for TLV type format (irrespective of generated using CSV or cust_flash_tlv)**
 
 ### Legacy partition formats:
 

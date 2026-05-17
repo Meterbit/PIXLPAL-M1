@@ -14,17 +14,20 @@ from esp_secure_cert.efuse_helper import (
 from esp_secure_cert.esp_secure_cert_helper import convert_der_key_to_pem
 
 supported_targets_rsa_ds = ['esp32s2', 'esp32s3', 'esp32c3',
-                            'esp32c6', 'esp32h2', 'esp32p4']
+                            'esp32c6', 'esp32h2', 'esp32p4', 'esp32c5']
 supported_key_size_rsa = {'esp32s2': [1024, 2048, 3072, 4096],
                           'esp32c3': [1024, 2048, 3072],
                           'esp32s3': [1024, 2048, 3072, 4096],
                           'esp32c6': [1024, 2048, 3072],
                           'esp32h2': [1024, 2048, 3072],
-                          'esp32p4': [1024, 2048, 3072, 4096]}
+                          'esp32p4': [1024, 2048, 3072, 4096],
+                          'esp32c5': [1024, 2048, 3072, 4096]}
 
-supported_targets_ecdsa = ['esp32h2', 'esp32p4']
+supported_targets_ecdsa = ['esp32h2', 'esp32p4', 'esp32c5', 'esp32c61']
 supported_key_size_ecdsa = {'esp32h2': [256],
-                            'esp32p4': [256]}
+                            'esp32p4': [256],
+                            'esp32c5': [256, 384],
+                            'esp32c61': [192, 256]}
 
 
 def number_as_bytes(number, pad_bits=None):
@@ -45,7 +48,7 @@ def number_as_bytes(number, pad_bits=None):
 #       privkey         : path to the RSA private key
 #       priv_key_pass   : path to the RSA privaete key password
 #       hmac_key        : HMAC key value ( to calculate DS params)
-#       idf_target      : The target chip for the script (e.g. esp32c3)
+#       idf_target      : The target chip for the script (e.g. esp32c3, esp32c5)
 # @info
 #       The function calculates the encrypted private key parameters.
 #       Consult the DS documentation (available for the ESP32-S2)
@@ -96,9 +99,9 @@ def calculate_rsa_ds_params(privkey, priv_key_pass, hmac_key, idf_target):
     expected_len = (max_len / 8) * 3 + 8 + 16
     assert len(md_in) == expected_len
     md = hashlib.sha256(md_in).digest()
-    # In case of ESP32-S2
+    # In case of ESP32-S2, ESP32-S3, ESP32-C5
     # Y4096 || M4096 || Rb4096 || M_prime32 || LENGTH32 || MD256 || 0x08*8
-    # In case of ESP32-C3
+    # In case of ESP32-C3, ESP32-C6, ESP32-H2
     # Y3072 || M3072 || Rb3072 || M_prime32 || LENGTH32 || MD256 || 0x08*8
     p = number_as_bytes(Y, max_len) + \
         number_as_bytes(M, max_len) + \
@@ -132,6 +135,10 @@ def validate_ds_algorithm(ds_algo, key_size_bits, target_chip):
                   f'{ds_algo} {key_size_bits}, supported key sizes are '
                   f'{supported_key_size_rsa[target_chip]}')
             sys.exit(-1)
+        if key_size_bits == 1024:
+            print('\033[93mDeprecationWarning: RSA 1024-bit key size is deprecated due to security concerns. '
+                  'Please use 2048-bit or higher. '
+                  'Support for RSA 1024 may be removed in a future release.\033[0m')
 
     elif ds_algo == 'ECDSA':
         if target_chip not in supported_targets_ecdsa:
@@ -145,6 +152,10 @@ def validate_ds_algorithm(ds_algo, key_size_bits, target_chip):
                   f'{ds_algo} {key_size_bits}, supported key sizes are '
                   f'{supported_key_size_ecdsa[target_chip]}')
             sys.exit(-1)
+        if key_size_bits == 192:
+            print('\033[93mDeprecationWarning: ECDSA P-192 curve is deprecated due to security concerns. '
+                  'Please use P-256 or higher. '
+                  'Support for ECDSA P-192 may be removed in a future release.\033[0m')
 
     else:
         print(f'ERROR: Invalid DS algorithm {ds_algo} {key_size_bits}')
@@ -207,8 +218,10 @@ def configure_efuse_for_ecdsa(idf_target, port, ecdsa_key_file, esp_secure_cert_
     sign_algo_key_size = ecdsa_key_size
     validate_ds_algorithm(sign_algo, sign_algo_key_size, idf_target)
 
-    # efuse key length
-    expected_key_len = 32
+    # Convert key size from bits to bytes
+    # ESP32-C5 supports both 256-bit (32 bytes) and 384-bit (48 bytes) ECDSA keys
+    key_size_bits = int(ecdsa_key_size, 10) if isinstance(ecdsa_key_size, str) else ecdsa_key_size
+    expected_key_len = key_size_bits // 8
     ecdsa_key = get_ecdsa_key_bytes(priv_key, priv_key_pass, expected_key_len)
 
     # Ensure directory exists
@@ -227,7 +240,13 @@ def configure_efuse_for_ecdsa(idf_target, port, ecdsa_key_file, esp_secure_cert_
             key_file.write(pem_key)
 
         efuse_key_file = temp_ecdsa_key_file
-        efuse_purpose = 'ECDSA_KEY'
+
+        if key_size_bits == 192:
+            efuse_purpose = 'ECDSA_KEY_P192'
+        elif key_size_bits == 384:
+            efuse_purpose = 'ECDSA_KEY_P384'
+        else:
+            efuse_purpose = 'ECDSA_KEY'
 
         # Choose flow based on port availability
         if port:

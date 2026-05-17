@@ -1,6 +1,6 @@
 
 /*
- * SPDX-FileCopyrightText: 2025 Espressif Systems (Shanghai) CO LTD
+ * SPDX-FileCopyrightText: 2025-2026 Espressif Systems (Shanghai) CO LTD
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -280,7 +280,7 @@ static void result_txt_create(const uint8_t *data, size_t len, mdns_txt_item_t *
 
         memcpy(key, data + i, name_len);
         key[name_len] = 0;
-        i += name_len + 1;
+        i += name_len + (name_len < part_len); // skip '=' only if present
         t->key = key;
 
         int new_value_len = part_len - name_len - 1;
@@ -1090,6 +1090,9 @@ static void mdns_parse_packet(mdns_rx_packet_t *packet)
             }
 #ifdef CONFIG_LWIP_IPV6
             else if (type == MDNS_TYPE_AAAA) { // ipv6
+                if (data_len < MDNS_ANSWER_AAAA_SIZE) {
+                    continue; // malformed AAAA record, RDATA smaller than an IPv6 address
+                }
                 esp_ip_addr_t ip6;
                 ip6.type = ESP_IPADDR_TYPE_V6;
                 memcpy(ip6.u_addr.ip6.addr, data_ptr, MDNS_ANSWER_AAAA_SIZE);
@@ -1150,6 +1153,9 @@ static void mdns_parse_packet(mdns_rx_packet_t *packet)
 #endif /* CONFIG_LWIP_IPV6 */
 #ifdef CONFIG_LWIP_IPV4
             else if (type == MDNS_TYPE_A) {
+                if (data_len < 4) {
+                    continue; // malformed A record, RDATA smaller than an IPv4 address
+                }
                 esp_ip_addr_t ip;
                 ip.type = ESP_IPADDR_TYPE_V4;
                 memcpy(&(ip.u_addr.ip4.addr), data_ptr, 4);

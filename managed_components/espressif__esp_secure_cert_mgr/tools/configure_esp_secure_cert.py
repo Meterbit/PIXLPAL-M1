@@ -3,9 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 import argparse
 import os
-import subprocess
 import sys
-import csv
 from esp_secure_cert import nvs_format, custflash_format
 from esp_secure_cert import tlv_format
 from esp_secure_cert.tlv_format_construct import (
@@ -29,7 +27,9 @@ csv_filename = os.path.join(esp_secure_cert_data_dir, 'esp_secure_cert.csv')
 bin_filename = os.path.join(esp_secure_cert_data_dir, 'esp_secure_cert.bin')
 # Targets supported by the script
 supported_targets = {'esp32', 'esp32s2', 'esp32c3', 'esp32s3',
-                     'esp32c6', 'esp32h2', 'esp32p4', 'esp32c5'}
+                     'esp32c6', 'esp32h2', 'esp32p4', 'esp32c5',
+                     'esp32c61'}
+
 
 def cleanup(args):
     if args.keep_ds_data is False:
@@ -81,7 +81,7 @@ def main():
         choices=supported_targets,
         default='esp32c3',
         metavar='target chip',
-        help='The target chip e.g. esp32s2, s3, c3')
+        help='The target chip e.g. esp32s2, s3, c3, c5')
 
     parser.add_argument(
         '--summary',
@@ -188,6 +188,12 @@ def main():
         default=None,
         help='Bin filename to use')
 
+    parser.add_argument(
+        '--append-integrity',
+        dest='append_integrity',
+        metavar='[/path/to/esp_secure_cert.bin]',
+        help='Append an integrity TLV entry containing SHA256 of the entire partition (excluding integrity TLV itself) to an existing .bin file')
+
     args = parser.parse_args()
 
     idf_target = args.target_chip
@@ -204,6 +210,14 @@ def main():
 
     if args.parse_bin:
         EspSecureCert.parse_esp_secure_cert_bin(args.parse_bin)
+        return
+
+    if args.append_integrity:
+        if not os.path.exists(args.append_integrity):
+            print(f'ERROR: The provided binary file does not exist: {args.append_integrity}')
+            sys.exit(-1)
+        EspSecureCert.append_integrity_tlv(args.append_integrity)
+        print(f'Successfully appended integrity TLV to: {args.append_integrity}')
         return
 
     if (args.privkey is not None and os.path.exists(args.privkey) is False):
@@ -268,7 +282,7 @@ def main():
                 'algorithm': args.priv_key_algo[0].upper() if args.priv_key_algo else '',
                 'key_size': int(args.priv_key_algo[1]) if args.priv_key_algo and len(args.priv_key_algo) > 1 else 0,
                 'efuse_id': args.efuse_key_id if hasattr(args, 'efuse_key_id') else 0,
-                'efuse_key_file': args.efuse_key_file if hasattr(args, 'efuse_key_file') else None, # For HMAC key only, not for ECDSA key
+                'efuse_key_file': args.efuse_key_file if hasattr(args, 'efuse_key_file') else None,  # For HMAC key only, not for ECDSA key
             }
             esp_secure_cert.add_entry(entry_priv)
 
@@ -288,11 +302,13 @@ def main():
         if args.esp_secure_cert_csv is not None:
             esp_secure_cert.parse_esp_secure_cert_csv(args.esp_secure_cert_csv)
 
-        bin_filename = esp_secure_cert.generate_esp_secure_cert(args.target_chip, args.port)
 
         if args.secure_sign:
+            bin_filename = esp_secure_cert.generate_esp_secure_cert(args.target_chip, args.port, add_tlv_integrity=False)
             # Set the secure boot scheme
             bin_filename = esp_secure_cert.add_signature_block_using_existing_key(bin_filename, args.signing_key_file, args.signing_scheme)
+
+        bin_filename = esp_secure_cert.generate_esp_secure_cert(args.target_chip, args.port, add_tlv_integrity=True)
 
         if not args.skip_flash:
             esp_secure_cert.flash_esp_secure_cert_partition(args.target_chip, args.port, args.sec_cert_part_offset, bin_filename)
@@ -332,12 +348,15 @@ def main():
         nvs_format.generate_partition(csv_filename, bin_filename)
 
     if args.skip_flash is False:
-        flash_esp_secure_cert_partition(idf_target,
-                                        args.port,
-                                        args.sec_cert_part_offset,
-                                        bin_filename)
+        esp_secure_cert = EspSecureCert()
+        esp_secure_cert.flash_esp_secure_cert_partition(
+            idf_target,
+            args.port,
+            args.sec_cert_part_offset,
+            bin_filename)
 
     cleanup(args)
+
 
 if __name__ == '__main__':
     main()

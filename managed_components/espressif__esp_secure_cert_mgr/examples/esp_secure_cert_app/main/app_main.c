@@ -46,6 +46,10 @@
 #endif
 #endif
 
+#if CONFIG_ESP_SECURE_CERT_DS_PERIPHERAL
+#include "psa_crypto_driver_esp_rsa_ds.h"
+#endif
+
 #define TAG "esp_secure_cert_app"
 
 // Modular function to print certificate or key data in PEM or DER format
@@ -85,16 +89,20 @@ static esp_err_t test_ciphertext_validity(esp_ds_data_ctx_t *ds_data, unsigned c
     }
 
 #if (MBEDTLS_VERSION_NUMBER >= 0x04000000)
+    esp_rsa_ds_opaque_key_t rsa_ds_opaque_key = {0};
+    rsa_ds_opaque_key.ds_data_ctx = ds_data;
+
     psa_key_id_t key_id = PSA_KEY_ID_NULL;
     psa_status_t status = PSA_ERROR_GENERIC_ERROR;
     psa_key_attributes_t attributes = PSA_KEY_ATTRIBUTES_INIT;
     psa_algorithm_t alg = PSA_ALG_RSA_PKCS1V15_SIGN(PSA_ALG_SHA_256);
     psa_set_key_type(&attributes, PSA_KEY_TYPE_RSA_KEY_PAIR);
-    psa_set_key_bits(&attributes, ds_data->rsa_length_bits);
+    psa_set_key_bits(&attributes, rsa_ds_opaque_key.ds_data_ctx->rsa_length_bits);
     psa_set_key_usage_flags(&attributes, PSA_KEY_USAGE_SIGN_HASH);
     psa_set_key_algorithm(&attributes, alg);
-    psa_set_key_lifetime(&attributes, PSA_KEY_LIFETIME_ESP_RSA_DS);
-    status = psa_import_key(&attributes, (const uint8_t *)ds_data, sizeof(esp_ds_data_ctx_t), &key_id);
+    psa_set_key_lifetime(&attributes, PSA_KEY_LIFETIME_ESP_RSA_DS_VOLATILE);
+
+    status = psa_import_key(&attributes, (const uint8_t *)&rsa_ds_opaque_key, sizeof(esp_rsa_ds_opaque_key_t), &key_id);
     if (status != PSA_SUCCESS) {
         ESP_LOGE(TAG, "Failed to import the DS key, returned %d", status);
         goto exit;

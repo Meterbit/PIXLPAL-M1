@@ -45,7 +45,9 @@ bool mtb_Download_Github_Strg_File(String bucketPath, String flashPath){
   // Set headers
   https.addHeader("User-Agent", "ESP32");
   https.addHeader("Accept", "application/vnd.github.v3.raw");
-  https.addHeader("Authorization", "token " + String(token));
+  if (token && token[0] != '\0') {
+    https.addHeader("Authorization", "token " + String(token));
+  }
 
   // Send GET request
   int httpCode = https.GET();
@@ -120,7 +122,9 @@ bool mtb_Download_Github_File_To_PSRAM(const String& bucketPath, uint8_t** outBu
 
     https.addHeader("User-Agent", "ESP32");
     https.addHeader("Accept", "application/vnd.github.v3.raw");
-    https.addHeader("Authorization", "token " + String(token));
+    if (token && token[0] != '\0') {
+        https.addHeader("Authorization", "token " + String(token));
+    }
 
     int httpCode = https.GET();
 

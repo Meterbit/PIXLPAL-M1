@@ -160,14 +160,14 @@ void ghota_Update_Task(void* dApplication){
     /* register for events relating to the update progress */
     esp_event_handler_register(GHOTA_EVENTS, ESP_EVENT_ANY_ID, &ghota_event_callback, ghota_client);
 
-    /* for private repositories or to get more API calls than anonymouse, set a github username and PAT token
-     * see https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
-     * for more information on how to create a PAT token.
-     * 
-     * Be carefull, as the PAT token will be stored in your firmware etc and can be used to access your github account.
-     */
-    ESP_ERROR_CHECK(ghota_set_auth(ghota_client, "Meterbit", github_Token));
-    /* or do a check/update now */
+    // // /* for private repositories or to get more API calls than anonymouse, set a github username and PAT token
+    // //  * see https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
+    // //  * for more information on how to create a PAT token.
+    // //  * 
+    // //  * Be carefull, as the PAT token will be stored in your firmware etc and can be used to access your github account.
+    // //  */
+    ESP_ERROR_CHECK(ghota_set_auth(ghota_client, "Meterbit", "Input your Classic PAT token here."));
+    // // /* or do a check/update now */
 
 
     /* Query the Github Release API for the latest release */

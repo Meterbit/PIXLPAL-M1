@@ -99,12 +99,10 @@ def setup_flash_image_for_qemu(dut):
         pytest.fail(f"Unexpected error: {e}")
 
 
-@pytest.mark.qemu
 @pytest.mark.parametrize('target', ['esp32c3', 'esp32'], indirect=True)
 @pytest.mark.parametrize('config', ['default'], indirect=True)
-def test_esp_secure_cert_sanity_qemu(dut):
+def test_esp_secure_cert_sanity(dut):
     """Simple sanity check to verify the application is working"""
-    setup_flash_image_for_qemu(dut)
     dut.expect(
         r'Successfully obtained and verified the contents of '
         r'esp_secure_cert partition',
@@ -112,10 +110,37 @@ def test_esp_secure_cert_sanity_qemu(dut):
     )
 
 
-@pytest.mark.parametrize('target', ['esp32c3', 'esp32'], indirect=True)
+@pytest.mark.qemu
 @pytest.mark.parametrize('config', ['default'], indirect=True)
-def test_esp_secure_cert_sanity(dut):
-    """Simple sanity check to verify the application is working"""
+@pytest.mark.parametrize(
+    'target,qemu_extra_args',
+    [
+        (
+            'esp32c3',
+            (
+                '-drive file={},if=none,format=raw,id=efuse '
+                '-global driver=nvram.esp32c3.efuse,'
+                'property=drive,value=efuse '
+                '-global driver=timer.esp32c3.timg,'
+                'property=wdt_disable,value=true'
+            ).format(
+                os.path.join(
+                    os.path.dirname(__file__),
+                    'tests',
+                    'qemu_efuse.bin'
+                )
+            ),
+        ),
+    ],
+    indirect=['qemu_extra_args'],
+)
+def test_esp_secure_cert_ds_peripheral_qemu(dut):
+    """Test DS peripheral functionality on QEMU with efuse support"""
+    setup_flash_image_for_qemu(dut)
+    dut.expect(r'Successfully obtained the ds context', timeout=10)
+    dut.expect(r'The value of rsa length is \d+', timeout=10)
+    dut.expect(r'The value of efuse key id is \d+', timeout=10)
+    dut.expect(r'Ciphertext validated succcessfully', timeout=10)
     dut.expect(
         r'Successfully obtained and verified the contents of '
         r'esp_secure_cert partition',

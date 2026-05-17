@@ -1,5 +1,12 @@
 # This file contains the list of changes across different versions
 
+## 2.6.0
+- Added support for ESP32-C5 target chip.
+- ESP32-C5 supports RSA DS with key sizes: 1024, 2048, 3072, 4096 bits.
+- ESP32-C5 supports ECDSA peripheral with key sizes: 256, 384 bits.
+- Added support for ESP32-C61 target chip.
+- ESP32-C61 supports ECDSA peripheral with key sizes: 192, 256 bits.
+
 ## 2.5.1
 - Fixed the issue, where `configure_esp_secure_cert.py` tool unable to generate DS context using already burned efuse key on device
 when port is provided.
