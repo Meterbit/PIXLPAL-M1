@@ -27,7 +27,7 @@ extern bool mtb_Prepare_Flash_File_Path(const char* filePath);
 extern bool mtb_Download_Github_File_To_SPIFFS(githubStrg_UpDwn_t&);
 
 
-extern bool mtb_Download_Github_File_To_SPIFFS(const String& bucketPath, const String& flashPath, const String& account_Owner = "Meterbit", const String& repo_Name = "PXP_X1_STORAGE", const String& github_PAT = "");
-extern bool mtb_Download_Github_File_To_PSRAM(const String& bucketPath, uint8_t** outBuffer, size_t* outSize, const String& account_Owner = "Meterbit", const String& repo_Name = "PXP_X1_STORAGE", const String& github_PAT = "");
+extern bool mtb_Download_Github_File_To_SPIFFS(const String& bucketPath, const String& flashPath, const String account_Owner = "Meterbit", const String repo_Name = "PXP_X1_STORAGE", const String github_PAT = "");
+extern bool mtb_Download_Github_File_To_PSRAM(const String& bucketPath, uint8_t** outBuffer, size_t* outSize, const String account_Owner = "Meterbit", const String repo_Name = "PXP_X1_STORAGE", const String github_PAT = "");
 
 #endif

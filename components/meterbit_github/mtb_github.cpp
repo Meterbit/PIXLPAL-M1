@@ -16,7 +16,7 @@ void files2Download_Task(void*);
 
 EXT_RAM_BSS_ATTR Mtb_Services *mtb_GitHub_File_Dwnload_Sv = new Mtb_Services(files2Download_Task, &files2Download_Task_H, "Github Dwnld", 10240, 2, 1);
 
-bool mtb_Download_Github_File_To_SPIFFS(const String& bucketPath, const String& flashPath, const String& account_Owner, const String& repo_Name, const String& github_PAT){
+bool mtb_Download_Github_File_To_SPIFFS(const String& bucketPath, const String& flashPath, const String account_Owner, const String repo_Name, const String github_PAT){
     // GitHub repository details
     const char* host = "api.github.com";
     const int httpsPort = 443;
@@ -99,7 +99,7 @@ bool mtb_Download_Github_File_To_SPIFFS(const String& bucketPath, const String& 
   return true;
 }
 
-bool mtb_Download_Github_File_To_PSRAM(const String& bucketPath, uint8_t** outBuffer, size_t* outSize, const String& account_Owner, const String& repo_Name, const String& github_PAT) {
+bool mtb_Download_Github_File_To_PSRAM(const String& bucketPath, uint8_t** outBuffer, size_t* outSize, const String account_Owner, const String repo_Name, const String github_PAT) {
     // GitHub repo details
     const char* host = "api.github.com";
     const int httpsPort = 443;

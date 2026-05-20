@@ -113,6 +113,7 @@ void finhubStats_App_Task(void* dApplication){
     if(currentStocks.stockChangeInterval > 1) xTimerStart(stockChangeTimer_H, 0);
 //##############################################################################################################
 char apiUrl[1000]; // Adjust size as needed
+Mtb_LocalImage_t stockIconImg;
 static HTTPClient http;
 
 while (THIS_APP_IS_ACTIVE == pdTRUE){
@@ -121,7 +122,11 @@ while (THIS_APP_IS_ACTIVE == pdTRUE){
 
 
     while ((Mtb_Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
-    mtb_Download_Github_File_To_SPIFFS("stocks_Icons/_" + currentStocks.stockID +".png", String(currentStocks.stockFilePath));
+    snprintf(stockIconImg.imagePath, sizeof(stockIconImg.imagePath), "/stocks/%s.png", currentStocks.stockID.c_str());
+    stockIconImg.xAxis = 5; stockIconImg.yAxis = 18; stockIconImg.scale = 2;
+    if (!LittleFS.exists(stockIconImg.imagePath)) {
+        mtb_Download_Github_File_To_SPIFFS("stocks_Icons/_" + currentStocks.stockID + ".png", String(stockIconImg.imagePath));
+    }
         
     if (http.connected()) { http.end(); } // Cleanup before starting a new request
     //************************************************************************************** */
@@ -151,7 +156,7 @@ while (THIS_APP_IS_ACTIVE == pdTRUE){
             double openPrice24 = doc["o"];
             double previouClosePrice24 = doc["pc"];
 
-            mtb_Draw_Local_Png({"/stocks/stocksIcon_1.png", 5, 18, 2});     // REVISIT -> CHECK FREQUENCY OF IMAGE DRAWING
+            mtb_Draw_Local_Png(stockIconImg);
 
             stockID_txt.mtb_Write_String(currentStocks.stockID);
             current_price_txt.mtb_Write_String(String(current_price));

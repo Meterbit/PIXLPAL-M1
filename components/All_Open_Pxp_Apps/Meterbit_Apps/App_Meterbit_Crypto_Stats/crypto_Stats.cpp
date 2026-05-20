@@ -139,6 +139,7 @@ void cryptoStats_App_Task(void* dApplication){
     if(currentCryptoCurrency.cryptoChangeInterval > 1) xTimerStart(cryptoChangeTimer_H, 0);
 //##############################################################################################################
 //##############################################################################################################
+Mtb_LocalImage_t cryptoIconImg;
 
 while (THIS_APP_IS_ACTIVE == pdTRUE) {
     // ==================== LOAD NEW COIN FOR DISPLAY ====================
@@ -148,7 +149,11 @@ while (THIS_APP_IS_ACTIVE == pdTRUE) {
 
     while ((Mtb_Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
     currentCryptoCurrency.coinSymbol.toLowerCase();
-    mtb_Download_Github_File_To_SPIFFS("cryp_Icons/" + currentCryptoCurrency.coinSymbol + ".png", "/crypto/cryptIcon_1.png");
+    snprintf(cryptoIconImg.imagePath, sizeof(cryptoIconImg.imagePath), "/crypto/%s.png", currentCryptoCurrency.coinSymbol.c_str());
+    cryptoIconImg.xAxis = 3; cryptoIconImg.yAxis = 16; cryptoIconImg.scale = 1;
+    if (!LittleFS.exists(cryptoIconImg.imagePath)) {
+        mtb_Download_Github_File_To_SPIFFS("cryp_Icons/" + currentCryptoCurrency.coinSymbol + ".png", String(cryptoIconImg.imagePath));
+    }
 
     // ==================== FETCH AND UPDATE EVERY INTERVAL ====================
     while (THIS_APP_IS_ACTIVE == pdTRUE) {
@@ -176,7 +181,7 @@ while (THIS_APP_IS_ACTIVE == pdTRUE) {
                 String market_cap = data["marketCapUsd"];
                 String circulating_supply = data["supply"];
 
-                mtb_Draw_Local_Png({"/crypto/cryptIcon_1.png", 3, 16});
+                mtb_Draw_Local_Png(cryptoIconImg);
 
                 double coinPrice_Double = coinPrice.toDouble();
                 current_price_txt.mtb_Write_String(String(coinPrice_Double, coinPrice_Double < 100 ? 4 : 2));

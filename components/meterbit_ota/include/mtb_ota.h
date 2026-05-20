@@ -11,9 +11,9 @@ extern "C" {
 
 /* initialize our ghota config */
 //static const char github_Token[] = "insert your github PAT token here";
-extern TaskHandle_t ota_Updating;
 extern SemaphoreHandle_t ota_Update_Sem;
-extern void ghota_Update_Task(void *);
+extern void ghota_Check_Update_Task(void *);
+extern void ghota_Perform_Update_Task(void *);
 
 #ifdef __cplusplus
 }

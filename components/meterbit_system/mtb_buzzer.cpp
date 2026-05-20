@@ -21,6 +21,7 @@
 
 EXT_RAM_BSS_ATTR SemaphoreHandle_t beep_Duration_Sem = NULL; 
 EXT_RAM_BSS_ATTR TimerHandle_t beepTimerHandle10 = NULL;
+EXT_RAM_BSS_ATTR TimerHandle_t beepTimerHandle100 = NULL;
 EXT_RAM_BSS_ATTR TimerHandle_t beepTimerHandle200 = NULL;
 EXT_RAM_BSS_ATTR TimerHandle_t beepTimerHandle1000 = NULL;
 EXT_RAM_BSS_ATTR TaskHandle_t beepTaskHandle = NULL;
@@ -54,8 +55,9 @@ Mtb_Services *thisServ = (Mtb_Services *)dService;
     uint8_t beep_TRACK;
     if(beep_Duration_Sem == NULL) beep_Duration_Sem = xSemaphoreCreateBinary();
     if(beepTimerHandle200 == NULL) beepTimerHandle200 = xTimerCreate("beepTimer200", pdMS_TO_TICKS(200), pdFALSE, NULL, beepStop);
+    if(beepTimerHandle100 == NULL) beepTimerHandle100 = xTimerCreate("beepTimer100", pdMS_TO_TICKS(100), pdFALSE, NULL, beepStop);
     if(beepTimerHandle1000 == NULL) beepTimerHandle1000 = xTimerCreate("beepTimer1000", pdMS_TO_TICKS(1000), pdFALSE, NULL, beepStop);
-    if(beepTimerHandle10 == NULL) beepTimerHandle10 = xTimerCreate("beepTimer200", pdMS_TO_TICKS(10), pdFALSE, NULL, beepStop);
+    if(beepTimerHandle10 == NULL) beepTimerHandle10 = xTimerCreate("beepTimer10", pdMS_TO_TICKS(10), pdFALSE, NULL, beepStop);
         
     while(beep_COUNT-->0 && MTB_SERV_IS_ACTIVE){
         beep_TRACK = beep_TYPE;
@@ -66,19 +68,19 @@ Mtb_Services *thisServ = (Mtb_Services *)dService;
             break;
 
         case BEEP_1:
-            while(beep_TRACK-->0) make_Beep(beepTimerHandle200);
+            while(beep_TRACK-->0) make_Beep(beepTimerHandle100);
             break;
 
         case BEEP_2:
-            while(beep_TRACK-->0) make_Beep(beepTimerHandle200);
+            while(beep_TRACK-->0) make_Beep(beepTimerHandle100);
             break;
         
         case BEEP_3:
-            while(beep_TRACK-->0) make_Beep(beepTimerHandle200);
+            while(beep_TRACK-->0) make_Beep(beepTimerHandle100);
             break;
 
         case BEEP_4:
-            while(beep_TRACK-->0) make_Beep(beepTimerHandle200);
+            while(beep_TRACK-->0) make_Beep(beepTimerHandle100);
             break;
 
         case CLICK_BEEP:
@@ -87,8 +89,8 @@ Mtb_Services *thisServ = (Mtb_Services *)dService;
         default:
             break;
         }
-        delay(1000);
-        //ESP_LOGI(TAG, "ONE SEC DELAY\n");
+        delay(500);
+        //ESP_LOGI(TAG, "HALF SEC DELAY\n");
     }
 // CREATED TIMERS IN THIS TASK SHOULD BE DELETED HERE IF NEEDED.
     mtb_Delete_This_Service(thisServ);

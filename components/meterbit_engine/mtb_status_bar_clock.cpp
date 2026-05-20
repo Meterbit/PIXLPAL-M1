@@ -74,29 +74,29 @@ if (pre_Month != now->tm_mon  || timeRefresh){
 pre_Month = now->tm_mon;
 
 switch (pre_Month){
-      case JANUARY: strcpy(&rtc_Dated[0], "Jan");
+      case JANUARY: strcpy(&rtc_Dated[0], "JAN");
       break;
-      case FEBUARY: strcpy(&rtc_Dated[0], "Feb");
+      case FEBUARY: strcpy(&rtc_Dated[0], "FEB");
       break;
-      case MARCH: strcpy(&rtc_Dated[0], "Mar");
+      case MARCH: strcpy(&rtc_Dated[0], "MAR");
       break;
-      case APRIL: strcpy(&rtc_Dated[0], "Apr");
+      case APRIL: strcpy(&rtc_Dated[0], "APR");
       break;
-      case MAY: strcpy(&rtc_Dated[0], "May");
+      case MAY: strcpy(&rtc_Dated[0], "MAY");
       break;
-      case JUNE: strcpy(&rtc_Dated[0], "Jun");
+      case JUNE: strcpy(&rtc_Dated[0], "JUN");
       break;
-      case JULY: strcpy(&rtc_Dated[0], "Jul");
+      case JULY: strcpy(&rtc_Dated[0], "JUL");
       break;
-      case AUGUST: strcpy(&rtc_Dated[0], "Aug");
+      case AUGUST: strcpy(&rtc_Dated[0], "AUG");
       break;
-      case SEPTEMBER: strcpy(&rtc_Dated[0], "Sep");
+      case SEPTEMBER: strcpy(&rtc_Dated[0], "SEP");
       break;
-      case OCTOBER: strcpy(&rtc_Dated[0], "Oct");
+      case OCTOBER: strcpy(&rtc_Dated[0], "OCT");
       break;
-      case NOVEMBER: strcpy(&rtc_Dated[0], "Nov");
+      case NOVEMBER: strcpy(&rtc_Dated[0], "NOV");
       break;
-      case DECEMBER: strcpy(&rtc_Dated[0], "Dec");
+      case DECEMBER: strcpy(&rtc_Dated[0], "DEC");
       break;
       default: strcpy(&rtc_Dated[0], "Err");
 }

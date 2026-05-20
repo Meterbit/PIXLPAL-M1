@@ -13,7 +13,7 @@
 #include "cJSON.h"
 #include "nvs.h"
 #include <esp_app_desc.h>
-#include <esp_ghota.h>
+//#include <esp_ghota.h>
 #include "Arduino.h"
 #include "ArduinoJson.h"
 #include "mtb_nvs.h"
@@ -27,7 +27,7 @@ static const char TAG[] = "MTB-BLE-UPDATE";
 EXT_RAM_BSS_ATTR TaskHandle_t bleFirmwareUpdate_H = NULL;
 void bleFirmwareUpdateTask(void* dApplication);
 void stopButton_BLE_OTA_UPDATE (button_event_t button_Data);
-void attemptSoftwareUpdate(JsonDocument&);
+void ghotaSoftwareUpdate(JsonDocument&);
 void ble_Ota_Control(JsonDocument &doc);
 void abort_Ble_Ota_Update_Manually(void);
 
@@ -73,7 +73,7 @@ void softwareUpdate(JsonDocument& dCommand) {
             break;
         }
         case 2:
-            attemptSoftwareUpdate(dCommand);
+            ghotaSoftwareUpdate(dCommand);
         break;
 
         case 3:
@@ -95,12 +95,12 @@ bleSettingsComSend(mtb_Software_Update_Route, currentVersion);
 }
 
 // //**02*********************************************************************************************************************
-void attemptSoftwareUpdate(JsonDocument& dCommand){ 
+void ghotaSoftwareUpdate(JsonDocument& dCommand){ 
 
 String failure = "{\"set_command\": 2, \"response\": 0}";
 
 if(Mtb_Applications::internetConnectStatus == pdTRUE){
-  mtb_Launch_This_App(ghotaOTA_Update_App, LAUNCH_PXP_APP, IGNORE_PREVIOUS_APP);
+  mtb_Launch_This_App(ghotaOTA_Perform_Update_App, LAUNCH_PXP_APP, IGNORE_PREVIOUS_APP);
 } else{
   bleSettingsComSend(mtb_Software_Update_Route, failure);
 }

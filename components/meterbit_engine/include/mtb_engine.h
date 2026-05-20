@@ -326,7 +326,8 @@ extern Mtb_Services* mtb_App_Cycling_Sv;
 // All System Apps
 extern Mtb_Applications_FullScreen* usbOTA_Update_App;          // App ID: 12/0
 extern Mtb_Applications_FullScreen* bleOTA_Update_App;          // App ID: 12/1
-extern Mtb_Applications_FullScreen* ghotaOTA_Update_App;        // App ID: 12/2
+extern Mtb_Applications_FullScreen* ghotaOTA_Check_Update_App;        // App ID: 12/2
+extern Mtb_Applications_FullScreen* ghotaOTA_Perform_Update_App;        // App ID: 12/3
 
 // All User Apps
 // Clocks and Timers
