@@ -49,7 +49,12 @@ void intRadioButtonControl(button_event_t);
 //bool decodeSaveBase64(String &base64Image, String &fileName);
 //void station_Poster_Download(void);
 
-EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *internetRadio_App = new Mtb_Applications_StatusBar(internetRadio_App_Task, &internet_Radio_Task_H, "Int Rad Task", {9,0}, 6144);
+EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *internetRadio_App;
+Mtb_Applications* internetRadio_App_GetInstance() {
+    if (!internetRadio_App) internetRadio_App = new Mtb_Applications_StatusBar(internetRadio_App_Task, &internet_Radio_Task_H, "Int Rad Task", {9,0}, 6144);
+    return internetRadio_App;
+}
+MTB_REGISTER_APP(internetRadio_App, 9, 0)
 
 //***************************************************************************************************
 void  internetRadio_App_Task(void* dApplication){

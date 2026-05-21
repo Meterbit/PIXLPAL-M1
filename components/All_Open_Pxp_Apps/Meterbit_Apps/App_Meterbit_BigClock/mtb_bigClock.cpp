@@ -12,7 +12,12 @@ void bigClockGet_NTP_Local_Time(JsonDocument&);
 EXT_RAM_BSS_ATTR TaskHandle_t bigClockCalendar_Task_H = NULL;
 void bigClock_App_Task(void *dApplication);
 
-EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *bigClockCalendar_App = new Mtb_Applications_FullScreen(bigClock_App_Task, &bigClockCalendar_Task_H, "big Clock", {0,3}, 4096);
+EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *bigClockCalendar_App;
+Mtb_Applications* bigClockCalendar_App_GetInstance() {
+    if (!bigClockCalendar_App) bigClockCalendar_App = new Mtb_Applications_FullScreen(bigClock_App_Task, &bigClockCalendar_Task_H, "big Clock", {0,3}, 4096);
+    return bigClockCalendar_App;
+}
+MTB_REGISTER_APP(bigClockCalendar_App, 0, 3)
 //***************************************************************************************************
 void  bigClock_App_Task(void* dApplication){
   Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;

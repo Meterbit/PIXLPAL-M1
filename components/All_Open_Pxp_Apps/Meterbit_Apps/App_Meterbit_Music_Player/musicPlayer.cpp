@@ -25,7 +25,12 @@ void nextTrackButton(button_event_t button_Data);
 // bluetooth functions
 void selectNext_PreviousTrack(JsonDocument&);
 
-EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *musicPlayer_App = new Mtb_Applications_StatusBar(musicPlayer_App_Task, &musicPlayer_Task_H, "musicPlayer", {9,1}, 4096);
+EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *musicPlayer_App;
+Mtb_Applications* musicPlayer_App_GetInstance() {
+    if (!musicPlayer_App) musicPlayer_App = new Mtb_Applications_StatusBar(musicPlayer_App_Task, &musicPlayer_Task_H, "musicPlayer", {9,1}, 4096);
+    return musicPlayer_App;
+}
+MTB_REGISTER_APP(musicPlayer_App, 9, 1)
 
 void musicPlayer_App_Task(void* dApplication){
   Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;

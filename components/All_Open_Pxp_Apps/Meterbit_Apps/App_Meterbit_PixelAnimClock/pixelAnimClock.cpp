@@ -48,7 +48,12 @@ Mtb_CentreText_t* headerText;
 Mtb_ScrollText_t* headerTextScroll;
 
 EXT_RAM_BSS_ATTR Mtb_Services *pixAnimClkGif_Sv = new Mtb_Services(pixAnimClockGif_Task, &pixAnimClockGif_Task_H, "Anim Clk Task", 2560);
-EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *pixelAnimClock_App = new Mtb_Applications_FullScreen(pixAnimClock_App_Task, &pixAnimClock_Task_H, "Pixel Anim Clk", {0,1}, 2560);
+EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *pixelAnimClock_App;
+Mtb_Applications* pixelAnimClock_App_GetInstance() {
+    if (!pixelAnimClock_App) pixelAnimClock_App = new Mtb_Applications_FullScreen(pixAnimClock_App_Task, &pixAnimClock_Task_H, "Pixel Anim Clk", {0,1}, 2560);
+    return pixelAnimClock_App;
+}
+MTB_REGISTER_APP(pixelAnimClock_App, 0, 1)
 
 void  pixAnimClock_App_Task(void* dApplication){
   Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
@@ -404,11 +409,9 @@ void pixelAnimChangeButton(button_event_t button_Data){
             break;
 
             case BUTTON_PRESSED:
-              
               break;
 
             case BUTTON_PRESSED_LONG:
-              mtb_Launch_This_App(calendarClock_App);
               break;
 
             case BUTTON_CLICKED:

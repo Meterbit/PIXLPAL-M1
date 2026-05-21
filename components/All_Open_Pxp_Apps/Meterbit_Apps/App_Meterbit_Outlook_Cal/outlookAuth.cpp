@@ -3,7 +3,7 @@
 
 static const char TAG[] = "OUTLOOK_AUTH";
 
-String getAccessToken(const String& clientId, const String& clientSecret, const String& refreshToken) {
+String getOutlookCalAccessToken(const String& clientId, const String& clientSecret, const String& refreshToken) {
   HTTPClient http;
 
   const char* tokenUrl = "https://oauth2.googleapis.com/token";

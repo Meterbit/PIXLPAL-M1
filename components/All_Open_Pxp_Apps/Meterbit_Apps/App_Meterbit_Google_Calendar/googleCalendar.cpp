@@ -86,7 +86,12 @@ void googleCalButtonControl(button_event_t){}
 //*************************************************************************************************** */
 
   //Mtb_Services *googleCalScreenUpdate_Sv = new Mtb_Services(performScreenUpdate_Task, &screenUpdates_Task_H, "screenUpdates", 4096, pdTRUE);
-  Mtb_Applications_StatusBar *google_Calendar_App = new Mtb_Applications_StatusBar(googleCal_App_Task, &googleCal_Task_H, "googleCal App", {2,0}, 4096); // Review down this stack size later.
+  EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *google_Calendar_App;
+  Mtb_Applications* google_Calendar_App_GetInstance() {
+    if (!google_Calendar_App) google_Calendar_App = new Mtb_Applications_StatusBar(googleCal_App_Task, &googleCal_Task_H, "googleCal App", {2,0}, 4096);
+    return google_Calendar_App;
+  }
+  MTB_REGISTER_APP(google_Calendar_App, 2, 0)
 
 //THIS IS THE APPLICATION IMPLEMENTATION ***************************************************************************
 void  googleCal_App_Task(void* dApplication){
@@ -129,7 +134,7 @@ void  googleCal_App_Task(void* dApplication){
   
   googleCalendarRefreshTokener = String(userGoogleCal.refreshToken);
 
-  String accessToken = getAccessToken(googleClient_ID, googleClient_SECRET, googleCalendarRefreshTokener);
+  String accessToken = getGoogleCalAccessToken(googleClient_ID, googleClient_SECRET, googleCalendarRefreshTokener);
   if (accessToken.isEmpty()) {
     ESP_LOGI(TAG, "Unable to retrieve access token.\n");
   } else {

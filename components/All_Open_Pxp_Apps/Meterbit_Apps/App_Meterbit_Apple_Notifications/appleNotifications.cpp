@@ -22,7 +22,12 @@ void appleNotifications_App_Task(void *);
 // bluetooth functions
 void cancelAppLaunch(JsonDocument&);
 
-EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *apple_Notifications_App = new Mtb_Applications_StatusBar(appleNotifications_App_Task, &appleNotification_Task_H, "apple Notif", {7,0}, 4096);
+EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *apple_Notifications_App;
+Mtb_Applications* apple_Notifications_App_GetInstance() {
+    if (!apple_Notifications_App) apple_Notifications_App = new Mtb_Applications_StatusBar(appleNotifications_App_Task, &appleNotification_Task_H, "apple Notif", {7,0}, 4096);
+    return apple_Notifications_App;
+}
+MTB_REGISTER_APP(apple_Notifications_App, 7, 0)
 
 void appleNotifications_App_Task(void* dApplication){
   Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;

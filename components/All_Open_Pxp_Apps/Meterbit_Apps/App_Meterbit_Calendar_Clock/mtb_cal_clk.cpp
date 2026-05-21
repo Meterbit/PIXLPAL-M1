@@ -14,7 +14,12 @@ void get_NTP_Local_Time(JsonDocument&);
 EXT_RAM_BSS_ATTR TaskHandle_t classicClock_Task_H = NULL;
 void calendarClock_App_Task(void *dApplication);
 
-EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *calendarClock_App = new Mtb_Applications_StatusBar(calendarClock_App_Task, &classicClock_Task_H, "Classic Clock", {0,0}, 2560, ICONS_ONLY_STATUS_BAR);
+EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *calendarClock_App;
+Mtb_Applications* calendarClock_App_GetInstance() {
+    if (!calendarClock_App) calendarClock_App = new Mtb_Applications_StatusBar(calendarClock_App_Task, &classicClock_Task_H, "Classic Clock", {0,0}, 2560, ICONS_ONLY_STATUS_BAR);
+    return calendarClock_App;
+}
+MTB_REGISTER_APP(calendarClock_App, 0, 0)
 //***************************************************************************************************
 void  calendarClock_App_Task(void* dApplication){
   Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;

@@ -6,7 +6,12 @@
 EXT_RAM_BSS_ATTR TaskHandle_t exampleDesignMobileUI_Task_H = NULL;
 void exampleDesignMobileUI_Task(void *dApplication);
 
-EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *exampleDesignMobileUI_App = new Mtb_Applications_FullScreen(exampleDesignMobileUI_Task, &exampleDesignMobileUI_Task_H, "exampleDesignMobileUI_App", {11,0}, 4096);
+EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *exampleDesignMobileUI_App;
+Mtb_Applications* exampleDesignMobileUI_App_GetInstance() {
+    if (!exampleDesignMobileUI_App) exampleDesignMobileUI_App = new Mtb_Applications_FullScreen(exampleDesignMobileUI_Task, &exampleDesignMobileUI_Task_H, "exampleDesignMobileUI_App", {11,0}, 4096);
+    return exampleDesignMobileUI_App;
+}
+MTB_REGISTER_APP(exampleDesignMobileUI_App, 11, 0)
 
 void exampleDesignMobileUI_Task(void* dApplication){
 // ****** Initialize the App Parameters

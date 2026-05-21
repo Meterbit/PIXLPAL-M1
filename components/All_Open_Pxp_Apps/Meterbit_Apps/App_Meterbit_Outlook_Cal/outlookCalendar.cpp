@@ -75,7 +75,12 @@ void outlookCalButtonControl(button_event_t){}
   void show_OutlookCal_Tasks(JsonDocument& dCommand);
   void show_OutlookCal_Holidays(JsonDocument& dCommand);
 
-  Mtb_Applications_StatusBar *outlook_Calendar_App = new Mtb_Applications_StatusBar(outlookCal_App_Task, &outlookCal_Task_H, "outlookCal App", {2,1}, 4096); // Review down this stack size later.
+  EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *outlook_Calendar_App;
+  Mtb_Applications* outlook_Calendar_App_GetInstance() {
+    if (!outlook_Calendar_App) outlook_Calendar_App = new Mtb_Applications_StatusBar(outlookCal_App_Task, &outlookCal_Task_H, "outlookCal App", {2,1}, 4096);
+    return outlook_Calendar_App;
+  }
+  MTB_REGISTER_APP(outlook_Calendar_App, 2, 1)
 
 //THIS IS THE APPLICATION IMPLEMENTATION ***************************************************************************
 void  outlookCal_App_Task(void* dApplication){
@@ -121,7 +126,7 @@ void  outlookCal_App_Task(void* dApplication){
   
   outlookCalendarRefreshTokener = String(userOutlookCal.refreshToken);
 
-  String accessToken = getAccessToken(outlookClient_ID, outlookClient_SECRET, outlookCalendarRefreshTokener);
+  String accessToken = getOutlookCalAccessToken(outlookClient_ID, outlookClient_SECRET, outlookCalendarRefreshTokener);
   if (accessToken.isEmpty()) {
     ESP_LOGI(TAG, "Unable to retrieve access token.\n");
   } else {

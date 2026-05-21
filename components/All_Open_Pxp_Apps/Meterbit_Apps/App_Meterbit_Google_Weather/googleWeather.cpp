@@ -27,7 +27,12 @@ void changeGoogleWeatherLocation(button_event_t button_Data);
 // bluetooth functions
 void setGoogleWeatherLocation(JsonDocument&);
 
-EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *googleWeather_App = new Mtb_Applications_StatusBar(googleWeatherUpdate_App_Task, &googleWeather_Task_H, "GoogleWeather", {3,2}, 4096);
+EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *googleWeather_App;
+Mtb_Applications* googleWeather_App_GetInstance() {
+    if (!googleWeather_App) googleWeather_App = new Mtb_Applications_StatusBar(googleWeatherUpdate_App_Task, &googleWeather_Task_H, "GoogleWeather", {3,2}, 4096);
+    return googleWeather_App;
+}
+MTB_REGISTER_APP(googleWeather_App, 3, 2)
 
 void googleWeatherUpdate_App_Task(void* dApplication){
   Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;

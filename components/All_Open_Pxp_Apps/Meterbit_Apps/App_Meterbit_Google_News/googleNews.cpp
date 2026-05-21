@@ -42,7 +42,12 @@ void googleNews_TimerCallback(TimerHandle_t timer) {
     xSemaphoreGive(googleNewsupdateSem);
 }
 
-EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *googleNews_App = new Mtb_Applications_StatusBar(googleNews_App_Task, &googleNews_Task_H, "Google News", {1,0}, 4096);
+EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *googleNews_App;
+Mtb_Applications* googleNews_App_GetInstance() {
+    if (!googleNews_App) googleNews_App = new Mtb_Applications_StatusBar(googleNews_App_Task, &googleNews_Task_H, "Google News", {1,0}, 4096);
+    return googleNews_App;
+}
+MTB_REGISTER_APP(googleNews_App, 1, 0)
 
 // Main task for the News Ticker app.
 void googleNews_App_Task(void * dApplication) {

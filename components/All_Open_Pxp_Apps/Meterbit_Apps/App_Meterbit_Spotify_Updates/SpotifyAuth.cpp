@@ -8,7 +8,7 @@ static const char TAG[] = "SPOTIFY_AUTH";
 const char* token_host = "accounts.spotify.com";
 String access_token;
 
-bool getAccessToken(const char* client_id, const char* refresh_token) {
+bool getSpotifyAccessToken(const char* client_id, const char* refresh_token) {
   HTTPClient http;
 
   http.begin("https://accounts.spotify.com/api/token");

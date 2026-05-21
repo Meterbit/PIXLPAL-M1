@@ -37,7 +37,12 @@ void setScreenBrightness(JsonDocument&);
 void setStudioLightMode(JsonDocument&);
 void setStudioLightDuration(JsonDocument&);
 
-EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *studioLight_App = new Mtb_Applications_FullScreen(studioLight_App_Task, &studioLight_Task_H, "studioLight", {6,0}, 2048);
+EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *studioLight_App;
+Mtb_Applications* studioLight_App_GetInstance() {
+    if (!studioLight_App) studioLight_App = new Mtb_Applications_FullScreen(studioLight_App_Task, &studioLight_Task_H, "studioLight", {6,0}, 2048);
+    return studioLight_App;
+}
+MTB_REGISTER_APP(studioLight_App, 6, 0)
 
 void studioLight_App_Task(void* dApplication){
   Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;

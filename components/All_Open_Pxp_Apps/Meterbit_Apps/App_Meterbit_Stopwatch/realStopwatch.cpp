@@ -25,7 +25,12 @@ void adjustwatchTimeEncoder(rotary_encoder_rotation_t button_Data);
 // bluetooth functions
 void setWatchTime(JsonDocument&);
 
-EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *stopWatch_App = new Mtb_Applications_StatusBar(realStopwatch_App_Task, &realStopwatch_Task_H, "real Stopwatch", {0,4}, 4096);
+EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *stopWatch_App;
+Mtb_Applications* stopWatch_App_GetInstance() {
+    if (!stopWatch_App) stopWatch_App = new Mtb_Applications_StatusBar(realStopwatch_App_Task, &realStopwatch_Task_H, "real Stopwatch", {0,4}, 4096);
+    return stopWatch_App;
+}
+MTB_REGISTER_APP(stopWatch_App, 0, 4)
 
 void realStopwatch_App_Task(void* dApplication){
   Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;

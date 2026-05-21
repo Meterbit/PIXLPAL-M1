@@ -41,7 +41,12 @@ void newsAPI_TimerCallback(TimerHandle_t timer) {
     xSemaphoreGive(newsAPI_UpdateSem);
 }
 
-EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *newsAPI_App = new Mtb_Applications_StatusBar(newsAPI_App_Task, &newsAPI_Task_H, "NewsAPI App", {1,2}, 4096);
+EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *newsAPI_App;
+Mtb_Applications* newsAPI_App_GetInstance() {
+    if (!newsAPI_App) newsAPI_App = new Mtb_Applications_StatusBar(newsAPI_App_Task, &newsAPI_Task_H, "NewsAPI App", {1,2}, 4096);
+    return newsAPI_App;
+}
+MTB_REGISTER_APP(newsAPI_App, 1, 2)
 
 // Main task for the News Ticker app.
 void newsAPI_App_Task(void * dApplication) {

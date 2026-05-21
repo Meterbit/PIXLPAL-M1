@@ -119,7 +119,7 @@ void mtb_System_Init(void){
     while(*(usbOTA_Update_App->appHandle_ptr) != NULL) delay(1000);
 
     cycling_Apps = (Mtb_Apps_To_Cycle_t){
-        .appsCycleActive = true,
+        .appsCycleActive = false,
         .appsNoInCycle = 5,
         .appCycleDuration = 15,
         .appsCycling = {{0,0},{0,1},{0,2},{4,0},{6,1}},

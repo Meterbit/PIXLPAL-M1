@@ -41,7 +41,12 @@ void drawWorldClock5CitiesBkgd(void);
 void drawWorldClockSingleCity(void);
 
 // Declare the World Clock App in Status Bar Mode
-EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *worldClock_App = new Mtb_Applications_StatusBar(worldClock_App_Task, &worldClock_Task_H, "world Clock", {0,2}, 3072, WEEKDAY_STATUS_BAR);
+EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *worldClock_App;
+Mtb_Applications* worldClock_App_GetInstance() {
+    if (!worldClock_App) worldClock_App = new Mtb_Applications_StatusBar(worldClock_App_Task, &worldClock_Task_H, "world Clock", {0,2}, 3072, WEEKDAY_STATUS_BAR);
+    return worldClock_App;
+}
+MTB_REGISTER_APP(worldClock_App, 0, 2)
 
 void worldClock_App_Task(void* dApplication){
   Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;

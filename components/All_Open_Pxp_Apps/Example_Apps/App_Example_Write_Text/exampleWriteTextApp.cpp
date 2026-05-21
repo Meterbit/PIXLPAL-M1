@@ -5,7 +5,12 @@
 EXT_RAM_BSS_ATTR TaskHandle_t exampleWriteTextApp_Task_H = NULL;
 void exampleWriteTextApp_Task(void *dApplication);
 
-EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *exampleWriteText_App = new Mtb_Applications_FullScreen(exampleWriteTextApp_Task, &exampleWriteTextApp_Task_H, "exampleWriteTextApp", {11,1}, 4096);
+EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *exampleWriteText_App;
+Mtb_Applications* exampleWriteText_App_GetInstance() {
+    if (!exampleWriteText_App) exampleWriteText_App = new Mtb_Applications_FullScreen(exampleWriteTextApp_Task, &exampleWriteTextApp_Task_H, "exampleWriteTextApp", {11,1}, 4096);
+    return exampleWriteText_App;
+}
+MTB_REGISTER_APP(exampleWriteText_App, 11, 1)
 
 void exampleWriteTextApp_Task(void* dApplication){
 // ****** Initialize the App Parameters

@@ -28,7 +28,12 @@ void changeOpenMeteoLocation(button_event_t button_Data);
 // bluetooth functions
 void setOpenMeteoLocation(JsonDocument&);
 
-EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *openMeteo_App = new Mtb_Applications_StatusBar(openMeteoUpdate_App_Task, &openMeteo_Task_H, "Open Meteo", {3,1}, 4096);
+EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *openMeteo_App;
+Mtb_Applications* openMeteo_App_GetInstance() {
+    if (!openMeteo_App) openMeteo_App = new Mtb_Applications_StatusBar(openMeteoUpdate_App_Task, &openMeteo_Task_H, "Open Meteo", {3,1}, 4096);
+    return openMeteo_App;
+}
+MTB_REGISTER_APP(openMeteo_App, 3, 1)
 
 void openMeteoUpdate_App_Task(void* dApplication){
   Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;

@@ -7,9 +7,9 @@
 
 extern const char* token_host;
 extern String access_token;
-//bool getAccessToken(const char* client_id, const char* refresh_token);
+//bool getGoogleCalAccessToken(const char* client_id, const char* refresh_token);
 extern char* googleCal_root_ca;
 
-String getAccessToken(const String& clientId, const String& clientSecret, const String& refreshToken);
+String getGoogleCalAccessToken(const String& clientId, const String& clientSecret, const String& refreshToken);
 
 #endif // GOOGLE_AUTH_H

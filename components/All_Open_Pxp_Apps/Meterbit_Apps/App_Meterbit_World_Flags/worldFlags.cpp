@@ -38,7 +38,12 @@ void cycleAllFlags(JsonDocument&);
 void showCountryName(JsonDocument&);
 void setFlagChangeIntv(JsonDocument&);
 
-EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *worldFlags_App = new Mtb_Applications_FullScreen(worldFlags_App_Task, &worldFlags_Task_H, "worldFlagsApp", {6,1}, 3072);
+EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *worldFlags_App;
+Mtb_Applications* worldFlags_App_GetInstance() {
+    if (!worldFlags_App) worldFlags_App = new Mtb_Applications_FullScreen(worldFlags_App_Task, &worldFlags_Task_H, "worldFlagsApp", {6,1}, 3072);
+    return worldFlags_App;
+}
+MTB_REGISTER_APP(worldFlags_App, 6, 1)
 
 void worldFlags_App_Task(void* dApplication){
   Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;

@@ -21,7 +21,12 @@ void setPolygonPair(JsonDocument &);
 void setPolygonInterval(JsonDocument &);
 void setPolygonAPIKey(JsonDocument &);
 
-EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *polygonFX_App = new Mtb_Applications_StatusBar(polygonFX_App_Task, &polygonFX_Task_H, "Polygon FX", {4,3}, 4096);
+EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *polygonFX_App;
+Mtb_Applications* polygonFX_App_GetInstance() {
+    if (!polygonFX_App) polygonFX_App = new Mtb_Applications_StatusBar(polygonFX_App_Task, &polygonFX_Task_H, "Polygon FX", {4,3}, 4096);
+    return polygonFX_App;
+}
+MTB_REGISTER_APP(polygonFX_App, 4, 3)
 
 void polygonFX_App_Task(void *dApplication){
     Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;

@@ -44,7 +44,12 @@ void add_RemoveCurrencySymbol(JsonDocument&);
 void setcurrencyChangeInterval(JsonDocument&);
 void saveCurrencyAPI_key(JsonDocument&);
 
-EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *currencyExchange_App = new Mtb_Applications_StatusBar(currencyExchange_App_Task, &currencyExchange_Task_H, "currencyEx", {4,2}, 4096);
+EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *currencyExchange_App;
+Mtb_Applications* currencyExchange_App_GetInstance() {
+    if (!currencyExchange_App) currencyExchange_App = new Mtb_Applications_StatusBar(currencyExchange_App_Task, &currencyExchange_Task_H, "currencyEx", {4,2}, 4096);
+    return currencyExchange_App;
+}
+MTB_REGISTER_APP(currencyExchange_App, 4, 2)
 
 void currencyExchange_App_Task(void* dApplication){
   Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;

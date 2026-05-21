@@ -271,19 +271,28 @@ extern TaskHandle_t statusBarClock_H;
 extern void mtb_StatusBar_Clock_Task(void*);
 extern void mtb_StatusBar_Calendar_Task(void*);
 
-// All Apps Categories
-extern Mtb_Applications* mtb_Clk_Tim_AppLaunch(uint16_t, Mtb_Action_On_App_t);
-extern Mtb_Applications* mtb_Msg_App_Launch(uint16_t, Mtb_Action_On_App_t);
-extern Mtb_Applications* mtb_Calendar_App_Launch(uint16_t, Mtb_Action_On_App_t);
-extern Mtb_Applications* mtb_Weather_App_Launch(uint16_t, Mtb_Action_On_App_t);
-extern Mtb_Applications* mtb_Sports_App_Launch(uint16_t, Mtb_Action_On_App_t);
-extern Mtb_Applications* mtb_Animations_App_Launch(uint16_t, Mtb_Action_On_App_t);
-extern Mtb_Applications* mtb_Finance_App_Launch(uint16_t, Mtb_Action_On_App_t);
-extern Mtb_Applications* mtb_sMedia_App_Launch(uint16_t, Mtb_Action_On_App_t);
-extern Mtb_Applications* mtb_Notifications_App_Launch(uint16_t, Mtb_Action_On_App_t);
-extern Mtb_Applications* mtb_AIs_App_Launch(uint16_t, Mtb_Action_On_App_t);
-extern Mtb_Applications* mtb_Audio_Stream_App_Launch(uint16_t, Mtb_Action_On_App_t);
-extern Mtb_Applications* mtb_Miscellanous_App_Launch(uint16_t, Mtb_Action_On_App_t);
+// App Self-Registration
+struct Mtb_App_Registry_Entry {
+    Mtb_User_AppID_t         appID;
+    Mtb_Applications*        (*getRaw)();      // returns pointer without allocating
+    Mtb_Applications*        (*getInstance)(); // allocates on first call
+    Mtb_App_Registry_Entry*  next;
+};
+extern Mtb_App_Registry_Entry* mtb_App_Registry_Head;
+
+struct Mtb_App_AutoRegister {
+    Mtb_App_AutoRegister(Mtb_App_Registry_Entry* entry) {
+        entry->next = mtb_App_Registry_Head;
+        mtb_App_Registry_Head = entry;
+    }
+};
+
+#define MTB_REGISTER_APP(appName, genApp, speApp)                             \
+    static Mtb_Applications* appName##_getRaw()      { return appName; }      \
+    static Mtb_App_Registry_Entry appName##_reg_entry = {                     \
+        {genApp, speApp}, appName##_getRaw, appName##_GetInstance, nullptr    \
+    };                                                                        \
+    static Mtb_App_AutoRegister appName##_registrar(&appName##_reg_entry);
 
 // System Sevices
 
@@ -311,7 +320,6 @@ extern Mtb_Services* mtb_Encoder_Task_Sv;
 extern Mtb_Services* mtb_Button_Task_Sv;        
    
 //*********************************************************************************** */
-// Mtb_Applications SECTION (USERS AND SYSTEM APPS)
 
 // Application Specific Mtb_Services
 extern Mtb_Services* pixAnimClkGif_Sv;
@@ -323,67 +331,9 @@ extern Mtb_Services* mtb_Status_Bar_Clock_Sv;
 extern Mtb_Services* mtb_Status_Bar_Calendar_Sv;
 extern Mtb_Services* mtb_App_Cycling_Sv;
 
-// All System Apps
+// System Apps (registered manually — not user-configurable)
 extern Mtb_Applications_FullScreen* usbOTA_Update_App;          // App ID: 12/0
 extern Mtb_Applications_FullScreen* bleOTA_Update_App;          // App ID: 12/1
-extern Mtb_Applications_FullScreen* ghotaOTA_Check_Update_App;        // App ID: 12/2
-extern Mtb_Applications_FullScreen* ghotaOTA_Perform_Update_App;        // App ID: 12/3
-
-// All User Apps
-// Clocks and Timers
-extern Mtb_Applications_StatusBar* calendarClock_App;           // App ID: 0/0
-extern Mtb_Applications_FullScreen* pixelAnimClock_App;         // App ID: 0/1
-extern Mtb_Applications_StatusBar* worldClock_App;              // App ID: 0/2
-extern Mtb_Applications_FullScreen* bigClockCalendar_App;       // App ID: 0/3
-extern Mtb_Applications_StatusBar* stopWatch_App;               // App ID: 0/4
-
-// News and Messages
-extern Mtb_Applications_StatusBar *googleNews_App;              // App ID: 1/0 .... Replace this with google news app. Find api in Rapid API.
-extern Mtb_Applications_StatusBar *rssNewsApp;                  // App ID: 1/1
-extern Mtb_Applications_StatusBar *newsAPI_App;                 // App ID: 1/2
-
-// Calendars
-extern Mtb_Applications_StatusBar *google_Calendar_App;         // App ID: 2/0
-extern Mtb_Applications_StatusBar *outlook_Calendar_App;        // App ID: 2/1
-
-// Weather Updates
-extern Mtb_Applications_StatusBar *openWeather_App;             // App ID: 3/0
-extern Mtb_Applications_StatusBar *openMeteo_App;               // App ID: 3/1
-extern Mtb_Applications_StatusBar *googleWeather_App;           // App ID: 3/2
-
-// Finance
-extern Mtb_Applications_StatusBar *finnhub_Stats_App;           // App ID: 4/0
-extern Mtb_Applications_StatusBar *coinCap_Stats_App;           // App ID: 4/1
-extern Mtb_Applications_StatusBar *currencyExchange_App;        // App ID: 4/2
-extern Mtb_Applications_StatusBar *polygonFX_App;               // App ID: 4/3
-
-// Sports
-extern Mtb_Applications_StatusBar *liveFootbalScores_App;       // App ID: 5/0
-
-// Animations
-extern Mtb_Applications_FullScreen *studioLight_App;            // App ID: 6/0
-extern Mtb_Applications_FullScreen *worldFlags_App;             // App ID: 6/1
-
-// Notifications
-extern Mtb_Applications_StatusBar *apple_Notifications_App;     // App ID: 7/0
-
-// Artificial Intelligence
-extern Mtb_Applications_StatusBar *chatGPT_App;                 // App ID: 8/0
-
-// Audio and Media
-extern Mtb_Applications_StatusBar* internetRadio_App;           // App ID: 9/0
-extern Mtb_Applications_StatusBar* musicPlayer_App;             // App ID: 9/1
-extern Mtb_Applications_FullScreen* audSpecAnalyzer_App;        // App ID: 9/2
-extern Mtb_Applications_StatusBar *spotify_App;                 // App ID: 9/3
-
-// Miscellanous
-// extern Mtb_Applications_StatusBar* cpuTemp_App;                 // App ID: 11/1
-// extern Mtb_Applications_StatusBar* memUsage_App;                // App ID: 11/2
-
-// Example Apps
-extern Mtb_Applications_FullScreen* exampleWriteText_App;        
-extern Mtb_Applications_StatusBar* exampleDrawShapes_App;          
-extern Mtb_Applications_FullScreen* exampleDrawImages_App;          
-extern Mtb_Applications_StatusBar* exampleEncoderBeep_App;
-extern Mtb_Applications_FullScreen* exampleDesignMobileUI_App;  // App ID: 11/0
+extern Mtb_Applications_FullScreen* ghotaOTA_Check_Update_App;  // App ID: 12/2
+extern Mtb_Applications_FullScreen* ghotaOTA_Perform_Update_App;// App ID: 12/3
 #endif
