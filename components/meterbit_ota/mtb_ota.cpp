@@ -44,14 +44,10 @@ String semver_t_ToString(const semver_t &version);
         }
         else if (id == GHOTA_EVENT_UPDATE_AVAILABLE){
             String updateAvailable = "{\"set_command\": 2, \"response\": 1, \"latVersion\": \"";
-            /* get the version of the latest release on Github */
             semver_t *latestVer = ghota_get_latest_version(client);
             updateAvailable += semver_t_ToString(*latestVer) + "\"}";
-            //latest_softwareVersion(dLatestVersion.c_str());
-            //ESP_LOGI(TAG, "Latest Software Version: %s\n", dLatestVersion.c_str());
-            if (latestVer) semver_free(latestVer);
-            xSemaphoreGiveFromISR(ota_Update_Sem, &xHigherPriorityTaskWoken);
-            bleSettingsComSend(mtb_Software_Update_Route, updateAvailable); // Send the update available message to the BLE client
+            free(latestVer);
+            bleSettingsComSend(mtb_Software_Update_Route, updateAvailable);
         }
         else if (id == GHOTA_EVENT_NOUPDATE_AVAILABLE){
             //String updateNotAvailable = "{\"set_command\": 2, \"response\": 1, \"available\": 0}";
@@ -67,9 +63,9 @@ String semver_t_ToString(const semver_t &version);
             Mtb_Applications::appDestroy(Mtb_Applications::currentRunningApp);
             ghotaOTA_Check_Update_App->mtb_App_Init();
             if(litFS_Ready) mtb_Draw_Local_Png({"/batIcons/otaStatus.png", 0, 0});
-            otaUpdateTextTop->mtb_Write_String("SOFTWARE UPDATE");
-            otaUpdateTextBot->mtb_Write_String("IN PROGRESS:");
-            otaUpdateTextBar->mtb_Write_String("0%");
+            if(otaUpdateTextTop) otaUpdateTextTop->mtb_Write_String("SOFTWARE UPDATE");
+            if(otaUpdateTextBot) otaUpdateTextBot->mtb_Write_String("IN PROGRESS:");
+            if(otaUpdateTextBar) otaUpdateTextBar->mtb_Write_String("0%");
         }
         else if (id == GHOTA_EVENT_FIRMWARE_UPDATE_PROGRESS){
             //Mtb_LocalImage_t updtBar_Icon {"/batIcons/updtBar_", 1, 53};
@@ -79,8 +75,10 @@ String semver_t_ToString(const semver_t &version);
             strcat(softProgress, "%");
             //mtb_Draw_Local_Png(updtBar_Icon);  // The Progress Bars don't show because the OTA App is actively writing to the SoC's Flash. Reading from flash at same time is not possible.
             //ESP_LOGI(TAG, "Image Path is: %s\n", updtBar_Icon.imagePath);
-            if(*((int *)event_data) < 100 ) otaUpdateTextBar->mtb_Write_String(softProgress); // We compare the percentage completion to 100 to prevent writing outside the pixel panel
-            else otaUpdateTextBar->mtb_Write_String("OK");
+            if(otaUpdateTextBar) {
+                if(*((int *)event_data) < 100) otaUpdateTextBar->mtb_Write_String(softProgress);
+                else otaUpdateTextBar->mtb_Write_String("OK");
+            }
         }
         else if (id == GHOTA_EVENT_FINISH_UPDATE){   
             // Mtb_LocalImage_t wipeUpdtBar_Icon {"/littlefs/batIcons/wipeUpdtBar.png", 0, 53};
@@ -122,10 +120,10 @@ String semver_t_ToString(const semver_t &version);
         //     ESP_LOGI(TAG, "Storage Update Failed\n");
         // }
         else if (id == GHOTA_EVENT_PENDING_REBOOT){
-            otaUpdateTextTop->mtb_Write_Colored_Text("DEVICE UPDATED", CYAN);
+            if(otaUpdateTextTop) otaUpdateTextTop->mtb_Write_Colored_Text("DEVICE UPDATED", CYAN);
             Mtb_LocalImage_t wipeUpdtBar_Icon {"/batIcons/wipeUpdtBar.png", 0, 53};
             mtb_Draw_Local_Png(wipeUpdtBar_Icon);
-            otaUpdateTextBot->mtb_Write_Colored_Text("SUCCESSFULLY", CYAN);
+            if(otaUpdateTextBot) otaUpdateTextBot->mtb_Write_Colored_Text("SUCCESSFULLY", CYAN);
             ESP_LOGI(TAG, "Ghota Pending Reboot.\n");
         }
         (void)client;
@@ -134,11 +132,9 @@ String semver_t_ToString(const semver_t &version);
 
 void ghota_Check_Update_Task(void* dApplication){
     Mtb_Applications *THIS_APP = (Mtb_Applications *)dApplication;
-    if(ota_Update_Sem == NULL) ota_Update_Sem = xSemaphoreCreateBinary();
     Mtb_Applications::otaAppHolder = THIS_APP;
     Mtb_Applications::otaAppHolder->action_On_Prev_App = SUSPEND_PREVIOUS_APP;
 
-    /* initialize our ghota config */
     ghota_config_t ghconfig = {
         "PIXLPAL-M1.bin",
         "spiffs.bin",
@@ -149,73 +145,38 @@ void ghota_Check_Update_Task(void* dApplication){
         1
     };
 
-    otaUpdateTextTop = new Mtb_FixedText_t(8, 39, Terminal8x12, GREEN);  //FREE THESE VARIABLES WHEN DONE WITH THE OTA APPLICATION
-    otaUpdateTextBot = new Mtb_FixedText_t(8, 52, Terminal8x12, GREEN);
-    otaUpdateTextBar = new Mtb_FixedText_t(105, 52, Terminal8x12, WHITE);
-
-    /* initialize ghota. */
     ghota_client_handle_t *ghota_client = ghota_init(&ghconfig);
     if (ghota_client == NULL) {
         ESP_LOGE(TAG, "ghota_client_init failed");
+        mtb_Delete_This_App(THIS_APP);
         return;
     }
 
-    /* register for events relating to the update progress */
-    esp_event_handler_register(GHOTA_EVENTS, ESP_EVENT_ANY_ID, &ghota_event_callback, ghota_client);
+    ghota_set_auth(ghota_client, "Meterbit", "");
 
-    // // /* for private repositories or to get more API calls than anonymouse, set a github username and PAT token
-    // //  * see https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
-    // //  * for more information on how to create a PAT token.
-    // //  * 
-    // //  * Be carefull, as the PAT token will be stored in your firmware etc and can be used to access your github account.
-    // //  */
-    ESP_ERROR_CHECK(ghota_set_auth(ghota_client, "Meterbit", ""));
-    // // /* or do a check/update now */
-
-
-    /* Query the Github Release API for the latest release */
-    ESP_ERROR_CHECK(ghota_check(ghota_client));
-
-    /* get the semver version of the currently running firmware */
-    semver_t *cur = ghota_get_current_version(ghota_client);
-    if (cur) {
-         ESP_LOGI(TAG, "Current version: %d.%d.%d", cur->major, cur->minor, cur->patch);
-         semver_free(cur);
-    
-    /* get the version of the latest release on Github */
-    semver_t *latest = ghota_get_latest_version(ghota_client);
-    if (latest) {
-        ESP_LOGI(TAG, "Latest version: %d.%d.%d", latest->major, latest->minor, latest->patch);
-        semver_free(latest);
-    }
-
-    /* do some comparisions */
-    if (semver_gt(*latest, *cur) == 1) {
-        statusBarNotif.mtb_Scroll_This_Text("NEW UPDATE AVAILABLE. INSTALL VIA MOBILE APP.", YELLOW);
-        do_beep(BEEP_1);
-        ESP_LOGI(TAG, "Latest version is greater than current version");
-    } else if (semver_eq(*latest, *cur) == 1) {
-        statusBarNotif.mtb_Scroll_This_Text("NO NEW UPDATE FOUND. DEVICE IS UP-TO-DATE.", MAGENTA);
-        ESP_LOGI(TAG, "Latest version is equal to current version");
+    if (ghota_check(ghota_client) == ESP_OK) {
+        semver_t *cur = ghota_get_current_version(ghota_client);
+        semver_t *latest = ghota_get_latest_version(ghota_client);
+        if (cur && latest) {
+            ESP_LOGI(TAG, "Current version: %d.%d.%d", cur->major, cur->minor, cur->patch);
+            ESP_LOGI(TAG, "Latest version: %d.%d.%d", latest->major, latest->minor, latest->patch);
+            if (semver_gt(*latest, *cur) == 1) {
+                statusBarNotif.mtb_Scroll_This_Text("NEW UPDATE AVAILABLE. INSTALL VIA MOBILE APP.", YELLOW);
+                do_beep(BEEP_1);
+            } else if (semver_eq(*latest, *cur) == 1) {
+                statusBarNotif.mtb_Scroll_This_Text("SOFTWARE UPDATE CHECK COMPLETED.   NO NEW UPDATE FOUND.", MAGENTA);
+            }
+        }
+        free(cur);
+        free(latest);
     } else {
-        ESP_LOGI(TAG, "Latest version is less than current version");
+        statusBarNotif.mtb_Scroll_This_Text("SOFTWARE UPDATE CHECK COMPLETED.   NO NEW UPDATE FOUND.", MAGENTA);
     }
-    }
-
-    xSemaphoreTake(ota_Update_Sem, portMAX_DELAY);
 
     ghota_free(ghota_client);
 
     while(THIS_APP_IS_ACTIVE == pdTRUE) delay(10);
-
-    delete otaUpdateTextTop; otaUpdateTextTop = NULL;
-    delete otaUpdateTextBot; otaUpdateTextBot = NULL;
-    delete otaUpdateTextBar; otaUpdateTextBar = NULL;
-
-    vSemaphoreDelete(ota_Update_Sem);
-    ota_Update_Sem = NULL;
-
-    mtb_Delete_This_App(THIS_APP);// We are using this command, but this is an App not a service.
+    mtb_Delete_This_App(THIS_APP);
 }
 
 void ghota_Perform_Update_Task(void* dApplication){

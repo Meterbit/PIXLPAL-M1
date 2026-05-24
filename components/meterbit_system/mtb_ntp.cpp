@@ -19,7 +19,7 @@ void on_got_time(struct timeval* tv){
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
   mtb_Read_Nvs_Struct("Clock Cols", &clk_Updt, sizeof(Clock_Colors));
   xQueueSendFromISR(clock_Update_Q, &clk_Updt, &xHigherPriorityTaskWoken);
-  mtb_Launch_This_App(ghotaOTA_Check_Update_App, LAUNCH_PXP_APP, IGNORE_PREVIOUS_APP);
+  //mtb_Launch_This_App(ghotaOTA_Check_Update_App, LAUNCH_PXP_APP, IGNORE_PREVIOUS_APP);
 }
 
 void sntp_Time_init_Task(void* dService){

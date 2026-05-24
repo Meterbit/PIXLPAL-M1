@@ -15,7 +15,7 @@ There are two ways to add this component to your project
 1. As a ESP-IDF managed component: In your project directory run
 
 ```
-idf.py add-dependency joltwallet/littlefs==1.20.3
+idf.py add-dependency joltwallet/littlefs==1.22.1
 ```
 
 2. As a submodule: In your project, add this as a submodule to your `components/` directory.
@@ -226,6 +226,8 @@ LittleFS (cache=4096):             27,709 us
 
 # Running Unit Tests
 
+## ESP-IDF v5.x
+
 To flash the unit-tester app and the unit-tests, clone or symbolicly link this
 component to `$IDF_PATH/tools/unit-test-app/components/littlefs`. Make sure the
 folder name is `littlefs`, not `esp_littlefs`. Then, run the following:
@@ -256,6 +258,19 @@ The unit tester can then be flashed via the command:
 ```
 idf.py -T littlefs -p YOUR_PORT_HERE encrypted-flash monitor
 ```
+
+## ESP-IDF v6.0+
+
+ESP-IDF v6.0 removed the legacy `unit-test-app`. Instead, use the standalone test app in `test_apps/`:
+
+```
+cd test_apps
+idf.py set-target esp32  # Or your target
+idf.py build
+idf.py -p YOUR_PORT_HERE flash monitor
+```
+
+Once running, press Enter to see the test menu. You can run all tests by typing `*` or run specific tests by name or number.
 
 # Breaking Changes
 

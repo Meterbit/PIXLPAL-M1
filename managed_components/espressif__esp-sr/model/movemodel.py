@@ -19,6 +19,40 @@ def calculate_total_size(folder_path):
             total_size = total_size + os.path.getsize(path)
     return total_size
 
+def find_dirs_with_model_info(root_path):
+    result_dirs = []
+
+    for dirpath, dirnames, filenames in os.walk(root_path):
+        if '_MODEL_INFO_' in filenames:
+            file_path = os.path.join(dirpath, '_MODEL_INFO_')
+            if os.path.getsize(file_path) > 0:
+                result_dirs.append(dirpath)
+
+    return result_dirs
+
+def copy_models_from_sdkconfig_path(sdkconfig_path, target_path):
+    """
+    Copy wakenet model from model_path to target_path based on sdkconfig
+    """
+    models = []
+    extra_model_path = None
+    with io.open(sdkconfig_path, "r") as f:
+        for label in f:
+            label = label.strip("\n")
+            if 'ESP_SR_EXTERNAL_MODEL_PATH' in label:
+                extra_model_path = label.split("=")[1].strip('"')
+
+    if extra_model_path:
+        if os.path.exists(extra_model_path):
+            model_dirs = find_dirs_with_model_info(extra_model_path)
+            for model in model_dirs:
+                model_name = os.path.basename(model)
+                models.append(model_name)
+                shutil.copytree(model, target_path+'/'+model_name, dirs_exist_ok=True)
+
+    return extra_model_path, models
+
+
 def copy_wakenet_from_sdkconfig(model_path, sdkconfig_path, target_path):
     """
     Copy wakenet model from model_path to target_path based on sdkconfig
@@ -147,7 +181,46 @@ if __name__ == '__main__':
     copy_wakenet_from_sdkconfig(model_path, sdkconfig_path, target_path)
     copy_nsnet_from_sdkconfig(model_path, sdkconfig_path, target_path)
     copy_vadnet_from_sdkconfig(model_path, sdkconfig_path, target_path)
+    extra_model_path, extra_models = copy_models_from_sdkconfig_path(sdkconfig_path, target_path)
+
+    loaded_models = []
+    if os.path.exists(target_path):
+        loaded_models = sorted([d for d in os.listdir(target_path) if os.path.isdir(os.path.join(target_path, d))])
+
     pack_models(target_path, image_file)
-    total_size = os.path.getsize(os.path.join(target_path, image_file))
-    recommended_size = int(math.ceil(total_size/1024))
-    print("Recommended model partition size: %dK" % (recommended_size))
+
+    total_size = 0
+    image_path = os.path.join(target_path, image_file)
+    if os.path.exists(image_path):
+        total_size = os.path.getsize(image_path)
+
+    recommended_size = int(math.ceil(total_size / 1024.0)) + 1
+
+    # ESP-SR Model Report
+    print(u'')
+    print(u'ESP-SR Models Report')
+    print(u'─' * 40)
+    if extra_model_path:
+        if os.path.exists(extra_model_path):
+            print(u'  Models loaded from external path: {}'.format(extra_model_path))
+            for model in extra_models:
+                model_size = calculate_total_size(os.path.join(target_path, model))
+                print(u'    - {:<20} ({:.2f} KB)'.format(model, model_size / 1024.0))
+        else:
+            print(u'  External model path specified but does not exist: {}'.format(extra_model_path))
+        print(u'')
+
+    if loaded_models:
+        print(u'  Models loaded from esp-sr:')
+        for model in loaded_models:
+            if model in extra_models:
+                continue
+            model_size = calculate_total_size(os.path.join(target_path, model))
+            print(u'    - {:<20} ({:.2f} KB)'.format(model, model_size / 1024.0))
+        print(u'')
+        print(u'  Recommended Partition Size: {}K'.format(recommended_size))
+    else:
+        print(u'  No speech models loaded.')
+
+    print(u'─' * 40)
+    print(u'')

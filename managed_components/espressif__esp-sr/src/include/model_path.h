@@ -49,6 +49,22 @@ srmodel_list_t *esp_srmodel_init(const char *partition_label);
  */
 void esp_srmodel_deinit(srmodel_list_t *models);
 
+
+/**
+ * @brief Deinitialize with reference count
+ * 
+ * This function uses a reference count mechanism to defer the actual deinitialization
+ * until it is safe to do so, preventing premature release while other modules
+ * are still using the model.
+ * 
+ * @param models Pointer to the model list to be deinitialized
+ * 
+ * @note Behavior:
+ *       - When init count <= 1: performs actual deinitialization
+ *       - When init count > 1: only decrements the count without actual cleanup
+ */
+void esp_srmodel_deinit_with_refcount(srmodel_list_t *models);
+
 /**
  * @brief Return the first model name containing the specified keywords
  *        If keyword is NULL, we will ignore the keyword.
@@ -129,7 +145,20 @@ srmodel_list_t *get_static_srmodels(void);
  */
 srmodel_list_t *srmodel_load(const void *root);
 
+/**
+ * @brief Initialize and load model from binary file in host.
+ * 
+ * @param filename    The binary model file name.
+ */
+srmodel_list_t *srmodel_host_init(const char* filename);
 
+
+/**
+ * @brief Deinitialize the model list loaded by srmodel_load function.
+ * 
+ * @param models    The srmodel_list_t point allocated by srmodel_load function.
+ */
+void srmodel_host_deinit(srmodel_list_t *models);
 
 #ifdef ESP_PLATFORM
 #include "dl_lib_coefgetter_if.h"

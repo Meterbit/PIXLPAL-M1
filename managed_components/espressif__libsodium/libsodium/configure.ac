@@ -1,5 +1,5 @@
 AC_PREREQ([2.69])
-AC_INIT([libsodium],[1.0.19],[https://github.com/jedisct1/libsodium/issues],[libsodium],[https://libsodium.org])
+AC_INIT([libsodium],[1.0.22],[https://github.com/jedisct1/libsodium/issues],[libsodium],[https://libsodium.org])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([src/libsodium/sodium/version.c])
@@ -13,9 +13,9 @@ AM_DEP_TRACK
 AC_SUBST(VERSION)
 
 SODIUM_LIBRARY_VERSION_MAJOR=26
-SODIUM_LIBRARY_VERSION_MINOR=1
+SODIUM_LIBRARY_VERSION_MINOR=4
 DLL_VERSION=26
-SODIUM_LIBRARY_VERSION=27:0:1
+SODIUM_LIBRARY_VERSION=30:0:4
 #                       | | |
 #                +------+ | +---+
 #                |        |     |
@@ -52,11 +52,10 @@ AC_USE_SYSTEM_EXTENSIONS
 dnl Default optimization flags
 
 if test "$sodium_CFLAGS" != "set" ; then
-  AX_CHECK_COMPILE_FLAG([-Ofast], [CFLAGS="$CFLAGS -Ofast"],
-    [AX_CHECK_COMPILE_FLAG([-O3], [CFLAGS="$CFLAGS -O3"],
-      [AX_CHECK_COMPILE_FLAG([-O2], [CFLAGS="$CFLAGS -O2"],
-        [AX_CHECK_COMPILE_FLAG([-O1], [CFLAGS="$CFLAGS -O1"],
-          [AX_CHECK_COMPILE_FLAG([-O], [CFLAGS="$CFLAGS -O"])])])])])
+  AX_CHECK_COMPILE_FLAG([-O3], [CFLAGS="$CFLAGS -O3"],
+    [AX_CHECK_COMPILE_FLAG([-O2], [CFLAGS="$CFLAGS -O2"],
+      [AX_CHECK_COMPILE_FLAG([-O1], [CFLAGS="$CFLAGS -O1"],
+        [AX_CHECK_COMPILE_FLAG([-O], [CFLAGS="$CFLAGS -O"])])])])
 fi
 
 dnl Switches
@@ -92,11 +91,22 @@ AS_IF([test "x$EMSCRIPTEN" != "x"], [
     enable_asm="no"
     AC_MSG_WARN([compiling to JavaScript - asm implementations disabled])
   ], [
-    AC_MSG_WARN([EMSCRIPTEN environment variable defined, but emcc doesn't appear to be used - Assuming compilation to native code])
+    AC_MSG_WARN([EMSCRIPTEN environment variable defined, but emcc doesn\'t appear to be used - Assuming compilation to native code])
     CFLAGS="$CFLAGS -U__EMSCRIPTEN__"
     unset EMSCRIPTEN
   ])
 ])
+
+AC_MSG_CHECKING([if we are using FilC])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#ifndef __FILC__
+# error __FILC__ is not defined
+#endif
+]], [[]])],
+  [AC_MSG_RESULT(yes)
+   enable_asm="no"
+   AC_MSG_WARN([compiling with FilC - asm implementations disabled])],
+  [AC_MSG_RESULT(no)])
 
 AC_ARG_ENABLE(pie,
 [AS_HELP_STRING(--disable-pie,Do not produce position independent executables)],
@@ -296,7 +306,7 @@ AS_CASE([$host_os],
 AS_IF([test "x$enable_ssp" != "xno"],[
 
 AS_CASE([$host_os],
-  [cygwin*|mingw*|msys|pw32*|cegcc*|haiku|none|eabi*], [ ],
+  [solaris*|cygwin*|mingw*|msys|pw32*|cegcc*|haiku|none|eabi*], [ ],
   [*], [
     AX_CHECK_COMPILE_FLAG([-fstack-protector], [
       AX_CHECK_LINK_FLAG([-fstack-protector],
@@ -366,11 +376,26 @@ AX_CHECK_CATCHABLE_ABRT
 
 AS_IF([test "x$with_threads" = "xyes"], [
   AX_TLS([AC_MSG_RESULT(thread local storage is supported)
-          AX_CHECK_COMPILE_FLAG([-ftls-model=local-dynamic],
-            [CFLAGS="$CFLAGS -ftls-model=local-dynamic"])],
+          AX_CHECK_COMPILE_FLAG([-ftls-model=global-dynamic],
+            [CFLAGS="$CFLAGS -ftls-model=global-dynamic"])],
          [AC_MSG_RESULT(thread local storage is not supported)]) ])
 
 LT_INIT
+
+dnl CompCert compiler support
+AC_MSG_CHECKING([if we are using CompCert])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#ifndef __COMPCERT__
+# error __COMPCERT__ is not defined
+#endif
+]], [[]])],
+  [AC_MSG_RESULT(yes)
+   lt_prog_compiler_wl='-Wl,'
+   enable_asm="no"
+   CFLAGS="$CFLAGS -fstruct-passing"
+   AC_MSG_WARN([compiling with CompCert - asm implementations disabled])],
+  [AC_MSG_RESULT(no)])
+
 AC_SUBST(LIBTOOL_DEPS)
 
 AC_ARG_VAR([AR], [path to the ar utility])
@@ -398,11 +423,6 @@ AS_IF([test "x$EMSCRIPTEN" = "x"], [
     have_armcrypto=no
     AC_MSG_CHECKING(for ARM crypto instructions set)
     AC_LINK_IFELSE([AC_LANG_PROGRAM([[
-      #ifdef __clang__
-      #  pragma clang attribute push(__attribute__((target("neon,crypto,aes"))), apply_to = function)
-      #elif defined(__GNUC__)
-      #  pragma GCC target("+simd+crypto")
-      #endif
       #ifndef __ARM_FEATURE_CRYPTO
       #  define __ARM_FEATURE_CRYPTO 1
       #endif
@@ -411,8 +431,16 @@ AS_IF([test "x$EMSCRIPTEN" = "x"], [
       #endif
 
       #include <arm_neon.h>
+
+      #ifdef __clang__
+      #  pragma clang attribute push(__attribute__((target("neon,crypto,aes"))), apply_to = function)
+      #elif defined(__GNUC__)
+      #  pragma GCC target("+simd+crypto")
+      #endif
     ]], [[
+      int64x2_t x = { 0, 0 };
       vaeseq_u8(vmovq_n_u8(0), vmovq_n_u8(0));
+      vmull_high_p64(vreinterpretq_p64_s64(x), vreinterpretq_p64_s64(x));
 
       #ifdef __clang__
       #  pragma clang attribute pop
@@ -441,8 +469,12 @@ AS_IF([test "x$EMSCRIPTEN" = "x"], [
             #ifndef __ARM_FEATURE_AES
             #  define __ARM_FEATURE_AES 1
             #endif
+
+            #include <arm_neon.h>
           ]], [[
+            int64x2_t x = { 0, 0 };
             vaeseq_u8(vmovq_n_u8(0), vmovq_n_u8(0));
+            vmull_high_p64(vreinterpretq_p64_s64(x), vreinterpretq_p64_s64(x));
 
             #ifdef __clang__
             #  pragma clang attribute pop
@@ -652,7 +684,7 @@ AC_SUBST(CFLAGS_RDRAND)
 
 AC_CHECK_HEADERS([sys/mman.h sys/param.h sys/random.h intrin.h sys/auxv.h])
 AC_CHECK_HEADERS([CommonCrypto/CommonRandom.h])
-AC_CHECK_HEADERS([cet.h])
+AC_CHECK_HEADERS([cet.h threads.h])
 
 AC_MSG_CHECKING([if _xgetbv() is available])
 AC_LINK_IFELSE(
@@ -690,6 +722,9 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 
 AC_MSG_CHECKING(whether we can use inline asm code)
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#ifdef __FILC__
+# error inline assembly is not supported with FilC
+#endif
 ]], [[
 int a = 42;
 int *pnt = &a;
@@ -958,7 +993,7 @@ AC_SUBST([LIBTOOL_EXTRA_FLAGS])
 TEST_LDFLAGS=''
 AS_IF([test "x$EMSCRIPTEN" != "x"],[
   EXEEXT=.js
-  TEST_LDFLAGS='--memory-init-file 0 --pre-js pre.js.inc -s RESERVED_FUNCTION_POINTERS=8'
+  TEST_LDFLAGS='--pre-js pre.js.inc -sALLOW_TABLE_GROWTH'
 ])
 AC_SUBST(TEST_LDFLAGS)
 AM_CONDITIONAL([EMSCRIPTEN], [test "x$EMSCRIPTEN" != "x"])

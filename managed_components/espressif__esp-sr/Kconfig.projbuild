@@ -3,7 +3,7 @@ menu "ESP Speech Recognition"
 choice MODEL_DATA_PATH
     prompt "model data path"
     default MODEL_IN_FLASH
-    depends on IDF_TARGET_ESP32S3 || IDF_TARGET_ESP32P4
+    depends on IDF_TARGET_ESP32S3 || IDF_TARGET_ESP32P4 ||  IDF_TARGET_ESP32S31
 
     config MODEL_IN_FLASH
         bool "Read model data from flash"
@@ -35,7 +35,7 @@ choice SR_NSN_MODEL_LOAD
 
     config SR_NSN_NSNET2
         bool "Deep noise suppression v2 (nsnet2)"
-	    depends on IDF_TARGET_ESP32S3 ||  IDF_TARGET_ESP32P4
+	    depends on IDF_TARGET_ESP32S3 ||  IDF_TARGET_ESP32P4 ||  IDF_TARGET_ESP32S31
 endchoice
 
 choice SR_VADN_MODEL_LOAD
@@ -49,7 +49,7 @@ choice SR_VADN_MODEL_LOAD
 
     config SR_VADN_VADNET1_MEDIUM
         bool "voice activity detection (vadnet1 medium)"
-	    depends on IDF_TARGET_ESP32S3 ||  IDF_TARGET_ESP32P4
+	    depends on IDF_TARGET_ESP32S3 ||  IDF_TARGET_ESP32P4 ||  IDF_TARGET_ESP32S31
 endchoice
 
 
@@ -74,10 +74,22 @@ menu "Load Multiple Wake Words (WakeNet9s)"
 endmenu
 
 menu "Load Multiple Wake Words (WakeNet9)"
-    depends on IDF_TARGET_ESP32S3 ||  IDF_TARGET_ESP32P4 || IDF_TARGET_ESP32
+    depends on IDF_TARGET_ESP32S3 ||  IDF_TARGET_ESP32P4 ||  IDF_TARGET_ESP32S31 || IDF_TARGET_ESP32
 
     config SR_WN_WN9_HILEXIN
     bool "Hi,乐鑫 (wn9_hilexin)"
+    default False
+
+    config SR_WN_WN9_HIESP
+    bool "Hi,ESP (wn9_hiesp)"
+    default False
+
+    config SR_WN_WN9L_JA_KONNICHIHAESP_TTS3
+    bool "こんにちは ESP (wn9l_ja_konnichihaesp_tts3)"
+    default False
+
+    config SR_WN_WN9L_FR_BONJOURESP_TTS3
+    bool "Bonjour ESP (wn9l_fr_bonjouresp_tts3)"
     default False
 
     config SR_WN_WN9_NIHAOMIAOBAN_TTS2
@@ -102,10 +114,6 @@ menu "Load Multiple Wake Words (WakeNet9)"
 
     config SR_WN_WN9_ALEXA
     bool "Alexa (wn9_alexa)"
-    default False
-
-    config SR_WN_WN9_HIESP
-    bool "Hi,ESP (wn9_hiesp)"
     default False
 
     config SR_WN_WN9_JARVIS_TTS
@@ -176,9 +184,16 @@ menu "Load Multiple Wake Words (WakeNet9)"
     bool "Hey,Ivy (wn9_heyivy_tts2)"
     default False
 
+    config SR_WN_WN9L_HISTACKCHAN_TTS3
+    bool "Hi,Stack Chan (wn9l_histackchan_tts3)"
+    default False
 
-    config SR_WN_WN9_HISTACKCHAN_TTS3
-    bool "Hi,Stack Chan (wn9_histackchan_tts3)"
+    config SR_WN_WN9_HEYKIRA_TTS3
+    bool "Hey,Kira (wn9_heykira_tts3)"
+    default False
+
+    config SR_WN_WN9L_HEYGIGI_TTS3
+    bool "Hey,GiGi (wn9l_heygigi_tts3)"
     default False
 
     config SR_WN_WN9_XIAOLONGXIAOLONG_TTS
@@ -292,6 +307,14 @@ menu "Load Multiple Wake Words (WakeNet9)"
     config SR_WN_WN9_XIAO3FENG1XIAO3FENG1_TTS3
     bool "小峰小峰 (wn9_xiao3feng1xiao3feng1_tts3)"
     default False
+
+    config SR_WN_WN9_HAI1XIAO3XIANG4_TTS3
+    bool "嗨小象 (wn9_hai1xiao3xiang4_tts3)"
+    default False
+
+    config SR_WN_WN9L_NI3HAO3XING1BAO3_TTS3
+    bool "你好星宝 (wn9l_ni3hao3xing1bao3_tts3)"
+    default False
 endmenu
 
 
@@ -322,11 +345,11 @@ choice CHINESE_SR_MN_MODEL_SEL
 
     config SR_MN_CN_MULTINET7_QUANT
         bool "general chinese recognition (mn7_cn)"
-        depends on IDF_TARGET_ESP32S3 || IDF_TARGET_ESP32P4
+        depends on IDF_TARGET_ESP32S3 || IDF_TARGET_ESP32P4 ||  IDF_TARGET_ESP32S31
 
     config SR_MN_CN_MULTINET7_AC_QUANT
         bool "chinese recognition for air conditioner controller (mn7_cn_ac)"
-        depends on IDF_TARGET_ESP32S3 || IDF_TARGET_ESP32P4
+        depends on IDF_TARGET_ESP32S3 || IDF_TARGET_ESP32P4 ||  IDF_TARGET_ESP32S31
 
 endchoice
 
@@ -349,7 +372,7 @@ choice ENGLISH_SR_MN_MODEL_SEL
 
     config SR_MN_EN_MULTINET7_QUANT
         bool "general english recognition (mn7_en)"
-        depends on IDF_TARGET_ESP32S3 || IDF_TARGET_ESP32P4
+        depends on IDF_TARGET_ESP32S3 || IDF_TARGET_ESP32P4 ||  IDF_TARGET_ESP32S31
 
 endchoice
 
@@ -1447,12 +1470,12 @@ config EN_SPEECH_COMMAND_ID16
 config EN_SPEECH_COMMAND_ID17
     string "ID17"
     depends on SR_MN_EN_MULTINET5_SINGLE_RECOGNITION_QUANT8
-    default "TkN nN eL jc LiTS"
+    default "TkN nN eL jc list"
 
 config EN_SPEECH_COMMAND_ID18
     string "ID18"
     depends on SR_MN_EN_MULTINET5_SINGLE_RECOGNITION_QUANT8
-    default "TkN eF eL jc LiTS"
+    default "TkN eF eL jc list"
 
 config EN_SPEECH_COMMAND_ID19
     string "ID19"
@@ -2360,5 +2383,9 @@ config EN_SPEECH_COMMAND_ID199
     default ""
 
 endmenu
+
+config ESP_SR_EXTERNAL_MODEL_PATH
+string "Load models from external path"
+default ""
 
 endmenu

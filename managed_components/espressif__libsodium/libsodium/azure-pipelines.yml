@@ -7,6 +7,25 @@ pr: none
 jobs:
   - job: "windows"
     pool:
+      vmImage: "windows-latest"
+    steps:
+      - powershell: |
+          cd builds\msvc\build
+          & .\buildbase.bat ..\vs2026\libsodium.sln 18
+        displayName: Compile it all
+      - powershell: |
+          mkdir bin\include\sodium
+          Copy-Item "src\libsodium\include\sodium\*.h" -Destination "bin\include\sodium" -Recurse
+          Copy-Item "src\libsodium\include\*.h" -Destination "bin\include\"
+        displayName: Copy header files
+      - task: PublishBuildArtifacts@1
+        condition: not(canceled())
+        inputs:
+          pathToPublish: bin
+          artifactName: libsodium
+
+  - job: "windows_2022"
+    pool:
       vmImage: "windows-2022"
     steps:
       - powershell: |
@@ -26,8 +45,11 @@ jobs:
 
   - job: "windows_2019"
     pool:
-      vmImage: "windows-2019"
+      vmImage: "windows-2022"
     steps:
+      - powershell: |
+          choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --quiet --wait" -y
+        displayName: Install VS2019 Build Tools
       - powershell: |
           cd builds\msvc\build
           & .\buildbase.bat ..\vs2019\libsodium.sln 16
@@ -45,10 +67,10 @@ jobs:
 
   - job: mingw64
     pool:
-      vmImage: "windows-2019"
+      vmImage: "windows-2022"
     steps:
       - powershell: |
-          (New-Object Net.WebClient).DownloadFile("https://github.com/msys2/msys2-installer/releases/download/2023-07-18/msys2-base-x86_64-20230718.sfx.exe", "sfx.exe")
+          (New-Object Net.WebClient).DownloadFile("https://github.com/msys2/msys2-installer/releases/download/2026-03-22/msys2-base-x86_64-20260322.sfx.exe", "sfx.exe")
           .\sfx.exe -y -o\
           del sfx.exe
         displayName: Install MSYS2
@@ -84,10 +106,10 @@ jobs:
 
   - job: mingw32
     pool:
-      vmImage: "windows-2019"
+      vmImage: "windows-2022"
     steps:
       - powershell: |
-          (New-Object Net.WebClient).DownloadFile("https://github.com/msys2/msys2-installer/releases/download/2023-07-18/msys2-base-x86_64-20230718.sfx.exe", "sfx.exe")
+          (New-Object Net.WebClient).DownloadFile("https://github.com/msys2/msys2-installer/releases/download/2026-03-22/msys2-base-x86_64-20260322.sfx.exe", "sfx.exe")
           .\sfx.exe -y -o\
           del sfx.exe
         displayName: Install MSYS2

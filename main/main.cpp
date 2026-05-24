@@ -7,6 +7,9 @@
 #include "mtb_ble.h"
 #include "esp_heap_caps.h"
 #include <HardwareSerial.h>
+#include <HTTPClient.h>
+#include <WiFiClientSecure.h>
+#include "my_secret_keys.h"
 
 using namespace std;
 
@@ -22,9 +25,8 @@ extern "C" void app_main(){
     mtb_Wifi_Init();
 
     // Cycling through a number of user selected apps, or Launch the Last Executed App or Launch a particular App after boot-up
-    // if(cycling_Apps.appsCycleActive == true) mtb_Launch_This_Service(mtb_App_Cycling_Sv);
-    // else 
-    mtb_Identify_App_By_ID(lastSavedApp, LAUNCH_PXP_APP);
+    if(cycling_Apps.appsCycleActive == true) mtb_Launch_This_Service(mtb_App_Cycling_Sv);
+    else mtb_Identify_App_By_ID(lastSavedApp, LAUNCH_PXP_APP);
 
     // Declare Variable for monitoring Free/Available internal SRAM
     size_t free_sram = 0;
@@ -41,5 +43,6 @@ extern "C" void app_main(){
     // delay 30 seconds
     delay(30000);
      }
+
 }
 

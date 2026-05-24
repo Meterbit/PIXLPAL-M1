@@ -13,18 +13,21 @@ tv_kdf_hkdf(void)
     size_t         prk512_len = crypto_kdf_hkdf_sha512_KEYBYTES;
     unsigned char *salt;
     size_t         salt_len = 77;
+    unsigned char *generated_prk256;
+    unsigned char *generated_prk512;
     char          *context;
     size_t         context_len = 88;
     unsigned char *out;
     size_t         out_len = 99;
     char           hex[99 * 2 + 1];
     size_t         i;
-    int            ret;
 
     master_key = (unsigned char *) sodium_malloc(master_key_len);
     prk256 = (unsigned char *) sodium_malloc(prk256_len);
     prk512 = (unsigned char *) sodium_malloc(prk512_len);
     salt = (unsigned char *) sodium_malloc(salt_len);
+    generated_prk256 = (unsigned char *) sodium_malloc(prk256_len);
+    generated_prk512 = (unsigned char *) sodium_malloc(prk512_len);
     context = (char *) sodium_malloc(context_len);
     out = (unsigned char *) sodium_malloc(out_len);
     for (i = 0; i < master_key_len; i++) {
@@ -37,8 +40,10 @@ tv_kdf_hkdf(void)
         context[i] = (unsigned char) (i + 111);
     }
 
+    crypto_kdf_hkdf_sha256_keygen(generated_prk256);
+    crypto_kdf_hkdf_sha512_keygen(generated_prk512);
+
     printf("\nHKDF/SHA-256:\n");
-    crypto_kdf_hkdf_sha256_keygen(prk256);
     if (crypto_kdf_hkdf_sha256_extract(prk256, salt, salt_len,
                                        master_key, master_key_len) != 0) {
         printf("hkdf_sha256_extract() failed\n");
@@ -55,7 +60,6 @@ tv_kdf_hkdf(void)
     }
 
     printf("\nHKDF/SHA-512:\n");
-    crypto_kdf_hkdf_sha256_keygen(prk512);
     if (crypto_kdf_hkdf_sha512_extract(prk512, salt, salt_len,
                                        master_key, master_key_len) != 0) {
         printf("hkdf_sha512_extract() failed\n");
@@ -73,6 +77,8 @@ tv_kdf_hkdf(void)
 
     sodium_free(out);
     sodium_free(context);
+    sodium_free(generated_prk512);
+    sodium_free(generated_prk256);
     sodium_free(salt);
     sodium_free(master_key);
     sodium_free(prk512);
@@ -81,10 +87,12 @@ tv_kdf_hkdf(void)
     assert(crypto_kdf_hkdf_sha512_bytes_min() == crypto_kdf_hkdf_sha512_BYTES_MIN);
     assert(crypto_kdf_hkdf_sha512_bytes_max() == crypto_kdf_hkdf_sha512_BYTES_MAX);
     assert(crypto_kdf_hkdf_sha512_keybytes() == crypto_kdf_hkdf_sha512_KEYBYTES);
+    assert(crypto_kdf_hkdf_sha512_statebytes() >= sizeof (crypto_kdf_hkdf_sha512_state));
 
     assert(crypto_kdf_hkdf_sha256_bytes_min() == crypto_kdf_hkdf_sha256_BYTES_MIN);
     assert(crypto_kdf_hkdf_sha256_bytes_max() == crypto_kdf_hkdf_sha256_BYTES_MAX);
     assert(crypto_kdf_hkdf_sha256_keybytes() == crypto_kdf_hkdf_sha256_KEYBYTES);
+    assert(crypto_kdf_hkdf_sha256_statebytes() >= sizeof (crypto_kdf_hkdf_sha256_state));
 
     assert(crypto_kdf_hkdf_sha256_KEYBYTES < crypto_kdf_hkdf_sha512_KEYBYTES);
 

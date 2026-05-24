@@ -1,5 +1,0 @@
-dependencies:
-  espressif/esp-dsp:
-    version: '*'
-  espressif/esp32_azure_iot_kit: '*'
-description: ESP-DSP azure board application Kalman filter

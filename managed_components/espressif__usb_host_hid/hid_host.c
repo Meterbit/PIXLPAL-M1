@@ -32,7 +32,7 @@ static portMUX_TYPE hid_lock = portMUX_INITIALIZER_UNLOCKED;
 // HID verification macros
 #define HID_GOTO_ON_FALSE_CRITICAL(exp, err)    \
     do {                                        \
-        if(!(exp)) {                            \
+        if (unlikely(!(exp))) {                 \
             HID_EXIT_CRITICAL();                \
             ret = err;                          \
             goto fail;                          \
@@ -41,7 +41,7 @@ static portMUX_TYPE hid_lock = portMUX_INITIALIZER_UNLOCKED;
 
 #define HID_RETURN_ON_FALSE_CRITICAL(exp, err)  \
     do {                                        \
-        if(!(exp)) {                            \
+        if (unlikely(!(exp))) {                 \
             HID_EXIT_CRITICAL();                \
             return err;                         \
         }                                       \
@@ -85,6 +85,9 @@ typedef struct hid_host_device {
     usb_transfer_t *ctrl_xfer;                  /**< Pointer to control transfer buffer */
     usb_device_handle_t dev_hdl;                /**< USB device handle */
     uint8_t dev_addr;                           /**< USB device address */
+#ifdef HID_HOST_REMOTE_WAKE_SUPPORTED
+    bool remote_wakeup_enabled;                 /**< To indicate whether remote wakeup is currently enabled */
+#endif // HID_HOST_REMOTE_WAKE_SUPPORTED
 } hid_device_t;
 
 /**
@@ -184,7 +187,7 @@ static void event_handler_task(void *arg)
 /**
  * @brief Return HID device in devices list by USB device handle
  *
- * @param[in] usb_device_handle_t   USB device handle
+ * @param[in] usb_handle   USB device handle
  * @return hid_device_t Pointer to device, NULL if device not present
  */
 static hid_device_t *get_hid_device_by_handle(usb_device_handle_t usb_handle)
@@ -282,7 +285,9 @@ static inline const usb_ep_desc_t *get_iface_ep_in(const usb_intf_desc_t *iface_
  * @brief Check HID interface descriptor present
  *
  * @param[in] config_desc  Pointer to Configuration Descriptor
- * @return esp_err_t
+ * @return
+ *  - true if HID interface descriptor is present
+ *  - false if HID interface descriptor is not present
  */
 static bool hid_interface_present(const usb_config_desc_t *config_desc)
 {
@@ -345,7 +350,7 @@ static inline void hid_host_user_device_callback(hid_iface_t *iface,
  * @param[in] hid_device    HID device handle
  * @param[in] iface_desc  Pointer to an Interface descriptor
  * @param[in] hid_desc    Pointer to an HID device descriptor
- * @param[in] ep_desc     Pointer to an EP descriptor
+ * @param[in] ep_in_desc  Pointer to an EP descriptor
  * @return esp_err_t
  */
 static esp_err_t hid_host_add_interface(hid_device_t *hid_device,
@@ -442,8 +447,7 @@ static void hid_host_notify_interface_connected(hid_device_t *hid_device)
  * @brief Create a list of available interfaces in RAM
  *
  * @param[in] hid_device  Pointer to HID device structure
- * @param[in] dev_addr    USB device physical address
- * @param[in] sub_class   USB HID SubClass value
+ * @param[in] config_desc Pointer to USB configuration descriptor
  * @return esp_err_t
  */
 static esp_err_t hid_host_interface_list_create(hid_device_t *hid_device,
@@ -851,7 +855,7 @@ static esp_err_t hid_host_disable_interface(hid_iface_t *iface)
 /**
  * @brief HID IN Transfer complete callback
  *
- * @param[in] transfer  Pointer to transfer data structure
+ * @param[in] in_xfer  Pointer to transfer data structure
  */
 static void in_xfer_done(usb_transfer_t *in_xfer)
 {
@@ -886,7 +890,9 @@ static void in_xfer_done(usb_transfer_t *in_xfer)
  *
  * @param[in] hid_device    Pointer to HID device structure
  * @param[in] timeout_ms    Timeout of trying to take the mutex
- * @return esp_err_t
+ * @return
+ *    - ESP_OK if the mutex was successfully taken
+ *    - ESP_ERR_TIMEOUT if the mutex could not be taken within the specified timeout
  */
 static inline esp_err_t hid_device_try_lock(hid_device_t *hid_device, uint32_t timeout_ms)
 {
@@ -898,8 +904,6 @@ static inline esp_err_t hid_device_try_lock(hid_device_t *hid_device, uint32_t t
 /** Unlock HID device from other task
  *
  * @param[in] hid_device    Pointer to HID device structure
- * @param[in] timeout_ms    Timeout of trying to take the mutex
- * @return esp_err_t
  */
 static inline void hid_device_unlock(hid_device_t *hid_device)
 {
@@ -921,15 +925,13 @@ static void ctrl_xfer_done(usb_transfer_t *ctrl_xfer)
 /**
  * @brief HID control transfer synchronous.
  *
- * @note  Passes interface and endpoint descriptors to obtain:
-
- *        - interface number, IN endpoint, OUT endpoint, max. packet size
- *
  * @param[in] hid_device  Pointer to HID device structure
- * @param[in] ctrl_xfer   Pointer to the Transfer structure
  * @param[in] len         Number of bytes to transfer
  * @param[in] timeout_ms  Timeout in ms
- * @return esp_err_t
+ * @return
+ *   - ESP_OK if the transfer was successful
+ *   - ESP_ERR_TIMEOUT if the transfer was not completed within the specified timeout
+ *   - ESP_ERR_INVALID_RESPONSE if the transfer completed with an error status or incorrect number of bytes transferred
  */
 static esp_err_t hid_control_transfer(hid_device_t *hid_device,
                                       size_t len,
@@ -950,17 +952,11 @@ static esp_err_t hid_control_transfer(hid_device_t *hid_device,
 
     BaseType_t received = xSemaphoreTake(hid_device->ctrl_xfer_done, pdMS_TO_TICKS(ctrl_xfer->timeout_ms));
 
-    if (received != pdTRUE) {
-        // Transfer was not finished, error in USB LIB. Reset the endpoint
-        ESP_LOGE(TAG, "Control Transfer Timeout");
-
-        HID_RETURN_ON_ERROR( usb_host_endpoint_halt(hid_device->dev_hdl, ctrl_xfer->bEndpointAddress),
-                             "Unable to HALT EP");
-        HID_RETURN_ON_ERROR( usb_host_endpoint_flush(hid_device->dev_hdl, ctrl_xfer->bEndpointAddress),
-                             "Unable to FLUSH EP");
-        usb_host_endpoint_clear(hid_device->dev_hdl, ctrl_xfer->bEndpointAddress);
-        return ESP_ERR_TIMEOUT;
-    }
+    // In case transfer was not finished, error in USB LIB. This is EP0, USBH will reset the endpoint.
+    HID_RETURN_ON_FALSE(received == pdTRUE, ESP_ERR_TIMEOUT, "Control transfer timeout");
+    // Check transfer status
+    // Device can return less data than requested, but it must not return more data than requested
+    HID_RETURN_ON_FALSE(ctrl_xfer->actual_num_bytes <= ctrl_xfer->num_bytes, ESP_ERR_INVALID_RESPONSE, "Incorrect number of bytes transferred");
 
     ESP_LOG_BUFFER_HEXDUMP(TAG, ctrl_xfer->data_buffer, ctrl_xfer->actual_num_bytes, ESP_LOG_DEBUG);
 
@@ -980,11 +976,6 @@ static esp_err_t usb_class_request_get_descriptor(hid_device_t *hid_device, cons
     HID_RETURN_ON_INVALID_ARG(hid_device->ctrl_xfer);
     HID_RETURN_ON_INVALID_ARG(req);
     HID_RETURN_ON_INVALID_ARG(req->data);
-
-    if (req->wLength > HID_MAX_REPORT_DESC_LEN) {
-        ESP_LOGE(TAG, "Requested descriptor size exceeds maximum");
-        return ESP_ERR_INVALID_SIZE;
-    }
 
     HID_RETURN_ON_ERROR( hid_device_try_lock(hid_device, DEFAULT_TIMEOUT_MS),
                          "HID Device is busy by other task");
@@ -1058,6 +1049,11 @@ static esp_err_t hid_class_request_report_descriptor(hid_iface_t *iface)
                         ESP_ERR_INVALID_STATE,
                         "Unable to request report descriptor. Interface is not ready");
 
+    // Check if the report descriptor size is within the maximum allowed size before allocating memory
+    HID_RETURN_ON_FALSE(iface->report_desc_size <= HID_MAX_REPORT_DESC_LEN,
+                        ESP_ERR_INVALID_SIZE,
+                        "Requested descriptor size exceeds maximum");
+
     iface->report_desc = malloc(iface->report_desc_size);
     HID_RETURN_ON_FALSE(iface->report_desc,
                         ESP_ERR_NO_MEM,
@@ -1071,7 +1067,13 @@ static esp_err_t hid_class_request_report_descriptor(hid_iface_t *iface)
         .data = iface->report_desc
     };
 
-    return usb_class_request_get_descriptor(iface->parent, &get_desc);
+    const esp_err_t ret = usb_class_request_get_descriptor(iface->parent, &get_desc);
+
+    if (ret != ESP_OK) {
+        free(iface->report_desc);
+        iface->report_desc = NULL;
+    }
+    return ret;
 }
 
 /**
@@ -1191,9 +1193,9 @@ static esp_err_t hid_host_string_descriptor_copy(wchar_t *dest,
     return ESP_OK;
 }
 
-esp_err_t hid_host_install_device(uint8_t dev_addr,
-                                  usb_device_handle_t dev_hdl,
-                                  hid_device_t **hid_device_handle)
+static esp_err_t hid_host_install_device(uint8_t dev_addr,
+                                         usb_device_handle_t dev_hdl,
+                                         hid_device_t **hid_device_handle)
 {
     esp_err_t ret;
     hid_device_t *hid_device;
@@ -1555,6 +1557,66 @@ esp_err_t hid_host_device_get_raw_input_report_data(hid_host_device_handle_t hid
     *data_length = copied;
     return ESP_OK;
 }
+
+#ifdef HID_HOST_REMOTE_WAKE_SUPPORTED
+
+esp_err_t hid_host_enable_remote_wakeup(hid_host_device_handle_t hid_dev_handle, bool enable)
+{
+    HID_RETURN_ON_FALSE(s_hid_driver, ESP_ERR_INVALID_STATE, "HID Driver is not installed");
+    hid_iface_t *iface = get_iface_by_handle(hid_dev_handle);
+
+    HID_RETURN_ON_INVALID_ARG(iface);
+    HID_RETURN_ON_INVALID_ARG(iface->parent);
+    HID_RETURN_ON_FALSE(is_interface_in_list(iface), ESP_ERR_NOT_FOUND, "Interface handle not found");
+    hid_device_t *hid_device = iface->parent;
+
+    // Get device's config descriptor
+    const usb_config_desc_t *config_desc;
+    ESP_RETURN_ON_ERROR(
+        usb_host_get_active_config_descriptor(hid_device->dev_hdl, &config_desc), TAG, "Unable to get configuration descriptor");
+
+    // Check if the device reports remote wakeup feature in it's configuration descriptor
+    ESP_RETURN_ON_FALSE(
+        (config_desc->bmAttributes & USB_BM_ATTRIBUTES_WAKEUP), ESP_ERR_NOT_SUPPORTED, TAG, "Device does not support remote wakeup");
+
+    HID_RETURN_ON_ERROR( hid_device_try_lock(hid_device, DEFAULT_TIMEOUT_MS), "HID Device is busy by other task");
+
+    // Check current remote wakeup status
+    // If user wants to enable it and is already enabled (or vice versa) return early, otherwise proceed to ctrl transfer
+    if (hid_device->remote_wakeup_enabled == enable) {
+        ESP_LOGD(TAG, "Remote wakeup already %s on this device", (enable) ? "enabled" : "disabled");
+        hid_device_unlock(hid_device);
+        return ESP_OK;
+    }
+
+    usb_transfer_t *ctrl_xfer = hid_device->ctrl_xfer;
+    HID_RETURN_ON_INVALID_ARG(ctrl_xfer);
+
+    usb_setup_packet_t *setup = (usb_setup_packet_t *)ctrl_xfer->data_buffer;
+    if (enable) {
+        // Enable remote wakeup
+        USB_SETUP_PACKET_INIT_SET_FEATURE(setup, DEVICE_REMOTE_WAKEUP);
+        ESP_LOGI(TAG, "Enabling remote wakeup on device");
+    } else {
+        // Disable remote wakeup
+        USB_SETUP_PACKET_INIT_CLEAR_FEATURE(setup, DEVICE_REMOTE_WAKEUP);
+        ESP_LOGI(TAG, "Disabling remote wakeup on device");
+    }
+
+    esp_err_t ret = hid_control_transfer(hid_device,
+                                         USB_SETUP_PACKET_SIZE + setup->wLength,
+                                         DEFAULT_TIMEOUT_MS);
+
+    // CTRL transfer passed, update device status about remote wakeup
+    if (ret == ESP_OK) {
+        hid_device->remote_wakeup_enabled = enable;
+    }
+
+    hid_device_unlock(hid_device);
+    return ret;
+}
+
+#endif // HID_HOST_REMOTE_WAKE_SUPPORTED
 
 // ------------------------ USB HID Host driver API ----------------------------
 

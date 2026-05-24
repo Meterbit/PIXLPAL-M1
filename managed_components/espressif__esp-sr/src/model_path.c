@@ -4,13 +4,10 @@
 #include "string.h"
 #include <dirent.h>
 #include <sys/stat.h>
-// #ifndef CONFIG_IDF_TARGET_ESP32P4
-// #include "esp_mn_models.h"
-// #endif
+#include "esp_log.h"
 
 #ifdef ESP_PLATFORM
 #include "esp_idf_version.h"
-#include "esp_log.h"
 #include "esp_spiffs.h"
 #include "sdkconfig.h"
 #include <sys/dirent.h>
@@ -22,6 +19,7 @@
 static char *TAG = "MODEL_LOADER";
 static char *SRMODE_BASE_PATH = "/srmodel";
 static srmodel_list_t *static_srmodels = NULL;
+static int srmodel_init_refcount = 0;
 
 void set_model_base_path(const char *base_path)
 {
@@ -106,6 +104,73 @@ static srmodel_list_t *srmodel_list_alloc(void)
 #endif
     models->mmap_handle = NULL;
 
+    return models;
+}
+
+
+static uint32_t read_int32(char *data)
+{
+    uint8_t *bytes = (uint8_t *)data;
+    return (uint32_t)bytes[0] | ((uint32_t)bytes[1] << 8) | ((uint32_t)bytes[2] << 16) | ((uint32_t)bytes[3] << 24);
+}
+
+
+srmodel_list_t *srmodel_load(const void *root)
+{
+    if (static_srmodels == NULL) {
+        static_srmodels = srmodel_list_alloc();
+    }
+
+    srmodel_list_t *models = static_srmodels;
+    char *start = (char *)root;
+    char *data = (char *)root;
+    int str_len = SRMODEL_STRING_LENGTH;
+    int int_len = 4;
+    // read model number
+    models->num = read_int32(data);
+    data += int_len;
+    models->model_data = (srmodel_data_t **)malloc(sizeof(srmodel_data_t *) * models->num);
+    models->model_name = (char **)malloc(sizeof(char *) * models->num);
+    models->model_info = (char **)malloc(sizeof(char *) * models->num);
+
+    for (int i = 0; i < models->num; i++) {
+        srmodel_data_t *model_data = (srmodel_data_t *)malloc(sizeof(srmodel_data_t));
+        models->model_info[i] = NULL;
+        // read model name
+        models->model_name[i] = (char *)malloc((SRMODEL_STRING_LENGTH + 1) * sizeof(char));
+        strncpy(models->model_name[i], data, SRMODEL_STRING_LENGTH);
+        models->model_name[i][SRMODEL_STRING_LENGTH] = '\0';
+        data += str_len;
+        // read model number
+        int file_num = read_int32(data);
+        model_data->num = file_num;
+        data += int_len;
+        model_data->files = (char **)malloc(sizeof(char *) * file_num);
+        model_data->data = (char **)malloc(sizeof(void *) * file_num);
+        model_data->sizes = (int *)malloc(sizeof(int) * file_num);
+
+        for (int j = 0; j < file_num; j++) {
+            // read file name
+            model_data->files[j] = data;
+            data += str_len;
+            // read file start index
+            int index = read_int32(data);
+            data += int_len;
+            model_data->data[j] = start + index;
+            // read file size
+            int size = read_int32(data);
+            data += int_len;
+            model_data->sizes[j] = size;
+
+            // read model info
+            if (strcmp(model_data->files[j], "_MODEL_INFO_") == 0) {
+                models->model_info[i] = get_model_info(model_data->data[j], model_data->sizes[j]);
+            }
+        }
+        models->model_data[i] = model_data;
+    }
+    ESP_LOGI(TAG, "Successfully load srmodels");
+    set_model_base_path(NULL);
     return models;
 }
 
@@ -238,74 +303,7 @@ void srmodel_spiffs_deinit(srmodel_list_t *models)
     models = NULL;
 }
 
-static uint32_t read_int32(char *data)
-{
-    uint32_t value = 0;
-    value |= data[0] << 0;
-    value |= data[1] << 8;
-    value |= data[2] << 16;
-    value |= data[3] << 24;
-    return value;
-}
 
-srmodel_list_t *srmodel_load(const void *root)
-{
-    if (static_srmodels == NULL) {
-        static_srmodels = srmodel_list_alloc();
-        printf("create static models");
-    }
-
-    srmodel_list_t *models = static_srmodels;
-    char *start = (char *)root;
-    char *data = (char *)root;
-    int str_len = SRMODEL_STRING_LENGTH;
-    int int_len = 4;
-    // read model number
-    models->num = read_int32(data);
-    data += int_len;
-    models->model_data = (srmodel_data_t **)malloc(sizeof(srmodel_data_t *) * models->num);
-    models->model_name = (char **)malloc(sizeof(char *) * models->num);
-    models->model_info = (char **)malloc(sizeof(char *) * models->num);
-
-    for (int i = 0; i < models->num; i++) {
-        srmodel_data_t *model_data = (srmodel_data_t *)malloc(sizeof(srmodel_data_t));
-        models->model_info[i] = NULL;
-        // read model name
-        models->model_name[i] = (char *)malloc((strlen(data) + 1) * sizeof(char));
-        strcpy(models->model_name[i], data);
-        data += str_len;
-        // read model number
-        int file_num = read_int32(data);
-        model_data->num = file_num;
-        data += int_len;
-        model_data->files = (char **)malloc(sizeof(char *) * file_num);
-        model_data->data = (char **)malloc(sizeof(void *) * file_num);
-        model_data->sizes = (int *)malloc(sizeof(int) * file_num);
-
-        for (int j = 0; j < file_num; j++) {
-            // read file name
-            model_data->files[j] = data;
-            data += str_len;
-            // read file start index
-            int index = read_int32(data);
-            data += int_len;
-            model_data->data[j] = start + index;
-            // read file size
-            int size = read_int32(data);
-            data += int_len;
-            model_data->sizes[j] = size;
-
-            // read model info
-            if (strcmp(model_data->files[j], "_MODEL_INFO_") == 0) {
-                models->model_info[i] = get_model_info(model_data->data[j], model_data->sizes[j]);
-            }
-        }
-        models->model_data[i] = model_data;
-    }
-    ESP_LOGI(TAG, "Successfully load srmodels");
-    set_model_base_path(NULL);
-    return models;
-}
 
 srmodel_list_t *srmodel_mmap_init(const esp_partition_t *partition)
 {
@@ -511,6 +509,7 @@ void srmodel_sdcard_deinit(srmodel_list_t *models)
 
 srmodel_list_t *esp_srmodel_init(const char *partition_label)
 {
+    srmodel_init_refcount ++;
 #ifdef ESP_PLATFORM
 
 #ifdef CONFIG_MODEL_IN_SDCARD
@@ -543,6 +542,15 @@ void esp_srmodel_deinit(srmodel_list_t *models)
 #else
     return srmodel_sdcard_deinit(models);
 #endif
+}
+
+void esp_srmodel_deinit_with_refcount(srmodel_list_t *models)
+{
+    if (srmodel_init_refcount <= 1) {
+        esp_srmodel_deinit(models);
+    } else if (srmodel_init_refcount > 1) {
+        srmodel_init_refcount--;
+    }
 }
 
 // repackage strstr function to support needle==NULL
@@ -600,4 +608,61 @@ char *esp_srmodel_get_wake_words(srmodel_list_t *models, char *model_name)
         }
     }
     return NULL;
+}
+
+srmodel_list_t *srmodel_host_init(const char* filename)
+{
+    if (static_srmodels == NULL) {
+        static_srmodels = srmodel_list_alloc();
+    } else {
+        return static_srmodels;
+    }
+
+    srmodel_list_t *models = static_srmodels;
+
+#ifdef ESP_PLATFORM
+    models->partition = NULL;
+#endif
+    FILE *fp = fopen(filename, "rb");
+    if (fp == NULL) {
+        printf("Could not open model file: %s\n", filename);
+        return NULL;
+    }
+    fseek(fp, 0L, SEEK_END);
+    int file_size = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+    void *root = malloc(file_size);
+    fread(root, file_size, 1, fp);
+    fclose(fp);
+    models->mmap_handle = root;
+    srmodel_load(root);
+
+    return models;
+}
+
+void srmodel_host_deinit(srmodel_list_t *models)
+{
+    if (models != NULL) {
+        if (models->mmap_handle) {
+            free(models->mmap_handle);
+        }
+
+        if (models->num > 0) {
+            for (int i = 0; i < models->num; i++) {
+                free(models->model_data[i]->files);
+                free(models->model_data[i]->data);
+                free(models->model_data[i]->sizes);
+                free(models->model_data[i]);
+                free(models->model_name[i]);
+                if (models->model_info[i] != NULL)
+                    free(models->model_info[i]);
+            }
+        }
+        free(models->model_data);
+        free(models->model_name);
+        free(models->model_info);
+        free(models);
+    }
+    models = NULL;
+    static_srmodels = NULL;
 }

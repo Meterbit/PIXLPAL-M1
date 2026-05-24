@@ -24,6 +24,8 @@ set(srcs
     "${SRC}/crypto_core/hchacha20/core_hchacha20.c"
     "${SRC}/crypto_core/hsalsa20/core_hsalsa20.c"
     "${SRC}/crypto_core/hsalsa20/ref2/core_hsalsa20_ref2.c"
+    "${SRC}/crypto_core/keccak1600/keccak1600.c"
+    "${SRC}/crypto_core/keccak1600/ref/keccak1600_ref.c"
     "${SRC}/crypto_core/salsa/ref/core_salsa_ref.c"
     "${SRC}/crypto_core/softaes/softaes.c"
     "${SRC}/crypto_generichash/blake2b/generichash_blake2.c"
@@ -33,13 +35,20 @@ set(srcs
     "${SRC}/crypto_generichash/blake2b/ref/blake2b-ref.c"
     "${SRC}/crypto_generichash/blake2b/ref/generichash_blake2b.c"
     "${SRC}/crypto_generichash/crypto_generichash.c"
+    "${SRC}/crypto_ipcrypt/crypto_ipcrypt.c"
+    "${SRC}/crypto_ipcrypt/ipcrypt_soft.c"
     "${SRC}/crypto_hash/crypto_hash.c"
-    "${SRC}/crypto_hash/sha256/cp/hash_sha256_cp.c"
     "${SRC}/crypto_hash/sha256/hash_sha256.c"
-    "${SRC}/crypto_hash/sha512/cp/hash_sha512_cp.c"
     "${SRC}/crypto_hash/sha512/hash_sha512.c"
+    "${SRC}/crypto_hash/sha3/hash_sha3.c"
     "${SRC}/crypto_kdf/blake2b/kdf_blake2b.c"
     "${SRC}/crypto_kdf/crypto_kdf.c"
+    "${SRC}/crypto_kdf/hkdf/kdf_hkdf_sha256.c"
+    "${SRC}/crypto_kdf/hkdf/kdf_hkdf_sha512.c"
+    "${SRC}/crypto_kem/crypto_kem.c"
+    "${SRC}/crypto_kem/mlkem768/kem_mlkem768.c"
+    "${SRC}/crypto_kem/mlkem768/ref/kem_mlkem768_ref.c"
+    "${SRC}/crypto_kem/xwing/kem_xwing.c"
     "${SRC}/crypto_kx/crypto_kx.c"
     "${SRC}/crypto_onetimeauth/crypto_onetimeauth.c"
     "${SRC}/crypto_onetimeauth/poly1305/donna/poly1305_donna.c"
@@ -108,6 +117,14 @@ set(srcs
     "${SRC}/crypto_stream/xchacha20/stream_xchacha20.c"
     "${SRC}/crypto_stream/xsalsa20/stream_xsalsa20.c"
     "${SRC}/crypto_verify/verify.c"
+    "${SRC}/crypto_xof/shake128/xof_shake128.c"
+    "${SRC}/crypto_xof/shake128/ref/shake128_ref.c"
+    "${SRC}/crypto_xof/shake256/xof_shake256.c"
+    "${SRC}/crypto_xof/shake256/ref/shake256_ref.c"
+    "${SRC}/crypto_xof/turboshake128/xof_turboshake128.c"
+    "${SRC}/crypto_xof/turboshake128/ref/turboshake128_ref.c"
+    "${SRC}/crypto_xof/turboshake256/xof_turboshake256.c"
+    "${SRC}/crypto_xof/turboshake256/ref/turboshake256_ref.c"
     "${SRC}/randombytes/randombytes.c"
     "${SRC}/sodium/codecs.c"
     "${SRC}/sodium/core.c"
@@ -120,14 +137,16 @@ if(CONFIG_LIBSODIUM_USE_MBEDTLS_SHA)
     list(APPEND srcs
         "port/crypto_hash_mbedtls/crypto_hash_sha256_mbedtls.c"
         "port/crypto_hash_mbedtls/crypto_hash_sha512_mbedtls.c")
+    set(include_dirs port_include ${SRC}/include)
+    set(priv_include_dirs port port_include/sodium ${SRC}/include/sodium)
 else()
     list(APPEND srcs
         "${SRC}/crypto_hash/sha256/cp/hash_sha256_cp.c"
         "${SRC}/crypto_hash/sha512/cp/hash_sha512_cp.c")
+    set(include_dirs ${SRC}/include port_include)
+    set(priv_include_dirs ${SRC}/include/sodium port_include/sodium port)
 endif()
 
-set(include_dirs ${SRC}/include port_include)
-set(priv_include_dirs ${SRC}/include/sodium port_include/sodium port)
 idf_component_register(SRCS "${srcs}"
                     INCLUDE_DIRS "${include_dirs}"
                     PRIV_INCLUDE_DIRS "${priv_include_dirs}"
@@ -139,6 +158,7 @@ target_compile_definitions(${COMPONENT_LIB} PRIVATE
     HAVE_WEAK_SYMBOLS
     __STDC_LIMIT_MACROS
     __STDC_CONSTANT_MACROS
+    __STDC_WANT_LIB_EXT1__=0
     )
 
 # patch around warnings in third-party files
@@ -169,6 +189,16 @@ set_source_files_properties(
     -Wno-implicit-fallthrough
     )
 
+# Upstream libsodium 1.0.22 KEM sources define parameters as plain pointers
+# while their headers declare them as fixed-size arrays, which trips
+# -Werror=array-parameter on GCC >= 11. Suppress until fixed upstream.
+set_source_files_properties(
+    ${SRC}/crypto_kem/mlkem768/kem_mlkem768.c
+    ${SRC}/crypto_kem/xwing/kem_xwing.c
+    PROPERTIES COMPILE_FLAGS
+    -Wno-array-parameter
+    )
+
 set_source_files_properties(
     ${SRC}/randombytes/randombytes.c
     PROPERTIES COMPILE_FLAGS
@@ -177,7 +207,19 @@ set_source_files_properties(
 
 target_compile_options(${COMPONENT_LIB} PRIVATE -Wno-unused-function)
 
+if(CONFIG_LIBSODIUM_USE_MBEDTLS_SHA)
+    target_compile_options(${COMPONENT_LIB} PRIVATE
+        "$<$<COMPILE_LANGUAGE:C>:SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/port_include/sodium/crypto_hash_sha256.h>"
+        "$<$<COMPILE_LANGUAGE:C>:SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/port_include/sodium/crypto_hash_sha512.h>")
+endif()
+
 if(CONFIG_COMPILER_OPTIMIZATION_ASSERTIONS_DISABLE)
     # some libsodium variables are only used for asserts
     target_compile_options(${COMPONENT_LIB} PRIVATE -Wno-unused-but-set-variable)
+endif()
+
+if(CONFIG_COMPILER_STATIC_ANALYZER AND CMAKE_C_COMPILER_ID STREQUAL "GNU")
+    # GCC's -fanalyzer causes the compiler to hang on libsodium's elliptic curve code
+    # due to combinatorial state explosion in the interprocedural analysis
+    target_compile_options(${COMPONENT_LIB} PRIVATE "-fno-analyzer")
 endif()

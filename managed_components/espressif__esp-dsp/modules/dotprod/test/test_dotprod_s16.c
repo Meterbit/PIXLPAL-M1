@@ -155,7 +155,7 @@ TEST_CASE("dsps_dotprod_s16 benchmark", "[dsps]")
         x[i] = 0x100;
         y[i] = 0x200;
     }
-    // Disable interrupt to get exect count
+    // Disable interrupt to get exact count
 
     portENTER_CRITICAL(&testnlock);
 
@@ -191,7 +191,7 @@ TEST_CASE("dsps_dotprod_s16_ansi benchmark", "[dsps]")
         x[i] = 0x100;
         y[i] = 0x200;
     }
-    // Disable interrupt to get exect count
+    // Disable interrupt to get exact count
 
     portENTER_CRITICAL(&testnlock);
 
@@ -206,7 +206,7 @@ TEST_CASE("dsps_dotprod_s16_ansi benchmark", "[dsps]")
     float total_b = end_b - start_b;
     float cycles = total_b / (repeat_count);
     printf("Benchmark dsps_dotprod_s16 - %f cycles for 1024 samples + overhead. Result = %08x\n", cycles, z[1]);
-    float min_exec = 1024 * 10;
+    float min_exec = 1024;
     float max_exec = 1024 * 30;
     TEST_ASSERT_EXEC_IN_RANGE(min_exec, max_exec, cycles);
 

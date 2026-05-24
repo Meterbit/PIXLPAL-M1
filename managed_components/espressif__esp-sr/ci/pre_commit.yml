@@ -1,5 +1,6 @@
 .check_pre_commit_template:
   stage: check  # or "pre-check", depending on your pipeline structure
+  tags: ["build", "amd64", "internet"]
   image: python:3.8
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"  # Run this job only for merge request pipelines.

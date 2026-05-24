@@ -24,9 +24,8 @@ extern bool mtb_Download_Png_Img_To_PSRAM(const char* url, uint8_t** outBuffer, 
 extern bool mtb_Download_Svg_Img_To_PSRAM(const char* url, uint8_t** outBuffer, size_t* outSize, String* outMimeType = nullptr);
 extern bool mtb_Download_Online_Image_To_SPIFFS(const char* url, const char* pathInSPIFFS); // Check this function for possible bugs
 extern bool mtb_Prepare_Flash_File_Path(const char* filePath);
+
 extern bool mtb_Download_Github_File_To_SPIFFS(githubStrg_UpDwn_t&);
-
-
 extern bool mtb_Download_Github_File_To_SPIFFS(const String& bucketPath, const String& flashPath, const String account_Owner = "Meterbit", const String repo_Name = "PXP_X1_STORAGE", const String github_PAT = "");
 extern bool mtb_Download_Github_File_To_PSRAM(const String& bucketPath, uint8_t** outBuffer, size_t* outSize, const String account_Owner = "Meterbit", const String repo_Name = "PXP_X1_STORAGE", const String github_PAT = "");
 

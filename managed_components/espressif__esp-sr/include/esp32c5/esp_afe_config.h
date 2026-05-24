@@ -143,6 +143,8 @@ typedef struct {
     bool debug_init;
     bool fixed_first_channel; // If true, the channel after first wake-up is fixed to raw data of microphone
                               // otherwise, select channel number by wakenet
+    bool fixed_output_channel; // If true, the output channel is fixed to the microphone channel, otherwise, select channel number by wakenet or vad
+    bool output_playback_channel; // If true, the playback reference channel will be outputted in afe fetch function
 } afe_config_t;
 
 /**

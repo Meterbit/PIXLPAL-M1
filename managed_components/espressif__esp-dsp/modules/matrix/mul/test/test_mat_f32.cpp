@@ -49,7 +49,7 @@ TEST_CASE("Mat class check solve ", "[dspm]")
     std::cout << "Roots result matrix: rows: " << x2.rows << ", columns: " << x2.cols << std::endl;
     std::cout << (x2 * 12).t();
     dspm::Mat diff_b = x1 - x2;
-    std::cout << "Difference between solve() abd roots(): " << diff_b.t();
+    std::cout << "Difference between solve() and roots(): " << diff_b.t();
     for (int m = 0 ; m < diff_b.rows; m++) {
         for (int n = 0 ; n < diff_b.cols ; n++) {
             if (fabs(diff_b(m, n)) > 0.000001) {
@@ -210,7 +210,7 @@ TEST_CASE("Mat class operators", "[dspm]")
             result(m, n) = 1;
         }
     }
-    std::cout << "Befor normalize: " << std::endl;
+    std::cout << "Before normalize: " << std::endl;
     std::cout << result << std::endl;
     result.normalize();
     std::cout << "normalize: " << std::endl;
@@ -238,7 +238,7 @@ TEST_CASE("Mat class operators", "[dspm]")
     std::cout << "inverse: " << std::endl;
     std::cout << result << std::endl;
     for (int i = 0 ; i < 3 * 3 ; i++) {
-        if (std::abs(result.data[i] - m_result[i]) > 1e-4) {
+        if (std::abs(result.data[i] - m_result[i]) > (2 * 1e-4)) {
             printf("Error at[%i] = %f, expected= %f, calculated = %f \n", i, std::abs(result.data[i] - m_result[i]), m_result[i], result.data[i]);
             TEST_ASSERT_MESSAGE (false, "Error in inverse() operation!\n");
         }

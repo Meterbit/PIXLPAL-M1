@@ -26,7 +26,7 @@ crypto_kdf_hkdf_sha512_extract_final(crypto_kdf_hkdf_sha512_state *state,
                                      unsigned char prk[crypto_kdf_hkdf_sha512_KEYBYTES])
 {
     crypto_auth_hmacsha512_final(&state->st, prk);
-    sodium_memzero(state, sizeof state);
+    sodium_memzero(state, sizeof *state);
 
     return 0;
 }
@@ -115,4 +115,9 @@ size_t
 crypto_kdf_hkdf_sha512_bytes_max(void)
 {
     return crypto_kdf_hkdf_sha512_BYTES_MAX;
+}
+
+size_t crypto_kdf_hkdf_sha512_statebytes(void)
+{
+    return sizeof(crypto_kdf_hkdf_sha512_state);
 }

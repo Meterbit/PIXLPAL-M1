@@ -14,13 +14,14 @@ files:
 issues: https://github.com/espressif/esp-usb/issues
 repository: git://github.com/espressif/esp-usb.git
 repository_info:
-  commit_sha: 8add017b798aa7f36f2405a7f0a3ea0b79be36ea
+  commit_sha: 0deb8045caf6eadd18089bbcb9ae1aaa505f449e
   path: host/class/hid/usb_host_hid
 targets:
 - esp32s2
 - esp32s3
 - esp32p4
 - esp32h4
+- esp32s31
 - linux
 url: https://github.com/espressif/esp-usb/tree/master/host/class/hid/usb_host_hid
-version: 1.1.0
+version: 1.2.0

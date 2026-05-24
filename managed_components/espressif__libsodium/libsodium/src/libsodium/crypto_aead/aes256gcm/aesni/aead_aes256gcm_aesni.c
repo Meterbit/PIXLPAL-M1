@@ -16,9 +16,11 @@
 
 #if defined(HAVE_TMMINTRIN_H) && defined(HAVE_WMMINTRIN_H)
 
-#ifdef __GNUC__
-#pragma GCC target("avx,aes,pclmul")
-#endif
+# ifdef __clang__
+#  pragma clang attribute push(__attribute__((target("aes,avx,pclmul"))), apply_to = function)
+# elif defined(__GNUC__)
+#  pragma GCC target("aes,avx,pclmul")
+# endif
 
 #if !defined(_MSC_VER) || _MSC_VER < 1800
 #define __vectorcall
@@ -933,6 +935,7 @@ crypto_aead_aes256gcm_decrypt_detached_afternm(unsigned char *m, unsigned char *
         memset(m, 0xd0, m_len);
         return -1;
     }
+    ACQUIRE_FENCE;
     return 0;
 }
 
@@ -967,6 +970,7 @@ crypto_aead_aes256gcm_decrypt_detached(unsigned char *m, unsigned char *nsec,
                                        const unsigned char *k)
 {
     CRYPTO_ALIGN(16) crypto_aead_aes256gcm_state st;
+    int                                          ret;
 
     PREFETCH_WRITE(m);
     PREFETCH_READ(c);
@@ -974,8 +978,11 @@ crypto_aead_aes256gcm_decrypt_detached(unsigned char *m, unsigned char *nsec,
 
     crypto_aead_aes256gcm_beforenm(&st, k);
 
-    return crypto_aead_aes256gcm_decrypt_detached_afternm(
+    ret = crypto_aead_aes256gcm_decrypt_detached_afternm(
         m, nsec, c, clen, mac, ad, adlen, npub, (const crypto_aead_aes256gcm_state *) &st);
+    sodium_memzero(&st, sizeof st);
+
+    return ret;
 }
 
 int
@@ -1005,5 +1012,9 @@ crypto_aead_aes256gcm_is_available(void)
 {
     return sodium_runtime_has_pclmul() & sodium_runtime_has_aesni() & sodium_runtime_has_avx();
 }
+
+#ifdef __clang__
+# pragma clang attribute pop
+#endif
 
 #endif

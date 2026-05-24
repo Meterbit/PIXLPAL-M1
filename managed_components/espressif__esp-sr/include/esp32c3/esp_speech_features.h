@@ -8,8 +8,8 @@
 #define M_2PI 6.283185307179586476925286766559005
 #endif
 
-#define MAX(x, y) ((x) > (y) ? (x) : (y))
-#define MIN(x, y) ((x) < (y) ? (x) : (y))
+#define SR_MAX(x, y) ((x) > (y) ? (x) : (y))
+#define SR_MIN(x, y) ((x) < (y) ? (x) : (y))
 
 typedef struct {
     float *coeff;
