@@ -343,7 +343,7 @@ void fetchOutlookTasks(const String& accessToken) {
     const char *refreshToken = dCommand["refreshToken"];
     strcpy(userOutlookCal.refreshToken, refreshToken);
     mtb_Write_Nvs_Struct("outlookCalData", &userOutlookCal, sizeof(OutlookCal_Data_t));
-    do_beep(CLICK_BEEP);
+    mtb_Do_Beep(CLICK_BEEP);
     statusBarNotif.mtb_Scroll_This_Text("OUTLOOK CALENDAR LINK UPDATED. YOU MAY CLOSE THE BROWSER", GREEN_LIZARD);
   }
 

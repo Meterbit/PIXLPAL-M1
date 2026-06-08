@@ -41,7 +41,7 @@
     };
 
     struct Mtb_OnlineImage_t {          // Structure for online images to be downloaded from URL
-        char imageLink[300] = {0};
+        const char* imageLink = nullptr; // Must point to a string that outlives the download call (string literals are ideal)
         uint16_t xAxis = 0;
         uint16_t yAxis = 0;
         int8_t scale = 1;
@@ -82,7 +82,7 @@
     extern bool mtb_Draw_Multi_Png(size_t drawPNGsCount = 2, ImgWipeFn_ptr wipePreviousImgs = mtb_Do_Nothing_Void_Fn);                                          // Draw multiple pre-downloaded PNG images
 
     extern BaseType_t mtb_Draw_Local_Svg(const Mtb_LocalImage_t&);                                                                                          // Draw a local SVG image from SPIFFS
-    extern bool mtb_Draw_Online_Svg(const Mtb_OnlineImage_t* images, size_t drawSVGsCount = 1, ImgWipeFn_ptr wipePreviousImgs = mtb_Do_Nothing_Void_Fn);    // Draw an online SVG image from URL
+    extern bool mtb_Draw_Online_Svg(const Mtb_OnlineImage_t* images, size_t drawSVGsCount = 1, ImgWipeFn_ptr wipePreviousImgs = mtb_Do_Nothing_Void_Fn); 
     extern void mtb_Download_Multi_Svg(const Mtb_OnlineImage_t* images, size_t drawSVGsCount = 2);                                                              // Download multiple SVG images from URLs
     extern bool mtb_Draw_Multi_Svg(size_t drawSVGsCount = 2, ImgWipeFn_ptr wipePreviousImgs = mtb_Do_Nothing_Void_Fn);                                      // Draw multiple pre-downloaded SVG images
     
@@ -107,8 +107,6 @@
     // GRAPHICS PROCESSING FUNCTIONS
     extern uint16_t mtb_Panel_Color565(uint8_t r, uint8_t g, uint8_t b, uint16_t *color = nullptr);
     extern uint16_t mtb_Panel_Color32bit_To_Color565(const char* dartColor, uint16_t *color565 = nullptr);
-    extern void mtb_Panel_Draw_PixelRGB(int16_t x, int16_t y, uint8_t r, uint8_t g, uint8_t b);
-    extern void mtb_Panel_Draw_Pixel565(int16_t x, int16_t y, uint16_t color);
     extern void mtb_Panel_Draw_FrameRGB888(int16_t x, int16_t y, int16_t width, int16_t height, const uint8_t *data);
     extern void mtb_Panel_Draw_FrameRGB565(int16_t x, int16_t y, int16_t width, int16_t height, const uint16_t *data);
     extern void mtb_Panel_Draw_FullScreen_RGB565(uint16_t data[128][64]);
@@ -116,12 +114,15 @@
     extern void mtb_Panel_Set_Brightness(uint8_t brightness);
     extern void mtb_Panel_Fill_Screen(uint16_t color);
     extern void mtb_Panel_Clear_Screen(void);
+
+//  DIRECT USER GRAPHICS DRAW APIS
+    extern void mtb_Panel_Draw_PixelRGB(int16_t x, int16_t y, uint8_t r, uint8_t g, uint8_t b);
+    extern void mtb_Panel_Draw_Pixel565(int16_t x, int16_t y, uint16_t color);
+    extern void mtb_Panel_Draw_Line(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color);    
     extern void mtb_Panel_Draw_HLine(int16_t y, int16_t x1, int16_t x2, uint16_t color);
     extern void mtb_Panel_Draw_VLine(int16_t x, int16_t y1, int16_t y2, uint16_t color);
     extern void mtb_Panel_Draw_Rect(int16_t x1, int16_t y1, int16_t x2, int16_t y2,  uint16_t color);
     extern void mtb_Panel_Fill_Rect(int16_t x1, int16_t y1, int16_t x2, int16_t y2,  uint16_t color);
-    extern void mtb_Panel_Draw_Line(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color);
-    
     extern void mtb_Panel_Draw_Circle(int16_t x0, int16_t y0, int16_t r, uint16_t color);
     extern void mtb_Panel_Fill_Circle(int16_t x0, int16_t y0, int16_t r, uint16_t color);
     extern void mtb_Panel_Draw_Triangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color);

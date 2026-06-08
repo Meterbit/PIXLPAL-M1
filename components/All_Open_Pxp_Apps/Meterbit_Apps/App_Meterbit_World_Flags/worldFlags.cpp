@@ -70,21 +70,22 @@ while (THIS_APP_IS_ACTIVE == pdTRUE){
 
     while ((Mtb_Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
 
-        strcpy(large_Flag.imageLink, getFlag4x3ByCountry(worldFlagsInfo.countryName).c_str());
+        std::string flagUrl = getFlag4x3ByCountry(worldFlagsInfo.countryName);
+        large_Flag.imageLink = flagUrl.c_str();
         mtb_Draw_Online_Svg(&large_Flag, 1, wipeFlagBackground);
 
     while (THIS_APP_IS_ACTIVE == pdTRUE && Mtb_Applications::internetConnectStatus == true) {
         if (worldFlagsInfo.cycleAllFlags == true) {
             uint8_t changeLargeFlagIntv = worldFlagsInfo.flagChangeIntv;
             getRandomCountryAndFlag4x3(country, flagLink);
-            strcpy(large_Flag.imageLink, flagLink.c_str());
+            large_Flag.imageLink = flagLink.c_str();
             mtb_Draw_Online_Svg(&large_Flag, 1, wipeFlagBackground);
             while(changeLargeFlagIntv-->0 && THIS_APP_IS_ACTIVE == pdTRUE) delay(1000);
         } else delay(1000);
         if (worldFlagsInfo.showCountryName == true) {
             uint8_t changeSmallFlagIntv = 10;
             //uint8_t changeIntv = worldFlagsInfo.flagChangeIntv/2;
-            strcpy(small_Flag.imageLink, large_Flag.imageLink);
+            small_Flag.imageLink = large_Flag.imageLink;
             mtb_Draw_Online_Svg(&small_Flag, 1, wipeFlagBackground);
             dispCountryName.mtb_Write_Colored_Text(country.c_str(), WHITE, mtb_Panel_Color565(0, 0, 16));
             while(changeSmallFlagIntv-->0 && THIS_APP_IS_ACTIVE == pdTRUE) delay(1000);
@@ -134,8 +135,9 @@ void selectDisplayFlag(JsonDocument& dCommand){
     ESP_LOGI(TAG, "Select Country: %s \n", countryFlag);
     Mtb_OnlineImage_t imageHolder({"placeHolder", 16, 0, 1});
     strcpy(worldFlagsInfo.countryName, countryFlag);
-    strcpy(imageHolder.imageLink, getFlag4x3ByCountry(countryFlag).c_str());
-    mtb_Draw_Online_Svg(&imageHolder, 1, wipeFlagBackground); 
+    std::string flagUrl = getFlag4x3ByCountry(countryFlag);
+    imageHolder.imageLink = flagUrl.c_str();
+    mtb_Draw_Online_Svg(&imageHolder, 1, wipeFlagBackground);
     mtb_Write_Nvs_Struct("worldFlagsData", &worldFlagsInfo, sizeof(WorldFlags_Data_t));
 }
 

@@ -35,6 +35,7 @@ static const char cryptoSymbolsFilePath[] = "/crypto/dCrypto.csv";
 static const char cryptoIDsFilePath[] = "/crypto/dCryptoID.csv";
 
 EXT_RAM_BSS_ATTR TaskHandle_t cryptoStats_Task_H = NULL;
+
 void cryptoStats_App_Task(void *);
 void readCryptoSymbols(const char *filename, String coinSymbols[], int &count, const int maxSymbols);
 void buttonChangeDisplayCrypto(button_event_t button_Data);
@@ -66,7 +67,9 @@ void cryptoStats_App_Task(void* dApplication){
         "get free key @ https://coincap.io/api-key",
         30
     };
+
   mtb_Read_Nvs_Struct("cryptoCur", &currentCryptoCurrency, sizeof(Crypto_Stat_t));
+  
   if(changeDispCrypto_Sem == NULL) changeDispCrypto_Sem = xSemaphoreCreateBinary();
   if(cryptoChangeTimer_H == NULL) cryptoChangeTimer_H = xTimerCreate("cryptoIntvTim", pdMS_TO_TICKS(currentCryptoCurrency.cryptoChangeInterval>0 ? (currentCryptoCurrency.cryptoChangeInterval * 1000) : (30 * 1000)), true, NULL, crytoChange_TimerCallback);
   JsonDocument doc;

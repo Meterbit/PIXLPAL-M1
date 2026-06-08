@@ -12,6 +12,7 @@
 #include "mtb_graphics.h"
 #include "mtb_buzzer.h"
 #include "my_secret_keys.h"
+#include <array>
 
 #define FIXTURES_ENDPOINT 0
 #define STANDINGS_ENDPOINT 1
@@ -340,7 +341,7 @@ void processFituresMatches(SpiRamJsonDocument& doc, void* dApplication){
       liveFootballData.endpointType = LIVE_MATCHES_ENDPOINT;
       liveFootballPtr = processLiveMatches;
       liveFootballBackgroundPtr = drawLiveMatchesBackground;
-      do_beep(BEEP_1);
+      mtb_Do_Beep(BEEP_1);
       return;
     }
 
@@ -492,12 +493,12 @@ bool fetchLiveMatchTeamLogos(SpiRamJsonDocument& doc, size_t matchIndex) {
 
     if (countryHomeLink.length() && countryAwayLink.length()) {
 
-      strncpy(svgLogoBatch[0].imageLink, countryHomeLink.c_str(), sizeof(svgLogoBatch[0].imageLink));
+      svgLogoBatch[0].imageLink = countryHomeLink.c_str();
       svgLogoBatch[0].xAxis = 4;
       svgLogoBatch[0].yAxis = 12;
       svgLogoBatch[0].scale = 2;
 
-      strncpy(svgLogoBatch[1].imageLink, countryAwayLink.c_str(), sizeof(svgLogoBatch[1].imageLink));
+      svgLogoBatch[1].imageLink = countryAwayLink.c_str();
       svgLogoBatch[1].xAxis = 86;
       svgLogoBatch[1].yAxis = 12;
       svgLogoBatch[1].scale = 2;
@@ -508,12 +509,12 @@ bool fetchLiveMatchTeamLogos(SpiRamJsonDocument& doc, size_t matchIndex) {
     } else {
           ESP_LOGI(TAG, "Home and Away logos are both PNGs.\n");
 
-          strncpy(pnglogoBatch[0].imageLink, homeLogo, sizeof(pnglogoBatch[0].imageLink));
+          pnglogoBatch[0].imageLink = homeLogo;
           pnglogoBatch[0].xAxis = 6;
           pnglogoBatch[0].yAxis = 15;
           pnglogoBatch[0].scale = 5;
 
-          strncpy(pnglogoBatch[1].imageLink, awayLogo, sizeof(pnglogoBatch[1].imageLink));
+          pnglogoBatch[1].imageLink = awayLogo;
           pnglogoBatch[1].xAxis = 88;
           pnglogoBatch[1].yAxis = 15;
           pnglogoBatch[1].scale = 5;
@@ -558,37 +559,37 @@ bool fetchFixturesMatchTeamLogos(SpiRamJsonDocument& doc, size_t matchIndex) {
 
     if (countryHomeLink.length() && countryAwayLink.length()) {
 
-        strncpy(svgLogoBatch[0].imageLink, countryHomeLink.c_str(), sizeof(svgLogoBatch[0].imageLink));
+        svgLogoBatch[0].imageLink = countryHomeLink.c_str();
         svgLogoBatch[0].xAxis = 1;
         svgLogoBatch[0].yAxis = 22;
         svgLogoBatch[0].scale = 2;
 
-        strncpy(svgLogoBatch[1].imageLink, countryAwayLink.c_str(), sizeof(svgLogoBatch[1].imageLink));
+        svgLogoBatch[1].imageLink = countryAwayLink.c_str();
         svgLogoBatch[1].xAxis = 52;
         svgLogoBatch[1].yAxis = 22;
         svgLogoBatch[1].scale = 2;
 
-        mtb_Download_Multi_Svg(svgLogoBatch, 2);
-        mtb_Draw_Multi_Svg(2);
+        mtb_Download_Multi_Svg(svgLogoBatch, std::size(svgLogoBatch));
+        mtb_Draw_Multi_Svg(std::size(svgLogoBatch));
         return true;
     } else {
 
-        strncpy(pnglogoBatch[0].imageLink, homeLogo, sizeof(pnglogoBatch[0].imageLink));
+        pnglogoBatch[0].imageLink = homeLogo;
         pnglogoBatch[0].xAxis = 2;
         pnglogoBatch[0].yAxis = 22;
         pnglogoBatch[0].scale = 5;
 
-        strncpy(pnglogoBatch[1].imageLink, awayLogo, sizeof(pnglogoBatch[1].imageLink));
+        pnglogoBatch[1].imageLink = awayLogo;
         pnglogoBatch[1].xAxis = 53;
         pnglogoBatch[1].yAxis = 22;
         pnglogoBatch[1].scale = 5;
 
-        mtb_Download_Multi_Png(pnglogoBatch, 2);
-        mtb_Draw_Multi_Png(2, wipePrevFixturesLogos);
+        mtb_Download_Multi_Png(pnglogoBatch, std::size(pnglogoBatch));
+        mtb_Draw_Multi_Png(std::size(pnglogoBatch), wipePrevFixturesLogos);
         //if(matchIndex > 0) mtb_Draw_Multiple_Png(2, wipePrevFixturesLogos);
         //else mtb_Draw_Multiple_Png(2);
         return true;
-    } 
+    }
     
     statusBarNotif.mtb_Scroll_This_Text("Invalid logo format for match index: " + String(matchIndex), RED);
 

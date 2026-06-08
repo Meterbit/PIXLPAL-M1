@@ -224,7 +224,7 @@ while (checkMountAttempts-- > 0) {
         esp_err_t result = flash_bin_to_spiffs_partition(psramBuf, readBytes, "spiffs");
         if (result == ESP_OK){
            ESP_LOGI(TAG, "SPIFFS partition updated successfully");
-           do_beep(BEEP_1);
+           mtb_Do_Beep(BEEP_1);
         } 
         else ESP_LOGE(TAG, "Failed to update SPIFFS partition: %s", esp_err_to_name(result));
 
@@ -273,7 +273,7 @@ void startButton_USB_OTA_UPDATE (button_event_t button_Data){
 
             case BUTTON_PRESSED:
             Mtb_Applications::firmwareOTA_Status = 10;
-            do_beep(CLICK_BEEP);
+            mtb_Do_Beep(CLICK_BEEP);
             break;
 
             case BUTTON_PRESSED_LONG:
@@ -300,9 +300,9 @@ void startButton_USB_OTA_UPDATE (button_event_t button_Data){
 void startEncoder_USB_SPIFFS_UPDATE(rotary_encoder_rotation_t direction){
 if (direction == ROT_CLOCKWISE){
     Mtb_Applications::spiffsOTA_Status = 10;
-    do_beep(CLICK_BEEP);
+    mtb_Do_Beep(CLICK_BEEP);
 } else if(direction == ROT_COUNTERCLOCKWISE){
     Mtb_Applications::spiffsOTA_Status = 10;
-    do_beep(CLICK_BEEP);
+    mtb_Do_Beep(CLICK_BEEP);
 }
 }

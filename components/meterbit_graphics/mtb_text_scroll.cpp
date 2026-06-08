@@ -78,7 +78,7 @@ void Mtb_ScrollText_t::mtb_Scroll_String(TaskHandle_t& dAppTaskHandle){
 
     UBaseType_t uxNumberOfMessages;
 
-    if(beep) do_beep(beep,0);
+    if(beep) mtb_Do_Beep(beep,0);
 
     for (uint16_t b = 0; b < pass; b++){
         uxNumberOfMessages = uxQueueMessagesWaiting(scroll_Q[this->scrollTaskHandling]); //Know how many items are waiting to be processed.

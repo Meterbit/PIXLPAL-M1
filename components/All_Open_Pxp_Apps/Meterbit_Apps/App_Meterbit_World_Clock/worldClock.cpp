@@ -133,8 +133,8 @@ while (THIS_APP_IS_ACTIVE == pdTRUE){
 
       while ((Mtb_Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
       
-      strcpy(worldCountryFlag.imageLink, getFlag4x3ByCountry(worldClockCities.firstCountryName).c_str());
-
+      std::string flagUrl = getFlag4x3ByCountry(worldClockCities.firstCountryName);
+      worldCountryFlag.imageLink = flagUrl.c_str();
       mtb_Draw_Online_Svg(&worldCountryFlag);       // IF FLAG IS NOT DRAWN, IT MEANS THE NAME OF THE COUNTRY WAS NOT FOUND AMONG THE COUNTRIES FLAG LISTS/JSON.
 
       cacheTimezone(worldClockCities.worldTimeZones[0]);

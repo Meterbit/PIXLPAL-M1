@@ -233,7 +233,7 @@ public:
 class Mtb_Applications_FullScreen : public Mtb_Applications{            
     public:
         Mtb_Applications_FullScreen();
-        Mtb_Applications_FullScreen(void (*dApplication)(void *), TaskHandle_t *dAppHandle_ptr, const char *dAppName, Mtb_User_AppID_t applicationID, uint32_t dStackSize = 4096) : 
+        Mtb_Applications_FullScreen(void (*dApplication)(void *), TaskHandle_t *dAppHandle_ptr, const char *dAppName, Mtb_User_AppID_t applicationID = {11,1}, uint32_t dStackSize = 10240) : 
         Mtb_Applications(dApplication, dAppHandle_ptr, dAppName, applicationID, dStackSize, NO_STATUS_BAR) { 
             fullScreen = true;
         }
@@ -243,7 +243,7 @@ class Mtb_Applications_FullScreen : public Mtb_Applications{
 class Mtb_Applications_StatusBar : public Mtb_Applications{
     public:
         Mtb_Applications_StatusBar();
-        Mtb_Applications_StatusBar(void (*dApplication)(void *), TaskHandle_t *dAppHandle_ptr, const char *dAppName, Mtb_User_AppID_t applicationID, uint32_t dStackSize = 4096, Mtb_Status_Bar_t statusBarType = CLOCK_STATUS_BAR) : 
+        Mtb_Applications_StatusBar(void (*dApplication)(void *), TaskHandle_t *dAppHandle_ptr, const char *dAppName, Mtb_User_AppID_t applicationID = {11,1}, uint32_t dStackSize = 10240, Mtb_Status_Bar_t statusBarType = CLOCK_STATUS_BAR) : 
         Mtb_Applications(dApplication, dAppHandle_ptr, dAppName, applicationID, dStackSize, statusBarType) { 
             fullScreen = false;
         }
@@ -332,8 +332,11 @@ extern Mtb_Services* mtb_Status_Bar_Calendar_Sv;
 extern Mtb_Services* mtb_App_Cycling_Sv;
 
 // System Apps (registered manually — not user-configurable)
-extern Mtb_Applications_FullScreen* usbOTA_Update_App;          // App ID: 12/0
-extern Mtb_Applications_FullScreen* bleOTA_Update_App;          // App ID: 12/1
-extern Mtb_Applications_FullScreen* ghotaOTA_Check_Update_App;  // App ID: 12/2
-extern Mtb_Applications_FullScreen* ghotaOTA_Perform_Update_App;// App ID: 12/3
+extern Mtb_Applications_FullScreen* usbOTA_Update_App;              // App ID: 12/0
+extern Mtb_Applications_FullScreen* bleOTA_Update_App;              // App ID: 12/1
+extern Mtb_Applications_FullScreen* ghotaOTA_Check_Update_App;      // App ID: 12/2
+extern Mtb_Applications_FullScreen* ghotaOTA_Perform_Update_App;    // App ID: 12/3
+
+// Example Applications (registered manually — and also user-configurable)
+extern Mtb_Applications_FullScreen* exampleDesignMobileUI_App;      // App ID: 11/0    
 #endif

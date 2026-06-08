@@ -75,6 +75,8 @@ EXT_RAM_BSS_ATTR Mtb_PreloadedImage_t preloadedSVGs[MAX_SVG_IMAGES];
 volatile int preloadIndex = 0;
 volatile int downloadedPNGs = 0;
 volatile int downloadedSVGs = 0;
+volatile int drawnPNGs = 0;
+volatile int drawnSVGs = 0;
 SemaphoreHandle_t preloadIndexMutex = xSemaphoreCreateMutex();
 
 void mtb_Do_Nothing_Void_Fn(void){}
@@ -1264,18 +1266,16 @@ void drawDecodedPNG(Mtb_PreloadedImage_t& pImg) {
 
 void pngDownloaderWorker(void* param) {
     size_t drawPNGsCount = (size_t)param;
-	//log_i("PNG Downloader Worker started processing %d images", drawPNGsCount);
     while (true) {
         int myIndex;
 
-        // Atomically fetch next index
         xSemaphoreTake(preloadIndexMutex, portMAX_DELAY);
-        myIndex = preloadIndex++;
-        xSemaphoreGive(preloadIndexMutex);
-
-        if (myIndex >= drawPNGsCount) {
+        if (preloadIndex >= (int)drawPNGsCount) {
+            xSemaphoreGive(preloadIndexMutex);
             break;
         }
+        myIndex = preloadIndex++;
+        xSemaphoreGive(preloadIndexMutex);
 
         Mtb_PreloadedImage_t* img = &preloadedPNGs[myIndex];
         String mime;
@@ -1284,61 +1284,58 @@ void pngDownloaderWorker(void* param) {
         } else {
             img->failed = true;
         }
-		downloadedPNGs++;
+        downloadedPNGs++;
     }
-	
-	while(downloadedPNGs < drawPNGsCount)delay(10); // Wait for all images to be processed
-    //log_i("PNG Downloader Worker finished processing %d images", drawPNGsCount);
-    vTaskDelete(NULL);  // ✅ Frees stack after work
+
+    while (downloadedPNGs < (int)drawPNGsCount) delay(10);
+    vTaskDelete(NULL);
 }
 
 void pngDrawerWorker(void* param) {
     size_t drawPNGsCount = (size_t)param;
-	//log_i("PNG Drawer Worker started processing %d images", drawPNGsCount);
-	// Now decode & draw
-    for (int i = 0; i < drawPNGsCount; ++i){
+    for (size_t i = 0; i < drawPNGsCount; ++i) {
         if (preloadedPNGs[i].isReady) {
-			preloadedPNGs[i].isReady = false;
+            preloadedPNGs[i].isReady = false;
             drawDecodedPNG(preloadedPNGs[i]);
             free(preloadedPNGs[i].imageBuffer);
+            preloadedPNGs[i].imageBuffer = nullptr;
         }
+        drawnPNGs++;
     }
-	//log_i("PNG Drawer Worker finished processing %d images", drawPNGsCount);
-    vTaskDelete(NULL);  // ✅ Frees stack after work
+    vTaskDelete(NULL);
 }
 
 bool mtb_Draw_Multi_Png(size_t drawPNGsCount, ImgWipeFn_ptr wipePreviousImg) {
+    uint16_t imageDrawElapseTimer = 6000;
 
-	uint16_t imageDrawElapseTimer = 6000;
-	TaskHandle_t h = NULL;
-
-	while(downloadedPNGs < drawPNGsCount &&  imageDrawElapseTimer --> 0) delay(10); // Wait 1 minute for all images to be fetched from the internet
-	if (downloadedPNGs < drawPNGsCount){
-	ESP_LOGI(TAG,"Online PNG Download and Draw Timed-Out.\n");
-	return false;
-	} 
-	
-	wipePreviousImg();
-
-	    // Start download worker tasks (e.g. 2 workers)
-    for (int i = 0; i < drawPNGsCount; ++i) {
-        xTaskCreatePinnedToCore(pngDrawerWorker, "PNG IMG_DR", 4096, (void*)drawPNGsCount, 1, NULL, 1);
-				if (h == NULL) {
-			ESP_LOGE(TAG, "Failed to create PNG drawer worker task");
-			continue;
-		}
-		delay(1); // This delay is necessary to allow the task to start ahead of the next, so more than one task doesn't an image more than once.
+    while (downloadedPNGs < (int)drawPNGsCount && imageDrawElapseTimer-- > 0) delay(10);
+    if (downloadedPNGs < (int)drawPNGsCount) {
+        ESP_LOGI(TAG, "Online PNG Download and Draw Timed-Out.\n");
+        return false;
     }
 
-	downloadedPNGs = 0;
-	return true;
+    wipePreviousImg();
+
+    drawnPNGs = 0;
+    TaskHandle_t h = NULL;
+    xTaskCreatePinnedToCore(pngDrawerWorker, "PNG IMG_DR", 4096, (void*)drawPNGsCount, 1, &h, 1);
+    if (h == NULL) {
+        ESP_LOGE(TAG, "Failed to create PNG drawer worker task");
+        downloadedPNGs = 0;
+        return false;
+    }
+
+    uint16_t drawElapseTimer = 6000;
+    while (drawnPNGs < (int)drawPNGsCount && drawElapseTimer-- > 0) delay(10);
+    downloadedPNGs = 0;
+    return drawnPNGs >= (int)drawPNGsCount;
 }
 
 void mtb_Download_Multi_Png(const Mtb_OnlineImage_t* images, size_t count) {
     if (count > MAX_PNG_IMAGES) count = MAX_PNG_IMAGES;
-	preloadIndex = 0;
+    preloadIndex = 0;
+    downloadedPNGs = 0;
 
-    // Prepare preload structures
     for (size_t i = 0; i < count; i++) {
         preloadedPNGs[i].meta = images[i];
         preloadedPNGs[i].imageBuffer = nullptr;
@@ -1347,8 +1344,8 @@ void mtb_Download_Multi_Png(const Mtb_OnlineImage_t* images, size_t count) {
         preloadedPNGs[i].failed = false;
     }
 
-    // Start download worker tasks (e.g. 2 workers)
-    for (int i = 0; i < 2; ++i) {
+    size_t workerCount = count < 2 ? count : 2;
+    for (size_t i = 0; i < workerCount; ++i) {
         xTaskCreatePinnedToCore(pngDownloaderWorker, "IMG_DL", 8192, (void*)count, 1, NULL, 1);
     }
 }
@@ -1439,46 +1436,43 @@ void svgDownloaderWorker(void* param) {
 }
 
 void svgDrawerWorker(void* param) {
-	// param is a pointer to StaticTaskParams which carries stack/tcb ptrs
-	size_t* args = (size_t*)param;
-	size_t drawSVGsCount = args ? *args : 0;
-	//log_i("SVG Drawer Worker started processing %d images", drawSVGsCount);
-	// Now decode & draw
-	for (int i = 0; i < drawSVGsCount; ++i){
-		if (preloadedSVGs[i].isReady) {
-			preloadedSVGs[i].isReady = false;
-			drawDecodedSVG(preloadedSVGs[i]);
-			free(preloadedSVGs[i].imageBuffer);
-		}
-	}
-	//log_i("SVG Drawer Worker finished processing %d images", drawSVGsCount);
-	vTaskDelete(NULL);  // ✅ Frees stack after work (actual memory freed asynchronously)
+    size_t drawSVGsCount = (size_t)param;
+    for (size_t i = 0; i < drawSVGsCount; ++i) {
+        if (preloadedSVGs[i].isReady) {
+            preloadedSVGs[i].isReady = false;
+            drawDecodedSVG(preloadedSVGs[i]);
+            free(preloadedSVGs[i].imageBuffer);
+            preloadedSVGs[i].imageBuffer = nullptr;
+        }
+        drawnSVGs++;
+    }
+    vTaskDelete(NULL);
 }
 
 bool mtb_Draw_Multi_Svg(size_t drawSVGsCount, ImgWipeFn_ptr wipePreviousImg) {
-	uint16_t imageDrawElapseTimer = 6000;
-	TaskHandle_t h = NULL;
+    uint16_t imageDrawElapseTimer = 6000;
 
-	while(downloadedSVGs < drawSVGsCount &&  imageDrawElapseTimer --> 0) delay(10); // Wait 1 minute for all images to be fetched from the internet
-	if (downloadedSVGs < drawSVGsCount){
-		ESP_LOGI(TAG,"Online SVG Download and Draw Timed-Out.\n");
-		return false;
-	} 
-
-	wipePreviousImg();
-
-	    // Start download worker tasks (e.g. 2 workers)
-    for (int i = 0; i < drawSVGsCount; ++i) {
-		xTaskCreatePinnedToCore(svgDrawerWorker, "SVG IMG_DR", 4096, &drawSVGsCount, 1, &h, 1);
-		if (h == NULL) {
-			ESP_LOGE(TAG, "Failed to create SVG drawer worker task");
-			continue;
-		}
-		delay(1); // This delay is necessary to allow one task start ahead of the next, so two or more tasks doesn't draw the same image at the same time.
+    while (downloadedSVGs < (int)drawSVGsCount && imageDrawElapseTimer-- > 0) delay(10);
+    if (downloadedSVGs < (int)drawSVGsCount) {
+        ESP_LOGI(TAG, "Online SVG Download and Draw Timed-Out.\n");
+        return false;
     }
 
-	downloadedSVGs = 0;
-	return true;
+    wipePreviousImg();
+
+    drawnSVGs = 0;
+    TaskHandle_t h = NULL;
+    xTaskCreatePinnedToCore(svgDrawerWorker, "SVG IMG_DR", 4096, (void*)drawSVGsCount, 1, &h, 1);
+    if (h == NULL) {
+        ESP_LOGE(TAG, "Failed to create SVG drawer worker task");
+        downloadedSVGs = 0;
+        return false;
+    }
+
+    uint16_t drawElapseTimer = 6000;
+    while (drawnSVGs < (int)drawSVGsCount && drawElapseTimer-- > 0) delay(10);
+    downloadedSVGs = 0;
+    return drawnSVGs >= (int)drawSVGsCount;
 }
 
 void mtb_Download_Multi_Svg(const Mtb_OnlineImage_t* images, size_t count) {
@@ -1494,7 +1488,8 @@ void mtb_Download_Multi_Svg(const Mtb_OnlineImage_t* images, size_t count) {
         preloadedSVGs[i].failed = false;
     }
 
-    for (int i = 0; i < 2; ++i) {
+    size_t workerCount = count < 2 ? count : 2;
+    for (size_t i = 0; i < workerCount; ++i) {
         xTaskCreatePinnedToCore(svgDownloaderWorker, "SVG_DL", 8192, (void*)count, 3, NULL, 0);
     }
 }

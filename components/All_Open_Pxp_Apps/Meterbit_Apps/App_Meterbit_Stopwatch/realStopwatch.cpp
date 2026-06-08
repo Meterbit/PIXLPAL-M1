@@ -88,14 +88,14 @@ if (direction == ROT_CLOCKWISE){
     // mtb_Panel_Set_Brightness(panelBrightness); // 0-255
     // mtb_Write_Nvs_Struct("pan_brghnss", &panelBrightness, sizeof(uint8_t));
     // }
-    // if(panelBrightness >= 255) do_beep(CLICK_BEEP);
+    // if(panelBrightness >= 255) mtb_Do_Beep(CLICK_BEEP);
 } else if(direction == ROT_COUNTERCLOCKWISE){
     // if(panelBrightness >= 7){
     // panelBrightness -= 5;
     // mtb_Panel_Set_Brightness(panelBrightness); //0-255
     // mtb_Write_Nvs_Struct("pan_brghnss", &panelBrightness, sizeof(uint8_t));
     // }
-    // if(panelBrightness <= 6) do_beep(CLICK_BEEP);
+    // if(panelBrightness <= 6) mtb_Do_Beep(CLICK_BEEP);
 }
 }
 

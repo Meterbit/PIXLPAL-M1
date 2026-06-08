@@ -11,12 +11,7 @@ void exampleEncoderBeepApp_Task(void *dApplication);
 void exampleAppButtonFn(button_event_t button_Data);
 void exampleAppEncoderFn(rotary_encoder_rotation_t direction);
 
-EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *exampleEncoderBeep_App;
-Mtb_Applications* exampleEncoderBeep_App_GetInstance() {
-    if (!exampleEncoderBeep_App) exampleEncoderBeep_App = new Mtb_Applications_StatusBar(exampleEncoderBeepApp_Task, &exampleEncoderBeepApp_Task_H, "exampleEncoderBeepApp", {11,2}, 4096);
-    return exampleEncoderBeep_App;
-}
-MTB_REGISTER_APP(exampleEncoderBeep_App, 11, 2)
+EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *exampleEncoderBeep_App = new Mtb_Applications_FullScreen(exampleEncoderBeepApp_Task, &exampleEncoderBeepApp_Task_H, "exampleEncoderBeepApp");
 
 void exampleEncoderBeepApp_Task(void* dApplication){
 // ****** Initialize the App Parameters
@@ -29,12 +24,14 @@ void exampleEncoderBeepApp_Task(void* dApplication){
 Mtb_FixedText_t exampleFixedText(2,30, Terminal6x8, GREEN);
 
 // Write Fixed Text to display
-exampleFixedText.mtb_Write_String("Encoder and Buzzer App");
+exampleFixedText.mtb_Write_String("Encoder & Buzzer App");
+
+mtb_Do_Beep(BEEP_0);
 
 while (THIS_APP_IS_ACTIVE == pdTRUE) {
 // Scroll the ScrollText Variable on display every 15 seconds
 ESP_LOGI(TAG, "Use the Rotary Encoder to Rotate or Press the Button");
-delay(5000);
+delay(15000);
 }
 
 // Clean up the application before exiting
@@ -44,26 +41,29 @@ delay(5000);
 // ROTARY ENCODER CALLBACK FUNCTION
 void exampleAppEncoderFn(rotary_encoder_rotation_t direction){
     if (direction == ROT_CLOCKWISE){
-    do_beep(CLICK_BEEP);
+    mtb_Do_Beep(CLICK_BEEP);
+    mtb_Set_Status_RGB_LED(PURPLE);
+    printf("Clockwise\n");
     } else if(direction == ROT_COUNTERCLOCKWISE){
-    do_beep(CLICK_BEEP);
+    mtb_Do_Beep(CLICK_BEEP);
+    mtb_Set_Status_RGB_LED(GREEN);
+    printf("Counter Clockwise\n");
     }
 }
-
 
 // BUTTON CALLBACK FUNCTION
 void exampleAppButtonFn(button_event_t button_Data){
             switch (button_Data.type){
             case BUTTON_RELEASED:
-            //do_beep(BEEP_0);
+            //mtb_Do_Beep(BEEP_0);
             break;
 
             case BUTTON_PRESSED:
-            do_beep(BEEP_0);
+            mtb_Do_Beep(BEEP_0);
             break;
 
             case BUTTON_PRESSED_LONG:
-            do_beep(BEEP_1);
+            mtb_Do_Beep(BEEP_1);
             break;
 
             case BUTTON_CLICKED:
@@ -72,10 +72,10 @@ void exampleAppButtonFn(button_event_t button_Data){
             case 1:
                 break;
             case 2:
-            do_beep(BEEP_2);
-                break;
+            mtb_Do_Beep(BEEP_2);
+            break;
             case 3:
-            do_beep(BEEP_3);
+            mtb_Do_Beep(BEEP_3);
                 break;
             default:
                 break;

@@ -347,7 +347,7 @@ void fetchTasks(const String& accessToken) {
     const char *refreshToken = dCommand["refreshToken"];
     strcpy(userGoogleCal.refreshToken, refreshToken);
     mtb_Write_Nvs_Struct("googleCalData", &userGoogleCal, sizeof(GoogleCal_Data_t));
-    do_beep(CLICK_BEEP);
+    mtb_Do_Beep(CLICK_BEEP);
     statusBarNotif.mtb_Scroll_This_Text("GOOGLE CALENDAR LINK UPDATED. YOU MAY CLOSE THE BROWSER", GREEN_LIZARD);
   }
 

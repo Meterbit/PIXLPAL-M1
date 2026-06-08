@@ -358,7 +358,7 @@ void mtb_Brightness_Control(rotary_encoder_rotation_t direction){
         mtb_Set_Status_RGB_LED(currentStatusLEDcolor);
         mtb_Write_Nvs_Struct("pan_brghnss", &panelBrightness, sizeof(uint8_t));
         }
-        if(panelBrightness >= 255) do_beep(CLICK_BEEP);
+        if(panelBrightness >= 255) mtb_Do_Beep(CLICK_BEEP);
     } else if(direction == ROT_COUNTERCLOCKWISE){
         if(panelBrightness >= 7){
         panelBrightness -= 5;
@@ -366,7 +366,7 @@ void mtb_Brightness_Control(rotary_encoder_rotation_t direction){
         mtb_Set_Status_RGB_LED(currentStatusLEDcolor);
         mtb_Write_Nvs_Struct("pan_brghnss", &panelBrightness, sizeof(uint8_t));
         }
-        if(panelBrightness <= 6) do_beep(CLICK_BEEP);
+        if(panelBrightness <= 6) mtb_Do_Beep(CLICK_BEEP);
     }
 }
 
@@ -376,13 +376,13 @@ if (direction == ROT_CLOCKWISE){
     ++deviceVolume;
     if(audio != nullptr) audio->setVolume(deviceVolume);
     mtb_Write_Nvs_Struct("dev_Volume", &deviceVolume, sizeof(uint8_t));
-    } else if(deviceVolume >= 21) do_beep(CLICK_BEEP);
+    } else if(deviceVolume >= 21) mtb_Do_Beep(CLICK_BEEP);
     } else if(direction == ROT_COUNTERCLOCKWISE){
     if(deviceVolume >= 1){
     --deviceVolume;
     if(audio != nullptr) audio->setVolume(deviceVolume);
     mtb_Write_Nvs_Struct("dev_Volume", &deviceVolume, sizeof(uint8_t));
-    } else if(deviceVolume <= 0) do_beep(CLICK_BEEP);
+    } else if(deviceVolume <= 0) mtb_Do_Beep(CLICK_BEEP);
     }
     //ESP_LOGI(TAG, "Device Volume is: %d\n", deviceVolume);
 }

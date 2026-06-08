@@ -34,7 +34,7 @@ idf_component_register(
                     App_Meterbit_World_Flags
 
 ################    Example App Placed Here for UI Testing and Development
-                    App_Example_Design_Mobile_UI  
+                    App_Example_Design_Mobile_UI
                     )
 
 

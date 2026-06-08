@@ -59,7 +59,7 @@ String semver_t_ToString(const semver_t &version);
             // ESP_LOGI(TAG, "No new Update available from Ghota.\n");
         }
         else if (id == GHOTA_EVENT_START_UPDATE){
-            do_beep(CLICK_BEEP);
+            mtb_Do_Beep(CLICK_BEEP);
             Mtb_Applications::appDestroy(Mtb_Applications::currentRunningApp);
             ghotaOTA_Check_Update_App->mtb_App_Init();
             if(litFS_Ready) mtb_Draw_Local_Png({"/batIcons/otaStatus.png", 0, 0});
@@ -162,7 +162,7 @@ void ghota_Check_Update_Task(void* dApplication){
             ESP_LOGI(TAG, "Latest version: %d.%d.%d", latest->major, latest->minor, latest->patch);
             if (semver_gt(*latest, *cur) == 1) {
                 statusBarNotif.mtb_Scroll_This_Text("NEW UPDATE AVAILABLE. INSTALL VIA MOBILE APP.", YELLOW);
-                do_beep(BEEP_1);
+                mtb_Do_Beep(BEEP_1);
             } else if (semver_eq(*latest, *cur) == 1) {
                 statusBarNotif.mtb_Scroll_This_Text("SOFTWARE UPDATE CHECK COMPLETED.   NO NEW UPDATE FOUND.", MAGENTA);
             }

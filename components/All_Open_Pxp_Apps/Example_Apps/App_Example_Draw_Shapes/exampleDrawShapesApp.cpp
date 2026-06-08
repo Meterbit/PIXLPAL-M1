@@ -5,13 +5,7 @@
 EXT_RAM_BSS_ATTR TaskHandle_t exampleDrawShapeApp_Task_H = NULL;
 void exampleDrawShapeApp_Task(void *dApplication);
 
-EXT_RAM_BSS_ATTR Mtb_Applications_StatusBar *exampleDrawShapes_App;
-Mtb_Applications* exampleDrawShapes_App_GetInstance() {
-    if (!exampleDrawShapes_App) exampleDrawShapes_App = new Mtb_Applications_StatusBar(exampleDrawShapeApp_Task, &exampleDrawShapeApp_Task_H, "exampleDrawShapeApp", {11,3}, 4096);
-    return exampleDrawShapes_App;
-}
-
-MTB_REGISTER_APP(exampleDrawShapes_App, 11, 3)
+EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *exampleDrawShapes_App = new Mtb_Applications_FullScreen(exampleDrawShapeApp_Task, &exampleDrawShapeApp_Task_H, "exampleDrawShapeApp");
 
 void exampleDrawShapeApp_Task(void* dApplication){
 // ****** Initialize the App Parameters
@@ -19,6 +13,7 @@ void exampleDrawShapeApp_Task(void* dApplication){
   THIS_APP->mtb_App_Init();
 // End of App parameter initialization
 
+// Clear the screen before drawing shapes
 mtb_Panel_Clear_Screen();
 
 mtb_Panel_Draw_Pixel565(21, 36, WHITE); // Draw a single pixel
@@ -41,7 +36,7 @@ mtb_Panel_Draw_Round_Rect(94, 16, 30, 40, 5, PINK);
 while (THIS_APP_IS_ACTIVE == pdTRUE) {
 ESP_LOGI("ExampleDrawShapesApp", "Shapes drawn on the display.");
 
-delay(15000);
+delay(1000);
 }
 
 // Clean up the application before exiting
