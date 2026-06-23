@@ -32,6 +32,7 @@ idf_component_register(
                     App_Meterbit_StudioLight
                     App_Meterbit_World_Clock   
                     App_Meterbit_World_Flags
+                    App_Meterbit_Digital_Art
 
 ################    Example App Placed Here for UI Testing and Development
                     App_Example_Design_Mobile_UI
