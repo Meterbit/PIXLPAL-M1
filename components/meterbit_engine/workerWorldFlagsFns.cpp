@@ -1,3 +1,12 @@
+/**
+ * @file workerWorldFlagsFns.cpp
+ * @brief PSRAM-backed world-countries dataset: parse, shuffle, and access implementation.
+ *
+ * Parses jsonWorldCountries (a JSON array of {name, flag_4x3} objects) into a
+ * PSRAM-allocated std::vector<Country> on first call, then maintains a shuffled index
+ * for uniform random access without repetition. Uses EspRandomEngine (backed by
+ * esp_random()) for hardware-seeded shuffling.
+ */
 // workerWorldFlagsFns.cpp  (definitions + state)
 
 #include <ArduinoJson.h>

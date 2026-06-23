@@ -1,3 +1,12 @@
+/**
+ * @file mtb_ota.cpp
+ * @brief GitHub-hosted OTA firmware update implementation using esp_ghota.
+ *
+ * Implements ghota_Check_Update_Task (compares current vs. latest semver tag) and
+ * ghota_Perform_Update_Task (downloads and flashes the binary). A static
+ * ghota_event_callback handles progress events and drives the on-screen update UI.
+ * The device reboots automatically on GHOTA_EVENT_PENDING_REBOOT.
+ */
 #include <stdlib.h>
 #include <string.h>
 #include <freertos/FreeRTOS.h>
@@ -95,8 +104,8 @@ String semver_t_ToString(const semver_t &version);
         }
         // else if (id == GHOTA_EVENT_START_STORAGE_UPDATE){
         //     mtb_LittleFS_DeInit();
-        //     otaUpdateTextTop->mtb_Write_Colored_Text("STORAGE UPDATE", MAGENTA);
-        //     otaUpdateTextBot->mtb_Write_Colored_Text("IN PROGRESS:", MAGENTA);
+        //     otaUpdateTextTop->mtb_Write_Colored_String("STORAGE UPDATE", MAGENTA);
+        //     otaUpdateTextBot->mtb_Write_Colored_String("IN PROGRESS:", MAGENTA);
         //     otaUpdateTextBar->mtb_Write_String("0%");
         //     ESP_LOGI(TAG, "Storage Update Started\n");
         // }
@@ -120,10 +129,10 @@ String semver_t_ToString(const semver_t &version);
         //     ESP_LOGI(TAG, "Storage Update Failed\n");
         // }
         else if (id == GHOTA_EVENT_PENDING_REBOOT){
-            if(otaUpdateTextTop) otaUpdateTextTop->mtb_Write_Colored_Text("DEVICE UPDATED", CYAN);
+            if(otaUpdateTextTop) otaUpdateTextTop->mtb_Write_Colored_String("DEVICE UPDATED", CYAN);
             Mtb_LocalImage_t wipeUpdtBar_Icon {"/batIcons/wipeUpdtBar.png", 0, 53};
             mtb_Draw_Local_Png(wipeUpdtBar_Icon);
-            if(otaUpdateTextBot) otaUpdateTextBot->mtb_Write_Colored_Text("SUCCESSFULLY", CYAN);
+            if(otaUpdateTextBot) otaUpdateTextBot->mtb_Write_Colored_String("SUCCESSFULLY", CYAN);
             ESP_LOGI(TAG, "Ghota Pending Reboot.\n");
         }
         (void)client;

@@ -1,3 +1,11 @@
+/**
+ * @file mtb_status_bar_calendar.cpp
+ * @brief Status-bar calendar service — updates the weekday and date display.
+ *
+ * Implements mtb_StatusBar_Calendar_Task, a FreeRTOS service that reads localtime
+ * on each loop tick and redraws the weekday name and day/month string whenever the
+ * calendar day changes. Depends on NTP synchronisation via mtb_ntp.
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>

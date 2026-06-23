@@ -1,3 +1,9 @@
+/**
+ * @file mtb_buzzer.cpp
+ * @brief Piezo buzzer driver task and beep pattern implementation.
+ * Implements buzzer_Beep() (FreeRTOS task that drives the LEDC PWM channel on
+ * ALM_BUZZER GPIO 48) and mtb_Do_Beep() (the ISR-safe caller API).
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include "driver/gpio.h"

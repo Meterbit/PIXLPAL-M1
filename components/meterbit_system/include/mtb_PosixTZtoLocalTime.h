@@ -1,5 +1,5 @@
 /**
- * @file TimezoneParser.h
+ * @file mtb_PosixTZtoLocalTime.h
  * @brief POSIX Timezone String Parser and Local Time Calculator
  * 
  * Parses POSIX TZ strings and calculates local time without using setenv().

@@ -1,3 +1,11 @@
+/**
+ * @file mtb_status_bar_clock.cpp
+ * @brief Status-bar clock service — updates the HH:MM time display every second.
+ *
+ * Implements mtb_StatusBar_Clock_Task, a FreeRTOS service that reads localtime on each
+ * loop tick and redraws the hours:minutes string when the minute (or second) changes.
+ * The colour scheme is loaded from NVS on start and applied to the Mtb_FixedText_t widget.
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>

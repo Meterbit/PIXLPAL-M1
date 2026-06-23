@@ -1,3 +1,12 @@
+/**
+ * @file mtb_ble_ota.cpp
+ * @brief BLE OTA firmware update service implementation.
+ *
+ * Implements the NimBLE GATT OTA service registered via mtb_Ble_Ota_Init(). Handles
+ * START (sets partition, calls esp_ota_begin), raw data chunks (esp_ota_write), and
+ * COMPLETE (validates CRC, calls esp_ota_end + esp_ota_set_boot_partition, reboots).
+ * Status codes are notified back to the client on the control characteristic.
+ */
 #include "mtb_ble_ota.h"
 #include "esp_log.h"
 #include "esp_ota_ops.h"

@@ -1,4 +1,13 @@
 
+/**
+ * @file mtb_audio.cpp
+ * @brief Implementation of the PIXLPAL-M1 audio subsystem.
+ *
+ * Implements the MTB_Audio playback class, dual-pipeline FreeRTOS tasks for I2S DAC
+ * output (audio_Out_Processing_Task) and I2S microphone capture (audio_In_Processing_Task),
+ * USB Audio Class (UAC) speaker support via the ESP-IDF uac_host driver, the arduinoFFT
+ * spectrum visualiser loop, and all init / de-init helpers declared in mtb_audio.h.
+ */
 #include "stdlib.h"
 #include "stdio.h"
 #include "arduinoFFT.h"

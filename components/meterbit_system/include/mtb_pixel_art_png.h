@@ -1,3 +1,13 @@
+/**
+ * @file mtb_pixel_art_png.h
+ * @brief Inline JSON catalog of pixel-art PNG filenames stored on GitHub.
+ *
+ * Defines `json_Github_Pixel_Art_Pngs`, a `const char*` R-string literal containing
+ * a JSON object with a single "names" array of PNG filenames. These filenames
+ * correspond to 128×64 pixel-art images hosted in the project's GitHub release
+ * assets and are downloaded on demand by the World-Pixel-Art app. The list is
+ * embedded at compile time to avoid a secondary network lookup for the index.
+ */
 #ifndef GITHUB_PIXEL_ARTS_JSON
 #define GITHUB_PIXEL_ARTS_JSON
 

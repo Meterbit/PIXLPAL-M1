@@ -1,3 +1,9 @@
+/**
+ * @file mtb_text_scroll.cpp
+ * @brief Implementation of the horizontal text scroll subsystem.
+ * Defines the scroll task pool, pixel buffer allocations, Mtb_ScrollText_t
+ * constructors and methods, and the status-bar notification scroll object.
+ */
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -1,3 +1,10 @@
+/**
+ * @file mtb_littleFs.cpp
+ * @brief LittleFS mount/unmount implementation and file-size helper.
+ * Implements mtb_LittleFS_Init() and mtb_LittleFS_DeInit() using the
+ * esp_vfs_littlefs_register / esp_vfs_littlefs_unregister ESP-IDF APIs,
+ * and fsize() which seeks to the file end to measure its byte length.
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include "freertos/FreeRTOS.h"

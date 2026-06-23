@@ -5,6 +5,8 @@
 EXT_RAM_BSS_ATTR TaskHandle_t exampleWriteTextApp_Task_H = NULL;
 void exampleWriteTextApp_Task(void *dApplication);
 
+EXT_RAM_BSS_ATTR Mtb_FixedText_t* exampleFixedText = nullptr;
+
 EXT_RAM_BSS_ATTR Mtb_Applications_FullScreen *exampleWriteText_App = new Mtb_Applications_FullScreen(exampleWriteTextApp_Task, &exampleWriteTextApp_Task_H, "exampleWriteTextApp");
 
 void exampleWriteTextApp_Task(void* dApplication){
@@ -15,25 +17,30 @@ void exampleWriteTextApp_Task(void* dApplication){
 
 // *****************************************************************************************************************************
 
+  exampleFixedText = new Mtb_FixedText_t(5, 5, Terminal6x8, WHITE, PURPLE);
 // Declare Fixed and Scroll Text Variables
-  Mtb_FixedText_t exampleFixedText(5,5, Terminal8x12, GREEN);
-  Mtb_ScrollText_t exampleScrollText(5, 40, 118, Terminal6x8, WHITE, 20, 1);
-  Mtb_CentreText_t exampleCentreText(64, 25, Terminal8x12, YELLOW);
+  
+  // Mtb_ScrollText_t exampleScrollText(5, 40, 118, Terminal6x8, WHITE, 20, 1);
+  // Mtb_CentreText_t exampleCentreText(64, 25, Terminal8x12, YELLOW);
 
 // Write Fixed Text to display
-  exampleFixedText.mtb_Write_String("Hello World."); // Write text in default color
-//exampleFixedText.mtb_Write_Colored_Text(" in Color!", PURPLE);     // Write text in different color
-  exampleCentreText.mtb_Write_String("Welcome!"); // Write text in default color
+  exampleFixedText->mtb_Write_String("Sweet Field."); // Write text in default color
+  delay(5000);
+  exampleFixedText->mtb_Write_String("Hello World.");
+  delay(5000);
+  exampleFixedText->mtb_Write_Colored_String("Welcome 2 Pixlpal!", CYAN, YELLOW); // Write text in different color
+  // exampleCentreText.mtb_Write_String("Welcome!"); // Write text in default color
   while (THIS_APP_IS_ACTIVE == pdTRUE) {
 
 // Scroll the ScrollText Variable on display every 15 seconds
-  exampleScrollText.mtb_Scroll_This_Text("PIXLPAL - A project by Meterbit Cybernetics");      // Scroll text in default color
-  exampleScrollText.mtb_Scroll_This_Text("Visit us at www.meterbitcyb.com", CYAN);          // Scroll text in different color
+  // exampleScrollText.mtb_Scroll_This_Text("PIXLPAL - A project by Meterbit Cybernetics");      // Scroll text in default color
+  // exampleScrollText.mtb_Scroll_This_Text("Visit us at www.meterbitcyb.com", CYAN);          // Scroll text in different color
   
   delay(15000);
 }
 
-// Clean up the application before exiting
+  delete exampleFixedText;
+
   mtb_Delete_This_App(THIS_APP);
 }
 

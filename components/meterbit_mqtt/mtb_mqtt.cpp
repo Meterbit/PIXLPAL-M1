@@ -1,3 +1,11 @@
+/**
+ * @file mtb_mqtt.cpp
+ * @brief MQTT client task implementation using PicoMQTT.
+ *
+ * Runs a single FreeRTOS service task (mqtt_Client_Task) that drives the PicoMQTT event
+ * loop. On connect, displays the MQTT status icon and enables internet-dependent features;
+ * on disconnect, hides the icon and clears the internet-connected flag.
+ */
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"

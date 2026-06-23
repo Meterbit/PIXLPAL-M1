@@ -1,3 +1,9 @@
+/**
+ * @file mtb_system.cpp
+ * @brief System power management and hardware initialisation implementation.
+ * Implements mtb_System_Init() (full boot sequence), device_SD_RS() (shutdown/restart),
+ * and mtb_RotaryEncoder_Init() (encoder GPIO + ISR setup) declared in mtb_system.h.
+ */
 #include <stdio.h>
 #include <driver/gpio.h>
 #include "freertos/FreeRTOS.h"

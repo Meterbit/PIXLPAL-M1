@@ -1,3 +1,10 @@
+/**
+ * @file mtb_graphics.cpp
+ * @brief Implementation of the PIXLPAL-M1 graphics subsystem.
+ * Implements all image rendering (PNG, SVG, GIF), primitive draw operations,
+ * text widget rendering, status-bar management, RGB LED control, and the
+ * HUB75 DMA driver initialisation wrappers declared in mtb_graphics.h.
+ */
 #include <stdio.h>
 #include <string.h>
 #include "driver/gpio.h"
@@ -785,22 +792,22 @@ uint16_t Mtb_Static_Text_t::mtb_Write_String(String myString){
 	return mtb_Write_String(myString.c_str());
 }
 //**************************************************************************************
-uint16_t Mtb_FixedText_t::mtb_Write_Colored_Text(const char *myString, uint16_t dColor){
+uint16_t Mtb_FixedText_t::mtb_Write_Colored_String(const char *myString, uint16_t dColor){
 	color = dColor;
 	return mtb_Write_String(myString);
 }
-uint16_t Mtb_FixedText_t::mtb_Write_Colored_Text(String myString, uint16_t dColor){
+uint16_t Mtb_FixedText_t::mtb_Write_Colored_String(String myString, uint16_t dColor){
 	color = dColor;
 	return mtb_Write_String(myString);
 }
 //**************************************************************************************
-uint16_t Mtb_FixedText_t::mtb_Write_Colored_Text(const char *myString, uint16_t dColor, uint16_t dBackgroundColor){
+uint16_t Mtb_FixedText_t::mtb_Write_Colored_String(const char *myString, uint16_t dColor, uint16_t dBackgroundColor){
 	color = dColor;
 	backgroundColor = dBackgroundColor;
 	return mtb_Write_String(myString);
 }
 
-uint16_t Mtb_FixedText_t::mtb_Write_Colored_Text(String myString, uint16_t dColor, uint16_t dBackgroundColor){
+uint16_t Mtb_FixedText_t::mtb_Write_Colored_String(String myString, uint16_t dColor, uint16_t dBackgroundColor){
 	color = dColor;
 	backgroundColor = dBackgroundColor;
 	return mtb_Write_String(myString);
@@ -858,7 +865,7 @@ uint16_t Mtb_CentreText_t::mtb_Write_String(String myString)
 	return Mtb_FixedText_t::mtb_Write_String(myString.c_str());
 }
 //**************************************************************************************
-uint16_t Mtb_CentreText_t::mtb_Write_Colored_Text(const char *myString, uint16_t dColor)
+uint16_t Mtb_CentreText_t::mtb_Write_Colored_String(const char *myString, uint16_t dColor)
 {
 	color = dColor;
 	mtb_Clear_Panel_Segment();
@@ -880,7 +887,7 @@ uint16_t Mtb_CentreText_t::mtb_Write_Colored_Text(const char *myString, uint16_t
 	return Mtb_FixedText_t::mtb_Write_String(myString);
 }
 //**************************************************************************************
-uint16_t Mtb_CentreText_t::mtb_Write_Colored_Text(String myString, uint16_t dColor)
+uint16_t Mtb_CentreText_t::mtb_Write_Colored_String(String myString, uint16_t dColor)
 {
 	color = dColor;
 	mtb_Clear_Panel_Segment();
@@ -902,7 +909,7 @@ uint16_t Mtb_CentreText_t::mtb_Write_Colored_Text(String myString, uint16_t dCol
 	return Mtb_FixedText_t::mtb_Write_String(myString.c_str());
 }
 //**************************************************************************************
-uint16_t Mtb_CentreText_t::mtb_Write_Colored_Text(const char *myString, uint16_t dColor, uint16_t dBackgroundColor){
+uint16_t Mtb_CentreText_t::mtb_Write_Colored_String(const char *myString, uint16_t dColor, uint16_t dBackgroundColor){
 	color = dColor;
 	backgroundColor = dBackgroundColor;
 	mtb_Clear_Panel_Segment();
@@ -923,7 +930,7 @@ uint16_t Mtb_CentreText_t::mtb_Write_Colored_Text(const char *myString, uint16_t
 	return Mtb_FixedText_t::mtb_Write_String(myString);
 }
 //**************************************************************************************
-uint16_t Mtb_CentreText_t::mtb_Write_Colored_Text(String myString, uint16_t dColor, uint16_t dBackgroundColor){
+uint16_t Mtb_CentreText_t::mtb_Write_Colored_String(String myString, uint16_t dColor, uint16_t dBackgroundColor){
 	color = dColor;
 	backgroundColor = dBackgroundColor;
 	mtb_Clear_Panel_Segment();

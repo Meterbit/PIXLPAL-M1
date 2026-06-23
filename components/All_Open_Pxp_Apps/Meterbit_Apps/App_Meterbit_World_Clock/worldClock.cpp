@@ -104,11 +104,11 @@ while (THIS_APP_IS_ACTIVE == pdTRUE){
     THIS_APP->elementRefresh = false;
     if(worldClockCities.worldClockMode == FIVE_CLOCK_MODE){
                                                                                                                 // MEMORY LEAKING OBSERVED IN THIS LOOP - NEEDS FIXING LATER
-      cityMultiName0.mtb_Write_Colored_Text(worldClockCities.worldCapitals[0], worldClockCities.worldColors[0]);
-      cityMultiName1.mtb_Write_Colored_Text(worldClockCities.worldCapitals[1], worldClockCities.worldColors[1]);
-      cityMultiName2.mtb_Write_Colored_Text(worldClockCities.worldCapitals[2], worldClockCities.worldColors[2]);
-      cityMultiName3.mtb_Write_Colored_Text(worldClockCities.worldCapitals[3], worldClockCities.worldColors[3]);
-      cityMultiName4.mtb_Write_Colored_Text(worldClockCities.worldCapitals[4], worldClockCities.worldColors[4]);
+      cityMultiName0.mtb_Write_Colored_String(worldClockCities.worldCapitals[0], worldClockCities.worldColors[0]);
+      cityMultiName1.mtb_Write_Colored_String(worldClockCities.worldCapitals[1], worldClockCities.worldColors[1]);
+      cityMultiName2.mtb_Write_Colored_String(worldClockCities.worldCapitals[2], worldClockCities.worldColors[2]);
+      cityMultiName3.mtb_Write_Colored_String(worldClockCities.worldCapitals[3], worldClockCities.worldColors[3]);
+      cityMultiName4.mtb_Write_Colored_String(worldClockCities.worldCapitals[4], worldClockCities.worldColors[4]);
 
       while ((Mtb_Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
 
@@ -120,16 +120,16 @@ while (THIS_APP_IS_ACTIVE == pdTRUE){
       cacheTimezone(worldClockCities.worldTimeZones[4]);
 
       while (THIS_APP_IS_ACTIVE == pdTRUE && THIS_APP->elementRefresh == false) {
-        cityMultiTime0.mtb_Write_Colored_Text(getCityLocalTime(worldClockCities.worldTimeZones[0], worldCity_Hr_Min), worldClockCities.worldColors[0]);
-        cityMultiTime1.mtb_Write_Colored_Text(getCityLocalTime(worldClockCities.worldTimeZones[1], worldCity_Hr_Min), worldClockCities.worldColors[1]);
-        cityMultiTime2.mtb_Write_Colored_Text(getCityLocalTime(worldClockCities.worldTimeZones[2], worldCity_Hr_Min), worldClockCities.worldColors[2]);
-        cityMultiTime3.mtb_Write_Colored_Text(getCityLocalTime(worldClockCities.worldTimeZones[3], worldCity_Hr_Min), worldClockCities.worldColors[3]);
-        cityMultiTime4.mtb_Write_Colored_Text(getCityLocalTime(worldClockCities.worldTimeZones[4], worldCity_Hr_Min), worldClockCities.worldColors[4]);
+        cityMultiTime0.mtb_Write_Colored_String(getCityLocalTime(worldClockCities.worldTimeZones[0], worldCity_Hr_Min), worldClockCities.worldColors[0]);
+        cityMultiTime1.mtb_Write_Colored_String(getCityLocalTime(worldClockCities.worldTimeZones[1], worldCity_Hr_Min), worldClockCities.worldColors[1]);
+        cityMultiTime2.mtb_Write_Colored_String(getCityLocalTime(worldClockCities.worldTimeZones[2], worldCity_Hr_Min), worldClockCities.worldColors[2]);
+        cityMultiTime3.mtb_Write_Colored_String(getCityLocalTime(worldClockCities.worldTimeZones[3], worldCity_Hr_Min), worldClockCities.worldColors[3]);
+        cityMultiTime4.mtb_Write_Colored_String(getCityLocalTime(worldClockCities.worldTimeZones[4], worldCity_Hr_Min), worldClockCities.worldColors[4]);
         delay(1000);
       }
     } else {
       
-      dispSingleCityName.mtb_Write_Colored_Text(worldClockCities.worldCapitals[0], WHITE);
+      dispSingleCityName.mtb_Write_Colored_String(worldClockCities.worldCapitals[0], WHITE);
 
       while ((Mtb_Applications::internetConnectStatus != true) && (THIS_APP_IS_ACTIVE == pdTRUE)) delay(1000);
       
@@ -140,7 +140,7 @@ while (THIS_APP_IS_ACTIVE == pdTRUE){
       cacheTimezone(worldClockCities.worldTimeZones[0]);
 
       while (THIS_APP_IS_ACTIVE == pdTRUE && THIS_APP->elementRefresh == false) {
-        dispSingleCityTime.mtb_Write_Colored_Text(getCityLocalTime(worldClockCities.worldTimeZones[0], worldCity_Hr_Min), worldClockCities.worldColors[0]);
+        dispSingleCityTime.mtb_Write_Colored_String(getCityLocalTime(worldClockCities.worldTimeZones[0], worldCity_Hr_Min), worldClockCities.worldColors[0]);
         delay(1000);
       }
     }

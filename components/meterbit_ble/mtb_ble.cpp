@@ -1,3 +1,12 @@
+/**
+ * @file mtb_ble.cpp
+ * @brief NimBLE GATT server implementation for the PIXLPAL-M1 BLE communication subsystem.
+ *
+ * Creates a BLE server with two characteristics (settings channel and application channel),
+ * manages the connection lifecycle via MyServerCallbacks, and implements the parser tasks
+ * (ble_SetCom_Parse_Task / ble_AppCom_Parse_Task) that deserialise incoming JSON payloads
+ * and dispatch them to the appropriate settings or application handler.
+ */
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_log.h"

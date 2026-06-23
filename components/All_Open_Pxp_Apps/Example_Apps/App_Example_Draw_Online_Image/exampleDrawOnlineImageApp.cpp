@@ -29,7 +29,7 @@ void exampleDrawOnlineImageApp_Task(void* dApplication){
       3
     };
 
-mtb_Draw_Online_Png(&worldCountryFlag);
+  mtb_Draw_Online_Png(&worldCountryFlag);
 
 
   // To draw multiple online images, create an array of Mtb_OnlineImage_t with the respective image links and drawing parameters, then call mtb_Download_Multi_Svg() and mtb_Draw_Multi_Svg() with the count of images in the array.

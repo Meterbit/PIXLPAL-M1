@@ -195,9 +195,9 @@ while (THIS_APP_IS_ACTIVE == pdTRUE) {
                 current_price_txt.mtb_Write_String(String(coinPrice_Double, coinPrice_Double < 100 ? 4 : 2));
                 coinSymbol_txt.mtb_Write_String(coinSymbol);
 
-                price_change_percentage_24h_tag.mtb_Write_Colored_Text("D24:", price_change_percentage_24h.toDouble() < 0 ? RED : GREEN);
+                price_change_percentage_24h_tag.mtb_Write_Colored_String("D24:", price_change_percentage_24h.toDouble() < 0 ? RED : GREEN);
                 double priceChngPercent_Double = price_change_percentage_24h.toDouble();
-                price_change_percentage_24h_txt.mtb_Write_Colored_Text(String(priceChngPercent_Double, 2) + "%", priceChngPercent_Double < 0 ? RED : GREEN);
+                price_change_percentage_24h_txt.mtb_Write_Colored_String(String(priceChngPercent_Double, 2) + "%", priceChngPercent_Double < 0 ? RED : GREEN);
 
                 double vwap24Hours = vwap24Hr.toDouble();
                 vwap24Hr_txt.mtb_Write_String(String(vwap24Hours, vwap24Hours < 100 ? 4 : 2));

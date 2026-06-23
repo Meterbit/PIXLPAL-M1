@@ -1,4 +1,11 @@
-
+/**
+ * @file mtb_ble_wifi.cpp
+ * @brief BLE Wi-Fi settings command handler (query / connect to network).
+ *
+ * Implements wifiSettings() (dispatch), current_Network() (reports connected SSID and
+ * IP to the companion app), and connect_To_Network() (attempts a new Wi-Fi connection
+ * with credentials supplied via BLE, with a 10-second timeout).
+ */
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"

@@ -1,3 +1,10 @@
+/**
+ * @file mtb_usb_msc.cpp
+ * @brief USB Mass Storage Class host driver task implementation.
+ * Registers the ESP-IDF USB MSC host driver, waits for drive connection events,
+ * mounts the FAT filesystem, and sets USB_MOUNTED_BIT in usb_event_group to
+ * notify the OTA update task and other consumers.
+ */
 /*
  * SPDX-FileCopyrightText: 2022-2023 Espressif Systems (Shanghai) CO LTD
  * SPDX-License-Identifier: Unlicense OR CC0-1.0

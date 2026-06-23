@@ -1,3 +1,12 @@
+/**
+ * @file mtb_colors.h
+ * @brief Named RGB565 color constants for the PIXLPAL-M1 HUB75 display.
+ *
+ * Provides #define macros for approximately 600 named colors encoded in 16-bit
+ * RGB565 format, organised by hue family: light-blue, black, blue, brown,
+ * blue-green, gray, green, violet, orange, pink, purple, white, red, yellow,
+ * and miscellaneous. Use these constants anywhere a `uint16_t color` is expected.
+ */
 #ifndef COLORS_H
 #define COLORS_H
 

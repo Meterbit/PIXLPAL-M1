@@ -1,3 +1,10 @@
+/**
+ * @file mtb_ntp.cpp
+ * @brief SNTP time synchronisation task implementation.
+ * Implements sntp_Time_init_Task(): configures the SNTP client, polls until
+ * the RTC is updated (year > 2023), applies the POSIX TZ string from NVS,
+ * and self-deletes.
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>

@@ -1,4 +1,12 @@
-
+/**
+ * @file mtb_ble_software_update.cpp
+ * @brief BLE software update command handler (GitHub OTA and BLE OTA dispatch).
+ *
+ * Implements softwareUpdate(), which dispatches incoming BLE settings-channel JSON
+ * commands to either ghotaSoftwareUpdate() (GitHub OTA via esp_ghota) or
+ * ble_Ota_Control() (direct BLE binary OTA). Also owns bleFirmwareUpdateTask, the
+ * full-screen app task shown on-device during a BLE OTA transfer.
+ */
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -50,8 +58,8 @@ void  bleFirmwareUpdateTask(void* dApplication){
 
     while (THIS_APP_IS_ACTIVE == pdTRUE){
       countdown = 1500;
-      bleOTA_Update_Text.mtb_Write_Colored_Text("BLUETOOTH OTA UPDATE IN PROGRESS....", GREEN);
-      bleOTA_Update_Text.mtb_Write_Colored_Text("DO NOT SWITCH OFF DEVICE", YELLOW);
+      bleOTA_Update_Text.mtb_Write_Colored_String("BLUETOOTH OTA UPDATE IN PROGRESS....", GREEN);
+      bleOTA_Update_Text.mtb_Write_Colored_String("DO NOT SWITCH OFF DEVICE", YELLOW);
       while(countdown-->0  && THIS_APP_IS_ACTIVE) delay(10);
     }
 

@@ -1,3 +1,11 @@
+/**
+ * @file mtb_usb_ota.cpp
+ * @brief USB MSC OTA and SPIFFS update implementation.
+ * Implements usbFirmwareUpdateTask(), attemptUSB_FirmwareUpdate(),
+ * attemptUSB_SPIFFSUpdate(), and flash_bin_to_spiffs_partition() declared
+ * in mtb_usb_ota.h. Uses esp_msc_ota for firmware and raw partition write
+ * for the SPIFFS image.
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -103,7 +111,7 @@ static void msc_ota_event_handler(void *arg, esp_event_base_t event_base, int32_
         break;}
     case ESP_MSC_OTA_FAILED:
         ESP_LOGI(TAG, "ESP_MSC_OTA_FAILED");
-        otaProgressText.mtb_Write_Colored_Text("FAILED... ", RED);
+        otaProgressText.mtb_Write_Colored_String("FAILED... ", RED);
         break;
     case ESP_MSC_OTA_GET_IMG_DESC:
         ESP_LOGI(TAG, "ESP_MSC_OTA_GET_IMG_DESC");
@@ -118,11 +126,11 @@ static void msc_ota_event_handler(void *arg, esp_event_base_t event_base, int32_
         break;}
     case ESP_MSC_OTA_FINISH:
         ESP_LOGI(TAG, "ESP_MSC_OTA_FINISH");
-        otaProgressText.mtb_Write_Colored_Text("SUCCESSFUL", CYAN);
+        otaProgressText.mtb_Write_Colored_String("SUCCESSFUL", CYAN);
         break;
     case ESP_MSC_OTA_ABORT:
         ESP_LOGI(TAG, "ESP_MSC_OTA_ABORT");
-        otaProgressText.mtb_Write_Colored_Text("ABORTED... ", ORANGE);
+        otaProgressText.mtb_Write_Colored_String("ABORTED... ", ORANGE);
         break;
     }
 }

@@ -1,3 +1,10 @@
+/**
+ * @file mtb_usb_fs.cpp
+ * @brief Arduino fs::FS adapter for USB MSC drive — POSIX implementation.
+ * Implements USBFileImpl (file/dir POSIX wrappers), USBFSImpl (mount management
+ * and FSImpl overrides), and USBFSFS (the public fs::FS drop-in) declared in
+ * mtb_usb_fs.h. Also defines the global USBFS instance.
+ */
 //#include "mtb_usb_msc.h"
 #include "mtb_usb_fs.h"
 #include <unistd.h>   // fileno, ftruncate, truncate

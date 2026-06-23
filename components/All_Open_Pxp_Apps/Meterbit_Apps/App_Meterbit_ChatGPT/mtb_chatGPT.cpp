@@ -89,7 +89,7 @@ void  chatGPT_App_Task(void* dApplication){
   if(chatPromptTimer_H == NULL) chatPromptTimer_H = xTimerCreate("chatPrompt Timer", pdMS_TO_TICKS(1000), true, NULL, chatPrompt_TimerCallback);
   if(totalSampleBuffer == NULL) totalSampleBuffer = (int16_t* ) heap_caps_malloc(REC_DURATION_BYTES_MAX, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
   mtb_Draw_Local_Png({"/batIcons/openai.png", 12, 12});
-  chatGPT_Text.mtb_Write_Colored_Text("ChatGPT", WHITE);
+  chatGPT_Text.mtb_Write_Colored_String("ChatGPT", WHITE);
   mtb_Draw_Local_Png({"/batIcons/aiResp.png", 2, 45});
   mtb_Draw_Local_Png({"/batIcons/hmanSph.png", 2, 55});
   mtb_Panel_Draw_Rect(0, 43, 127, 63, PURPLE_NAVY);
@@ -251,7 +251,7 @@ void micAudioListen_Task(void* d_Service){	// Consider using hardware timer for 
   Mtb_FixedText_t recordingVoice(11, 45, Terminal6x8);
   uint32_t wavSize;
   int totalSamples = 0;
-  recordingVoice.mtb_Write_Colored_Text("Listening...", LEMON);
+  recordingVoice.mtb_Write_Colored_String("Listening...", LEMON);
   mtb_Dac_Or_Mic_Status(ON_MIC);
   while (MTB_SERV_IS_ACTIVE == pdTRUE && xTimerIsTimerActive(chatPromptTimer_H) == pdTRUE){
 		if(xSemaphoreTake(audio_In_Data_Collected_Sem_H, pdMS_TO_TICKS(5))){
@@ -262,7 +262,7 @@ void micAudioListen_Task(void* d_Service){	// Consider using hardware timer for 
       }
     }
   }
-  recordingVoice.mtb_Write_Colored_Text("Processing...", GREEN);
+  recordingVoice.mtb_Write_Colored_String("Processing...", GREEN);
   mtb_Draw_Local_Png({"/batIcons/aiResp.png", 2, 45});
   recWave.psRamFile_P = create_wav_in_psram(totalSampleBuffer, totalSamples, SAMPLE_RATE, &(recWave.psRamFile_Size));
   xQueueSend(chatPrompt_Queue_H, &recWave, pdTICKS_TO_MS(250));
@@ -275,7 +275,7 @@ void chatPrompt_TimerCallback(TimerHandle_t chatPrompt){
   //String number = String(--recordingCountdown);
 
   if(recordingCountdown --> 0){
-    //recordCountdownText.mtb_Write_Colored_Text(number.c_str(), LEMON);
+    //recordCountdownText.mtb_Write_Colored_String(number.c_str(), LEMON);
     if(recordingCountdown % 2){
       mtb_Draw_Local_Png({"/batIcons/micRec.png", 2, 45});
     } 

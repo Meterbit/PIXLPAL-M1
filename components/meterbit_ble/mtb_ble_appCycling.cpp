@@ -1,4 +1,12 @@
-
+/**
+ * @file mtb_ble_appCycling.cpp
+ * @brief BLE app-cycle settings command handler (carousel enable, duration, add/remove apps).
+ *
+ * Implements app_Cycle_Settings(), which dispatches JSON commands to sub-handlers:
+ * appCycling_Status (enable/disable carousel), appCycling_Duration (set dwell time),
+ * appCycling_Add_Remove (modify the active app list), and getUserCyclingApps (query
+ * current list). Changes are persisted to NVS after every command.
+ */
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"

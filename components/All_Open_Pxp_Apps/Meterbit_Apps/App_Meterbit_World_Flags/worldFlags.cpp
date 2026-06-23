@@ -87,7 +87,7 @@ while (THIS_APP_IS_ACTIVE == pdTRUE){
             //uint8_t changeIntv = worldFlagsInfo.flagChangeIntv/2;
             small_Flag.imageLink = large_Flag.imageLink;
             mtb_Draw_Online_Svg(&small_Flag, 1, wipeFlagBackground);
-            dispCountryName.mtb_Write_Colored_Text(country.c_str(), WHITE, mtb_Panel_Color565(0, 0, 16));
+            dispCountryName.mtb_Write_Colored_String(country.c_str(), WHITE, mtb_Panel_Color565(0, 0, 16));
             while(changeSmallFlagIntv-->0 && THIS_APP_IS_ACTIVE == pdTRUE) delay(1000);
         } 
     }

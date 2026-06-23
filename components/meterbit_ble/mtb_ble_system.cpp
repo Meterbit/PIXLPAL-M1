@@ -1,4 +1,12 @@
-
+/**
+ * @file mtb_ble_system.cpp
+ * @brief BLE system settings command handler (brightness, silent mode, time zone, restart, etc.).
+ *
+ * Implements systemSettings(), which dispatches incoming JSON system-settings commands
+ * to sub-handlers: system_Device_Brightness, system_Silent_Mode, system_PowerSaver_Mode,
+ * system_Wifi_Radio, system_Time_Zone, system_Clock_Format_Change, system_Restart_Device,
+ * and system_Shutdown_Device.
+ */
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"

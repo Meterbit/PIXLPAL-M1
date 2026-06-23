@@ -1,3 +1,9 @@
+/**
+ * @file mtb_nvs.cpp
+ * @brief NVS flash initialisation and factory-default parameter implementation.
+ * Implements init_nvs_mem() (opens the default NVS namespace) and
+ * set_factory_NVS_parameters() (writes firmware defaults on first boot or erase).
+ */
 #include <stdio.h>
 #include "driver/gpio.h"
 #include "freertos/FreeRTOS.h"

@@ -1,3 +1,18 @@
+/**
+ * @file mtb_fonts.h
+ * @brief Bitmap font data arrays for the PIXLPAL-M1 HUB75 text renderer.
+ *
+ * Contains MikroElektronika GLCD-format bitmap font tables for the following
+ * typefaces used by Mtb_Static_Text_t, Mtb_FixedText_t, Mtb_CentreText_t,
+ * and Mtb_ScrollText_t:
+ *   - Terminal4x6  — 4 × 6 px monospace (smallest, status-bar use)
+ *   - Terminal6x8  — 6 × 8 px monospace (default)
+ *   - Terminal8x12 — 8 × 12 px monospace (larger readability)
+ *
+ * Each array encodes character widths, glyph offsets, and pixel bitmaps in the
+ * MikroElektronika GLCD font binary format. Pass a pointer to one of these
+ * arrays as the `font` parameter of any text widget constructor.
+ */
 #ifndef FONTS
 #define FONTS
 

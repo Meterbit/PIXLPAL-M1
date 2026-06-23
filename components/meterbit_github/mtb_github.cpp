@@ -1,4 +1,12 @@
-
+/**
+ * @file mtb_github.cpp
+ * @brief GitHub raw-content download implementation for LittleFS and PSRAM targets.
+ *
+ * Implements all functions declared in mtb_github.h using WiFiClientSecure + HTTPClient.
+ * A background service task (files2Download_Task) drains the files2Download_Q queue
+ * whenever internet becomes available, downloading deferred assets from GitHub to LittleFS.
+ * mtb_Prepare_Flash_File_Path() creates any missing intermediate directories before writing.
+ */
 #include "mtb_github.h"
 #include "mtb_engine.h"
 #include "mtb_text_scroll.h"

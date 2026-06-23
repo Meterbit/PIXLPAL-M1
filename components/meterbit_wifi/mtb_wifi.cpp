@@ -1,3 +1,12 @@
+/**
+ * @file mtb_wifi.cpp
+ * @brief Wi-Fi station management and event handler implementation.
+ *
+ * Registers three ESP-IDF event handlers (CONNECTED, GOT_IP, DISCONNECTED) and
+ * implements mtb_Wifi_Init() which loads saved credentials from NVS and starts
+ * the connection. On connect, launches the MQTT client service and shows the
+ * Wi-Fi status icon; on disconnect, tears down MQTT and clears the icon.
+ */
 #include "ESPmDNS.h"
 #include "mtb_wifi.h"
 #include "freertos/timers.h"

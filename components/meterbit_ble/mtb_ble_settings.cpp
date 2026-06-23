@@ -1,4 +1,11 @@
-
+/**
+ * @file mtb_ble_settings.cpp
+ * @brief BLE device-name settings command handler.
+ *
+ * Implements bleSettings(), which handles commands to query (mtb_Current_Ble_Device)
+ * and update (mtb_Set_Pxp_Ble_Name) the advertised BLE device name. The new name is
+ * persisted to NVS and takes effect on the next advertisement cycle.
+ */
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"

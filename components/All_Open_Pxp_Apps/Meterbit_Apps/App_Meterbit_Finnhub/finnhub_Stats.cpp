@@ -165,10 +165,10 @@ while (THIS_APP_IS_ACTIVE == pdTRUE){
 
             stockID_txt.mtb_Write_String(currentStocks.stockID);
             current_price_txt.mtb_Write_String(String(current_price));
-            cPrice_diff_tag.mtb_Write_Colored_Text("DPR:", price_Diff < 0 ? RED : GREEN);
-            cPrice_diff_txt.mtb_Write_Colored_Text(String(price_Diff), price_Diff < 0 ? RED : GREEN);
-            priceChangePercent_tag.mtb_Write_Colored_Text("G/L:", price_change_percentage_24h < 0 ? ORANGE : YELLOW_GREEN);
-            priceChangePercent_txt.mtb_Write_Colored_Text(String(price_change_percentage_24h) + "%", price_change_percentage_24h < 0 ? ORANGE : YELLOW_GREEN);
+            cPrice_diff_tag.mtb_Write_Colored_String("DPR:", price_Diff < 0 ? RED : GREEN);
+            cPrice_diff_txt.mtb_Write_Colored_String(String(price_Diff), price_Diff < 0 ? RED : GREEN);
+            priceChangePercent_tag.mtb_Write_Colored_String("G/L:", price_change_percentage_24h < 0 ? ORANGE : YELLOW_GREEN);
+            priceChangePercent_txt.mtb_Write_Colored_String(String(price_change_percentage_24h) + "%", price_change_percentage_24h < 0 ? ORANGE : YELLOW_GREEN);
 
             if(price_Diff < 0) mtb_Draw_Local_Png({"/gain_lose/lose.png", 104, 20, 1});     // REVISIT -> CHECK FREQUENCY OF IMAGE DRAWING
             else mtb_Draw_Local_Png({"/gain_lose/gain.png", 104, 20, 1});                   // REVISIT -> CHECK FREQUENCY OF IMAGE DRAWING

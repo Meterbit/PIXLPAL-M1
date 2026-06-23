@@ -1,3 +1,12 @@
+/**
+ * @file mtb_engine.cpp
+ * @brief Application and service lifecycle engine implementation.
+ *
+ * Defines global app/service handles, implements the Mtb_Applications constructor,
+ * mtb_Launch_This_App (posts to appLauncherQueue), appLauncherTask, appCyclingTask,
+ * nvsAccessTask, and all utility functions (mtb_Unix_Time_To_Readable,
+ * mtb_Format_Large_Number, etc.). Also owns Mtb_Applications static member storage.
+ */
 #include "Arduino.h"
 #include <stdlib.h>
 #include <assert.h>

@@ -1,3 +1,20 @@
+/**
+ * @file mtb_countries.h
+ * @brief Inline JSON dataset of world countries and their flag URLs.
+ *
+ * Defines `jsonWorldCountries`, a `const char*` R-string literal containing a
+ * JSON array of country objects. Each object has the following fields:
+ *   - "name"     — Common country name (string)
+ *   - "capital"  — Capital city name (string)
+ *   - "code"     — ISO 3166-1 alpha-2 country code (lowercase string)
+ *   - "continent"— Continent name (string)
+ *   - "iso"      — Whether the country has an ISO code (boolean)
+ *   - "flag_1x1" — URL to a square-aspect-ratio SVG flag image
+ *   - "flag_4x3" — URL to a 4:3-aspect-ratio SVG flag image (used by the World Flags app)
+ *
+ * Consumed by `workerWorldFlagsFns.cpp` (parseJsonOnce), which deserializes this
+ * array into a PSRAM-backed std::vector<Country> and shuffles it on first access.
+ */
 #ifndef WORLD_COUNTRIES_JSON
 #define WORLD_COUNTRIES_JSON
 

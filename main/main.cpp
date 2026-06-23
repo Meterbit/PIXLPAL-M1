@@ -10,11 +10,10 @@
 #include <HTTPClient.h>
 #include <WiFiClientSecure.h>
 #include "my_secret_keys.h"
-#include "exampleDrawShapesApp.h"
 
 using namespace std;
 
-// extern Mtb_Applications_FullScreen *exampleDrawOnlineImages_App;
+extern Mtb_Applications_FullScreen *exampleWriteText_App;
 
 static const char TAG[] = "PXP-MAIN_PROG";
 
@@ -28,10 +27,10 @@ extern "C" void app_main(){
     mtb_Wifi_Init();
 
     // Cycling through a number of user selected apps, or Launch the Last Executed App or Launch a particular App after boot-up
-    if(cycling_Apps.appsCycleActive == true) mtb_Launch_This_Service(mtb_App_Cycling_Sv);
+    if (cycling_Apps.appsCycleActive == true) mtb_Launch_This_Service(mtb_App_Cycling_Sv);
     else mtb_Identify_App_By_ID(lastSavedApp, LAUNCH_PXP_APP);
 
-    // mtb_Launch_This_App(exampleDrawOnlineImages_App);
+    // mtb_Launch_This_App(exampleWriteText_App);
 
     // Declare Variable for monitoring Free/Available internal SRAM
     size_t free_sram = 0;
@@ -49,7 +48,7 @@ extern "C" void app_main(){
 
     // delay 30 seconds
     delay(30000);
-     }
+    }
 
 }
 
