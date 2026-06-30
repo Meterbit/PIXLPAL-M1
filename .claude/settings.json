@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sort -t'{' -k1)",
+      "Bash(mkdir -p /Users/stephengata/ESP32v5_3_Projects/PIXLPAL-M1/components/All_Open_Pxp_Apps/Meterbit_Apps/App_Meterbit_AI_Pixel_Art)"
+    ],
+    "additionalDirectories": [
+      "/Users/stephengata/ESP32v5_3_Projects/PIXLPAL-M1/components/All_Open_Pxp_Apps/Meterbit_Apps"
+    ]
+  }
+}

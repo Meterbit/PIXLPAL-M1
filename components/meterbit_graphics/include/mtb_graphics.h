@@ -196,6 +196,43 @@ extern bool mtb_Draw_Multi_Svg(size_t drawSVGsCount = 2, ImgWipeFn_ptr wipePrevi
 extern uint8_t mtb_Draw_Local_Gif(const Mtb_LocalAnim_t &dAnim);
 
 /**
+ * @brief Decode and draw a PNG already loaded into a PSRAM buffer.
+ *
+ * Decodes the raw PNG bytes pointed to by @p *buffer using lodepng, renders
+ * the result to the panel at (@p xAxis, @p yAxis) with anti-aliased
+ * box-filter downscaling, then frees @p *buffer and zeroes both @p *buffer
+ * and @p *imageSize so the caller's pointers are clean for reuse.
+ * @param buffer     Pointer to the PSRAM buffer pointer holding the raw PNG bytes.
+ *                   Set to nullptr after the call.
+ * @param imageSize  Pointer to the size of @p *buffer in bytes. Set to 0 after the call.
+ * @param xAxis      X-axis pixel position for the top-left corner of the image (default 0).
+ * @param yAxis      Y-axis pixel position for the top-left corner of the image (default 0).
+ * @param scale      Downscale divisor; 1 = original size, 2 = half size, etc. (default 1).
+ * @return 0 on success, 1 if arguments are invalid, 2 if PNG decoding fails.
+ */
+extern uint8_t mtb_Draw_PSRAM_Png(uint8_t** buffer, size_t* imageSize, uint16_t xAxis = 0, uint16_t yAxis = 0, uint8_t scale = 1);
+
+/**
+ * @brief Parse, rasterize, and draw an SVG already loaded into a PSRAM buffer.
+ *
+ * Parses the null-terminated SVG XML pointed to by @p *buffer with NanoSVG,
+ * auto-fits it to the available panel region starting at (@p xAxis, @p yAxis),
+ * further divided by @p scale, then rasterizes and draws the result.
+ * Frees @p *buffer and zeroes both @p *buffer and @p *imageSize after parsing
+ * (NanoSVG modifies the buffer in place, so it is consumed by the call).
+ * @param buffer     Pointer to the PSRAM buffer pointer holding the null-terminated SVG XML.
+ *                   Set to nullptr after the call.
+ * @param imageSize  Pointer to the size of @p *buffer in bytes. Set to 0 after the call.
+ * @param xAxis      X-axis pixel position for the top-left corner of the image (default 0).
+ * @param yAxis      Y-axis pixel position for the top-left corner of the image (default 0).
+ * @param scale      Extra downscale divisor applied on top of the auto-fit scale;
+ *                   1 = fit to available area, 2 = half that size, etc. (default 1).
+ * @return 0 on success, 1 if arguments are invalid, 2 if SVG parsing fails,
+ *         3 if PSRAM allocation for the raster buffer fails, 4 if rasterizer creation fails.
+ */
+extern uint8_t mtb_Draw_PSRAM_Svg(uint8_t** buffer, size_t* imageSize, uint16_t xAxis = 0, uint16_t yAxis = 0, uint8_t scale = 1);
+
+/**
  * @brief Set the onboard RGB status LED to a given colour and brightness.
  * @param color       Desired colour (RGB565).
  * @param brightness  LED brightness (0–255, default panelBrightness/2).

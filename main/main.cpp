@@ -15,7 +15,7 @@ using namespace std;
 
 extern Mtb_Applications_FullScreen *exampleWriteText_App;
 
-static const char TAG[] = "PXP-MAIN_PROG";
+static const char TAG[] = "PXP-MAIN";
 
 extern "C" void app_main(){
     // Initialize Pixlpal System
@@ -49,6 +49,5 @@ extern "C" void app_main(){
     // delay 30 seconds
     delay(30000);
     }
-
 }
 

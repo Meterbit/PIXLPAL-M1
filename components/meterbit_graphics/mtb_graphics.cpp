@@ -1059,6 +1059,119 @@ BaseType_t mtb_Draw_Local_Png(const Mtb_LocalImage_t &dImage){
 	return 0;
 }
 
+uint8_t mtb_Draw_PSRAM_Png(uint8_t** buffer, size_t* imageSize, uint16_t xAxis, uint16_t yAxis, uint8_t scale){
+	if (!buffer || !*buffer || !imageSize || *imageSize == 0) return 1;
+
+	uint8_t* image = nullptr;
+	unsigned width, height;
+	unsigned error = lodepng_decode24(&image, &width, &height, *buffer, *imageSize);
+
+	heap_caps_free(*buffer);
+	*buffer = nullptr;
+	*imageSize = 0;
+
+	if (error || !image) {
+		ESP_LOGE(TAG, "PSRAM PNG decode error %u: %s", error, lodepng_error_text(error));
+		free(image);
+		return 2;
+	}
+
+	if (scale < 1) scale = 1;
+
+	uint16_t scaledW = width  / scale;
+	uint16_t scaledH = height / scale;
+
+	for (uint16_t yOut = 0; yOut < scaledH; yOut++) {
+		for (uint16_t xOut = 0; xOut < scaledW; xOut++) {
+			uint32_t rSum = 0, gSum = 0, bSum = 0;
+			uint16_t pixelCount = 0;
+
+			for (uint8_t dy = 0; dy < scale; dy++) {
+				for (uint8_t dx = 0; dx < scale; dx++) {
+					uint16_t xIn = xOut * scale + dx;
+					uint16_t yIn = yOut * scale + dy;
+					if (xIn >= width || yIn >= height) continue;
+
+					uint32_t idx = yIn * width * 3 + xIn * 3;
+					rSum += image[idx + 0];
+					gSum += image[idx + 1];
+					bSum += image[idx + 2];
+					pixelCount++;
+				}
+			}
+
+			if (pixelCount > 0) {
+				mtb_Panel_Draw_PixelRGB(xAxis + xOut, yAxis + yOut,
+					rSum / pixelCount, gSum / pixelCount, bSum / pixelCount);
+			}
+		}
+	}
+
+	free(image);
+	return 0;
+}
+
+uint8_t mtb_Draw_PSRAM_Svg(uint8_t** buffer, size_t* imageSize, uint16_t xAxis, uint16_t yAxis, uint8_t scale){
+	if (!buffer || !*buffer || !imageSize || *imageSize == 0) return 1;
+
+	NSVGimage* svg = nsvgParse((char*)*buffer, "px", 96.0f);
+
+	heap_caps_free(*buffer);
+	*buffer = nullptr;
+	*imageSize = 0;
+
+	if (!svg) {
+		ESP_LOGE("SVG_DRAW", "PSRAM SVG parse failed");
+		return 2;
+	}
+
+	float svgW = svg->width  > 0.f ? svg->width  : 1024.0f;
+	float svgH = svg->height > 0.f ? svg->height :  512.0f;
+
+	if (scale < 1) scale = 1;
+	float baseScale  = fminf((float)PANEL_RES_X / svgW, (float)PANEL_RES_Y / svgH);
+	float renderScale = baseScale / (float)scale;
+	if (renderScale <= 0.f) renderScale = 1.0f;
+
+	uint16_t outW = (uint16_t)(svgW * renderScale + 0.5f);
+	uint16_t outH = (uint16_t)(svgH * renderScale + 0.5f);
+	if (outW == 0) outW = 1;
+	if (outH == 0) outH = 1;
+	if (outW > PANEL_RES_X - xAxis) outW = PANEL_RES_X - xAxis;
+	if (outH > PANEL_RES_Y - yAxis) outH = PANEL_RES_Y - yAxis;
+
+	const int stride = outW * 4;
+	uint8_t* rgba = (uint8_t*)heap_caps_malloc((size_t)outH * stride, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+	if (!rgba) {
+		ESP_LOGE("SVG_DRAW", "PSRAM alloc for RGBA failed");
+		nsvgDelete(svg);
+		return 3;
+	}
+	memset(rgba, 0, (size_t)outH * stride);
+
+	NSVGrasterizer* rast = nsvgCreateRasterizer();
+	if (!rast) {
+		heap_caps_free(rgba);
+		nsvgDelete(svg);
+		return 4;
+	}
+
+	nsvgRasterize(rast, svg, 0.0f, 0.0f, renderScale, rgba, (int)outW, (int)outH, stride);
+	nsvgDeleteRasterizer(rast);
+	nsvgDelete(svg);
+
+	for (uint16_t y = 0; y < outH; y++) {
+		const uint8_t* row = rgba + y * stride;
+		for (uint16_t x = 0; x < outW; x++) {
+			if (row[x * 4 + 3] < PANEL_RES_X) continue;
+			mtb_Panel_Draw_PixelRGB(xAxis + x, yAxis + y, row[x * 4], row[x * 4 + 1], row[x * 4 + 2]);
+		}
+	}
+
+	heap_caps_free(rgba);
+	return 0;
+}
+
 // --- helpers ---------------------------------------------------------------
 
 static const char* TAG_SVG = "SVG_DRAW";
@@ -1126,7 +1239,7 @@ void mtb_Draw_Local_Svg_Task(void *dService){
 
 		if(appHolder_Ptr != Mtb_Applications::currentRunningApp) break;
 
-		// SVG RENDERING PATH     ??????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
+		// SVG RENDERING PATH     ?????
 		// build path
 		String svgPath = "/littlefs" + String(holderItem.imagePath);
 
@@ -1211,7 +1324,7 @@ void mtb_Draw_Local_Svg_Task(void *dService){
 		nsvgDelete(image);
 		heap_caps_free(svg_text);
 
-		// END OF SVG RENDERING     ??????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
+		// END OF SVG RENDERING     ??
 	}
 
 	mtb_Delete_This_Service(THIS_SERVICE);
