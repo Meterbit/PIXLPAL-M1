@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2015-2025 Espressif Systems (Shanghai) CO LTD
+ * SPDX-FileCopyrightText: 2015-2026 Espressif Systems (Shanghai) CO LTD
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -56,6 +56,14 @@ static void browse_item_free(mdns_browse_t *browse)
     mdns_mem_free(browse);
 }
 
+/**
+ * @brief Deliver browse updates to the user notifier
+ *
+ * Invokes the notifier once per changed result accumulated for the current
+ * packet. The passed @c result pointer is a live node in @c browse->result;
+ * @c result->next is not cleared before the callback (only after TTL=0 removal).
+ * See @ref mdns_browse_notify_t for how callers should use @c next.
+ */
 static void browse_sync(mdns_browse_sync_t *browse_sync)
 {
     mdns_browse_t *browse = browse_sync->browse;
@@ -68,7 +76,7 @@ static void browse_sync(mdns_browse_sync_t *browse_sync)
             queueDetach(mdns_result_t, browse->result, result);
             // Just free current result
             result->next = NULL;
-            mdns_query_results_free(result);
+            mdns_priv_query_results_free(result);
         }
         sync_result = sync_result->next;
     }
@@ -77,7 +85,7 @@ static void browse_sync(mdns_browse_sync_t *browse_sync)
 /**
  * @brief  Send PTR query packet to all available interfaces for browsing.
  */
-static void browse_send(mdns_browse_t *browse, mdns_if_t interface)
+static void browse_send(mdns_browse_t *browse, mdns_if_t interface, mdns_ip_protocol_t ip_protocol)
 {
     // Using search once for sending the PTR query
     mdns_search_once_t search = {0};
@@ -89,18 +97,22 @@ static void browse_send(mdns_browse_t *browse, mdns_if_t interface)
     search.unicast = false;
     search.result = NULL;
     search.next = NULL;
+    mdns_priv_query_send(&search, interface, ip_protocol);
+}
 
-    for (uint8_t protocol_idx = 0; protocol_idx < MDNS_IP_PROTOCOL_MAX; protocol_idx++) {
-        mdns_priv_query_send(&search, interface, (mdns_ip_protocol_t) protocol_idx);
+void mdns_priv_browse_send_by_ip_protocol(mdns_if_t mdns_if, mdns_ip_protocol_t ip_protocol)
+{
+    mdns_browse_t *browse = s_browse;
+    while (browse) {
+        browse_send(browse, mdns_if, ip_protocol);
+        browse = browse->next;
     }
 }
 
 void mdns_priv_browse_send_all(mdns_if_t mdns_if)
 {
-    mdns_browse_t *browse = s_browse;
-    while (browse) {
-        browse_send(browse, mdns_if);
-        browse = browse->next;
+    for (uint8_t protocol_idx = 0; protocol_idx < MDNS_IP_PROTOCOL_MAX; protocol_idx++) {
+        mdns_priv_browse_send_by_ip_protocol(mdns_if, (mdns_ip_protocol_t) protocol_idx);
     }
 }
 
@@ -192,16 +204,173 @@ static void browse_add(mdns_browse_t *browse)
         s_browse = browse;
     }
     for (uint8_t interface_idx = 0; interface_idx < MDNS_MAX_INTERFACES; interface_idx++) {
-        browse_send(browse, (mdns_if_t) interface_idx);
+        for (uint8_t protocol_idx = 0; protocol_idx < MDNS_IP_PROTOCOL_MAX; protocol_idx++) {
+            browse_send(browse, (mdns_if_t) interface_idx, (mdns_ip_protocol_t) protocol_idx);
+        }
     }
     if (found) {
         browse_item_free(browse);
     }
 }
 
+static esp_err_t add_browse_result(mdns_browse_sync_t *sync_browse, mdns_result_t *r);
+
 /**
  * @brief  Called from packet parser to find matching running search
+ *
+ * @note Called from the mDNS service task while the service lock is held.
+ *       The returned browse is an active cache node that the parser may update.
  */
+mdns_browse_t *mdns_priv_browse_find_ptr(mdns_name_t *name)
+{
+    mdns_browse_t *b = s_browse;
+
+    if (mdns_utils_str_null_or_empty(name->service) || mdns_utils_str_null_or_empty(name->proto)) {
+        return NULL;
+    }
+
+    while (b) {
+        if (!strcasecmp(name->service, b->service) && !strcasecmp(name->proto, b->proto)) {
+            return b;
+        }
+        b = b->next;
+    }
+    return NULL;
+}
+
+/**
+ * @note Only one browse sync object is kept per parsed packet.  If @p sync
+ *       is already allocated for a *different* browse, this function returns
+ *       the existing object unchanged — callers that compare
+ *       out_sync_browse->browse against the current browse will silently
+ *       skip the update.  This is acceptable because mDNS answers for
+ *       multiple browsed service types in a single packet are uncommon.
+ *       The returned object must still be checked by the caller because NULL
+ *       means allocation failed when @p browse was non-NULL.
+ */
+mdns_browse_sync_t *mdns_priv_browse_ensure_sync(mdns_browse_t *browse, mdns_browse_sync_t *sync)
+{
+    if (!browse) {
+        return sync;
+    }
+    if (!sync) {
+        sync = (mdns_browse_sync_t *)mdns_mem_malloc(sizeof(mdns_browse_sync_t));
+        if (!sync) {
+            HOOK_MALLOC_FAILED;
+            return NULL;
+        }
+        sync->browse = browse;
+        sync->sync_result = NULL;
+    }
+    return sync;
+}
+
+void mdns_priv_browse_staged_ip_free(mdns_browse_staged_ip_t *staged)
+{
+    while (staged) {
+        mdns_browse_staged_ip_t *next = staged->next;
+        mdns_mem_free(staged);
+        staged = next;
+    }
+}
+
+esp_err_t mdns_priv_browse_stage_ip(mdns_browse_staged_ip_t **staged, const char *hostname, esp_ip_addr_t *ip,
+                                    mdns_if_t tcpip_if, mdns_ip_protocol_t ip_protocol, uint32_t ttl)
+{
+    mdns_browse_staged_ip_t *item = (mdns_browse_staged_ip_t *)mdns_mem_malloc(sizeof(mdns_browse_staged_ip_t));
+    if (!item) {
+        HOOK_MALLOC_FAILED;
+        return ESP_ERR_NO_MEM;
+    }
+    memset(item, 0, sizeof(mdns_browse_staged_ip_t));
+    strncpy(item->hostname, hostname, MDNS_NAME_BUF_LEN - 1);
+    item->hostname[MDNS_NAME_BUF_LEN - 1] = '\0';
+    item->ip = *ip;
+    item->tcpip_if = tcpip_if;
+    item->ip_protocol = ip_protocol;
+    item->ttl = ttl;
+    item->next = *staged;
+    *staged = item;
+    return ESP_OK;
+}
+
+/**
+ * @brief Apply packet-staged A/AAAA records after SRV hostnames are known
+ *
+ * @note Each staged address is applied via mdns_priv_browse_result_add_ip(), which
+ *       attaches the address only to the first browse result with a matching
+ *       hostname on the same interface and IP protocol. Additional instances that
+ *       share the same target host do not receive a copy automatically.
+ */
+void mdns_priv_browse_apply_staged_ips(mdns_browse_t *browse, mdns_browse_staged_ip_t *staged,
+                                       mdns_browse_sync_t *out_sync_browse)
+{
+    if (!browse || !staged || !out_sync_browse || out_sync_browse->browse != browse) {
+        return;
+    }
+    while (staged) {
+        mdns_priv_browse_result_add_ip(browse, staged->hostname, &staged->ip, staged->tcpip_if,
+                                       staged->ip_protocol, staged->ttl, out_sync_browse);
+        staged = staged->next;
+    }
+}
+
+void mdns_priv_browse_result_add_ptr(mdns_browse_t *browse, const char *instance, const char *service, const char *proto,
+                                     mdns_if_t tcpip_if, mdns_ip_protocol_t ip_protocol, uint32_t ttl,
+                                     mdns_browse_sync_t *out_sync_browse)
+{
+    if (!browse || !out_sync_browse || out_sync_browse->browse != browse
+            || mdns_utils_str_null_or_empty(instance) || mdns_utils_str_null_or_empty(service)
+            || mdns_utils_str_null_or_empty(proto)) {
+        return;
+    }
+    mdns_result_t *r = browse->result;
+    while (r) {
+        if (r->esp_netif == mdns_priv_get_esp_netif(tcpip_if) && r->ip_protocol == ip_protocol &&
+                !mdns_utils_str_null_or_empty(r->instance_name) && !strcasecmp(instance, r->instance_name) &&
+                !mdns_utils_str_null_or_empty(r->service_type) && !strcasecmp(service, r->service_type) &&
+                !mdns_utils_str_null_or_empty(r->proto) && !strcasecmp(proto, r->proto)) {
+            if (r->ttl != ttl) {
+                uint32_t previous_ttl = r->ttl;
+                if (r->ttl == 0) {
+                    r->ttl = ttl;
+                } else {
+                    mdns_priv_query_update_result_ttl(r, ttl);
+                }
+                if (previous_ttl != r->ttl) {
+                    add_browse_result(out_sync_browse, r);
+                }
+            }
+            return;
+        }
+        r = r->next;
+    }
+
+    r = (mdns_result_t *)mdns_mem_malloc(sizeof(mdns_result_t));
+    if (!r) {
+        HOOK_MALLOC_FAILED;
+        return;
+    }
+    memset(r, 0, sizeof(mdns_result_t));
+    r->instance_name = mdns_mem_strdup(instance);
+    r->service_type = mdns_mem_strdup(service);
+    r->proto = mdns_mem_strdup(proto);
+    if (!r->instance_name || !r->service_type || !r->proto) {
+        HOOK_MALLOC_FAILED;
+        mdns_mem_free(r->instance_name);
+        mdns_mem_free(r->service_type);
+        mdns_mem_free(r->proto);
+        mdns_mem_free(r);
+        return;
+    }
+    r->esp_netif = mdns_priv_get_esp_netif(tcpip_if);
+    r->ip_protocol = ip_protocol;
+    r->ttl = ttl;
+    r->next = browse->result;
+    browse->result = r;
+    add_browse_result(out_sync_browse, r);
+}
+
 mdns_browse_t *mdns_priv_browse_find(mdns_name_t *name, uint16_t type, mdns_if_t tcpip_if, mdns_ip_protocol_t ip_protocol)
 {
     mdns_browse_t *b = s_browse;
@@ -243,6 +412,14 @@ static void sync_browse_result_link_free(mdns_browse_sync_t *browse_sync)
         mdns_mem_free(need_free);
     }
     mdns_mem_free(browse_sync);
+}
+
+void mdns_priv_browse_sync_free(mdns_browse_sync_t *browse_sync)
+{
+    if (!browse_sync) {
+        return;
+    }
+    sync_browse_result_link_free(browse_sync);
 }
 
 void mdns_priv_browse_action(mdns_action_t *action, mdns_action_subtype_t type)
@@ -310,7 +487,12 @@ static esp_err_t add_browse_result(mdns_browse_sync_t *sync_browse, mdns_result_
 }
 
 /**
- * @brief  Called from parser to add A/AAAA data to search result
+ * @brief  Called from parser to add A/AAAA data to browse result
+ *
+ * @note Only the first browse result with a matching @p hostname (same interface
+ *       and IP protocol) receives the address. This predates browse staging and
+ *       also limits mdns_priv_browse_apply_staged_ips() when several instances
+ *       share one target host.
  */
 void mdns_priv_browse_result_add_ip(mdns_browse_t *browse, const char *hostname, esp_ip_addr_t *ip,
                                     mdns_if_t tcpip_if, mdns_ip_protocol_t ip_protocol, uint32_t ttl, mdns_browse_sync_t *out_sync_browse)
@@ -373,17 +555,35 @@ void mdns_priv_browse_result_add_ip(mdns_browse_t *browse, const char *hostname,
     }
 }
 
+static bool txt_values_equal(const char *a, const char *b, uint8_t len)
+{
+    if (len == 0) {
+        return true;
+    }
+    if (!a || !b) {
+        return a == b;
+    }
+    return memcmp(a, b, len) == 0;
+}
+
 static bool is_txt_item_in_list(mdns_txt_item_t txt, uint8_t txt_value_len, mdns_txt_item_t *txt_list, uint8_t *txt_value_len_list, size_t txt_count)
 {
     for (size_t i = 0; i < txt_count; i++) {
-        if (strcmp(txt.key, txt_list[i].key) == 0) {
-            if (txt_value_len == txt_value_len_list[i] && memcmp(txt.value, txt_list[i].value, txt_value_len) == 0) {
-                return true;
-            } else {
-                // The key value is unique, so there is no need to continue searching.
-                return false;
+        if (mdns_utils_str_null_or_empty(txt.key) || mdns_utils_str_null_or_empty(txt_list[i].key)) {
+            if (mdns_utils_str_null_or_empty(txt.key) != mdns_utils_str_null_or_empty(txt_list[i].key)) {
+                continue;
             }
+        } else if (strcmp(txt.key, txt_list[i].key) != 0) {
+            continue;
         }
+        if (txt_value_len != txt_value_len_list[i]) {
+            return false;
+        }
+        if (txt_values_equal(txt.value, txt_list[i].value, txt_value_len)) {
+            return true;
+        }
+        // The key value is unique, so there is no need to continue searching.
+        return false;
     }
     return false;
 }
@@ -395,12 +595,10 @@ void mdns_priv_browse_result_add_txt(mdns_browse_t *browse, const char *instance
                                      mdns_txt_item_t *txt, uint8_t *txt_value_len, size_t txt_count, mdns_if_t tcpip_if, mdns_ip_protocol_t ip_protocol,
                                      uint32_t ttl, mdns_browse_sync_t *out_sync_browse)
 {
-    if (out_sync_browse->browse == NULL) {
-        return;
-    } else {
-        if (out_sync_browse->browse != browse) {
-            return;
-        }
+    if (out_sync_browse->browse == NULL || out_sync_browse->browse != browse
+            || mdns_utils_str_null_or_empty(instance) || mdns_utils_str_null_or_empty(service)
+            || mdns_utils_str_null_or_empty(proto)) {
+        goto free_txt;
     }
     mdns_result_t *r = browse->result;
     while (r) {
@@ -462,11 +660,12 @@ void mdns_priv_browse_result_add_txt(mdns_browse_t *browse, const char *instance
     r->service_type = mdns_mem_strdup(service);
     r->proto = mdns_mem_strdup(proto);
     if (!r->instance_name || !r->service_type || !r->proto) {
+        HOOK_MALLOC_FAILED;
         mdns_mem_free(r->instance_name);
         mdns_mem_free(r->service_type);
         mdns_mem_free(r->proto);
         mdns_mem_free(r);
-        return;
+        goto free_txt;
     }
     r->txt = txt;
     r->txt_value_len = txt_value_len;
@@ -520,13 +719,20 @@ void mdns_priv_browse_result_add_srv(mdns_browse_t *browse, const char *hostname
             return;
         }
     }
+    if (mdns_utils_str_null_or_empty(instance) || mdns_utils_str_null_or_empty(service)
+            || mdns_utils_str_null_or_empty(proto)) {
+        return;
+    }
     mdns_result_t *r = browse->result;
     while (r) {
         if (r->esp_netif == mdns_priv_get_esp_netif(tcpip_if) && r->ip_protocol == ip_protocol &&
                 !mdns_utils_str_null_or_empty(r->instance_name) && !strcasecmp(instance, r->instance_name) &&
                 !mdns_utils_str_null_or_empty(r->service_type) && !strcasecmp(service, r->service_type) &&
                 !mdns_utils_str_null_or_empty(r->proto) && !strcasecmp(proto, r->proto)) {
-            if (mdns_utils_str_null_or_empty(r->hostname) || strcasecmp(hostname, r->hostname)) {
+            if (mdns_utils_str_null_or_empty(r->hostname)
+                    || mdns_utils_str_null_or_empty(hostname)
+                    || strcasecmp(hostname, r->hostname)) {
+                mdns_mem_free((char *)r->hostname);
                 r->hostname = mdns_mem_strdup(hostname);
                 r->port = port;
                 if (!r->hostname) {

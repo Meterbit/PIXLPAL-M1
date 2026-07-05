@@ -189,11 +189,43 @@ extern void mtb_Download_Multi_Svg(const Mtb_OnlineImage_t* images, size_t drawS
 extern bool mtb_Draw_Multi_Svg(size_t drawSVGsCount = 2, ImgWipeFn_ptr wipePreviousImgs = mtb_Do_Nothing_Void_Fn);
 
 /**
- * @brief Play a GIF animation stored on LittleFS.
+ * @brief Handle of the currently-running GIF animation task; NULL when no animation is playing.
+ *
+ * Can be polled (e.g. `gifAnimTask_Handle != NULL`) to check whether a GIF is still animating,
+ * or via `mtb_Is_Local_Gif_Playing()`.
+ */
+extern TaskHandle_t gifAnimTask_Handle;
+
+/**
+ * @brief Start playing a GIF animation stored on LittleFS.
+ *
+ * Non-blocking: decodes and validates just enough of the file to confirm it can be played
+ * (LittleFS mounted, file opens, dimensions fit within 128x64), then hands the frame-by-frame
+ * decode/render loop off to a dedicated background task and returns immediately. If another
+ * GIF animation is already playing, it is stopped (synchronously) before the new one starts.
  * @param dAnim  Descriptor specifying the path, position, and loop count.
- * @return 0 on normal completion, non-zero if the animation was aborted early.
+ * @return 0 if the animation task was started successfully, non-zero if the file/dimensions
+ *         are invalid or the task could not be created.
  */
 extern uint8_t mtb_Draw_Local_Gif(const Mtb_LocalAnim_t &dAnim);
+
+/**
+ * @brief Request the currently-running GIF animation (if any) to stop.
+ *
+ * Call this before drawing something else to the panel so the animation task doesn't race
+ * with and overwrite the new content.
+ * @param waitUntilStopped  If true (default), blocks until the animation task has fully
+ *                          exited and freed its resources. If false, returns immediately
+ *                          after requesting the stop; use `mtb_Is_Local_Gif_Playing()` to
+ *                          poll for completion.
+ */
+extern void mtb_Stop_Local_Gif(bool waitUntilStopped = true);
+
+/**
+ * @brief Check whether a GIF animation task is currently running.
+ * @return true if an animation is in progress, false otherwise.
+ */
+extern bool mtb_Is_Local_Gif_Playing(void);
 
 /**
  * @brief Decode and draw a PNG already loaded into a PSRAM buffer.
@@ -366,7 +398,7 @@ extern void mtb_Panel_Clear_Screen(void);
  * @param g  Green component.
  * @param b  Blue component.
  */
-extern void mtb_Panel_Draw_PixelRGB(int16_t x, int16_t y, uint8_t r, uint8_t g, uint8_t b);
+extern void mtb_Panel_Draw_PixelRGB888(int16_t x, int16_t y, uint8_t r, uint8_t g, uint8_t b);
 
 /**
  * @brief Draw a single pixel at (x, y) with the given RGB565 colour.
@@ -374,7 +406,7 @@ extern void mtb_Panel_Draw_PixelRGB(int16_t x, int16_t y, uint8_t r, uint8_t g, 
  * @param y      Y coordinate.
  * @param color  Pixel colour (RGB565).
  */
-extern void mtb_Panel_Draw_Pixel565(int16_t x, int16_t y, uint16_t color);
+extern void mtb_Panel_Draw_PixelRGB565(int16_t x, int16_t y, uint16_t color);
 
 /**
  * @brief Draw a straight line from (x1, y1) to (x2, y2).

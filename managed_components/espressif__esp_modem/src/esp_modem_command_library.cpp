@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2021-2025 Espressif Systems (Shanghai) CO LTD
+ * SPDX-FileCopyrightText: 2021-2026 Espressif Systems (Shanghai) CO LTD
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -89,10 +89,9 @@ template <typename T> command_result generic_get_string(CommandableIf *t, const 
         std::string_view response((char *)data, len);
         while ((pos = response.find('\n')) != std::string::npos) {
             std::string_view token = response.substr(0, pos);
-            for (auto it = token.end() - 1; it > token.begin(); it--) // strip trailing CR or LF
-                if (*it == '\r' || *it == '\n') {
-                    token.remove_suffix(1);
-                }
+            while (!token.empty() && (token.back() == '\r' || token.back() == '\n')) {
+                token.remove_suffix(1);
+            }
             ESP_LOGV(TAG, "Token: {%.*s}\n", static_cast<int>(token.size()), token.data());
 
             if (token.find("OK") != std::string::npos) {
@@ -187,7 +186,7 @@ command_result get_battery_status(CommandableIf *t, int &voltage, int &bcs, int 
     out = out.substr(pattern.size());
     int pos, value, property = 0;
     while ((pos = out.find(',')) != std::string::npos) {
-        if (std::from_chars(out.data(), out.data() + pos, value).ec == std::errc::invalid_argument) {
+        if (std::from_chars(out.data(), out.data() + pos, value).ec != std::errc{}) {
             return command_result::FAIL;
         }
         switch (property++) {
@@ -200,7 +199,7 @@ command_result get_battery_status(CommandableIf *t, int &voltage, int &bcs, int 
         }
         out = out.substr(pos + 1);
     }
-    if (std::from_chars(out.data(), out.data() + out.size(), voltage).ec == std::errc::invalid_argument) {
+    if (std::from_chars(out.data(), out.data() + out.size(), voltage).ec != std::errc{}) {
         return command_result::FAIL;
     }
     return command_result::OK;
@@ -224,10 +223,13 @@ command_result get_battery_status_sim7xxx(CommandableIf *t, int &voltage, int &b
     }
 
     int volt, fraction;
-    if (std::from_chars(out.data() + num_pos, out.data() + dot_pos, volt).ec == std::errc::invalid_argument) {
+    if (std::from_chars(out.data() + num_pos, out.data() + dot_pos, volt).ec != std::errc{}) {
         return command_result::FAIL;
     }
-    if (std::from_chars(out.data() + dot_pos + 1, out.data() + out.size() - 1, fraction).ec == std::errc::invalid_argument) {
+    if (dot_pos + 2 > out.size()) {
+        return command_result::FAIL;
+    }
+    if (std::from_chars(out.data() + dot_pos + 1, out.data() + out.size() - 1, fraction).ec != std::errc{}) {
         return command_result::FAIL;
     }
     bcl = bcs = -1; // not available for these models
@@ -256,14 +258,14 @@ command_result get_operator_name(CommandableIf *t, std::string &operator_name, i
         if (property++ == 2) {  // operator name is after second comma (as a 3rd property of COPS string)
             operator_name = out.substr(++pos);
             auto additional_comma = operator_name.find(',');    // check for the optional ACT
-            if (additional_comma != std::string::npos && std::from_chars(operator_name.data() + additional_comma + 1, operator_name.data() + operator_name.length(), act).ec != std::errc::invalid_argument) {
+            if (additional_comma != std::string::npos && std::from_chars(operator_name.data() + additional_comma + 1, operator_name.data() + operator_name.length(), act).ec == std::errc{}) {
                 operator_name = operator_name.substr(0, additional_comma);
             }
             // and strip quotes if present
             auto quote1 = operator_name.find('"');
             auto quote2 = operator_name.rfind('"');
-            if (quote1 != std::string::npos && quote2 != std::string::npos) {
-                operator_name = operator_name.substr(quote1 + 1, quote2 - 1);
+            if (quote1 != std::string::npos && quote2 != std::string::npos && quote2 > quote1) {
+                operator_name = operator_name.substr(quote1 + 1, quote2 - quote1 - 1);
             }
             return command_result::OK;
         }
@@ -378,26 +380,58 @@ command_result set_cmux(CommandableIf *t)
     return generic_command_common(t, "AT+CMUX=0\r");
 }
 
-command_result read_pin(CommandableIf *t, bool &pin_ok)
+static sim_pin_state parse_cpin_response(const std::string &out)
+{
+    if (out.find("+CPIN:") == std::string::npos) {
+        return sim_pin_state::UNKNOWN;
+    }
+    if (out.find("READY") != std::string::npos) {
+        return sim_pin_state::READY;
+    }
+    if (out.find("SIM PUK2") != std::string::npos || out.find("SIM PUK") != std::string::npos) {
+        return sim_pin_state::NEED_PUK;
+    }
+    if (out.find("SIM PIN2") != std::string::npos || out.find("SIM PIN") != std::string::npos) {
+        return sim_pin_state::NEED_PIN;
+    }
+    return sim_pin_state::OTHER;
+}
+
+command_result read_pin_state(CommandableIf *t, sim_pin_state &state)
 {
     ESP_LOGV(TAG, "%s", __func__);
     std::string out;
     auto ret = generic_get_string(t, "AT+CPIN?\r", out);
     if (ret != command_result::OK) {
+        state = sim_pin_state::UNKNOWN;
         return ret;
     }
-    if (out.find("+CPIN:") == std::string::npos) {
+    state = parse_cpin_response(out);
+    if (state == sim_pin_state::UNKNOWN) {
         return command_result::FAIL;
     }
-    if (out.find("SIM PIN") != std::string::npos || out.find("SIM PUK") != std::string::npos) {
-        pin_ok = false;
-        return command_result::OK;
+    return command_result::OK;
+}
+
+command_result read_pin(CommandableIf *t, bool &pin_ok)
+{
+    ESP_LOGV(TAG, "%s", __func__);
+    sim_pin_state state;
+    auto ret = read_pin_state(t, state);
+    if (ret != command_result::OK) {
+        return ret;
     }
-    if (out.find("READY") != std::string::npos) {
+    switch (state) {
+    case sim_pin_state::READY:
         pin_ok = true;
         return command_result::OK;
+    case sim_pin_state::NEED_PIN:
+    case sim_pin_state::NEED_PUK:
+        pin_ok = false;
+        return command_result::OK;
+    default:
+        return command_result::FAIL;
     }
-    return command_result::FAIL; // Neither pin-ok, nor waiting for pin/puk -> mark as error
 }
 
 command_result set_pin(CommandableIf *t, const std::string &pin)
@@ -405,6 +439,13 @@ command_result set_pin(CommandableIf *t, const std::string &pin)
     ESP_LOGV(TAG, "%s", __func__);
     std::string set_pin_command = "AT+CPIN=" + pin + "\r";
     return generic_command_common(t, set_pin_command);
+}
+
+command_result reset_pin(CommandableIf *t, const std::string &puk, const std::string &pin)
+{
+    ESP_LOGV(TAG, "%s", __func__);
+    std::string reset_pin_command = "AT+CPIN=" + puk + "," + pin + "\r";
+    return generic_command_common(t, reset_pin_command);
 }
 
 command_result at(CommandableIf *t, const std::string &cmd, std::string &out, int timeout = 500)
@@ -447,10 +488,10 @@ command_result get_signal_quality(CommandableIf *t, int &rssi, int &ber)
         return command_result::FAIL;
     }
 
-    if (std::from_chars(out.data() + rssi_pos, out.data() + ber_pos, rssi).ec == std::errc::invalid_argument) {
+    if (std::from_chars(out.data() + rssi_pos, out.data() + ber_pos, rssi).ec != std::errc{}) {
         return command_result::FAIL;
     }
-    if (std::from_chars(out.data() + ber_pos + 1, out.data() + out.size(), ber).ec == std::errc::invalid_argument) {
+    if (std::from_chars(out.data() + ber_pos + 1, out.data() + out.size(), ber).ec != std::errc{}) {
         return command_result::FAIL;
     }
     return command_result::OK;
@@ -482,7 +523,7 @@ command_result get_network_attachment_state(CommandableIf *t, int &state)
         return command_result::FAIL;
     }
 
-    if (std::from_chars(out.data() + pos, out.data() + out.size(), state).ec == std::errc::invalid_argument) {
+    if (std::from_chars(out.data() + pos, out.data() + out.size(), state).ec != std::errc{}) {
         return command_result::FAIL;
     }
 
@@ -509,7 +550,7 @@ command_result get_radio_state(CommandableIf *t, int &state)
         return command_result::FAIL;
     }
 
-    if (std::from_chars(out.data() + pos, out.data() + out.size(), state).ec == std::errc::invalid_argument) {
+    if (std::from_chars(out.data() + pos, out.data() + out.size(), state).ec != std::errc{}) {
         return command_result::FAIL;
     }
 
@@ -570,12 +611,16 @@ command_result get_network_system_mode(CommandableIf *t, int &mode)
     }
 
     constexpr std::string_view pattern = "+CNSMOD: ";
-    int mode_pos = out.find(",") + 1; // Skip "<n>,"
     if (out.find(pattern) == std::string::npos) {
         return command_result::FAIL;
     }
+    auto comma = out.find(',');
+    if (comma == std::string::npos) {
+        return command_result::FAIL;
+    }
+    size_t mode_pos = comma + 1;
 
-    if (std::from_chars(out.data() + mode_pos, out.data() + out.size(), mode).ec == std::errc::invalid_argument) {
+    if (std::from_chars(out.data() + mode_pos, out.data() + out.size(), mode).ec != std::errc{}) {
         return command_result::FAIL;
     }
 
@@ -602,7 +647,7 @@ command_result get_gnss_power_mode(CommandableIf *t, int &mode)
         return command_result::FAIL;
     }
 
-    if (std::from_chars(out.data() + pos, out.data() + out.size(), mode).ec == std::errc::invalid_argument) {
+    if (std::from_chars(out.data() + pos, out.data() + out.size(), mode).ec != std::errc{}) {
         return command_result::FAIL;
     }
 
@@ -668,7 +713,7 @@ command_result get_network_registration_state(CommandableIf *t, int &state)
     }
 
     // Extract state value (skip the comma)
-    if (std::from_chars(out.data() + state_pos_start + 1, out.data() + state_pos_end, state).ec == std::errc::invalid_argument) {
+    if (std::from_chars(out.data() + state_pos_start + 1, out.data() + state_pos_end, state).ec != std::errc{}) {
         return command_result::FAIL;
     }
 

@@ -25,7 +25,7 @@
  * Each peak function draws a single peak-dot above the bar for that band.
  * This is a header-only implementation file — include it in exactly ONE translation unit.
  *
- * All functions write directly to the HUB75 panel via mtb_Panel_Draw_PixelRGB().
+ * All functions write directly to the HUB75 panel via mtb_Panel_Draw_PixelRGB888().
  * Layout macros (BAR_WIDTH, TOP, NeededWidth) are defined in ledDriver.h and depend
  * on the runtime values of kMatrixWidth, kMatrixHeight, and audioSpecVisual_Set.noOfBands.
  */
@@ -69,14 +69,14 @@ void ColorBars(int band, int barHeight) {
   for (int y = TOP; y >= 2; y--) {
       if(y >= TOP - barHeight){
 
-        mtb_Panel_Draw_PixelRGB(x,y,(band+1)*40,(band+1)*30,255-((band+1)*70));      //middle
-      //   mtb_Panel_Draw_PixelRGB(x,y,band*40,band*30,150-(band*10));      //middle
+        mtb_Panel_Draw_PixelRGB888(x,y,(band+1)*40,(band+1)*30,255-((band+1)*70));      //middle
+      //   mtb_Panel_Draw_PixelRGB888(x,y,band*40,band*30,150-(band*10));      //middle
 
      }
       else {
        // leds[i].fadeToBlackBy( 64 );
 
-      mtb_Panel_Draw_PixelRGB(x,y,0,0,0);
+      mtb_Panel_Draw_PixelRGB888(x,y,0,0,0);
 
       }
     }
@@ -99,14 +99,14 @@ void RedBars(int band, int barHeight) {
   for (int y = TOP; y >= 2; y--) {
       if(y >= TOP - barHeight){
 
-        mtb_Panel_Draw_PixelRGB(x,y,250,0,0);      //middle
-      //   mtb_Panel_Draw_PixelRGB(x,y,band*40,band*30,150-(band*10));      //middle
+        mtb_Panel_Draw_PixelRGB888(x,y,250,0,0);      //middle
+      //   mtb_Panel_Draw_PixelRGB888(x,y,band*40,band*30,150-(band*10));      //middle
 
      }
       else {
        // leds[i].fadeToBlackBy( 64 );
 
-      mtb_Panel_Draw_PixelRGB(x,y,0,0,0);
+      mtb_Panel_Draw_PixelRGB888(x,y,0,0,0);
 
       }
     }
@@ -128,14 +128,14 @@ void Twins(int band, int barHeight) {
 
   for (int y = TOP; y >= 2; y--) {
       if(y >= TOP - barHeight){
-        if((band & 1)==1)mtb_Panel_Draw_PixelRGB(x,y,250,0,0);
-        else mtb_Panel_Draw_PixelRGB(x,y,250,250,0);      //middle
+        if((band & 1)==1)mtb_Panel_Draw_PixelRGB888(x,y,250,0,0);
+        else mtb_Panel_Draw_PixelRGB888(x,y,250,250,0);      //middle
 
      }
       else {
        // leds[i].fadeToBlackBy( 64 );
 
-      mtb_Panel_Draw_PixelRGB(x,y,0,0,0);
+      mtb_Panel_Draw_PixelRGB888(x,y,0,0,0);
 
       }
     }
@@ -157,14 +157,14 @@ void Twins2(int band, int barHeight) {
 
   for (int y = TOP; y >= 2; y--) {
       if(y >= TOP - barHeight){
-        if((band & 1)==1)mtb_Panel_Draw_PixelRGB(x,y,250,0,250);
-        else mtb_Panel_Draw_PixelRGB(x,y,0,250,250);      //middle
+        if((band & 1)==1)mtb_Panel_Draw_PixelRGB888(x,y,250,0,250);
+        else mtb_Panel_Draw_PixelRGB888(x,y,0,250,250);      //middle
 
      }
       else {
        // leds[i].fadeToBlackBy( 64 );
 
-      mtb_Panel_Draw_PixelRGB(x,y,0,0,0);
+      mtb_Panel_Draw_PixelRGB888(x,y,0,0,0);
 
       }
     }
@@ -187,16 +187,16 @@ void TriBars(int band, int barHeight) {
   for (int y = TOP; y >= 2; y--) {
       if(y >= TOP - barHeight){
 
-        if (y < (PANEL_HEIGHT/4)) mtb_Panel_Draw_PixelRGB(x, y,TriBar_RGB_Top );     //Top
-        else if (y > (PANEL_HEIGHT/2)) mtb_Panel_Draw_PixelRGB(x, y, TriBar_RGB_Bottom ); // bottom
-        else  mtb_Panel_Draw_PixelRGB(x,y,TriBar_RGB_Middle);      //middle
-        //else  mtb_Panel_Draw_PixelRGB(x,y,TriBar_Color_Middle_RGB);      //middle
+        if (y < (PANEL_HEIGHT/4)) mtb_Panel_Draw_PixelRGB888(x, y,TriBar_RGB_Top );     //Top
+        else if (y > (PANEL_HEIGHT/2)) mtb_Panel_Draw_PixelRGB888(x, y, TriBar_RGB_Bottom ); // bottom
+        else  mtb_Panel_Draw_PixelRGB888(x,y,TriBar_RGB_Middle);      //middle
+        //else  mtb_Panel_Draw_PixelRGB888(x,y,TriBar_Color_Middle_RGB);      //middle
 
      }
       else {
        // leds[i].fadeToBlackBy( 64 );
 
-      mtb_Panel_Draw_PixelRGB(x,y,0,0,0);
+      mtb_Panel_Draw_PixelRGB888(x,y,0,0,0);
 
       }
     }
@@ -217,16 +217,16 @@ void BoxedBars(int band, int barHeight) {
     for (int y = TOP; y >= 2; y--) {
      if(y >= TOP - barHeight){
 
-      if (y==(TOP - barHeight))mtb_Panel_Draw_PixelRGB(x,y,250,0,0);
-      else if (x==xStart)mtb_Panel_Draw_PixelRGB(x,y,250,0,0); // Border left side of the bars
-      else if(x==xStart+BAR_WIDTH-1)mtb_Panel_Draw_PixelRGB(x,y,250,0,0); // Border right side of the bars
-      else mtb_Panel_Draw_PixelRGB(x,y,0,0,250);
+      if (y==(TOP - barHeight))mtb_Panel_Draw_PixelRGB888(x,y,250,0,0);
+      else if (x==xStart)mtb_Panel_Draw_PixelRGB888(x,y,250,0,0); // Border left side of the bars
+      else if(x==xStart+BAR_WIDTH-1)mtb_Panel_Draw_PixelRGB888(x,y,250,0,0); // Border right side of the bars
+      else mtb_Panel_Draw_PixelRGB888(x,y,0,0,250);
 
      }
       else {
        // leds[i].fadeToBlackBy( 64 );
 
-      mtb_Panel_Draw_PixelRGB(x,y,0,0,0);
+      mtb_Panel_Draw_PixelRGB888(x,y,0,0,0);
 
       }
     }
@@ -246,16 +246,16 @@ void BoxedBars2(int band, int barHeight) {
     for (int y = TOP; y >= 2; y--) {
      if(y >= TOP - barHeight){
 
-      if (y==(TOP - barHeight))mtb_Panel_Draw_PixelRGB(x,y,250,250,250);
-      else if (x==xStart)mtb_Panel_Draw_PixelRGB(x,y,250,250,250); // Border left side of the bars
-      else if(x==xStart+BAR_WIDTH-1)mtb_Panel_Draw_PixelRGB(x,y,250,250,250); // Border right side of the bars
-      else mtb_Panel_Draw_PixelRGB(x,y,0,0,250);
+      if (y==(TOP - barHeight))mtb_Panel_Draw_PixelRGB888(x,y,250,250,250);
+      else if (x==xStart)mtb_Panel_Draw_PixelRGB888(x,y,250,250,250); // Border left side of the bars
+      else if(x==xStart+BAR_WIDTH-1)mtb_Panel_Draw_PixelRGB888(x,y,250,250,250); // Border right side of the bars
+      else mtb_Panel_Draw_PixelRGB888(x,y,0,0,250);
 
      }
       else {
        // leds[i].fadeToBlackBy( 64 );
 
-      mtb_Panel_Draw_PixelRGB(x,y,0,0,0);
+      mtb_Panel_Draw_PixelRGB888(x,y,0,0,0);
 
       }
     }
@@ -276,16 +276,16 @@ void BoxedBars3(int band, int barHeight) {
     for (int y = TOP; y >= 2; y--) {
      if(y >= TOP - barHeight){
 
-      if (y==(TOP - barHeight))mtb_Panel_Draw_PixelRGB(x,y,0,255,0);
-      else if (x==xStart)mtb_Panel_Draw_PixelRGB(x,y,0,255,0); // Border left side of the bars
-      else if(x==xStart+BAR_WIDTH-1)mtb_Panel_Draw_PixelRGB(x,y,0,255,0); // Border right side of the bars
-      else mtb_Panel_Draw_PixelRGB(x,y,200,200,0);
+      if (y==(TOP - barHeight))mtb_Panel_Draw_PixelRGB888(x,y,0,255,0);
+      else if (x==xStart)mtb_Panel_Draw_PixelRGB888(x,y,0,255,0); // Border left side of the bars
+      else if(x==xStart+BAR_WIDTH-1)mtb_Panel_Draw_PixelRGB888(x,y,0,255,0); // Border right side of the bars
+      else mtb_Panel_Draw_PixelRGB888(x,y,200,200,0);
 
      }
       else {
        // leds[i].fadeToBlackBy( 64 );
 
-      mtb_Panel_Draw_PixelRGB(x,y,0,0,0);
+      mtb_Panel_Draw_PixelRGB888(x,y,0,0,0);
 
       }
     }
@@ -310,17 +310,17 @@ void centerBars(int band, int barHeight) {
      // if(y >= TOP - barHeight){
 
     if(y==(barHeight/2)){
-          mtb_Panel_Draw_PixelRGB(x,center+y,Center_RGB_Edge);      //edge
-         mtb_Panel_Draw_PixelRGB(x,center-y-1,Center_RGB_Edge);      //edge
+          mtb_Panel_Draw_PixelRGB888(x,center+y,Center_RGB_Edge);      //edge
+         mtb_Panel_Draw_PixelRGB888(x,center-y-1,Center_RGB_Edge);      //edge
       }
     else  {
-    mtb_Panel_Draw_PixelRGB(x,center+y,Center_RGB_Middle);      //middle
-    mtb_Panel_Draw_PixelRGB(x,center-y-1,Center_RGB_Middle);      //middle
+    mtb_Panel_Draw_PixelRGB888(x,center+y,Center_RGB_Middle);      //middle
+    mtb_Panel_Draw_PixelRGB888(x,center-y-1,Center_RGB_Middle);      //middle
     }
      }
      for (int y= barHeight/2;y<TOP;y++){
-      mtb_Panel_Draw_PixelRGB(x, center+y+1, 0, 0, 0); // make unused pixel bottom black
-      if((center-y-2)>1)mtb_Panel_Draw_PixelRGB(x, center-y-2, 0, 0, 0); // make unused pixel top black except those of the VU meter
+      mtb_Panel_Draw_PixelRGB888(x, center+y+1, 0, 0, 0); // make unused pixel bottom black
+      if((center-y-2)>1)mtb_Panel_Draw_PixelRGB888(x, center-y-2, 0, 0, 0); // make unused pixel top black except those of the VU meter
      }
 
 
@@ -346,17 +346,17 @@ void centerBars2(int band, int barHeight) {
      // if(y >= TOP - barHeight){
 
     if(y==(barHeight/2)){
-          mtb_Panel_Draw_PixelRGB(x,center+y,Center_RGB_Edge2);      //edge
-         mtb_Panel_Draw_PixelRGB(x,center-y-1,Center_RGB_Edge2);      //edge
+          mtb_Panel_Draw_PixelRGB888(x,center+y,Center_RGB_Edge2);      //edge
+         mtb_Panel_Draw_PixelRGB888(x,center-y-1,Center_RGB_Edge2);      //edge
       }
     else  {
-    mtb_Panel_Draw_PixelRGB(x,center+y,Center_RGB_Middle2);      //middle
-    mtb_Panel_Draw_PixelRGB(x,center-y-1,Center_RGB_Middle2);      //middle
+    mtb_Panel_Draw_PixelRGB888(x,center+y,Center_RGB_Middle2);      //middle
+    mtb_Panel_Draw_PixelRGB888(x,center-y-1,Center_RGB_Middle2);      //middle
     }
      }
      for (int y= barHeight/2;y<TOP;y++){
-      mtb_Panel_Draw_PixelRGB(x, center+y+1, 0, 0, 0); // make unused pixel bottom black
-      if((center-y-2)>1)mtb_Panel_Draw_PixelRGB(x, center-y-2, 0, 0, 0); // make unused pixel top black except those of the VU meter
+      mtb_Panel_Draw_PixelRGB888(x, center+y+1, 0, 0, 0); // make unused pixel bottom black
+      if((center-y-2)>1)mtb_Panel_Draw_PixelRGB888(x, center-y-2, 0, 0, 0); // make unused pixel top black except those of the VU meter
      }
 
 
@@ -377,13 +377,13 @@ void BlackBars(int band, int barHeight) {
   for (int y = TOP; y >= 2; y--) {
       if(y >= TOP - barHeight){
 
-        mtb_Panel_Draw_PixelRGB(x,y,0,0,0);      //middle
+        mtb_Panel_Draw_PixelRGB888(x,y,0,0,0);      //middle
 
      }
       else {
        // leds[i].fadeToBlackBy( 64 );
 
-      mtb_Panel_Draw_PixelRGB(x,y,0,0,0);
+      mtb_Panel_Draw_PixelRGB888(x,y,0,0,0);
 
       }
     }
@@ -406,7 +406,7 @@ void RedPeak(int band) {
   int peakHeight = TOP - peak[band] - 1;
   for (int x = xStart; x < xStart + BAR_WIDTH; x++) {
    // matrix->drawPixel(x, peakHeight, CHSV(0,255,0));
-   mtb_Panel_Draw_PixelRGB(x,peakHeight,255,0,0);
+   mtb_Panel_Draw_PixelRGB888(x,peakHeight,255,0,0);
      }
  // #endif
 }
@@ -422,7 +422,7 @@ void WhitePeak(int band) {
   int peakHeight = TOP - peak[band] - 1;
   for (int x = xStart; x < xStart + BAR_WIDTH; x++) {
    // matrix->drawPixel(x, peakHeight, CHSV(0,255,0));
-   mtb_Panel_Draw_PixelRGB(x,peakHeight,255,255,255);
+   mtb_Panel_Draw_PixelRGB888(x,peakHeight,255,255,255);
      }
  // #endif
 }
@@ -438,7 +438,7 @@ void BluePeak(int band) {
   int peakHeight = TOP - peak[band] - 1;
   for (int x = xStart; x < xStart + BAR_WIDTH; x++) {
    // matrix->drawPixel(x, peakHeight, CHSV(0,255,0));
-   mtb_Panel_Draw_PixelRGB(x,peakHeight,0,0,255);
+   mtb_Panel_Draw_PixelRGB888(x,peakHeight,0,0,255);
      }
  // #endif
 }
@@ -454,8 +454,8 @@ void DoublePeak(int band) {
   int peakHeight = TOP - peak[band] - 1;
   for (int x = xStart; x < xStart + BAR_WIDTH; x++) {
    // matrix->drawPixel(x, peakHeight, CHSV(0,255,0));
-   mtb_Panel_Draw_PixelRGB(x,peakHeight,0,0,255);
-   mtb_Panel_Draw_PixelRGB(x,peakHeight+1,0,0,255);
+   mtb_Panel_Draw_PixelRGB888(x,peakHeight,0,0,255);
+   mtb_Panel_Draw_PixelRGB888(x,peakHeight+1,0,0,255);
      }
 
 }
@@ -471,9 +471,9 @@ void TriPeak(int band) {
   for (int x = xStart; x < xStart + BAR_WIDTH; x++) {
 
 
-  if (peakHeight < (PANEL_HEIGHT/4)) mtb_Panel_Draw_PixelRGB(x,peakHeight,TriBar_RGB_Top); //Top red
-    else if (peakHeight > (PANEL_HEIGHT/2)) mtb_Panel_Draw_PixelRGB(x,peakHeight,TriBar_RGB_Bottom); //green
-    else mtb_Panel_Draw_PixelRGB(x,peakHeight,TriBar_RGB_Middle); //yellow
+  if (peakHeight < (PANEL_HEIGHT/4)) mtb_Panel_Draw_PixelRGB888(x,peakHeight,TriBar_RGB_Top); //Top red
+    else if (peakHeight > (PANEL_HEIGHT/2)) mtb_Panel_Draw_PixelRGB888(x,peakHeight,TriBar_RGB_Bottom); //green
+    else mtb_Panel_Draw_PixelRGB888(x,peakHeight,TriBar_RGB_Middle); //yellow
 
   }
 }
@@ -494,9 +494,9 @@ void GradientBars(int band, int barHeight) {
     for (int y = TOP; y >= 2; y--) {
       if (y >= TOP - barHeight) {
         int colorValue = mappers(y, TOP - barHeight, TOP, 0, 255);
-        mtb_Panel_Draw_PixelRGB(x, y, colorValue, colorValue, 255 - colorValue);
+        mtb_Panel_Draw_PixelRGB888(x, y, colorValue, colorValue, 255 - colorValue);
       } else {
-        mtb_Panel_Draw_PixelRGB(x, y, 0, 0, 0);
+        mtb_Panel_Draw_PixelRGB888(x, y, 0, 0, 0);
       }
     }
   }
@@ -515,12 +515,12 @@ void CheckerboardBars(int band, int barHeight) {
     for (int y = TOP; y >= 2; y--) {
       if (y >= TOP - barHeight) {
         if (((x + y) % 2) == 0) {
-          mtb_Panel_Draw_PixelRGB(x, y, 255, 255, 255);
+          mtb_Panel_Draw_PixelRGB888(x, y, 255, 255, 255);
         } else {
-          mtb_Panel_Draw_PixelRGB(x, y, 0, 0, 0);
+          mtb_Panel_Draw_PixelRGB888(x, y, 0, 0, 0);
         }
       } else {
-        mtb_Panel_Draw_PixelRGB(x, y, 0, 0, 0);
+        mtb_Panel_Draw_PixelRGB888(x, y, 0, 0, 0);
       }
     }
   }
@@ -539,9 +539,9 @@ void RainbowGradientBars(int band, int barHeight) {
     for (int y = TOP; y >= 2; y--) {
       if (y >= TOP - barHeight) {
         int hue = mappers(y, TOP - barHeight, TOP, 0, 255);
-        mtb_Panel_Draw_PixelRGB(x, y, hue, 255, 255 - hue);
+        mtb_Panel_Draw_PixelRGB888(x, y, hue, 255, 255 - hue);
       } else {
-        mtb_Panel_Draw_PixelRGB(x, y, 0, 0, 0);
+        mtb_Panel_Draw_PixelRGB888(x, y, 0, 0, 0);
       }
     }
   }
@@ -560,12 +560,12 @@ void StripedBars(int band, int barHeight) {
     for (int y = TOP; y >= 2; y--) {
       if (y >= TOP - barHeight) {
         if ((y / 2) % 2 == 0) {
-          mtb_Panel_Draw_PixelRGB(x, y, 0, 255, 0);
+          mtb_Panel_Draw_PixelRGB888(x, y, 0, 255, 0);
         } else {
-          mtb_Panel_Draw_PixelRGB(x, y, 0, 0, 255);
+          mtb_Panel_Draw_PixelRGB888(x, y, 0, 0, 255);
         }
       } else {
-        mtb_Panel_Draw_PixelRGB(x, y, 0, 0, 0);
+        mtb_Panel_Draw_PixelRGB888(x, y, 0, 0, 0);
       }
     }
   }
@@ -584,12 +584,12 @@ void DiagonalBars(int band, int barHeight) {
     for (int y = TOP; y >= 2; y--) {
       if (y >= TOP - barHeight) {
         if ((x + y) % 10 < 5) {
-          mtb_Panel_Draw_PixelRGB(x, y, 255, 0, 0);
+          mtb_Panel_Draw_PixelRGB888(x, y, 255, 0, 0);
         } else {
-          mtb_Panel_Draw_PixelRGB(x, y, 0, 0, 255);
+          mtb_Panel_Draw_PixelRGB888(x, y, 0, 0, 255);
         }
       } else {
-        mtb_Panel_Draw_PixelRGB(x, y, 0, 0, 0);
+        mtb_Panel_Draw_PixelRGB888(x, y, 0, 0, 0);
       }
     }
   }
@@ -608,9 +608,9 @@ void VerticalGradientBars(int band, int barHeight) {
     for (int y = TOP; y >= 2; y--) {
       if (y >= TOP - barHeight) {
         int colorValue = mappers(x, xStart, xStart + BAR_WIDTH - 1, 0, 255);
-        mtb_Panel_Draw_PixelRGB(x, y, colorValue, 255 - colorValue, colorValue / 2);
+        mtb_Panel_Draw_PixelRGB888(x, y, colorValue, 255 - colorValue, colorValue / 2);
       } else {
-        mtb_Panel_Draw_PixelRGB(x, y, 0, 0, 0);
+        mtb_Panel_Draw_PixelRGB888(x, y, 0, 0, 0);
       }
     }
   }
@@ -629,12 +629,12 @@ void ZigzagBars(int band, int barHeight) {
     for (int y = TOP; y >= 2; y--) {
       if (y >= TOP - barHeight) {
         if (((x + y) / 5) % 2 == 0) {
-          mtb_Panel_Draw_PixelRGB(x, y, 255, 100, 0);
+          mtb_Panel_Draw_PixelRGB888(x, y, 255, 100, 0);
         } else {
-          mtb_Panel_Draw_PixelRGB(x, y, 100, 0, 255);
+          mtb_Panel_Draw_PixelRGB888(x, y, 100, 0, 255);
         }
       } else {
-        mtb_Panel_Draw_PixelRGB(x, y, 0, 0, 0);
+        mtb_Panel_Draw_PixelRGB888(x, y, 0, 0, 0);
       }
     }
   }
@@ -653,12 +653,12 @@ void DottedBars(int band, int barHeight) {
     for (int y = TOP; y >= 2; y--) {
       if (y >= TOP - barHeight) {
         if ((x % 2 == 0) && (y % 2 == 0)) {
-          mtb_Panel_Draw_PixelRGB(x, y, 0, 255, 255);
+          mtb_Panel_Draw_PixelRGB888(x, y, 0, 255, 255);
         } else {
-          mtb_Panel_Draw_PixelRGB(x, y, 0, 0, 0);
+          mtb_Panel_Draw_PixelRGB888(x, y, 0, 0, 0);
         }
       } else {
-        mtb_Panel_Draw_PixelRGB(x, y, 0, 0, 0);
+        mtb_Panel_Draw_PixelRGB888(x, y, 0, 0, 0);
       }
     }
   }
@@ -677,9 +677,9 @@ void ColorFadeBars(int band, int barHeight) {
     for (int y = TOP; y >= 2; y--) {
       if (y >= TOP - barHeight) {
         int colorValue = mappers(y, TOP - barHeight, TOP, 0, 255);
-        mtb_Panel_Draw_PixelRGB(x, y, colorValue, 50, 255 - colorValue);
+        mtb_Panel_Draw_PixelRGB888(x, y, colorValue, 50, 255 - colorValue);
       } else {
-        mtb_Panel_Draw_PixelRGB(x, y, 0, 0, 0);
+        mtb_Panel_Draw_PixelRGB888(x, y, 0, 0, 0);
       }
     }
   }
@@ -698,9 +698,9 @@ void PulsingBars(int band, int barHeight) {
   for (int x = xStart; x < xStart + BAR_WIDTH; x++) {
     for (int y = TOP; y >= 2; y--) {
       if (y >= TOP - barHeight) {
-        mtb_Panel_Draw_PixelRGB(x, y, pulse, 0, 255 - pulse);
+        mtb_Panel_Draw_PixelRGB888(x, y, pulse, 0, 255 - pulse);
       } else {
-        mtb_Panel_Draw_PixelRGB(x, y, 0, 0, 0);
+        mtb_Panel_Draw_PixelRGB888(x, y, 0, 0, 0);
       }
     }
   }
@@ -720,12 +720,12 @@ void FlashingBars(int band, int barHeight) {
     for (int y = TOP; y >= 2; y--) {
       if (y >= TOP - barHeight) {
         if (flash) {
-          mtb_Panel_Draw_PixelRGB(x, y, 255, 0, 0);
+          mtb_Panel_Draw_PixelRGB888(x, y, 255, 0, 0);
         } else {
-          mtb_Panel_Draw_PixelRGB(x, y, 0, 255, 0);
+          mtb_Panel_Draw_PixelRGB888(x, y, 0, 255, 0);
         }
       } else {
-        mtb_Panel_Draw_PixelRGB(x, y, 0, 0, 0);
+        mtb_Panel_Draw_PixelRGB888(x, y, 0, 0, 0);
       }
     }
   }

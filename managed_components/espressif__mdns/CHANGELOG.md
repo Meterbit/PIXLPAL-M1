@@ -1,5 +1,32 @@
 # Changelog
 
+## [1.11.3](https://github.com/espressif/esp-protocols/commits/mdns-v1.11.3)
+
+### Features
+
+- Add a structure and APIs for allocating TXT items with given value length ([234f9f00](https://github.com/espressif/esp-protocols/commit/234f9f00))
+
+### Bug Fixes
+
+- Fix potential browse null instance crash caught by fuzzer ([953c3a78](https://github.com/espressif/esp-protocols/commit/953c3a78))
+- fix deadlock caused by re-acquiring the service lock ([88c68330](https://github.com/espressif/esp-protocols/commit/88c68330))
+- free dropped TXT query results when max results reached ([f81720b7](https://github.com/espressif/esp-protocols/commit/f81720b7))
+
+## [1.11.2](https://github.com/espressif/esp-protocols/commits/mdns-v1.11.2)
+
+### Bug Fixes
+
+- Fix Unbounded recursion in mDNS name decompression ([95c882c7](https://github.com/espressif/esp-protocols/commit/95c882c7))
+- Fix wrong "truncated AAAA" error ([fc5e6787](https://github.com/espressif/esp-protocols/commit/fc5e6787))
+- Add unit tests for fa84ee6e4 ([8d7b9432](https://github.com/espressif/esp-protocols/commit/8d7b9432))
+- guard null TXT values in browse TXT comparison ([1b4fcb0c](https://github.com/espressif/esp-protocols/commit/1b4fcb0c))
+- plug fuzz harness and browse sync memory leaks ([a8c1dad3](https://github.com/espressif/esp-protocols/commit/a8c1dad3))
+- bounds-copy browse service/proto when parsing packets ([429d7b91](https://github.com/espressif/esp-protocols/commit/429d7b91))
+- reject packets shorter than the DNS header ([b556327e](https://github.com/espressif/esp-protocols/commit/b556327e))
+- Add support for fuzzing browses ([7ec95d04](https://github.com/espressif/esp-protocols/commit/7ec95d04))
+- Fix browse to stage A/AAAA to match PTRs records ([26bfcd14](https://github.com/espressif/esp-protocols/commit/26bfcd14), [#1064](https://github.com/espressif/esp-protocols/issues/1064))
+- queue browse send and trigger per-family browse on GOT_IP events ([26e8dd1e](https://github.com/espressif/esp-protocols/commit/26e8dd1e))
+
 ## [1.11.1](https://github.com/espressif/esp-protocols/commits/mdns-v1.11.1)
 
 ### Bug Fixes

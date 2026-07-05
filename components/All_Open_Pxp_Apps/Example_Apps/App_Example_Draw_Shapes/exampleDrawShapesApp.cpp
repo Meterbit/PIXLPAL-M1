@@ -16,7 +16,7 @@ void exampleDrawShapeApp_Task(void* dApplication){
 // Clear the screen before drawing shapes
 mtb_Panel_Clear_Screen();
 
-mtb_Panel_Draw_Pixel565(21, 36, WHITE); // Draw a single pixel
+mtb_Panel_Draw_PixelRGB565(21, 36, WHITE); // Draw a single pixel
 // Draw some shapes
 // mtb_Panel_Draw_Rect(10, 10, 50, 10, WHITE);
 mtb_Panel_Draw_Circle(21, 36, 19, GREEN_PANTONE);

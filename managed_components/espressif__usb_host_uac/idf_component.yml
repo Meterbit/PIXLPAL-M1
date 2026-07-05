@@ -15,7 +15,7 @@ files:
 issues: https://github.com/espressif/esp-usb/issues
 repository: git://github.com/espressif/esp-usb.git
 repository_info:
-  commit_sha: bb33936af290ee1713b9544895669a98f3864f80
+  commit_sha: 6d24137e14a4f6c8138662a7a074be16a899c2c6
   path: host/class/uac/usb_host_uac
 targets:
 - esp32s2
@@ -25,4 +25,4 @@ targets:
 - esp32h4
 - linux
 url: https://github.com/espressif/esp-usb/tree/master/host/class/uac/usb_host_uac
-version: 1.4.0
+version: 1.5.0

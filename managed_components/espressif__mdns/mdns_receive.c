@@ -598,10 +598,19 @@ static void mdns_parse_packet(mdns_rx_packet_t *packet)
     bool do_not_reply = false;
     mdns_search_once_t *search_result = NULL;
     mdns_browse_t *browse_result = NULL;
+    /*
+     * Browse packet limitations (see also mdns_browse_new() / mdns_browse_notify_t in mdns.h):
+     * - Only one active browse is tracked per incoming packet; if a packet answers
+     *   two different browsed service types, only the last match gets staged A/AAAA.
+     * - Staged A/AAAA are applied via mdns_priv_browse_result_add_ip(), which sets
+     *   addresses on the first browse result per target hostname only.
+     */
+    mdns_browse_t *packet_browse = NULL;
     char *browse_result_instance = NULL;
     char *browse_result_service = NULL;
     char *browse_result_proto = NULL;
     mdns_browse_sync_t *out_sync_browse = NULL;
+    mdns_browse_staged_ip_t *staged_browse_ips = NULL;
 
     DBG_RX_PACKET(packet, data, len);
 
@@ -628,7 +637,7 @@ static void mdns_parse_packet(mdns_rx_packet_t *packet)
 #endif // CONFIG_MDNS_SKIP_SUPPRESSING_OWN_QUERIES
 
     // Check for the minimum size of mdns packet
-    if (len <=  MDNS_HEAD_ADDITIONAL_OFFSET) {
+    if (len < MDNS_HEAD_LEN) {
         return;
     }
 
@@ -755,6 +764,8 @@ static void mdns_parse_packet(mdns_rx_packet_t *packet)
         uint16_t recordIndex = 0;
 
         while (content < (data + len)) {
+            search_result = NULL;
+            browse_result = NULL;
 
             content = mdns_utils_parse_fqdn(data, content, name, len);
             if (!content) {
@@ -808,15 +819,10 @@ static void mdns_parse_packet(mdns_rx_packet_t *packet)
                 search_result = mdns_priv_query_find(name, type, packet->tcpip_if, packet->ip_protocol);
                 browse_result = mdns_priv_browse_find(name, type, packet->tcpip_if, packet->ip_protocol);
                 if (browse_result) {
+                    packet_browse = browse_result;
+                    out_sync_browse = mdns_priv_browse_ensure_sync(browse_result, out_sync_browse);
                     if (!out_sync_browse) {
-                        // will be freed in function `browse_sync`
-                        out_sync_browse = (mdns_browse_sync_t *)mdns_mem_malloc(sizeof(mdns_browse_sync_t));
-                        if (!out_sync_browse) {
-                            HOOK_MALLOC_FAILED;
-                            goto clear_rx_packet;
-                        }
-                        out_sync_browse->browse = browse_result;
-                        out_sync_browse->sync_result = NULL;
+                        goto clear_rx_packet;
                     }
                     if (!browse_result_service) {
                         browse_result_service = (char *)mdns_mem_malloc(MDNS_NAME_BUF_LEN);
@@ -825,7 +831,8 @@ static void mdns_parse_packet(mdns_rx_packet_t *packet)
                             goto clear_rx_packet;
                         }
                     }
-                    memcpy(browse_result_service, browse_result->service, MDNS_NAME_BUF_LEN);
+                    strncpy(browse_result_service, browse_result->service, MDNS_NAME_BUF_LEN - 1);
+                    browse_result_service[MDNS_NAME_BUF_LEN - 1] = '\0';
                     if (!browse_result_proto) {
                         browse_result_proto = (char *)mdns_mem_malloc(MDNS_NAME_BUF_LEN);
                         if (!browse_result_proto) {
@@ -833,7 +840,8 @@ static void mdns_parse_packet(mdns_rx_packet_t *packet)
                             goto clear_rx_packet;
                         }
                     }
-                    memcpy(browse_result_proto, browse_result->proto, MDNS_NAME_BUF_LEN);
+                    strncpy(browse_result_proto, browse_result->proto, MDNS_NAME_BUF_LEN - 1);
+                    browse_result_proto[MDNS_NAME_BUF_LEN - 1] = '\0';
                     if (type == MDNS_TYPE_SRV || type == MDNS_TYPE_TXT) {
                         if (!browse_result_instance) {
                             browse_result_instance = (char *)mdns_mem_malloc(MDNS_NAME_BUF_LEN);
@@ -848,10 +856,21 @@ static void mdns_parse_packet(mdns_rx_packet_t *packet)
             }
 
             if (type == MDNS_TYPE_PTR) {
-                if (!mdns_utils_parse_fqdn(data, data_ptr, name, len)) {
+                mdns_browse_t *browse_for_ptr = mdns_priv_browse_find_ptr(name);
+                size_t rdata_bound = (size_t)(data_ptr + data_len - data);
+                if (!mdns_utils_parse_fqdn(data, data_ptr, name, rdata_bound)) {
                     continue;//error
                 }
-                if (search_result) {
+                if (browse_for_ptr) {
+                    packet_browse = browse_for_ptr;
+                    out_sync_browse = mdns_priv_browse_ensure_sync(browse_for_ptr, out_sync_browse);
+                    if (!out_sync_browse) {
+                        goto clear_rx_packet;
+                    }
+                    mdns_priv_browse_result_add_ptr(browse_for_ptr, name->host, browse_for_ptr->service,
+                                                    browse_for_ptr->proto, packet->tcpip_if, packet->ip_protocol,
+                                                    ttl, out_sync_browse);
+                } else if (search_result) {
                     mdns_priv_query_result_add_ptr(search_result, name->host, name->service, name->proto,
                                                    packet->tcpip_if, packet->ip_protocol, ttl);
                 } else if ((discovery || ours) && !name->sub && is_ours(name)) {
@@ -931,7 +950,8 @@ static void mdns_parse_packet(mdns_rx_packet_t *packet)
                     }
                 }
                 bool is_selfhosted = is_name_selfhosted(name);
-                if (!mdns_utils_parse_fqdn(data, data_ptr + MDNS_SRV_FQDN_OFFSET, name, len)) {
+                size_t rdata_bound = (size_t)(data_ptr + data_len - data);
+                if (!mdns_utils_parse_fqdn(data, data_ptr + MDNS_SRV_FQDN_OFFSET, name, rdata_bound)) {
                     continue;
                 }
                 if (data_ptr + MDNS_SRV_PORT_OFFSET + 1 >= data + len) {
@@ -941,7 +961,9 @@ static void mdns_parse_packet(mdns_rx_packet_t *packet)
                 uint16_t weight = mdns_utils_read_u16(data_ptr, MDNS_SRV_WEIGHT_OFFSET);
                 uint16_t port = mdns_utils_read_u16(data_ptr, MDNS_SRV_PORT_OFFSET);
 
-                if (browse_result) {
+                if (browse_result && !mdns_utils_str_null_or_empty(browse_result_instance)
+                        && !mdns_utils_str_null_or_empty(browse_result_service)
+                        && !mdns_utils_str_null_or_empty(browse_result_proto)) {
                     mdns_priv_browse_result_add_srv(browse_result, name->host, browse_result_instance,
                                                     browse_result_service,
                                                     browse_result_proto, port, packet->tcpip_if, packet->ip_protocol,
@@ -1019,7 +1041,9 @@ static void mdns_parse_packet(mdns_rx_packet_t *packet)
                 size_t txt_count = 0;
 
                 mdns_result_t *result = NULL;
-                if (browse_result) {
+                if (browse_result && !mdns_utils_str_null_or_empty(browse_result_instance)
+                        && !mdns_utils_str_null_or_empty(browse_result_service)
+                        && !mdns_utils_str_null_or_empty(browse_result_proto)) {
                     result_txt_create(data_ptr, data_len, &txt, &txt_value_len, &txt_count);
                     mdns_priv_browse_result_add_txt(browse_result, browse_result_instance, browse_result_service,
                                                     browse_result_proto,
@@ -1096,10 +1120,13 @@ static void mdns_parse_packet(mdns_rx_packet_t *packet)
                 esp_ip_addr_t ip6;
                 ip6.type = ESP_IPADDR_TYPE_V6;
                 memcpy(ip6.u_addr.ip6.addr, data_ptr, MDNS_ANSWER_AAAA_SIZE);
-                if (browse_result) {
-                    mdns_priv_browse_result_add_ip(browse_result, name->host, &ip6, packet->tcpip_if,
-                                                   packet->ip_protocol,
-                                                   ttl, out_sync_browse);
+                if (packet_browse || browse_result) {
+                    mdns_browse_t *browse_ip = browse_result ? browse_result : packet_browse;
+                    out_sync_browse = mdns_priv_browse_ensure_sync(browse_ip, out_sync_browse);
+                    if (out_sync_browse && mdns_priv_browse_stage_ip(&staged_browse_ips, name->host, &ip6,
+                                                                     packet->tcpip_if, packet->ip_protocol, ttl) != ESP_OK) {
+                        goto clear_rx_packet;
+                    }
                 }
                 if (search_result) {
                     //check for more applicable searches (PTR & A/AAAA at the same time)
@@ -1159,10 +1186,13 @@ static void mdns_parse_packet(mdns_rx_packet_t *packet)
                 esp_ip_addr_t ip;
                 ip.type = ESP_IPADDR_TYPE_V4;
                 memcpy(&(ip.u_addr.ip4.addr), data_ptr, 4);
-                if (browse_result) {
-                    mdns_priv_browse_result_add_ip(browse_result, name->host, &ip, packet->tcpip_if,
-                                                   packet->ip_protocol,
-                                                   ttl, out_sync_browse);
+                if (packet_browse || browse_result) {
+                    mdns_browse_t *browse_ip = browse_result ? browse_result : packet_browse;
+                    out_sync_browse = mdns_priv_browse_ensure_sync(browse_ip, out_sync_browse);
+                    if (out_sync_browse && mdns_priv_browse_stage_ip(&staged_browse_ips, name->host, &ip,
+                                                                     packet->tcpip_if, packet->ip_protocol, ttl) != ESP_OK) {
+                        goto clear_rx_packet;
+                    }
                 }
                 if (search_result) {
                     //check for more applicable searches (PTR & A/AAAA at the same time)
@@ -1221,6 +1251,19 @@ static void mdns_parse_packet(mdns_rx_packet_t *packet)
         }
     }
 
+    if (staged_browse_ips) {
+        mdns_browse_t *browse_apply = packet_browse;
+        if (!browse_apply && out_sync_browse) {
+            browse_apply = out_sync_browse->browse;
+        }
+        out_sync_browse = mdns_priv_browse_ensure_sync(browse_apply, out_sync_browse);
+        if (browse_apply && out_sync_browse) {
+            mdns_priv_browse_apply_staged_ips(browse_apply, staged_browse_ips, out_sync_browse);
+        }
+    }
+    mdns_priv_browse_staged_ip_free(staged_browse_ips);
+    staged_browse_ips = NULL;
+
     if (!do_not_reply && mdns_priv_pcb_is_after_probing(packet) && (parsed_packet->questions || parsed_packet->discovery)) {
         mdns_priv_create_answer_from_parsed_packet(parsed_packet);
     }
@@ -1238,6 +1281,8 @@ static void mdns_parse_packet(mdns_rx_packet_t *packet)
     }
 
 clear_rx_packet:
+    mdns_priv_browse_staged_ip_free(staged_browse_ips);
+    staged_browse_ips = NULL;
     while (parsed_packet->questions) {
         mdns_parsed_question_t *question = parsed_packet->questions;
         parsed_packet->questions = parsed_packet->questions->next;
@@ -1274,7 +1319,7 @@ clear_rx_packet:
     mdns_mem_free(browse_result_instance);
     mdns_mem_free(browse_result_service);
     mdns_mem_free(browse_result_proto);
-    mdns_mem_free(out_sync_browse);
+    mdns_priv_browse_sync_free(out_sync_browse);
 }
 
 void mdns_priv_receive_action(mdns_action_t *action, mdns_action_subtype_t type)

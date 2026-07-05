@@ -3,7 +3,10 @@
     "allow": [
       "Bash(sort -t'{' -k1)",
       "Bash(mkdir -p /Users/stephengata/ESP32v5_3_Projects/PIXLPAL-M1/components/All_Open_Pxp_Apps/Meterbit_Apps/App_Meterbit_AI_Pixel_Art)",
-      "Bash(git status *)"
+      "Bash(git status *)",
+      "Read(//Users/stephengata/esp/**)",
+      "Read(//Users/stephengata/**)",
+      "Bash(find / -maxdepth 4 -iname \"export.sh\" -path \"*esp-idf*\")"
     ],
     "additionalDirectories": [
       "/Users/stephengata/ESP32v5_3_Projects/PIXLPAL-M1/components/All_Open_Pxp_Apps/Meterbit_Apps"

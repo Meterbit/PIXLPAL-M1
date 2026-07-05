@@ -534,7 +534,6 @@ const char* json_Github_Pixel_Art_Pngs = R"json(
         "pixellab-hands-reaching-toward-sunlight-1777617926820.png",
         "pixellab-leaf-slowly-falling-from-tree--1777618811241.png",
         "pixellab-man-sitting-on-low-stool-outsi-1777618772221.png",
-        "pixellab-mickey-mouse---1777315885386.png",
         "pixellab-mother-carrying-sleeping-child-1777617954225.png",
         "pixellab-object-left-behind-on-ground-u-1777767907477.png",
         "pixellab-person-standing-at-crossroads--1777618119798.png",

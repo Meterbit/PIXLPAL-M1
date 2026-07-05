@@ -258,13 +258,15 @@ void static dbg_packet(const uint8_t *data, size_t len)
             dbg_printf("%" PRIu32, ttl);
             dbg_printf("[%u] ", data_len);
             if (type == MDNS_TYPE_PTR) {
-                if (!mdns_utils_parse_fqdn(data, data_ptr, name, len)) {
+                size_t rdata_bound = (size_t)(data_ptr + data_len - data);
+                if (!mdns_utils_parse_fqdn(data, data_ptr, name, rdata_bound)) {
                     dbg_printf("ERROR: parse PTR\n");
                     continue;
                 }
                 dbg_printf("%s.%s.%s.%s.\n", name->host, name->service, name->proto, name->domain);
             } else if (type == MDNS_TYPE_SRV) {
-                if (!mdns_utils_parse_fqdn(data, data_ptr + MDNS_SRV_FQDN_OFFSET, name, len)) {
+                size_t rdata_bound = (size_t)(data_ptr + data_len - data);
+                if (!mdns_utils_parse_fqdn(data, data_ptr + MDNS_SRV_FQDN_OFFSET, name, rdata_bound)) {
                     dbg_printf("ERROR: parse SRV\n");
                     continue;
                 }
@@ -293,12 +295,12 @@ void static dbg_packet(const uint8_t *data, size_t len)
                 }
                 dbg_printf("\n");
             } else if (type == MDNS_TYPE_AAAA) {
-                if (data_len < sizeof(esp_ip6_addr_t)) {
+                if (data_len < MDNS_ANSWER_AAAA_SIZE) {
                     dbg_printf("ERROR: truncated AAAA\n");
                     continue;
                 }
-                esp_ip6_addr_t ip6;
-                memcpy(&ip6, data_ptr, sizeof(esp_ip6_addr_t));
+                esp_ip6_addr_t ip6 = {0};
+                memcpy(&ip6.addr, data_ptr, MDNS_ANSWER_AAAA_SIZE);
                 dbg_printf(IPV6STR "\n", IPV62STR(ip6));
             } else if (type == MDNS_TYPE_A) {
                 if (data_len < sizeof(esp_ip4_addr_t)) {

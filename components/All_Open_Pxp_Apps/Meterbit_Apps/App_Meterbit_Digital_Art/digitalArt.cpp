@@ -13,6 +13,8 @@
 #include "my_secret_keys.h"
 #include "mtb_github.h"
 #include "mbedtls/base64.h"
+#include <vector>
+#include <algorithm>
 
 
 
@@ -85,6 +87,8 @@ void digitalArt_App_Task(void* dApplication){
   THIS_APP->mtb_App_Init();
   //************************************************************************************ */
 
+    // mtb_Draw_Local_Gif({"/mtblg/mtbStart.gif", 0, 0, 1});
+
     digitalArtInfo = (Digital_Data_t){
         "pixellab-African-neighborhood-street-wi-1778402642758.png",
         "A little girl with a blue hat and a yellow scarf, sitting on a green hill, looking at the sunset, in the style of a children's book illustration.",
@@ -109,7 +113,7 @@ void digitalArt_App_Task(void* dApplication){
     if (strlen(digitalArtInfo.artPrompt) > 0)
         // promptText.mtb_Write_Colored_String(digitalArtInfo.artPrompt, YELLOW);
 
-    if (litFS_Ready && LittleFS.exists(AI_ART_SPIFFS_PATH)) {
+    if (digitalArtInfo.showPreloadedArt != true && litFS_Ready && LittleFS.exists(AI_ART_SPIFFS_PATH)) {
         Mtb_LocalImage_t savedImg;
         strlcpy(savedImg.imagePath, AI_ART_SPIFFS_PATH, sizeof(savedImg.imagePath));
         savedImg.xAxis = 0;
@@ -272,13 +276,32 @@ void next_DigitalArt(JsonDocument& dCommand){
 
 // ************************************************************************************
 
+// Shuffle-bag state: holds one full pass of indices in random order so that
+// every entry is served exactly once before any entry repeats.
+static std::vector<uint32_t> artShuffleBag;
+static size_t artShuffleBagPos = 0;
+
+static void reshuffleArtBag(uint32_t count) {
+    artShuffleBag.resize(count);
+    for (uint32_t i = 0; i < count; i++) artShuffleBag[i] = i;
+    for (uint32_t i = count - 1; i > 0; i--) {
+        uint32_t j = esp_random() % (i + 1);
+        std::swap(artShuffleBag[i], artShuffleBag[j]);
+    }
+    artShuffleBagPos = 0;
+}
+
 void getRamdomDigitalArtName(char* artName){
     JsonDocument doc;
     deserializeJson(doc, json_Github_Pixel_Art_Pngs);
     JsonArray names = doc["names"].as<JsonArray>();
     uint32_t count = names.size();
     if (count == 0) return;
-    uint32_t idx = esp_random() % count;
+
+    if (artShuffleBag.size() != count || artShuffleBagPos >= artShuffleBag.size())
+        reshuffleArtBag(count);
+
+    uint32_t idx = artShuffleBag[artShuffleBagPos++];
     strlcpy(artName, names[idx].as<const char*>(), 200);
 }
 
