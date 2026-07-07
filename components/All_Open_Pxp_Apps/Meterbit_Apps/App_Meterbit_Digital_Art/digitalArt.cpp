@@ -105,7 +105,7 @@ void digitalArt_App_Task(void* dApplication){
         aiArtRequest_Q = xQueueCreate(3, sizeof(AiArtRequest_t));
 
     Mtb_CentreText_t titleText(0, 20, Terminal6x8, WHITE);
-    Mtb_CentreText_t statusText(0, 32, Terminal6x8, CYAN);
+    Mtb_CentreText_t statusText(63, 20, Terminal8x12, CYAN);
     Mtb_CentreText_t promptText(0, 44, Terminal6x8, YELLOW);
 
     // titleText.mtb_Write_Colored_String("AI PIXEL ART", WHITE);
@@ -139,6 +139,7 @@ void digitalArt_App_Task(void* dApplication){
                         uint8_t changeArtIntv = digitalArtInfo.displayArtChangeIntv;
                         getRamdomDigitalArtName(digitalArtInfo.displayArtName);
                         mtb_Download_Github_File_To_PSRAM(constructPathFromName(digitalArtInfo.displayArtName).c_str(), &buffer, &imageSize, "Meterbit", "METERBIT_PRIV_RES", github_Token);
+                        ESP_LOGI(TAG, "Displaying \"%s\" for %d seconds", digitalArtInfo.displayArtName, changeArtIntv);
                         mtb_Draw_PSRAM_Png(&buffer, &imageSize);
                         while(changeArtIntv-->0 && THIS_APP_IS_ACTIVE == pdTRUE && digitalArtInfo.showPreloadedArt == true) delay(1000);
                     } else delay(1000);
@@ -150,7 +151,8 @@ void digitalArt_App_Task(void* dApplication){
             mtb_Write_Nvs_Struct("DigitArtData", &digitalArtInfo, sizeof(Digital_Data_t));
 
             mtb_Panel_Clear_Screen();
-            statusText.mtb_Write_Colored_String("Generating...", ORANGE);
+            mtb_Draw_Local_Gif({"/clkgif/clk31.gif", 47, 31, 0xFFFFFF});
+            statusText.mtb_Write_Colored_String("Generating...", WHITE_SMOKE);
 
             if (pixellab_Generate_To_PSRAM(digitalArtInfo.artPrompt, &buffer, &imageSize)) {
                 bool saved = false;
@@ -171,11 +173,14 @@ void digitalArt_App_Task(void* dApplication){
                     img.xAxis = 0;
                     img.yAxis = 0;
                     img.scale = 1;
+                    mtb_Stop_Local_Gif(true);
                     mtb_Draw_Local_Png(img);
                 } else {
+                    mtb_Stop_Local_Gif(true);
                     mtb_Draw_PSRAM_Png(&buffer, &imageSize);
                 }
             } else {
+                mtb_Stop_Local_Gif(true);
                 mtb_Panel_Clear_Screen();
                 titleText.mtb_Write_Colored_String("AI PIXEL ART", WHITE);
                 statusText.mtb_Write_Colored_String("Generation failed", RED);

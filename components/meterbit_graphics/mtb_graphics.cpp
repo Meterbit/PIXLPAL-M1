@@ -384,7 +384,6 @@ void Mtb_Static_Text_t::mtb_Init_Led_Matrix_Panel(){
 	mtb_Read_Nvs_Struct("pan_brghnss", &panelBrightness, sizeof(uint8_t));
 	mtb_Panel_Set_Brightness(panelBrightness); // 0-255
 	mtb_Set_Status_RGB_LED(currentStatusLEDcolor, panelBrightness);
-	// if(litFS_Ready)drawGIF("/mtblg/mtbStart.gif",0,0,1);
 }
 
 //************************************************
