@@ -11,4 +11,4 @@ idf_component_register( SRCS "main.cpp"
                         )
 
                          littlefs_create_partition_image(spiffs sysLitFs)
-#                         littlefs_create_partition_image(userDat userLitFs)
+                         littlefs_create_partition_image(userDat userLitFs)

@@ -212,6 +212,7 @@ void changeDigitalArtButton(button_event_t button_Data){
                 size_t sz = 0;
                 mtb_Download_Github_File_To_PSRAM(constructPathFromName(digitalArtInfo.displayArtName).c_str(), &buf, &sz, "Meterbit", "METERBIT_PRIV_RES", github_Token);
                 mtb_Draw_PSRAM_Png(&buf, &sz);
+                mtb_Write_Nvs_Struct("DigitArtData", &digitalArtInfo, sizeof(Digital_Data_t));
             } else {
                 if (strlen(digitalArtInfo.artPrompt) > 0) {
                     AiArtRequest_t req;
