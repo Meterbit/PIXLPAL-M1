@@ -595,11 +595,13 @@ extern Mtb_Services* mtb_Read_Write_NVS_Sv;        /**< Serialises NVS struct re
 extern Mtb_Services* mtb_Png_Local_ImageDrawer_Sv; /**< Renders PNG images from LittleFS to the panel. */
 extern Mtb_Services* mtb_SvgLocal_ImageDrawer_Sv;  /**< Renders SVG images from LittleFS to the panel. */
 extern Mtb_Services* mtb_Mqtt_Client_Sv;           /**< Runs the PicoMQTT client event loop. */
-extern Mtb_Services *mtb_GitHub_File_Dwnload_Sv;   /**< Downloads deferred assets from GitHub to LittleFS. */
+extern Mtb_Services* mtb_GitHub_File_Dwnload_Sv;   /**< Downloads deferred assets from GitHub to LittleFS. */
+
 extern Mtb_Services* mtb_Audio_Out_Sv;             /**< I2S DAC audio output processing task. */
 extern Mtb_Services* mtb_Audio_In_Sv;              /**< I2S microphone capture task. */
 extern Mtb_Services* mtb_Usb_Audio_Sv;             /**< USB Audio Class (UAC) speaker task. */
 extern Mtb_Services* mtb_Usb_Mass_Storage_Sv;      /**< USB mass-storage host task. */
+
 extern Mtb_Services* mtb_Scroll_Tasks_Sv[];        /**< Array of text-scroll service instances. */
 extern Mtb_Services* mtb_Encoder_Task_Sv;          /**< Reads EC11 encoder rotation events. */
 extern Mtb_Services* mtb_Button_Task_Sv;           /**< Reads EC11 button press events. */

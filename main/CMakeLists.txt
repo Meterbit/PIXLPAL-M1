@@ -8,6 +8,7 @@ idf_component_register( SRCS "main.cpp"
                         App_Example_Draw_Local_Image
                         App_Example_Encoder_N_Beep
                         App_Example_Draw_Online_Image
+                        App_Example_NVS_Storage
                         )
 
                          littlefs_create_partition_image(spiffs sysLitFs)

@@ -6,7 +6,8 @@
       "Bash(git status *)",
       "Read(//Users/stephengata/esp/**)",
       "Read(//Users/stephengata/**)",
-      "Bash(find / -maxdepth 4 -iname \"export.sh\" -path \"*esp-idf*\")"
+      "Bash(find / -maxdepth 4 -iname \"export.sh\" -path \"*esp-idf*\")",
+      "Bash(xargs -I{} sh -c 'echo ===={}====; cat {}')"
     ],
     "additionalDirectories": [
       "/Users/stephengata/ESP32v5_3_Projects/PIXLPAL-M1/components/All_Open_Pxp_Apps/Meterbit_Apps"

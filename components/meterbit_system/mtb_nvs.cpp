@@ -55,8 +55,7 @@ void init_nvs_mem(void){
         strcpy(pxp_BLE_Name, "PIXLPAL-M1");
         strcpy(ntp_TimeZone, "WAT-1");
         clk_Updt = {LASER_LEMON, LASER_LEMON, WHITE, WHITE, WHITE};
-     }
-     else {
+     } else {
         set_factory_NVS_parameters();
      }
 }

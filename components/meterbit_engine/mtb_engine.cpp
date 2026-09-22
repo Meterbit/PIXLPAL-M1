@@ -92,6 +92,27 @@ Mtb_Applications* mtb_Launch_This_App(Mtb_Applications *dApp, Mtb_Action_On_App_
 void mtb_Launch_This_Service(Mtb_Services* THIS_SERV){
     //ESP_LOGI(TAG, "Attempting to start service: %s\n", THIS_SERV->serviceName);
     BaseType_t result;
+
+    // mtb_Kill_This_Service() only clears service_is_Running; the task itself doesn't
+    // null its handle until it notices the flag and unwinds to mtb_Delete_This_Service().
+    // If a kill and a relaunch land close together (e.g. Wi-Fi drops and reconnects
+    // quickly), the handle can still be non-NULL here even though a teardown is already
+    // in progress, causing the launch below to silently no-op and leave the service dead.
+    // Detect that in-progress-teardown case (flag already cleared, handle not yet NULL)
+    // and wait briefly for the old task to actually exit before deciding whether to launch.
+    if(THIS_SERV->service_is_Running == pdFALSE) {
+        const uint32_t pollMs = 10;
+        const uint32_t maxWaitMs = 2000;
+        uint32_t waitedMs = 0;
+        while(*(THIS_SERV->serviceT_Handle_ptr) != NULL && waitedMs < maxWaitMs) {
+            vTaskDelay(pdMS_TO_TICKS(pollMs));
+            waitedMs += pollMs;
+        }
+        if(*(THIS_SERV->serviceT_Handle_ptr) != NULL) {
+            ESP_LOGE(TAG, "Service %s still tearing down after %ums; relaunch skipped this cycle\n", THIS_SERV->serviceName, maxWaitMs);
+        }
+    }
+
     if(*(THIS_SERV->serviceT_Handle_ptr) == NULL) {  // Prevents the service from being started multiple times
         MTB_SERV_IS_ACTIVE = pdTRUE;
         result = xTaskCreatePinnedToCore(THIS_SERV->service, THIS_SERV->serviceName, THIS_SERV->stackSize, THIS_SERV, THIS_SERV->servicePriority, THIS_SERV->serviceT_Handle_ptr, THIS_SERV->serviceCore);

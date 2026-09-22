@@ -51,7 +51,6 @@ void wifi_CurrentContdNetwork(void){
 // Handlers for the WiFi events
 void handle_wifi_connected(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data) {
     ESP_LOGI(TAG, "PixlPal WiFi Connected to AP");
-    mtb_Launch_This_Service(mtb_Mqtt_Client_Sv);
     Mtb_Applications::pxpWifiConnectStatus = true;
 }
 
@@ -62,6 +61,10 @@ void handle_ip_address_obtained(void* arg, esp_event_base_t event_base, int32_t 
     mtb_Show_Status_Bar_Icon({"/batIcons/sta_mode.png", 1, 1});
     mtb_Write_Nvs_Struct("Wifi Cred", &last_Successful_Wifi, sizeof(Wifi_Credentials));
     mtb_Set_Status_RGB_LED(GREEN);
+    // Launch MQTT here (once DHCP has actually handed out an IP/DNS server) rather than
+    // on STA_CONNECTED (mere AP association), which races DHCP and typically burns a
+    // failed DNS lookup + one full reconnect_interval before the first real connection.
+    mtb_Launch_This_Service(mtb_Mqtt_Client_Sv);
 }
 
 void handle_wifi_disconnected(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data) {
